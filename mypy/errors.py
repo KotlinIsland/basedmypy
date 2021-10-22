@@ -634,6 +634,8 @@ class Errors:
         ignored_lines = self.ignored_lines[file]
         used_ignored_lines = self.used_ignored_lines[file]
         for line, ignored_codes in ignored_lines.items():
+            if "unused-ignore" in ignored_codes:
+                continue
             used_ignored_codes = used_ignored_lines[line]
             unused_ignored_codes = set(ignored_codes) - set(used_ignored_codes)
             # `ignore` is used
@@ -664,7 +666,7 @@ class Errors:
                 -1,
                 "error",
                 message,
-                None,
+                codes.UNUSED_IGNORE,
                 False,
                 False,
                 False,
