@@ -990,7 +990,11 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                             ctx: Context = arg_type
                             if ctx.line < 0:
                                 ctx = typ
-                            self.fail(message_registry.FUNCTION_PARAMETER_CANNOT_BE_COVARIANT, ctx)
+                            self.fail(
+                                message_registry.FUNCTION_PARAMETER_CANNOT_BE_COVARIANT,
+                                ctx,
+                                code=codes.UNSAFE_VARIANCE,
+                            )
                     if typ.arg_kinds[i] == nodes.ARG_STAR:
                         if not isinstance(arg_type, ParamSpecType):
                             # builtins.tuple[T] is typing.Tuple[T, ...]
