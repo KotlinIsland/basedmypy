@@ -365,6 +365,9 @@ def parse_options(
     if flags:
         flag_list = flags.group(1).split()
         flag_list.append("--no-site-packages")  # the tests shouldn't need an installed Python
+        if "--local-partial-types" in flag_list:
+            flag_list.remove("--local-partial-types")
+            flag_list.append("--no-nonlocal-partial-types")
         targets, options = process_options(flag_list, require_targets=False)
         if targets:
             # TODO: support specifying targets via the flags pragma
