@@ -102,10 +102,16 @@ READ_ONLY_PROPERTY_OVERRIDES_READ_WRITE: Final = ErrorMessage(
 )
 FORMAT_REQUIRES_MAPPING: Final = "Format requires a mapping"
 RETURN_TYPE_CANNOT_BE_CONTRAVARIANT: Final = ErrorMessage(
-    "Cannot use a contravariant type variable as return type"
+    "This usage of this contravariant type variable is unsafe as a return type.\n"
+    "If this is intentional and you know what you are doing, "
+    "you can ignore this line with 'unsafe-variance'",
+    codes.UNSAFE_VARIANCE,
 )
 FUNCTION_PARAMETER_CANNOT_BE_COVARIANT: Final = ErrorMessage(
-    "Cannot use a covariant type variable as a parameter"
+    "This usage of this covariant type variable is unsafe as an input parameter.\n"
+    "If this is intentional and you know what you are doing, "
+    "you can ignore this line with 'unsafe-variance'",
+    codes.UNSAFE_VARIANCE,
 )
 INCOMPATIBLE_IMPORT_OF: Final = ErrorMessage('Incompatible import of "{}"', code=codes.ASSIGNMENT)
 FUNCTION_TYPE_EXPECTED: Final = ErrorMessage(
