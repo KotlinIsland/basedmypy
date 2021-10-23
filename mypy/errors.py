@@ -1,6 +1,9 @@
+import json
 import os.path
 import sys
 import traceback
+from pathlib import Path
+
 from mypy.backports import OrderedDict
 from collections import defaultdict
 
@@ -117,6 +120,28 @@ ErrorTuple = Tuple[Optional[str],
                    Optional[ErrorCode]]
 
 
+def filter_prefix(map: dict[str, list[ErrorInfo]]) -> dict[str, list[ErrorInfo]]:
+    result = {file.removeprefix(os.getcwd()): errors for file, errors in map.items()}
+    for errors in result.values():
+        for error in errors:
+            error.origin = error.origin[0].removeprefix(os.getcwd()), *error.origin[1:]
+            error.file = error.file.removeprefix(os.getcwd())
+    return result
+
+
+def baseline_json_hook(d: dict[str, object]):
+    class_ = d.pop(".class", None)
+    if class_ is None: return d
+    if class_ == "mypy.errors.ErrorInfo":
+        result = object.__new__(ErrorInfo)
+    elif class_ == "mypy.errorcodes.ErrorCode":
+        result = object.__new__(ErrorCode)
+    else:
+        raise Exception(f"unknown class {class_!r}")
+    result.__dict__ = d
+    return result
+
+
 class Errors:
     """Container for compile errors.
 
@@ -172,6 +197,11 @@ class Errors:
     # Have we seen an import-related error so far? If yes, we filter out other messages
     # in some cases to avoid reporting huge numbers of errors.
     seen_import_error = False
+
+    # Error baseline
+    baseline: dict[str, list[ErrorInfo]] = {}
+    # All detected errors before baseline filter
+    all_errors: dict[str, list[ErrorInfo]] = {}
 
     def __init__(self,
                  show_error_context: bool = False,
@@ -760,6 +790,42 @@ class Errors:
                 res.append(errors[i])
             i += 1
         return res
+
+    def save_baseline(self, file: Path) -> None:
+        """Create/update a file that stores all errors"""
+
+        if not file.parent.exists():
+            file.parent.mkdir()
+        json.dump(
+            filter_prefix(self.error_info_map),
+            file.open("w"),
+            default=lambda o: {".class": (t := type(o)).__module__ + "." + t.__qualname__} | o.__dict__
+        )
+
+    def load_baseline(self, file: Path) -> None:
+        """Load baseline errors from baseline file"""
+
+        if not file.exists():
+            return
+        self.baseline = json.load(file.open("r"), object_hook=baseline_json_hook)
+
+    def filter_baseline(self) -> None:
+        """Remove baseline errors from the error_info_map"""
+
+        self.all_errors = self.error_info_map.copy()
+        for file, errors in self.error_info_map.items():
+            baseline_errors = self.baseline[file.removeprefix(os.getcwd())]
+            new_errors = []
+            for error in errors:
+                for baseline_error in baseline_errors:
+                    if (
+                        error.line == baseline_error.line and error.code == baseline_error.code
+                        or error.message == baseline_error.message and abs(error.line - baseline_error.line) < 50
+                    ):
+                        break
+                else:
+                    new_errors.append(error)
+            self.error_info_map[file] = new_errors
 
 
 class CompileError(Exception):
