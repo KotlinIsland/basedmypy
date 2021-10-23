@@ -125,6 +125,11 @@ def main(script_path: Optional[str],
             stdout.write(formatter.format_success(len(sources), options.color_output) + '\n')
         stdout.flush()
 
+    if options.write_baseline:
+        stdout.write(formatter.style("Baseline successfully written to {}\n".format(options.baseline_file),
+                                     "green", bold=True))
+        code = 0
+
     if options.install_types and not options.non_interactive:
         result = install_types(formatter, options, after_run=True, non_interactive=False)
         if result:
@@ -494,6 +499,13 @@ def process_options(args: List[str],
         help="Show program's version number and exit",
         stdout=stdout)
 
+    general_group.add_argument(
+        '--write-baseline', action="store_true",
+        help="Create an error baseline from the result of this execution")
+    general_group.add_argument(
+        '--baseline-file', action='store',
+        help="Use baseline info in the given file"
+             "(defaults to '{}')".format(defaults.BASELINE_FILE))
     config_group = parser.add_argument_group(
         title='Config file',
         description="Use a config file instead of command line arguments. "
