@@ -15,6 +15,7 @@ PYTHON3_VERSION: Final = (3, 7)
 PYTHON3_VERSION_MIN: Final = (3, 4)
 
 CACHE_DIR: Final = ".mypy_cache"
+BASELINE_FILE: Final = ".mypy/baseline.json"
 CONFIG_FILE: Final = ["mypy.ini", ".mypy.ini"]
 PYPROJECT_CONFIG_FILES: Final = ["pyproject.toml"]
 SHARED_CONFIG_FILES: Final = ["setup.cfg"]
