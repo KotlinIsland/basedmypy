@@ -24,6 +24,7 @@ import stat
 import sys
 import time
 import types
+from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     AbstractSet,
@@ -71,7 +72,7 @@ from mypy.util import (
 if TYPE_CHECKING:
     from mypy.report import Reports  # Avoid unconditional slow import
 
-from mypy import errorcodes as codes
+from mypy import defaults, errorcodes as codes
 from mypy.config_parser import parse_mypy_comments
 from mypy.fixup import fixup_module
 from mypy.freetree import free_tree
@@ -3448,7 +3449,16 @@ def process_stale_scc(graph: Graph, scc: list[str], manager: BuildManager) -> No
         for id in stale:
             graph[id].transitive_error = True
     for id in stale:
+        if not manager.options.write_baseline and manager.options.baseline_file:
+            res = manager.errors.load_baseline(Path(manager.options.baseline_file))
+            if not res and manager.options.baseline_file != defaults.BASELINE_FILE:
+                print("Baseline file not found")
+                raise Exception("Baseline file not found")
+        if manager.errors.baseline:
+            manager.errors.filter_baseline()
         manager.flush_errors(manager.errors.file_messages(graph[id].xpath), False)
+        if manager.options.write_baseline and manager.options.baseline_file:
+            manager.errors.save_baseline(Path(manager.options.baseline_file))
         graph[id].write_cache()
         graph[id].mark_as_rechecked()
 
