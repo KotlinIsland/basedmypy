@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 from setuptools import find_packages, setup
 from setuptools.command.build_py import build_py
 
-from mypy.version import __version__ as version
+from mypy.version import __based_version__, __version__, based_version_info
 
 description = "Optional static typing for Python"
 long_description = """
@@ -81,7 +81,10 @@ class CustomPythonBuild(build_py):
         path = os.path.join(self.build_lib, "mypy")
         self.mkpath(path)
         with open(os.path.join(path, "version.py"), "w") as stream:
-            stream.write(f'__version__ = "{version}"\n')
+            stream.write("from mypy.versionutil import VersionInfo\n")
+            stream.write(f'__version__ = "{__version__}"\n')
+            stream.write(f"based_version_info = {based_version_info!r}\n")
+            stream.write(f'__based_version__ = "{__based_version__}"\n')
 
     def run(self):
         self.execute(self.pin_version, ())
@@ -206,7 +209,7 @@ classifiers = [
 
 setup(
     name="mypy",
-    version=version,
+    version=__based_version__,
     description=description,
     long_description=long_description,
     author="Jukka Lehtosalo",

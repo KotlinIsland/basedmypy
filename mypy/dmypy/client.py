@@ -20,7 +20,7 @@ from mypy.dmypy_os import alive, kill
 from mypy.dmypy_util import DEFAULT_STATUS_FILE, receive
 from mypy.ipc import IPCClient, IPCException
 from mypy.util import check_python_version, get_terminal_width
-from mypy.version import __version__
+from mypy.version import __based_version__, __version__
 
 # Argument parser.  Subparsers are tied to action functions by the
 # @action(subparse) decorator.
@@ -42,7 +42,7 @@ parser.add_argument(
     "-V",
     "--version",
     action="version",
-    version="%(prog)s " + __version__,
+    version=f"Basedmypy Daemon {__based_version__}\n" f"Based on %(prog)s {__version__}",
     help="Show program's version number and exit",
 )
 subparsers = parser.add_subparsers()
@@ -321,12 +321,12 @@ def do_run(args: argparse.Namespace) -> None:
         # Bad or missing status file or dead process; good to start.
         start_server(args, allow_sources=True)
     t0 = time.time()
-    response = request(args.status_file, "run", version=__version__, args=args.flags)
+    response = request(args.status_file, "run", version=__based_version__, args=args.flags)
     # If the daemon signals that a restart is necessary, do it
     if "restart" in response:
         print(f"Restarting: {response['restart']}")
         restart_server(args, allow_sources=True)
-        response = request(args.status_file, "run", version=__version__, args=args.flags)
+        response = request(args.status_file, "run", version=__based_version__, args=args.flags)
 
     t1 = time.time()
     response["roundtrip_time"] = t1 - t0

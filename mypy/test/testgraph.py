@@ -19,7 +19,7 @@ from mypy.options import Options
 from mypy.plugin import Plugin
 from mypy.report import Reports
 from mypy.test.helpers import Suite, assert_equal
-from mypy.version import __version__
+from mypy.version import __based_version__
 
 
 class GraphSuite(Suite):
@@ -50,7 +50,7 @@ class GraphSuite(Suite):
             source_set=BuildSourceSet([]),
             reports=Reports("", {}),
             options=options,
-            version_id=__version__,
+            version_id=__based_version__,
             plugin=Plugin(options),
             plugins_snapshot={},
             errors=errors,
