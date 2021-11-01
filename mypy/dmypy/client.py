@@ -20,7 +20,7 @@ from mypy.dmypy_os import alive, kill
 from mypy.dmypy_util import DEFAULT_STATUS_FILE, receive
 from mypy.ipc import IPCClient, IPCException
 from mypy.util import check_python_version, get_terminal_width, should_force_color
-from mypy.version import __version__
+from mypy.version import __based_version__, __version__
 
 # Argument parser.  Subparsers are tied to action functions by the
 # @action(subparse) decorator.
@@ -42,7 +42,7 @@ parser.add_argument(
     "-V",
     "--version",
     action="version",
-    version="%(prog)s " + __version__,
+    version=f"Basedmypy Daemon {__based_version__}\n" f"Based on %(prog)s {__version__}",
     help="Show program's version number and exit",
 )
 subparsers = parser.add_subparsers()
@@ -396,7 +396,7 @@ def do_run(args: argparse.Namespace) -> None:
     response = request(
         args.status_file,
         "run",
-        version=__version__,
+        version=__based_version__,
         args=args.flags,
         export_types=args.export_types,
     )
@@ -407,7 +407,7 @@ def do_run(args: argparse.Namespace) -> None:
         response = request(
             args.status_file,
             "run",
-            version=__version__,
+            version=__based_version__,
             args=args.flags,
             export_types=args.export_types,
         )
