@@ -68,7 +68,8 @@ READ_ONLY_PROPERTY_OVERRIDES_READ_WRITE: Final = (
 )
 FORMAT_REQUIRES_MAPPING: Final = "Format requires a mapping"
 RETURN_TYPE_CANNOT_BE_CONTRAVARIANT: Final = (
-    "Cannot use a contravariant type variable as return type"
+    "This usage of this contravariant type variable is unsafe as a return type.\n"
+    "If this is intentional and you know what you are doing, you can ignore this line with 'unsafe-variance'"
 )
 FUNCTION_PARAMETER_CANNOT_BE_COVARIANT: Final = (
     "This usage of this covariant type variable is unsafe as an input parameter.\n"
