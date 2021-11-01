@@ -1,6 +1,6 @@
 <img src="http://mypy-lang.org/static/mypy_light.svg" alt="mypy logo" width="300px"/>
 
-Mypy: Optional Static Typing for Python
+BasedMypy: Based Static Typing for Python
 =======================================
 
 [![Build Status](https://api.travis-ci.com/python/mypy.svg?branch=master)](https://travis-ci.com/python/mypy)
@@ -17,17 +17,27 @@ questions on [gitter chat](https://gitter.im/python/typing).  If you are
 sure you've found a bug please search our issue trackers for a
 duplicate before filing a new issue:
 
-- [mypy tracker](https://github.com/python/mypy/issues)
-  for mypy issues
-- [typeshed tracker](https://github.com/python/typeshed/issues)
+- [basedmypy tracker](https://github.com/KotlinIsland/basedmypy/issues)
+  for basedmypy issues
+- [basedtypeshed tracker](https://github.com/KotlinIsland/basedtypeshed/issues)
   for issues with specific modules
-- [typing tracker](https://github.com/python/typing/issues)
-  for discussion of new type system features (PEP 484 changes) and
-  runtime bugs in the typing module
+- [basedtyping tracker](https://github.com/KotlinIsland/basedtyping/issues)
+  for discussion of new type system features (against PEP 484) and
+  runtime bugs in the basedtyping module
+
+What is basedmypy?
+-------------
+BasedMypy is a fork of mypy that adds based functionality and breaks 
+compatability with the cringe parts of pep 484.
+
+Based features include:
+- Typesafe by default (optional and dynamic typing still supported)
+- Baseline functionality
+
+See the [changelog](CHANGELOG.md) for a comprehensive list.
 
 What is mypy?
 -------------
-
 Mypy is an optional static type checker for Python.  You can add type
 hints ([PEP 484](https://www.python.org/dev/peps/pep-0484/)) to your
 Python programs, and use mypy to type check them statically.
@@ -80,13 +90,13 @@ For other Linux flavors, macOS and Windows, packages are available at
 Quick start
 -----------
 
-Mypy can be installed using pip:
+Basedmypy can be installed using pip:
 
-    $ python3 -m pip install -U mypy
+    $ python3 -m pip install -U basedmypy
 
 If you want to run the latest version of the code, you can install from git:
 
-    $ python3 -m pip install -U git+git://github.com/python/mypy.git
+    $ python3 -m pip install -U git+git://github.com/KotlinIsland/basedmypy.git
 
 
 Now, if Python on your system is configured properly (else see
@@ -220,18 +230,10 @@ which tests to run, see [Test README.md](test-data/unit/README.md).
 Development status
 ------------------
 
-Mypy is beta software, but it has already been used in production
-for several years at Dropbox and in many other organizations, and
-it has an extensive test suite.
+Basedmypy is based software, check mypy for status.
 
 See [the roadmap](ROADMAP.md) if you are interested in plans for the
 future.
-
-
-Changelog
----------
-
-Follow mypy's updates on the blog: https://mypy-lang.blogspot.com/
 
 
 Issue tracker
