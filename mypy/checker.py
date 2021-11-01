@@ -885,7 +885,9 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 if isinstance(typ.ret_type, TypeVarType):
                     if typ.ret_type.variance == CONTRAVARIANT:
                         self.fail(message_registry.RETURN_TYPE_CANNOT_BE_CONTRAVARIANT,
-                                  typ.ret_type)
+                                  typ.ret_type,
+                                  code=codes.UNSAFE_VARIANCE,
+                                  )
 
                 # Check that Generator functions have the appropriate return type.
                 if defn.is_generator:
