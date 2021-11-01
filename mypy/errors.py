@@ -13,7 +13,7 @@ from mypy.message_registry import ErrorMessage
 from mypy.options import Options
 from mypy.scope import Scope
 from mypy.util import DEFAULT_SOURCE_OFFSET, is_typeshed_file
-from mypy.version import __version__ as mypy_version
+from mypy.version import __based_version__ as basedmypy_version
 
 T = TypeVar("T")
 
@@ -1158,14 +1158,16 @@ def report_internal_error(
         file=stderr,
     )
     if options.show_traceback:
-        print("Please report a bug at https://github.com/python/mypy/issues", file=stderr)
+        print(
+            "Please report a bug at https://github.com/KotlinIsland/basedmypy/issues", file=stderr
+        )
     else:
         print(
-            "If this issue continues with mypy master, "
-            "please report a bug at https://github.com/python/mypy/issues",
+            "If this issue continues with basedmypy master, "
+            "please report a bug at https://github.com/KotlinIsland/basedmypy/issues",
             file=stderr,
         )
-    print(f"version: {mypy_version}", file=stderr)
+    print(f"version: {basedmypy_version}", file=stderr)
 
     # If requested, drop into pdb. This overrides show_tb.
     if options.pdb:
