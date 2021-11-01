@@ -100,7 +100,7 @@ from mypy.stubinfo import (
 )
 from mypy.types import Type
 from mypy.typestate import TypeState, reset_global_state
-from mypy.version import __version__
+from mypy.version import __based_version__, __version__
 
 # Switch to True to produce debug output related to fine-grained incremental
 # mode only that is useful during development. This produces only a subset of
@@ -260,7 +260,7 @@ def _build(
         source_set=source_set,
         reports=reports,
         options=options,
-        version_id=__version__,
+        version_id=__based_version__,
         plugin=plugin,
         plugins_snapshot=snapshot,
         errors=errors,
@@ -2813,6 +2813,7 @@ def log_configuration(manager: BuildManager, sources: list[BuildSource]) -> None
 
     manager.log()
     configuration_vars = [
+        ("Basedmypy Version", __based_version__),
         ("Mypy Version", __version__),
         ("Config File", (manager.options.config_file or "Default")),
         ("Configured Executable", manager.options.python_executable or "None"),
