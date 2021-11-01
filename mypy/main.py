@@ -287,7 +287,8 @@ HEADER: Final = """%(prog)s [-h] [-v] [-V] [more options; see below]
 
 
 DESCRIPTION: Final = """
-Mypy is a program that will type check your Python code.
+Mypy is a program that will type check your Python code, 
+basedmypy is a program that will do it well.
 
 Pass in any files or folders you want to type check. Mypy will
 recursively traverse any provided folders to find .py files:
