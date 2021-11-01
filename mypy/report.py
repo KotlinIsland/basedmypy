@@ -22,7 +22,7 @@ from mypy.nodes import Expression, FuncDef, MypyFile
 from mypy.options import Options
 from mypy.traverser import TraverserVisitor
 from mypy.types import Type, TypeOfAny
-from mypy.version import __version__
+from mypy.version import __based_version__
 
 try:
     from lxml import etree  # type: ignore[import]
@@ -610,7 +610,9 @@ class CoberturaXmlReporter(AbstractReporter):
     def __init__(self, reports: Reports, output_dir: str) -> None:
         super().__init__(reports, output_dir)
 
-        self.root = etree.Element("coverage", timestamp=str(int(time.time())), version=__version__)
+        self.root = etree.Element(
+            "coverage", timestamp=str(int(time.time())), version=__based_version__
+        )
         self.doc = etree.ElementTree(self.root)
         self.root_package = CoberturaPackage(".")
 
