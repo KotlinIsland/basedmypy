@@ -3,7 +3,7 @@ name: Tests
 on:
   workflow_dispatch:
   push:
-    branches: [master, 'release*']
+    branches: [master, 'release*', 'rebase-master']
     tags: ['*']
   pull_request:
     paths-ignore:
