@@ -1,21 +1,38 @@
-<img src="http://mypy-lang.org/static/mypy_light.svg" alt="mypy logo" width="300px"/>
+# Based  <img src="http://mypy-lang.org/static/mypy_light.svg" alt="mypy logo" width="300px"/>
 
-BasedMypy: Based Static Typing for Python
-=======================================
+Basedmypy: Based Static Typing for Python
+=========================================
 
-[![Build Status](https://api.travis-ci.com/python/mypy.svg?branch=master)](https://travis-ci.com/python/mypy)
-[![Documentation Status](https://readthedocs.org/projects/mypy/badge/?version=latest)](https://mypy.readthedocs.io/en/latest/?badge=latest)
-[![Chat at https://gitter.im/python/typing](https://badges.gitter.im/python/typing.svg)](https://gitter.im/python/typing?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+What is basedmypy?
+-------------
+Basedmypy is a fork of mypy that adds based functionality and breaks
+compatability with the cringe parts of pep 484.
 
+Based features include:
+- Typesafe by default (optional and dynamic typing still supported)
+- Baseline functionality
 
-Got a question? Join us on Gitter!
+See the [changelog](CHANGELOG.md) for a comprehensive list.
+
+## Usage
+
+### Installation
+
+Basedmypy can be installed using pip from PyPI or from this GitHub repo:
+
+    python -m pip install -U basedmypy
+
+### Running
+Basedmypy currently overrides the `mypy` installation:
+
+    mypy test.py
+
+    python -m mypy test.py 
+
+Got a question or found a bug?
 ----------------------------------
 
-We don't have a mailing list; but we are always happy to answer
-questions on [gitter chat](https://gitter.im/python/typing).  If you are
-sure you've found a bug please search our issue trackers for a
-duplicate before filing a new issue:
+Feel free to start a discussion or raise an issue, were happy to respond:
 
 - [basedmypy tracker](https://github.com/KotlinIsland/basedmypy/issues)
   for basedmypy issues
@@ -25,16 +42,14 @@ duplicate before filing a new issue:
   for discussion of new type system features (against PEP 484) and
   runtime bugs in the basedtyping module
 
-What is basedmypy?
--------------
-BasedMypy is a fork of mypy that adds based functionality and breaks 
-compatability with the cringe parts of pep 484.
+Readme from python/mypy 
+===========
 
-Based features include:
-- Typesafe by default (optional and dynamic typing still supported)
-- Baseline functionality
+[![Build Status](https://api.travis-ci.com/python/mypy.svg?branch=master)](https://travis-ci.com/python/mypy)
+[![Documentation Status](https://readthedocs.org/projects/mypy/badge/?version=latest)](https://mypy.readthedocs.io/en/latest/?badge=latest)
+[![Chat at https://gitter.im/python/typing](https://badges.gitter.im/python/typing.svg)](https://gitter.im/python/typing?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
-See the [changelog](CHANGELOG.md) for a comprehensive list.
 
 What is mypy?
 -------------
@@ -90,13 +105,13 @@ For other Linux flavors, macOS and Windows, packages are available at
 Quick start
 -----------
 
-Basedmypy can be installed using pip:
+Mypy can be installed using pip:
 
-    $ python3 -m pip install -U basedmypy
+    $ python3 -m pip install -U mypy
 
 If you want to run the latest version of the code, you can install from git:
 
-    $ python3 -m pip install -U git+git://github.com/KotlinIsland/basedmypy.git
+    $ python3 -m pip install -U git+git://github.com/python/mypy.git
 
 
 Now, if Python on your system is configured properly (else see
@@ -230,10 +245,18 @@ which tests to run, see [Test README.md](test-data/unit/README.md).
 Development status
 ------------------
 
-Basedmypy is based software, check mypy for status.
+Mypy is beta software, but it has already been used in production
+for several years at Dropbox and in many other organizations, and
+it has an extensive test suite.
 
 See [the roadmap](ROADMAP.md) if you are interested in plans for the
 future.
+
+
+Changelog
+---------
+
+Follow mypy's updates on the blog: https://mypy-lang.blogspot.com/
 
 
 Issue tracker
