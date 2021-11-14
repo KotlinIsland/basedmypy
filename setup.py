@@ -212,6 +212,6 @@ setup(name='basedmypy',
       project_urls={
           'News': 'http://mypy-lang.org/news.html',
           'Documentation': 'https://mypy.readthedocs.io/en/stable/introduction.html',
-          'Repository': 'https://github.com/python/mypy',
+          'Repository': 'https://github.com/KotlinIsland/basedmypy',
       },
       )
