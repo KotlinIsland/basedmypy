@@ -1550,7 +1550,7 @@ class SemanticAnalyzer(
             del base_type_exprs[i]
         tvar_defs: List[TypeVarLikeType] = []
         for name, tvar_expr in declared_tvars:
-            tvar_def = self.tvar_scope.bind_new(name, tvar_expr)
+            tvar_def = self.tvar_scope.bind_new(name, tvar_expr, defn.name)
             tvar_defs.append(tvar_def)
         return base_type_exprs, tvar_defs, is_protocol
 

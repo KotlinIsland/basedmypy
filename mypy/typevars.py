@@ -36,6 +36,7 @@ def fill_typevars(typ: TypeInfo) -> Union[Instance, TupleType]:
                 tv.variance,
                 line=-1,
                 column=-1,
+                scopename=typ.name,
             )
         elif isinstance(tv, TypeVarTupleType):
             tv = UnpackType(
