@@ -1963,6 +1963,9 @@ class UnionType(ProperType):
     def __hash__(self) -> int:
         return hash(frozenset(self.items))
 
+    def __repr__(self):
+        return " | ".join(map(repr, self.items))
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, UnionType):
             return NotImplemented
