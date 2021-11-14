@@ -19,6 +19,7 @@ from textwrap import dedent
 from typing import Any, Callable, Collection, Iterable, Iterator, List, Sequence, cast
 from typing_extensions import Final
 
+import mypy.options
 from mypy import errorcodes as codes, message_registry
 from mypy.erasetype import erase_type
 from mypy.errorcodes import ErrorCode
@@ -80,6 +81,7 @@ from mypy.types import (
     TypeAliasType,
     TypedDictType,
     TypeOfAny,
+    TypeStrVisitor,
     TypeType,
     TypeVarTupleType,
     TypeVarType,
@@ -2304,6 +2306,11 @@ def format_type_inner(
     def format_list(types: Sequence[Type]) -> str:
         return ", ".join(format(typ) for typ in types)
 
+    def format_union(types: Sequence[Type]) -> str:
+        if not mypy.options._based:
+            return format_list(types)
+        return " | ".join(format(typ) for typ in types)
+
     def format_literal_value(typ: LiteralType) -> str:
         if typ.is_enum_literal():
             underlying_type = format(typ.fallback)
@@ -2342,11 +2349,13 @@ def format_type_inner(
             base_str = itype.type.name
         if not itype.args:
             # No type arguments, just return the type name
-            return base_str
+            return TypeStrVisitor.strip_builtins(base_str)
         elif itype.type.fullname == "builtins.tuple":
             item_type_str = format(itype.args[0])
-            return f"Tuple[{item_type_str}, ...]"
-        elif itype.type.fullname in reverse_builtin_aliases:
+            if not mypy.options._based:
+                return f"Tuple[{item_type_str}, ...]"
+            return f"tuple[{item_type_str}, ...]"
+        elif not mypy.options._based and itype.type.fullname in reverse_builtin_aliases:
             alias = reverse_builtin_aliases[itype.type.fullname]
             alias = alias.split(".")[-1]
             return f"{alias}[{format_list(itype.args)}]"
@@ -2357,6 +2366,8 @@ def format_type_inner(
         return f"Unpack[{format(typ.type)}]"
     elif isinstance(typ, TypeVarType):
         # This is similar to non-generic instance types.
+        if mypy.options._based:
+            return f"{typ.name}@{typ.scopename}"
         return typ.name
     elif isinstance(typ, TypeVarTupleType):
         # This is similar to non-generic instance types.
@@ -2375,7 +2386,12 @@ def format_type_inner(
         # Prefer the name of the fallback class (if not tuple), as it's more informative.
         if typ.partial_fallback.type.fullname != "builtins.tuple":
             return format(typ.partial_fallback)
-        s = f"Tuple[{format_list(typ.items)}]"
+        if not mypy.options._based:
+            s = f"Tuple[{format_list(typ.items)}]"
+        else:
+            s = format_list(typ.items)
+            s = f"({s},)" if len(typ.items) == 1 else f"({s})"
+
         return s
     elif isinstance(typ, TypedDictType):
         # If the TypedDictType is named, return the name
@@ -2400,9 +2416,14 @@ def format_type_inner(
             )
 
             if len(union_items) == 1 and isinstance(get_proper_type(union_items[0]), NoneType):
-                return f"Optional[{literal_str}]"
+                if mypy.options._based:
+                    return f"{literal_str} | None"
+                else:
+                    return f"Optional[{literal_str}]"
             elif union_items:
-                return f"Union[{format_list(union_items)}, {literal_str}]"
+                if not mypy.options._based:
+                    return f"Union[{format_list(union_items)}, {literal_str}]"
+                return f"{format_union(union_items)} | {literal_str}"
             else:
                 return literal_str
         else:
@@ -2413,9 +2434,15 @@ def format_type_inner(
             )
             if print_as_optional:
                 rest = [t for t in typ.items if not isinstance(get_proper_type(t), NoneType)]
-                return f"Optional[{format(rest[0])}]"
+                if mypy.options._based:
+                    return f"{format(rest[0])} | None"
+                else:
+                    return f"Optional[{format(rest[0])}]"
             else:
-                s = f"Union[{format_list(typ.items)}]"
+                if mypy.options._based:
+                    s = format_union(typ.items)
+                else:
+                    s = f"Union[{format_list(typ.items)}]"
 
             return s
     elif isinstance(typ, NoneType):
@@ -2430,7 +2457,9 @@ def format_type_inner(
         else:
             return "<nothing>"
     elif isinstance(typ, TypeType):
-        return f"Type[{format(typ.item)}]"
+        if not mypy.options._based:
+            return f"Type[{format(typ.item)}]"
+        return f"type[{format(typ.item)}]"
     elif isinstance(typ, FunctionLike):
         func = typ
         if func.is_type_obj():
@@ -2443,14 +2472,20 @@ def format_type_inner(
             else:
                 return_type = format(func.ret_type)
             if func.is_ellipsis_args:
-                return f"Callable[..., {return_type}]"
+                if not mypy.options._based:
+                    return f"Callable[..., {return_type}]"
+                return f"(...) -> {return_type}"
             param_spec = func.param_spec()
             if param_spec is not None:
-                return f"Callable[{format(param_spec)}, {return_type}]"
+                if not mypy.options._based:
+                    return f"Callable[{format(param_spec)}, {return_type}]"
+                return f"({param_spec.name}) -> {return_type}"
             args = format_callable_args(
                 func.arg_types, func.arg_kinds, func.arg_names, format, verbosity
             )
-            return f"Callable[[{args}], {return_type}]"
+            if not mypy.options._based:
+                return f"Callable[[{args}], {return_type}]"
+            return f"({args}) -> {return_type}"
         else:
             # Use a simple representation for function types; proper
             # function types may result in long and difficult-to-read

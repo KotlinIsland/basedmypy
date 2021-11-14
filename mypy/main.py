@@ -1230,6 +1230,10 @@ def process_options(
 
     options = Options()
 
+    if dummy.legacy:
+        if not os.getenv("__MYPY_UNDER_TEST__"):
+            mypy.options._based = True
+
     def set_strict_flags() -> None:
         pass
 

@@ -78,7 +78,9 @@ class TypeVarLikeScope:
         self.func_id -= 1
         return self.func_id
 
-    def bind_new(self, name: str, tvar_expr: TypeVarLikeExpr) -> TypeVarLikeType:
+    def bind_new(
+        self, name: str, tvar_expr: TypeVarLikeExpr, scopename: str | None = None
+    ) -> TypeVarLikeType:
         if self.is_class_scope:
             self.class_id += 1
             i = self.class_id
@@ -98,6 +100,7 @@ class TypeVarLikeScope:
                 variance=tvar_expr.variance,
                 line=tvar_expr.line,
                 column=tvar_expr.column,
+                scopename=scopename,
             )
         elif isinstance(tvar_expr, ParamSpecExpr):
             tvar_def = ParamSpecType(
