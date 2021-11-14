@@ -5,7 +5,7 @@ from __future__ import annotations
 import itertools
 from contextlib import contextmanager
 from itertools import chain
-from typing import Callable, Iterable, Iterator, List, Sequence, Tuple, TypeVar
+from typing import Callable, Iterable, Iterator, List, Sequence, Tuple, TypeVar, Union
 from typing_extensions import Final, Protocol
 
 from mypy import errorcodes as codes, message_registry, nodes
@@ -24,6 +24,7 @@ from mypy.nodes import (
     Context,
     Decorator,
     Expression,
+    FuncItem,
     MypyFile,
     ParamSpecExpr,
     PlaceholderNode,
@@ -321,6 +322,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                     tvar_def.variance,
                     line=t.line,
                     column=t.column,
+                    scopename=tvar_def.scopename,
                 )
             if isinstance(sym.node, TypeVarTupleExpr) and (
                 tvar_def is not None and self.defining_alias
@@ -1346,7 +1348,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         return list(zip(names, tvars))
 
     def bind_function_type_variables(
-        self, fun_type: CallableType, defn: Context
+        self, fun_type: CallableType, defn: Union[CallableType, FuncItem]
     ) -> Sequence[TypeVarLikeType]:
         """Find the type variables of the function type and bind them in our tvar_scope"""
         if fun_type.variables:
@@ -1356,7 +1358,11 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 assert var_node, "Binding for function type variable not found within function"
                 var_expr = var_node.node
                 assert isinstance(var_expr, TypeVarLikeExpr)
-                binding = self.tvar_scope.bind_new(var.name, var_expr)
+                binding = self.tvar_scope.bind_new(
+                    var.name,
+                    var_expr,
+                    scopename=var.scopename if isinstance(var, TypeVarType) else None,
+                )
                 defs.append(binding)
             return defs
         typevars = self.infer_type_variables(fun_type)
@@ -1372,7 +1378,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                     defn,
                     code=codes.VALID_TYPE,
                 )
-            binding = self.tvar_scope.bind_new(name, tvar)
+            binding = self.tvar_scope.bind_new(name, tvar, scopename=defn.name)
             defs.append(binding)
 
         return defs
@@ -1431,6 +1437,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 var_def.upper_bound.accept(self),
                 var_def.variance,
                 var_def.line,
+                scopename=var_def.scopename,
             )
         else:
             return var_def
