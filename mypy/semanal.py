@@ -231,7 +231,7 @@ from mypy.typeanal import (
     remove_dups,
     type_constructors,
 )
-from mypy.typeops import function_type, get_type_vars
+from mypy.typeops import function_type, get_type_vars, infer_impl_from_parts
 from mypy.types import (
     ASSERT_TYPE_NAMES,
     FINAL_DECORATOR_NAMES,
@@ -270,9 +270,10 @@ from mypy.types import (
     get_proper_types,
     invalid_recursive_alias,
     is_named_instance,
+    is_unannotated_any,
     store_argument_type,
 )
-from mypy.typevars import fill_typevars
+from mypy.typevars import fill_typevars, fill_typevars_with_any
 from mypy.util import (
     correct_relative_import,
     is_dunder,
@@ -800,6 +801,8 @@ class SemanticAnalyzer(
     def visit_func_def(self, defn: FuncDef) -> None:
         self.statement = defn
 
+        infer_fdef_types_from_defaults(defn, self)
+
         # Visit default values because they may contain assignment expressions.
         for arg in defn.arguments:
             if arg.initializer:
@@ -840,10 +843,36 @@ class SemanticAnalyzer(
             # Method definition
             assert self.type is not None
             defn.info = self.type
-            if defn.type is not None and defn.name in ("__init__", "__init_subclass__"):
-                assert isinstance(defn.type, CallableType)
-                if isinstance(get_proper_type(defn.type.ret_type), AnyType):
-                    defn.type = defn.type.copy_modified(ret_type=NoneType())
+            if defn.name in ("__init__", "__init_subclass__"):
+                if defn.type:
+                    assert isinstance(defn.type, CallableType)
+                    if isinstance(get_proper_type(defn.type.ret_type), AnyType):
+                        defn.type = defn.type.copy_modified(ret_type=NoneType())
+                elif self.options.infer_function_types:
+                    defn.type = CallableType(
+                        [AnyType(TypeOfAny.unannotated) for _ in defn.arg_kinds],
+                        defn.arg_kinds,
+                        defn.arg_names,
+                        NoneType(),
+                        self.named_type("builtins.function"),
+                        implicit=True,
+                    )
+            if defn.name == "__new__" and self.options.infer_function_types:
+                if defn.type:
+                    assert isinstance(defn.type, CallableType)
+                    if isinstance(get_proper_type(defn.type.ret_type), (AnyType, NoneType)):
+                        self_type = fill_typevars_with_any(defn.info)
+                        defn.type = defn.type.copy_modified(ret_type=self_type)
+                elif self.options.infer_function_types:
+                    self_type = fill_typevars_with_any(defn.info)
+                    defn.type = CallableType(
+                        [AnyType(TypeOfAny.unannotated) for _ in defn.arg_kinds],
+                        defn.arg_kinds,
+                        defn.arg_names,
+                        self_type,
+                        self.named_type("builtins.function"),
+                        implicit=True,
+                    )
             self.prepare_method_signature(defn, self.type, has_self_type)
 
         # Analyze function signature
@@ -1168,7 +1197,7 @@ class SemanticAnalyzer(
                 assert isinstance(callable, CallableType)
                 # overloads ignore the rule regarding default return and untyped defs
                 if item.type is None and self.options.default_return:
-                    if isinstance(get_proper_type(callable.ret_type), AnyType):
+                    if is_unannotated_any(callable.ret_type):
                         callable.ret_type = NoneType()
                 if not any(refers_to_fullname(dec, OVERLOAD_NAMES) for dec in item.decorators):
                     if i == len(defn.items) - 1 and not self.is_stub_file:
@@ -1189,6 +1218,8 @@ class SemanticAnalyzer(
                     impl = item
                 else:
                     non_overload_indexes.append(i)
+        if self.options.infer_function_types and impl and not non_overload_indexes:
+            infer_impl_from_parts(impl, types, self.named_type("builtins.function"))
         return types, impl, non_overload_indexes
 
     def handle_missing_overload_decorators(
@@ -3266,7 +3297,9 @@ class SemanticAnalyzer(
             for lv in s.lvalues
         )
 
-    def analyze_simple_literal_type(self, rvalue: Expression, is_final: bool) -> Type | None:
+    def analyze_simple_literal_type(
+        self, rvalue: Expression, is_final: bool, do_bools=False
+    ) -> Type | None:
         """Return builtins.int if rvalue is an int literal, etc.
 
         If this is a 'Final' context, we return "Literal[...]" instead.
@@ -6556,6 +6589,65 @@ def is_same_symbol(a: SymbolNode | None, b: SymbolNode | None) -> bool:
         or (isinstance(a, PlaceholderNode) and isinstance(b, PlaceholderNode))
         or is_same_var_from_getattr(a, b)
     )
+
+
+def infer_fdef_types_from_defaults(defn: FuncDef | Decorator, self: SemanticAnalyzer):
+    def is_unannotated_any(typ_: Type) -> bool:
+        return isinstance(get_proper_type(typ_), AnyType)
+
+    if isinstance(defn, Decorator):
+        defn = defn.func
+
+    if defn.type and isinstance(defn.type, CallableType) and defn.type.fully_typed:
+        return
+
+    if not defn.type and (
+        self.options.default_return
+        or (self.options.infer_function_types and any(arg.initializer for arg in defn.arguments))
+    ):
+        arg_types = []
+        if self.options.infer_function_types:
+            for arg in defn.arguments:
+                typ = None
+                if arg.variable.is_inferred and arg.initializer:
+                    arg.initializer.accept(self)
+                    typ = self.analyze_simple_literal_type(arg.initializer, False, do_bools=True)
+                arg_types.append(typ or AnyType(TypeOfAny.unannotated))
+        ret_type = None
+        if self.options.default_return and self.options.disallow_untyped_defs:
+            ret_type = NoneType()
+        if any(not isinstance(get_proper_type(t), AnyType) for t in arg_types) or ret_type:
+            defn.type = CallableType(
+                arg_types or [AnyType(TypeOfAny.unannotated) for _ in defn.arg_kinds],
+                defn.arg_kinds,
+                defn.arg_names,
+                ret_type or AnyType(TypeOfAny.unannotated),
+                self.named_type("builtins.function"),
+                line=defn.line,
+                column=defn.column,
+            )
+    elif defn.type:
+        assert isinstance(defn.type, CallableType)
+        if (
+            self.options.default_return
+            and is_unannotated_any(defn.type.ret_type)
+            and (
+                isinstance(defn.unanalyzed_type, CallableType)
+                and not self.options.disallow_untyped_defs
+                and any(defn.unanalyzed_type.arg_types)
+                or self.options.disallow_untyped_defs
+            )
+        ):
+            defn.type.ret_type = NoneType()
+        if self.options.infer_function_types:
+            for i, arg in enumerate(defn.arguments):
+                if is_unannotated_any(defn.type.arg_types[i]):
+                    if arg.variable.is_inferred and arg.initializer:
+                        ret = self.analyze_simple_literal_type(
+                            arg.initializer, False, do_bools=True
+                        )
+                        if ret:
+                            defn.type.arg_types[i] = ret
 
 
 def is_trivial_body(block: Block) -> bool:
