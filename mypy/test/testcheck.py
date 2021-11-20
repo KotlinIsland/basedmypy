@@ -28,6 +28,8 @@ typecheck_files = [
     'check-based-default-return.test',
     'check-based-ignore-any-from-error.test',
     'check-based-type-render.test',
+    'check-based-infer-function-types.test',
+    'check-based-incomplete-defs.test',
     'check-union-or-syntax.test',
     'check-callable.test',
     'check-classes.test',
@@ -173,6 +175,8 @@ class TypeCheckSuite(DataSuite):
         options.show_traceback = True
 
         # Enable some options automatically based on test file name.
+        if mypy_options._based:
+            options.show_column_numbers = False
         if 'optional' in testcase.file:
             options.strict_optional = True
         if 'columns' in testcase.file:
