@@ -1592,6 +1592,7 @@ class CallableType(FunctionLike):
         "type_guard",  # T, if -> TypeGuard[T] (ret_type is bool in this case).
         "from_concatenate",  # whether this callable is from a concatenate object
         # (this is used for error messages)
+        "fully_typed",  # If all type positions are filled.
     )
 
     def __init__(
@@ -1655,6 +1656,9 @@ class CallableType(FunctionLike):
         else:
             self.def_extras = {}
         self.type_guard = type_guard
+        self.fully_typed = not (
+            any(is_unannotated_any(arg) for arg in arg_types) or is_unannotated_any(ret_type)
+        )
 
     def copy_modified(
         self,
@@ -3291,3 +3295,9 @@ def callable_with_ellipsis(any_type: AnyType, ret_type: Type, fallback: Instance
         fallback=fallback,
         is_ellipsis_args=True,
     )
+
+
+def is_unannotated_any(t: Type) -> bool:
+    if not isinstance(t, ProperType):
+        return False
+    return isinstance(t, AnyType) and t.type_of_any == TypeOfAny.unannotated

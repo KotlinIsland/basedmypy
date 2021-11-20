@@ -4,9 +4,9 @@ NOTE: These must not be accessed from mypy.nodes or mypy.types to avoid import
       cycles. These must not be called from the semantic analysis main pass
       since these may assume that MROs are ready.
 """
-
 import itertools
 import sys
+from collections import defaultdict
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Set, Tuple, TypeVar, Union, cast
 
 from typing_extensions import Type as TypingType
@@ -25,6 +25,7 @@ from mypy.nodes import (
     FuncDef,
     FuncItem,
     OverloadedFuncDef,
+    OverloadPart,
     StrExpr,
     TypeInfo,
     Var,
@@ -57,6 +58,7 @@ from mypy.types import (
     UnpackType,
     get_proper_type,
     get_proper_types,
+    is_unannotated_any,
 )
 from mypy.typevars import fill_typevars
 
@@ -983,3 +985,45 @@ def separate_union_literals(t: UnionType) -> Tuple[Sequence[LiteralType], Sequen
             union_items.append(item)
 
     return literal_items, union_items
+
+
+def infer_impl_from_parts(impl: OverloadPart, types: List[CallableType], fallback: Instance):
+    impl_func = impl if isinstance(impl, FuncDef) else impl.func
+    # infer the types of the impl from the overload types
+    arg_types: Dict[str, List[Type]] = defaultdict(list)
+    ret_types = []
+    for tp in types:
+        for arg_type, arg_name, impl_kind in zip(tp.arg_types, tp.arg_names, tp.arg_kinds):
+            if arg_name in impl_func.arg_names:
+                if arg_name and arg_name in impl_func.arg_names:
+                    if arg_type not in arg_types[arg_name]:
+                        arg_types[arg_name].append(arg_type)
+        if tp.ret_type not in ret_types:
+            ret_types.append(tp.ret_type)
+    arg_types2 = {name: UnionType.make_union(it) for name, it in arg_types.items()}
+    res_arg_types = [
+        arg_types2[arg_name]
+        if arg_name in arg_types2 and arg_kind not in (ARG_STAR, ARG_STAR2)
+        else AnyType(TypeOfAny.unannotated)
+        for arg_name, arg_kind in zip(impl_func.arg_names, impl_func.arg_kinds)
+    ]
+    ret_type = UnionType.make_union(ret_types)
+    # use unanalyzed_type because we would have already tried to infer from defaults
+    if impl_func.unanalyzed_type:
+        assert isinstance(impl_func.unanalyzed_type, CallableType)
+        assert isinstance(impl_func.type, CallableType)
+        impl_func.type = impl_func.type.copy_modified(
+            arg_types=[
+                i if not is_unannotated_any(u) else r
+                for i, u, r in zip(
+                    impl_func.type.arg_types, impl_func.unanalyzed_type.arg_types, res_arg_types
+                )
+            ],
+            ret_type=ret_type
+            if isinstance(get_proper_type(impl_func.unanalyzed_type.ret_type), (AnyType, NoneType))
+            else impl_func.type.ret_type,
+        )
+    else:
+        impl_func.type = CallableType(
+            res_arg_types, impl_func.arg_kinds, impl_func.arg_names, ret_type, fallback
+        )
