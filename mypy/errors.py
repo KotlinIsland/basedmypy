@@ -814,7 +814,9 @@ class Errors:
 
         self.all_errors = self.error_info_map.copy()
         for file, errors in self.error_info_map.items():
-            baseline_errors = self.baseline[file.removeprefix(os.getcwd())]
+            baseline_errors = self.baseline.get(file.removeprefix(os.getcwd()))
+            if not baseline_errors:
+                return
             new_errors = []
             for error in errors:
                 for baseline_error in baseline_errors:
