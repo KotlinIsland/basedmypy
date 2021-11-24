@@ -120,7 +120,7 @@ ErrorTuple = Tuple[Optional[str],
                    Optional[ErrorCode]]
 
 
-def filter_prefix(map: dict[str, list[ErrorInfo]]) -> dict[str, list[ErrorInfo]]:
+def filter_prefix(map: Dict[str, List[ErrorInfo]]) -> Dict[str, List[ErrorInfo]]:
     result = {file.removeprefix(os.getcwd()): errors for file, errors in map.items()}
     for errors in result.values():
         for error in errors:
@@ -129,7 +129,7 @@ def filter_prefix(map: dict[str, list[ErrorInfo]]) -> dict[str, list[ErrorInfo]]
     return result
 
 
-def baseline_json_hook(d: dict[str, object]):
+def baseline_json_hook(d: Dict[str, object]):
     class_ = d.pop(".class", None)
     if class_ is None: return d
     if class_ == "mypy.errors.ErrorInfo":
@@ -793,13 +793,15 @@ class Errors:
 
     def save_baseline(self, file: Path) -> None:
         """Create/update a file that stores all errors"""
-
         if not file.parent.exists():
             file.parent.mkdir()
         json.dump(
             filter_prefix(self.error_info_map),
             file.open("w"),
-            default=lambda o: {".class": (t := type(o)).__module__ + "." + t.__qualname__} | o.__dict__
+            default=lambda o: {
+                **{".class": type(o).__module__ + "." + type(o).__qualname__},
+                **o.__dict__,
+            }
         )
 
     def load_baseline(self, file: Path) -> None:
@@ -822,7 +824,8 @@ class Errors:
                 for baseline_error in baseline_errors:
                     if (
                         error.line == baseline_error.line and error.code == baseline_error.code
-                        or error.message == baseline_error.message and abs(error.line - baseline_error.line) < 50
+                        or error.message == baseline_error.message and
+                            abs(error.line - baseline_error.line) < 50
                     ):
                         break
                 else:
