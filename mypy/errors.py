@@ -120,18 +120,30 @@ ErrorTuple = Tuple[Optional[str],
                    Optional[ErrorCode]]
 
 
-def filter_prefix(map: Dict[str, List[ErrorInfo]]) -> Dict[str, List[ErrorInfo]]:
-    result = {file.removeprefix(os.getcwd()): errors for file, errors in map.items()}
+def filter_prefix(error_map: Dict[str, List[ErrorInfo]]) -> Dict[str, List[ErrorInfo]]:
+    """Convert absolute paths to relative paths in an error_map"""
+    result = {
+        remove_path_prefix(file, os.getcwd()).replace(os.sep, "/"): errors
+        for file, errors in error_map.items()
+    }
     for errors in result.values():
         for error in errors:
-            error.origin = error.origin[0].removeprefix(os.getcwd()), *error.origin[1:]
-            error.file = error.file.removeprefix(os.getcwd())
+            error.origin = remove_path_prefix(
+                error.origin[0], os.getcwd()).replace(os.sep, "/"), *error.origin[1:]
+            error.file = remove_path_prefix(error.file, os.getcwd()).replace(os.sep, "/")
+            error.import_ctx = [
+                (
+                    remove_path_prefix(import_ctx[0], os.getcwd()).replace(os.sep, "/"),
+                    import_ctx[1],
+                ) for import_ctx in error.import_ctx
+            ]
     return result
 
 
-def baseline_json_hook(d: Dict[str, object]):
+def baseline_json_hook(d: Dict[str, object]) -> object:
     class_ = d.pop(".class", None)
-    if class_ is None: return d
+    if class_ is None:
+        return d
     if class_ == "mypy.errors.ErrorInfo":
         result = object.__new__(ErrorInfo)
     elif class_ == "mypy.errorcodes.ErrorCode":
@@ -199,9 +211,9 @@ class Errors:
     seen_import_error = False
 
     # Error baseline
-    baseline: dict[str, list[ErrorInfo]] = {}
+    baseline: Dict[str, List[ErrorInfo]] = {}
     # All detected errors before baseline filter
-    all_errors: dict[str, list[ErrorInfo]] = {}
+    all_errors: Dict[str, List[ErrorInfo]] = {}
 
     def __init__(self,
                  show_error_context: bool = False,
@@ -804,21 +816,23 @@ class Errors:
             }
         )
 
-    def load_baseline(self, file: Path) -> None:
+    def load_baseline(self, file: Path) -> bool:
         """Load baseline errors from baseline file"""
 
         if not file.exists():
-            return
+            return False
         self.baseline = json.load(file.open("r"), object_hook=baseline_json_hook)
+        return True
 
     def filter_baseline(self) -> None:
         """Remove baseline errors from the error_info_map"""
 
         self.all_errors = self.error_info_map.copy()
         for file, errors in self.error_info_map.items():
-            baseline_errors = self.baseline.get(file.removeprefix(os.getcwd()))
+            baseline_errors = self.baseline.get(
+                remove_path_prefix(file, os.getcwd()).replace(os.sep, "/"))
             if not baseline_errors:
-                return
+                continue
             new_errors = []
             for error in errors:
                 for baseline_error in baseline_errors:
