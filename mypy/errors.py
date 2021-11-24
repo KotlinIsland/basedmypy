@@ -798,7 +798,6 @@ class Errors:
 
     def save_baseline(self, file: Path) -> None:
         """Create/update a file that stores all errors"""
-
         if not file.parent.exists():
             file.parent.mkdir()
         json.dump(

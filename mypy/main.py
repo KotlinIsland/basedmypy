@@ -126,8 +126,9 @@ def main(script_path: Optional[str],
         stdout.flush()
 
     if options.write_baseline:
-        stdout.write(formatter.style("Baseline successfully written to {}\n".format(options.baseline_file),
-                                     "green", bold=True))
+        stdout.write(
+            formatter.style("Baseline successfully written to {}\n".format(options.baseline_file),
+                            "green", bold=True))
         code = 0
 
     if options.install_types and not options.non_interactive:
@@ -516,8 +517,8 @@ def process_options(args: List[str],
         help="Configuration file, must have a [mypy] section "
              "(defaults to {})".format(', '.join(defaults.CONFIG_FILES)))
     add_invertible_flag('--no-warn-unused-configs', default=True, dest="warn_unused_configs",
-                        help="Don't warn about unused '[mypy-<pattern>]' or '[[tool.mypy.overrides]]' "
-                             "config sections",
+                        help="Don't warn about unused '[mypy-<pattern>]' or "
+                             "'[[tool.mypy.overrides]]' config sections",
                         group=config_group)
 
     imports_group = parser.add_argument_group(
@@ -615,7 +616,8 @@ def process_options(args: List[str],
     add_invertible_flag('--no-check-untyped-defs', default=True, dest="check_untyped_defs",
                         help="Don't type check the interior of functions without type annotations",
                         group=untyped_group)
-    add_invertible_flag('--allow-untyped-decorators', default=True, dest="disallow_untyped_decorators",
+    add_invertible_flag('--allow-untyped-decorators', default=True,
+                        dest="disallow_untyped_decorators",
                         help="Allow decorating typed functions with untyped decorators",
                         group=untyped_group)
 

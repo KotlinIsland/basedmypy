@@ -135,7 +135,8 @@ NAME_MATCH: Final = ErrorCode(
 )
 UNSAFE_VARIANCE: Final = ErrorCode("unsafe-variance", "Incorrect usages of variance", "General")
 UNUSED_IGNORE: Final = ErrorCode("unused-ignore", "Ignore comment is unused", "General")
-NO_ERROR_CODE: Final = ErrorCode("no-error-code", "No error code specified in ignore comment", "General")
+NO_ERROR_CODE: Final = ErrorCode("no-error-code", "No error code specified in ignore comment",
+                                 "General")
 
 # Syntax errors are often blocking.
 SYNTAX: Final = ErrorCode("syntax", "Report syntax errors", "General")
