@@ -85,11 +85,13 @@ READ_ONLY_PROPERTY_OVERRIDES_READ_WRITE: Final = ErrorMessage(
 FORMAT_REQUIRES_MAPPING: Final = "Format requires a mapping"
 RETURN_TYPE_CANNOT_BE_CONTRAVARIANT: Final = ErrorMessage(
     "This usage of this contravariant type variable is unsafe as a return type.\n"
-    "If this is intentional and you know what you are doing, you can ignore this line with 'unsafe-variance'"
+    "If this is intentional and you know what you are doing, "
+    "you can ignore this line with 'unsafe-variance'"
 )
 FUNCTION_PARAMETER_CANNOT_BE_COVARIANT: Final = ErrorMessage(
     "This usage of this covariant type variable is unsafe as an input parameter.\n"
-    "If this is intentional and you know what you are doing, you can ignore this line with 'unsafe-variance'"
+    "If this is intentional and you know what you are doing, "
+    "you can ignore this line with 'unsafe-variance'"
 )
 INCOMPATIBLE_IMPORT_OF: Final = "Incompatible import of"
 FUNCTION_TYPE_EXPECTED: Final = ErrorMessage(
