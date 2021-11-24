@@ -205,7 +205,7 @@ class FileSystemCache:
         if sys.platform == "linux":
             # Assume that the file system on Linux is case sensitive
             return self.isfile(path)
-        if not self.isfile(path):
+        if not self.isfile(path):  # type: ignore[unreachable, unused-ignore]
             # Fast path
             return False
         if path in self.isfile_case_cache:
