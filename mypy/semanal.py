@@ -4182,8 +4182,14 @@ class SemanticAnalyzer(
                     upper_bound = get_proper_type(analyzed)
                     if isinstance(upper_bound, AnyType) and upper_bound.is_from_error:
                         self.fail(message_registry.TYPEVAR_BOUND_MUST_BE_TYPE, param_value)
-                        # Note: we do not return 'None' here -- we want to continue
-                        # using the AnyType as the upper bound.
+                    elif isinstance(upper_bound, LiteralType) and upper_bound.bare_literal:
+                        msg = message_registry.INVALID_BARE_LITERAL.format(
+                            upper_bound.value_repr()
+                        )
+                        self.fail(msg.value, param_value, code=msg.code)
+
+                    # Note: we do not return 'None' here -- we want to continue
+                    # using the AnyType as the upper bound.
                 except TypeTranslationError:
                     self.fail(message_registry.TYPEVAR_BOUND_MUST_BE_TYPE, param_value)
                     return None

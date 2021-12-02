@@ -5,7 +5,7 @@ This is conceptually part of mypy.semanal (semantic analyzer pass 2).
 
 from __future__ import annotations
 
-from mypy import errorcodes as codes
+from mypy import errorcodes as codes, message_registry
 from mypy.errorcodes import ErrorCode
 from mypy.exprtotype import TypeTranslationError, expr_to_unanalyzed_type
 from mypy.messages import MessageBuilder, format_type
@@ -34,6 +34,7 @@ from mypy.types import (
     AnyType,
     CallableType,
     Instance,
+    LiteralType,
     NoneType,
     PlaceholderType,
     TupleType,
@@ -214,9 +215,13 @@ class NewTypeAnalyzer:
             should_defer = True
 
         # The caller of this function assumes that if we return a Type, it's always
-        # a valid one. So, we translate AnyTypes created from errors into None.
+        # a valid one. So, we translate AnyTypes created from errors and bare literals into None.
         if isinstance(old_type, AnyType) and old_type.is_from_error:
             self.fail(msg, context)
+            return None, False
+        elif isinstance(old_type, LiteralType) and old_type.bare_literal:
+            msg_ = message_registry.INVALID_BARE_LITERAL.format(old_type.value_repr())
+            self.fail(msg_.value, context, code=msg_.code)
             return None, False
 
         return None if has_failed else old_type, should_defer
