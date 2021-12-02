@@ -3,8 +3,10 @@
 ## [Unreleased]
 ### Enhancements
 - Similar errors on the same line will now not be removed
+- Render generic upper bound with `: ` instead of ` <: `
 ### Fixes
 - Handle positional only `/` parameters in overload implementation inference
+- Render inferred literal without `?`
 
 ## [1.5.0]
 ### Added
