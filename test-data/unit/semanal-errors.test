@@ -848,7 +848,7 @@ assert_type(1, type=int) # E: "assert_type" must be called with 2 positional arg
 assert_type(1, *int) # E: "assert_type" must be called with 2 positional arguments
 assert_type() # E: "assert_type" expects 2 arguments
 assert_type(1, int, "hello") # E: "assert_type" expects 2 arguments
-assert_type(int, 1)  # E: Invalid type: try using Literal[1] instead?
+assert_type(int, 1)  # E: "1" is a bare literal and cannot be used here, try Literal[1] instead?
 assert_type(1, int[int])  # E: "int" expects no type arguments, but 1 given
 
 [case testInvalidAnyCall]
@@ -934,7 +934,7 @@ A[TypeVar] # E: Variable "typing.TypeVar" is not valid as a type \
 from typing import TypeVar, Generic
 t = TypeVar('t')
 class A(Generic[t]): pass
-A[1] # E: Invalid type: try using Literal[1] instead?
+A[1] # E: "1" is a bare literal and cannot be used here, try Literal[1] instead?
 [out]
 
 [case testVariableDeclWithInvalidNumberOfTypes]
@@ -1048,7 +1048,7 @@ e = TypeVar('e', int, str, x=1)   # E: Unexpected argument to "TypeVar()": "x"
 f = TypeVar('f', (int, str), int) # E: Type expected
 g = TypeVar('g', int)             # E: TypeVar cannot have only a single constraint
 h = TypeVar('h', x=(int, str))    # E: Unexpected argument to "TypeVar()": "x"
-i = TypeVar('i', bound=1)         # E: TypeVar "bound" must be a type
+i = TypeVar('i', bound=1)         # E: "1" is a bare literal and cannot be used here, try Literal[1] instead?
 j = TypeVar('j', covariant=None)  # E: TypeVar "covariant" may only be a literal bool
 k = TypeVar('k', contravariant=1) # E: TypeVar "contravariant" may only be a literal bool
 [out]
@@ -1063,7 +1063,7 @@ S = TypeVar('S', covariant=True, contravariant=True) \
 [case testInvalidTypevarValues]
 from typing import TypeVar
 b = TypeVar('b', *[int]) # E: Unexpected argument to "TypeVar()"
-c = TypeVar('c', int, 2) # E: Invalid type: try using Literal[2] instead?
+c = TypeVar('c', int, 2) # E: "2" is a bare literal and cannot be used here, try Literal[2] instead?
 [out]
 
 [case testObsoleteTypevarValuesSyntax]

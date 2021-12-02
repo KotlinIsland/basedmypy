@@ -727,24 +727,32 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         # a "Literal[...]" type. So, if `defining_literal` is not set,
         # we bail out early with an error.
         #
-        # If, in the distant future, we decide to permit things like
-        # `def foo(x: Color.RED) -> None: ...`, we can remove that
-        # check entirely.
+        # Based: we permit things like `def foo(x: Color.RED) -> None: ...`
         if isinstance(sym.node, Var) and sym.node.info and sym.node.info.is_enum:
             value = sym.node.name
-            base_enum_short_name = sym.node.info.name
+            # it's invalid to use in an expression, ie: a TypeAlias
             if not defining_literal:
-                msg = message_registry.INVALID_TYPE_RAW_ENUM_VALUE.format(
-                    base_enum_short_name, value
-                )
-                self.fail(msg.value, t, code=msg.code)
-                return AnyType(TypeOfAny.from_error)
-            return LiteralType(
+                if not self.options.bare_literals:
+                    base_enum_short_name = sym.node.info.name
+                    msg = message_registry.INVALID_TYPE_RAW_ENUM_VALUE.format(
+                        base_enum_short_name, value
+                    )
+                    self.fail(msg.value, t, code=msg.code)
+                if t.expression:
+                    base_enum_short_name = sym.node.info.name
+                    name = f"{base_enum_short_name}.{value}"
+                    msg = message_registry.INVALID_BARE_LITERAL.format(name)
+                    self.fail(msg.value, t, code=msg.code)
+            result = LiteralType(
                 value=value,
                 fallback=Instance(sym.node.info, [], line=t.line, column=t.column),
                 line=t.line,
                 column=t.column,
+                bare_literal=True,
             )
+            if t.expression:
+                return result
+            return result.accept(self)
 
         # None of the above options worked. We parse the args (if there are any)
         # to make sure there are no remaining semanal-only types, then give up.
@@ -995,16 +1003,18 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         # "fake literals" should always be wrapped in an UnboundType
         # corresponding to 'Literal'.
         #
-        # Note: if at some point in the distant future, we decide to
-        # make signatures like "foo(x: 20) -> None" legal, we can change
-        # this method so it generates and returns an actual LiteralType
-        # instead.
+        # Based: signatures like "foo(x: 20) -> None" are legal, this method
+        # generates and returns an actual LiteralType instead.
 
         if self.report_invalid_types:
+            msg = None
             if t.base_type_name in ("builtins.int", "builtins.bool"):
-                # The only time it makes sense to use an int or bool is inside of
-                # a literal type.
-                msg = f"Invalid type: try using Literal[{repr(t.literal_value)}] instead?"
+                if not self.options.bare_literals:
+                    # The only time it makes sense to use an int or bool is inside of
+                    # a literal type.
+                    msg = f"Invalid type: try using Literal[{repr(t.literal_value)}] instead?"
+                if t.expression:
+                    msg = message_registry.INVALID_BARE_LITERAL.value.format(t.literal_value)
             elif t.base_type_name in ("builtins.float", "builtins.complex"):
                 # We special-case warnings for floats and complex numbers.
                 msg = f"Invalid type: {t.simple_name()} literals cannot be used as a type"
@@ -1015,14 +1025,38 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 # string, it's unclear if the user meant to construct a literal type
                 # or just misspelled a regular type. So we avoid guessing.
                 msg = "Invalid type comment or annotation"
-
-            self.fail(msg, t, code=codes.VALID_TYPE)
-            if t.note is not None:
-                self.note(t.note, t, code=codes.VALID_TYPE)
-
+            if msg:
+                self.fail(msg, t, code=codes.VALID_TYPE)
+                if t.note is not None:
+                    self.note(t.note, t, code=codes.VALID_TYPE)
+        if t.base_type_name in ("builtins.int", "builtins.bool"):
+            v = t.literal_value
+            assert v is not None
+            result = LiteralType(
+                v,
+                fallback=self.named_type(t.base_type_name),
+                line=t.line,
+                column=t.column,
+                bare_literal=True,
+            )
+            if t.expression:
+                return result
+            return result.accept(self)
         return AnyType(TypeOfAny.from_error, line=t.line, column=t.column)
 
     def visit_literal_type(self, t: LiteralType) -> Type:
+        if (
+            self.nesting_level
+            and t.bare_literal
+            and not (self.api.is_future_flag_set("annotations") or self.api.is_stub_file)
+            and self.options.bare_literals
+        ):
+            self.fail(
+                f'"{t}" is a bare literal and shouldn\'t be used in a type operation without'
+                ' "__future__.annotations"',
+                t,
+                code=codes.VALID_TYPE,
+            )
         return t
 
     def visit_star_type(self, t: StarType) -> Type:
