@@ -70,15 +70,27 @@ def expr_to_unanalyzed_type(
     if isinstance(expr, NameExpr):
         name = expr.name
         if name == "True":
-            return RawExpressionType(True, "builtins.bool", line=expr.line, column=expr.column)
+            return RawExpressionType(
+                True,
+                "builtins.bool",
+                line=expr.line,
+                column=expr.column,
+                expression=not allow_new_syntax,
+            )
         elif name == "False":
-            return RawExpressionType(False, "builtins.bool", line=expr.line, column=expr.column)
+            return RawExpressionType(
+                False,
+                "builtins.bool",
+                line=expr.line,
+                column=expr.column,
+                expression=not allow_new_syntax,
+            )
         else:
             return UnboundType(name, line=expr.line, column=expr.column)
     elif isinstance(expr, MemberExpr):
         fullname = get_member_expr_fullname(expr)
         if fullname:
-            return UnboundType(fullname, line=expr.line, column=expr.column)
+            return UnboundType(fullname, line=expr.line, column=expr.column, expression=True)
         else:
             raise TypeTranslationError()
     elif isinstance(expr, IndexExpr):
@@ -178,7 +190,13 @@ def expr_to_unanalyzed_type(
                 return typ
         raise TypeTranslationError()
     elif isinstance(expr, IntExpr):
-        return RawExpressionType(expr.value, "builtins.int", line=expr.line, column=expr.column)
+        return RawExpressionType(
+            expr.value,
+            "builtins.int",
+            line=expr.line,
+            column=expr.column,
+            expression=not allow_new_syntax,
+        )
     elif isinstance(expr, FloatExpr):
         # Floats are not valid parameters for RawExpressionType , so we just
         # pass in 'None' for now. We'll report the appropriate error at a later stage.
