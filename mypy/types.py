@@ -762,6 +762,7 @@ class UnboundType(ProperType):
         "empty_tuple_index",
         "original_str_expr",
         "original_str_fallback",
+        "expression",
     )
 
     def __init__(
@@ -774,6 +775,7 @@ class UnboundType(ProperType):
         empty_tuple_index: bool = False,
         original_str_expr: Optional[str] = None,
         original_str_fallback: Optional[str] = None,
+        expression=False,
     ) -> None:
         super().__init__(line, column)
         if not args:
@@ -800,6 +802,9 @@ class UnboundType(ProperType):
         # so we don't have to try and recompute it later
         self.original_str_expr = original_str_expr
         self.original_str_fallback = original_str_fallback
+
+        self.expression = expression
+        """This is used to ban bare Enum literals from expressions like ``TypeAlias``es"""
 
     def copy_modified(self, args: Bogus[Optional[Sequence[Type]]] = _dummy) -> "UnboundType":
         if args is _dummy:
@@ -2368,7 +2373,7 @@ class RawExpressionType(ProperType):
         )
     """
 
-    __slots__ = ("literal_value", "base_type_name", "note")
+    __slots__ = ("literal_value", "base_type_name", "note", "expression")
 
     def __init__(
         self,
@@ -2377,11 +2382,13 @@ class RawExpressionType(ProperType):
         line: int = -1,
         column: int = -1,
         note: Optional[str] = None,
+        expression=False,
     ) -> None:
         super().__init__(line, column)
         self.literal_value = literal_value
         self.base_type_name = base_type_name
         self.note = note
+        self.expression = expression
 
     def simple_name(self) -> str:
         return self.base_type_name.replace("builtins.", "")
@@ -2422,15 +2429,21 @@ class LiteralType(ProperType):
     represented as `LiteralType(value="RED", fallback=instance_of_color)'.
     """
 
-    __slots__ = ("value", "fallback", "_hash")
+    __slots__ = ("value", "fallback", "_hash", "bare_literal")
 
     def __init__(
-        self, value: LiteralValue, fallback: Instance, line: int = -1, column: int = -1
+        self,
+        value: LiteralValue,
+        fallback: Instance,
+        line: int = -1,
+        column: int = -1,
+        bare_literal=False,
     ) -> None:
         self.value = value
         super().__init__(line, column)
         self.fallback = fallback
         self._hash = -1  # Cached hash value
+        self.bare_literal = bare_literal
 
     def can_be_false_default(self) -> bool:
         return not self.value
