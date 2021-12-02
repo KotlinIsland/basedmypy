@@ -555,6 +555,9 @@ def process_options(args: List[str],
         '--incomplete-is-typed', group=based_group, default=False,
         help="Partially typed/incomplete functions in this module are considered typed"
              " for untyped call errors.")
+    add_invertible_flag(
+        '--bare-literals', default=True,
+        help="Allow bare literals.", group=based_group)
 
     config_group = parser.add_argument_group(
         title='Config file',

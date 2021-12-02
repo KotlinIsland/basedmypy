@@ -64,7 +64,7 @@ def g(x):
 x = None  # type: Optional[1]   # E: Invalid type: try using Literal[1] instead?
 y = None  # type: Optional[Literal[1]]
 
-reveal_type(x)  # N: Revealed type is "Union[Any, None]"
+reveal_type(x)  # N: Revealed type is "Union[Literal[1], None]"
 reveal_type(y)  # N: Revealed type is "Union[Literal[1], None]"
 [out]
 
@@ -77,7 +77,7 @@ def foo(x: Tuple[1]) -> None: ...   # E: Invalid type: try using Literal[1] inst
 
 y: Tuple[Literal[2]]
 def bar(x: Tuple[Literal[2]]) -> None: ...
-reveal_type(x)                      # N: Revealed type is "Tuple[Any]"
+reveal_type(x)                      # N: Revealed type is "Tuple[Literal[1]]"
 reveal_type(y)                      # N: Revealed type is "Tuple[Literal[2]]"
 reveal_type(bar)                    # N: Revealed type is "def (x: Tuple[Literal[2]])"
 [builtins fixtures/tuple.pyi]
@@ -97,7 +97,7 @@ y = None  # type: Optional[Tuple[Literal[2]]]
 def bar(x):
     # type: (Tuple[Literal[2]]) -> None
     pass
-reveal_type(x)                      # N: Revealed type is "Union[Tuple[Any], None]"
+reveal_type(x)                      # N: Revealed type is "Union[Tuple[Literal[1]], None]"
 reveal_type(y)                      # N: Revealed type is "Union[Tuple[Literal[2]], None]"
 reveal_type(bar)                    # N: Revealed type is "def (x: Tuple[Literal[2]])"
 [out]
@@ -116,7 +116,7 @@ y = None  # type: Optional[Tuple[Literal[2]]]
 def bar(x):
     # type: (Tuple[Literal[2]]) -> None
     pass
-reveal_type(x)                      # N: Revealed type is "Union[Tuple[Any], None]"
+reveal_type(x)                      # N: Revealed type is "Union[Tuple[Literal[1]], None]"
 reveal_type(y)                      # N: Revealed type is "Union[Tuple[Literal[2]], None]"
 reveal_type(bar)                    # N: Revealed type is "def (x: Tuple[Literal[2]])"
 [builtins fixtures/tuple.pyi]

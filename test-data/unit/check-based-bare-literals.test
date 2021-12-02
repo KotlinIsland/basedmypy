@@ -1,0 +1,103 @@
+[case testBareLiteralLiterals]
+from __future__ import annotations
+
+a: 1
+reveal_type(a)  # N: Revealed type is "1"
+a2: 1 | str
+reveal_type(a2)  # N: Revealed type is "1 | str"
+a3: "1 | str"
+reveal_type(a3)  # N: Revealed type is "1 | str"
+
+b: True
+reveal_type(b)  # N: Revealed type is "True"
+b2: True | str
+reveal_type(b2)  # N: Revealed type is "True | str"
+
+c: False
+reveal_type(c)  # N: Revealed type is "False"
+c2: False | str
+reveal_type(c2)  # N: Revealed type is "False | str"
+
+d: 1.1  # E: Invalid type: float literals cannot be used as a type  [valid-type]
+d2: 1.1 | str  # E: Invalid type: float literals cannot be used as a type  [valid-type]
+
+e: 1j  # E: Invalid type: complex literals cannot be used as a type  [valid-type]
+e2: 1j | str  # E: Invalid type: complex literals cannot be used as a type  [valid-type]
+[builtins fixtures/tuple.pyi]
+
+
+[case testNoBareLiteralLiterals]
+# flags: --python-version 3.10
+
+a1: 1
+a2: 1 | str  # E: "1" is a bare literal and shouldn't be used in a type operation without "__future__.annotations"  [valid-type]
+
+b1: True
+b2: True | str  # E: "True" is a bare literal and shouldn't be used in a type operation without "__future__.annotations"  [valid-type]
+
+c1: False
+c2: False | str  # E: "False" is a bare literal and shouldn't be used in a type operation without "__future__.annotations"  [valid-type]
+
+d1: 1.1  # E: Invalid type: float literals cannot be used as a type  [valid-type]
+d2: 1.1 | str  # E: Invalid type: float literals cannot be used as a type  [valid-type]
+
+e1: 1j  # E: Invalid type: complex literals cannot be used as a type  [valid-type]
+e2: 1j | str  # E: Invalid type: complex literals cannot be used as a type  [valid-type]
+
+
+[case testBareLiteralEnum]
+# flags: --python-version 3.10
+from __future__ import annotations
+from enum import Enum
+
+class E(Enum):
+    A = 1
+
+a: E.A
+a2: E.A | str
+reveal_type(a)  # N: Revealed type is "__main__.E.A"
+[builtins fixtures/tuple.pyi]
+
+
+[case testNoBareLiteralEnum]
+# flags: --python-version 3.10
+from enum import Enum
+
+class E(Enum):
+    A = 1
+
+a: E.A
+b: E.A | str  # E: "__main__.E.A" is a bare literal and shouldn't be used in a type operation without "__future__.annotations"  [valid-type]
+[builtins fixtures/tuple.pyi]
+
+
+[case testNoBareLiteralTypeAlias]
+from __future__ import annotations
+from typing_extensions import TypeAlias
+from enum import Enum
+
+class E(Enum):
+    A = 1
+
+A: TypeAlias = 1  # E: "1" is a bare literal and cannot be used here, try Literal[1] instead?  [valid-type]
+B: TypeAlias = True  # E: "True" is a bare literal and cannot be used here, try Literal[True] instead?  [valid-type]
+C: TypeAlias = False  # E: "False" is a bare literal and cannot be used here, try Literal[False] instead?  [valid-type]
+D: TypeAlias = E.A  # E: "E.A" is a bare literal and cannot be used here, try Literal[E.A] instead?  [misc]
+A2 = str | 2  # E: Unsupported left operand type for | ("type[str]")  [operator]
+a2: A2  # E: Variable "__main__.A2" is not valid as a type  [valid-type] \
+       # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+[builtins fixtures/tuple.pyi]
+
+
+[case testBareLiteralTypeVarBound]
+# flags: --python-version 3.10
+
+from typing import TypeVar
+T1 = TypeVar("T1", bound=list[1])  # E: "1" is a bare literal and cannot be used here, try Literal[1] instead?  [valid-type]
+T2 = TypeVar("T2", str, list[1])  # E: "1" is a bare literal and cannot be used here, try Literal[1] instead?  [valid-type]
+
+
+[case testBareLiteralGeneric]
+# flags: --python-version 3.10
+l1: list[1]  # E: "1" is a bare literal and shouldn't be used in a type operation without "__future__.annotations"  [valid-type]
+l1 = list[1]()  # E: "1" is a bare literal and cannot be used here, try Literal[1] instead?  [valid-type]

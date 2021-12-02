@@ -1,6 +1,8 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Added
+- Allow literal `int`, `bool` and `Enum`s without `Literal`
 ### Enhancements
 - Render Literal types better in output messages
 

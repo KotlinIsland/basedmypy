@@ -7,7 +7,7 @@ from typing import Tuple, Optional
 
 from mypy.types import (
     Type, Instance, CallableType, NoneType, TupleType, AnyType, PlaceholderType,
-    TypeOfAny, get_proper_type
+    TypeOfAny, get_proper_type, LiteralType
 )
 from mypy.nodes import (
     AssignmentStmt, NewTypeExpr, CallExpr, NameExpr, RefExpr, Context, StrExpr, BytesExpr,
@@ -20,7 +20,7 @@ from mypy.exprtotype import expr_to_unanalyzed_type, TypeTranslationError
 from mypy.typeanal import check_for_explicit_any, has_any_from_unimported_type
 from mypy.messages import MessageBuilder, format_type
 from mypy.errorcodes import ErrorCode
-from mypy import errorcodes as codes
+from mypy import errorcodes as codes, message_registry
 
 
 class NewTypeAnalyzer:
@@ -174,9 +174,13 @@ class NewTypeAnalyzer:
             should_defer = True
 
         # The caller of this function assumes that if we return a Type, it's always
-        # a valid one. So, we translate AnyTypes created from errors into None.
+        # a valid one. So, we translate AnyTypes created from errors and bare literals into None.
         if isinstance(old_type, AnyType) and old_type.is_from_error:
             self.fail(msg, context)
+            return None, False
+        elif isinstance(old_type, LiteralType) and old_type.bare_literal:
+            self.fail(message_registry.INVALID_BARE_LITERAL.format(
+                old_type.value_repr()), context, code=codes.VALID_TYPE)
             return None, False
 
         return None if has_failed else old_type, should_defer

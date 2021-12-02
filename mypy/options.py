@@ -130,6 +130,7 @@ class Options:
         self.targets: List[str] = []
         self.ignore_any_from_error = True
         self.incomplete_is_typed = flip_if_not_based(False)
+        self.bare_literals = flip_if_not_based(True)
 
         # disallow_any options
         self.disallow_any_generics = flip_if_not_based(True)

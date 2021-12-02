@@ -11914,7 +11914,7 @@
         "code": "no-any-expr",
         "column": 66,
         "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 184,
+        "offset": 187,
         "target": "mypy.main.process_options"
       },
       {
@@ -13460,7 +13460,7 @@
         "code": "no-any-expr",
         "column": 30,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 277,
+        "offset": 266,
         "target": "mypy.messages.format_type_inner"
       },
       {
@@ -14324,7 +14324,7 @@
         "code": "no-any-unimported",
         "column": 8,
         "message": "Type of variable becomes \"set[Any (from unimported type)]\" due to an unfollowed import",
-        "offset": 217,
+        "offset": 218,
         "target": "mypy.options.Options.__init__"
       },
       {
@@ -16291,7 +16291,7 @@
         "code": "truthy-bool",
         "column": 15,
         "message": "\"call\" has type \"CallExpr\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 938,
+        "offset": 946,
         "target": "mypy.semanal.SemanticAnalyzer.extract_typevarlike_name"
       },
       {
@@ -25052,7 +25052,7 @@
         "code": "no-any-expr",
         "column": 31,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 971,
+        "offset": 988,
         "target": "mypy.typeanal.TypeAnalyser.analyze_callable_type"
       },
       {
@@ -25399,7 +25399,7 @@
         "code": "no-any-expr",
         "column": 62,
         "message": "Expression has type \"Any\"",
-        "offset": 69,
+        "offset": 73,
         "target": "mypy.types.UnboundType.copy_modified"
       },
       {
@@ -26540,14 +26540,14 @@
         "code": "no-any-return",
         "column": 8,
         "message": "Returning Any from function declared to return \"T\"",
-        "offset": 116,
+        "offset": 118,
         "target": "mypy.types.RawExpressionType.accept"
       },
       {
         "code": "no-any-expr",
         "column": 15,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 92,
+        "offset": 93,
         "target": "mypy.types.LiteralType.serialize"
       },
       {
