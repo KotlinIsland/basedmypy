@@ -1900,7 +1900,11 @@ class UnionType(ProperType):
         return hash(frozenset(self.items))
 
     def __repr__(self):
-        return " | ".join(map(repr, self.items))
+        from mypy import options
+        if options._based:
+            return " | ".join(map(repr, self.items))
+        else:
+            return super().__repr__()
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, UnionType):
