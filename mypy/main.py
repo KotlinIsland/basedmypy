@@ -672,7 +672,7 @@ def process_options(args: List[str],
                         help="Suppress toplevel errors caused by missing annotations",
                         group=strictness_group)
 
-    add_invertible_flag('--disallow-redefinition', default=True, dest="allow-redefinition",
+    add_invertible_flag('--disallow-redefinition', default=True, dest="allow_redefinition",
                         help="Disallow unconditional variable redefinition with a new type",
                         group=strictness_group)
 
@@ -680,7 +680,7 @@ def process_options(args: List[str],
                         help="Treat imports as private unless aliased",
                         group=strictness_group)
 
-    add_invertible_flag('--no-strict-equality', default=True, dest="strict-equality",
+    add_invertible_flag('--no-strict-equality', default=True, dest="strict_equality",
                         help="Allow equality, identity, and container checks for"
                              " non-overlapping types",
                         group=strictness_group)
@@ -703,7 +703,7 @@ def process_options(args: List[str],
     add_invertible_flag('--show-column-numbers', default=False,
                         help="Show column numbers in error messages",
                         group=error_group)
-    add_invertible_flag('--no-show-error-codes', default=True, dest="show-error-codes",
+    add_invertible_flag('--no-show-error-codes', default=True, dest="show_error_codes",
                         help="Don't show error codes in error messages",
                         group=error_group)
     add_invertible_flag('--pretty', default=False,

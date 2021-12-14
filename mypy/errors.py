@@ -123,7 +123,7 @@ ErrorTuple = Tuple[Optional[str],
 def filter_prefix(error_map: Dict[str, List[ErrorInfo]]) -> Dict[str, List[ErrorInfo]]:
     """Convert absolute paths to relative paths in an error_map"""
     result = {
-        remove_path_prefix(file, os.getcwd()).replace(os.sep, "/"): errors
+        Path(file).resolve().relative_to(Path.cwd()).as_posix(): errors
         for file, errors in error_map.items()
     }
     for errors in result.values():
