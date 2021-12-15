@@ -575,20 +575,20 @@ def process_options(args: List[str],
     disallow_any_group = parser.add_argument_group(
         title='Allow dynamic typing',
         description="Allow the use of the dynamic 'Any' type under certain conditions.")
-    disallow_any_group.add_argument(
-        '--allow-any-unimported', default=True, action='store_false',
+    add_invertible_flag(
+        '--allow-any-unimported', default=True,
         dest="disallow_any_unimported",
-        help="Allow Any types resulting from unfollowed imports")
-    disallow_any_group.add_argument(
-        '--allow-any-expr', default=True, action='store_false', dest="disallow_any_expr",
-        help='Allow expressions that have type Any')
-    disallow_any_group.add_argument(
-        '--allow-any-decorated', default=True, action='store_false', dest="disallow_any_decorated",
+        help="Allow Any types resulting from unfollowed imports", group=disallow_any_group)
+    add_invertible_flag(
+        '--allow-any-expr', default=True, dest="disallow_any_expr",
+        help='Allow expressions that have type Any', group=disallow_any_group)
+    add_invertible_flag(
+        '--allow-any-decorated', default=True, dest="disallow_any_decorated",
         help='Allow functions that have Any in their signature '
-             'after decorator transformation')
-    disallow_any_group.add_argument(
-        '--allow-any-explicit', default=True, action='store_false', dest="disallow_any_explicit",
-        help='Allow explicit Any in type positions')
+             'after decorator transformation', group=disallow_any_group)
+    add_invertible_flag(
+        '--allow-any-explicit', default=True, dest="disallow_any_explicit",
+        help='Allow explicit Any in type positions', group=disallow_any_group)
     add_invertible_flag('--allow-any-generics', default=True, dest="disallow_any_generics",
                         help='Allow usage of generic types that do not specify explicit type '
                         'parameters', group=disallow_any_group)
@@ -643,24 +643,25 @@ def process_options(args: List[str],
         title='Configuring warnings',
         description="Detect code that is sound but redundant or problematic.")
     add_invertible_flag('--no-warn-redundant-casts', default=True,
-                        dest="warn-redundant-casts",
+                        dest="warn_redundant_casts",
                         help="Do not warn about casting an expression to its inferred type",
                         group=lint_group)
-    add_invertible_flag('--no-warn-unused-ignores', default=True, dest="warn-unused-ignores",
+    add_invertible_flag('--no-warn-unused-ignores', default=True, dest="warn_unused_ignores",
                         help="Do not warn about unneeded '# type: ignore' comments",
                         group=lint_group)
     add_invertible_flag('--no-warn-no-ignore-code', default=False,
+                        dest="warn_no_ignore_code",
                         help="Do not warn about '# type: ignore' comments "
                              "that don't specify the error code",
                         group=lint_group)
     add_invertible_flag('--no-warn-no-return', dest='warn_no_return', default=True,
                         help="Do not warn about functions that end without returning",
                         group=lint_group)
-    add_invertible_flag('--no-warn-return-any', default=True, dest="warn-return-any",
+    add_invertible_flag('--no-warn-return-any', default=True, dest="warn_return_any",
                         help="Do not warn about returning values of type Any"
                              " from non-Any typed functions",
                         group=lint_group)
-    add_invertible_flag('--no-warn-unreachable', default=True, dest="warn-unreachable",
+    add_invertible_flag('--no-warn-unreachable', default=True, dest="warn_unreachable",
                         help="Do not warn about statements or expressions inferred to be"
                              " unreachable",
                         group=lint_group)
