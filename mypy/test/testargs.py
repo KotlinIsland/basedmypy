@@ -16,6 +16,9 @@ from mypy.test.helpers import Suite, assert_equal
 
 class ArgSuite(Suite):
     def test_coherence(self) -> None:
+        import mypy.options
+
+        mypy.options._based = False
         options = Options()
         _, parsed_options = process_options([], require_targets=False)
         # FIX: test this too. Requires changing working dir to avoid finding 'setup.cfg'
