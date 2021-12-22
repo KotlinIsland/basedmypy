@@ -1,0 +1,50 @@
+name: Crash Report
+description: Crash (traceback or "INTERNAL ERROR" or "IMPOSTER DETECTED")
+title: "[Crash]: "
+labels: "crash"
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        <!--
+          Use this form only if mypy reports an "INTERNAL ERROR" and/or gives a traceback.
+          Please include the traceback and all other messages below (use `mypy --show-traceback`).
+        -->
+  - type: input
+    attributes:
+      label: Crash Report
+      description: (Tell us what happened.)
+  - type: textarea
+    attributes:
+      label:  Traceback
+  - type: input
+    attributes:
+      label: To Reproduce
+      description: (Tell us what happened.)
+  - type: textarea
+    attributes:
+      label: gist
+      description: |
+        Full source code is appreciated. We also very much appreciate
+        it if you try to narrow the source down to a small stand-alone example.
+      render: python
+  - type: markdown
+    attributes:
+      value: "## Your Environment"
+  - type: input
+    attributes:
+      label: Basedmypy version
+  - type: input
+    attributes:
+      label: command-line flags
+  - type: input
+    attributes:
+      label: configuration options from `pyptoject.toml` (and other config files)
+  - type: input
+    attributes:
+      label: Python version used
+  - type: input
+    attributes:
+      label: Operating system and version
+      description: Linux/macOS/Windows/wsl etc

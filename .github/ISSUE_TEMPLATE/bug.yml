@@ -1,0 +1,32 @@
+name: Bug Report
+descriptions: Submit a bug report
+title: "[Bug]: "
+labels: "bug"
+
+body:
+  - type: input
+    attributes:
+      label: Describe the problem, ie expected/actual result (if it's not blatently obvious)
+  - type: textarea
+    attributes:
+      label: Gist to reproduce
+      render: python
+  - type: markdown
+    attributes:
+      value: Your Environment
+  - type: input
+    attributes:
+      label: Basedmypy version
+  - type: input
+    attributes:
+      label: command-line flags
+  - type: input
+    attributes:
+      label: configuration options from `pyptoject.toml` (and other config files)
+  - type: input
+    attributes:
+      label: Python version used
+  - type: input
+    attributes:
+      label: Operating system and version
+      description: Linux/macOS/Windows/wsl etc
