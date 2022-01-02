@@ -1,5 +1,6 @@
 import json
 import os.path
+import re
 import sys
 import traceback
 from pathlib import Path
@@ -8,7 +9,7 @@ from mypy.backports import OrderedDict
 from collections import defaultdict
 
 from typing import Tuple, List, TypeVar, Set, Dict, Optional, TextIO, Callable
-from typing_extensions import Final
+from typing_extensions import Final, TypedDict
 
 from mypy.scope import Scope
 from mypy.options import Options
@@ -140,18 +141,10 @@ def filter_prefix(error_map: Dict[str, List[ErrorInfo]]) -> Dict[str, List[Error
     return result
 
 
-def baseline_json_hook(d: Dict[str, object]) -> object:
-    class_ = d.pop(".class", None)
-    if class_ is None:
-        return d
-    if class_ == "mypy.errors.ErrorInfo":
-        result = object.__new__(ErrorInfo)
-    elif class_ == "mypy.errorcodes.ErrorCode":
-        result = object.__new__(ErrorCode)
-    else:
-        raise Exception(f"unknown class {class_!r}")
-    result.__dict__ = d
-    return result
+class BaselineError(TypedDict):
+    line: int
+    code: str
+    message: str
 
 
 class Errors:
@@ -211,7 +204,7 @@ class Errors:
     seen_import_error = False
 
     # Error baseline
-    baseline: Dict[str, List[ErrorInfo]] = {}
+    baseline: Dict[str, List[BaselineError]] = {}
     # All detected errors before baseline filter
     all_errors: Dict[str, List[ErrorInfo]] = {}
 
@@ -808,12 +801,18 @@ class Errors:
         if not file.parent.exists():
             file.parent.mkdir()
         json.dump(
-            filter_prefix(self.error_info_map),
+            {
+                file: [
+                    {
+                        "line": error.line,
+                        "code": error.code.code,
+                        "message": error.message
+                    } for error in errors
+                ]
+                for file, errors in filter_prefix(self.error_info_map).items()
+            },
             file.open("w"),
-            default=lambda o: {
-                **{".class": type(o).__module__ + "." + type(o).__qualname__},
-                **o.__dict__,
-            }
+            indent=2,
         )
 
     def load_baseline(self, file: Path) -> bool:
@@ -821,7 +820,7 @@ class Errors:
 
         if not file.exists():
             return False
-        self.baseline = json.load(file.open("r"), object_hook=baseline_json_hook)
+        self.baseline = json.load(file.open("r"))
         return True
 
     def filter_baseline(self) -> None:
@@ -837,14 +836,20 @@ class Errors:
             for error in errors:
                 for baseline_error in baseline_errors:
                     if (
-                        error.line == baseline_error.line and error.code == baseline_error.code
-                        or error.message == baseline_error.message and
-                            abs(error.line - baseline_error.line) < 50
+                        error.line == baseline_error["line"] and
+                            error.code.code == baseline_error["code"]
+                            or clean_baseline_message(error.message) ==
+                            clean_baseline_message(baseline_error["message"]) and
+                            abs(error.line - baseline_error["line"]) < 50
                     ):
                         break
                 else:
                     new_errors.append(error)
             self.error_info_map[file] = new_errors
+
+
+def clean_baseline_message(message: str) -> str:
+    return re.sub(r"line \r.", message, "")
 
 
 class CompileError(Exception):
