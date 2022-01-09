@@ -99,9 +99,6 @@ typecheck_files = [
     'check-formatting.test',
 ]
 
-based_type_check_files = [
-
-]
 
 # Tests that use Python 3.8-only AST features (like expression-scoped ignores):
 if sys.version_info >= (3, 8):
