@@ -1123,7 +1123,11 @@ class Errors:
         json.dump(
             {
                 file: [
-                    {"line": error.line, "code": error.code.code, "message": error.message}
+                    {
+                        "line": error.line,
+                        "code": error.code and error.code.code,
+                        "message": error.message,
+                    }
                     for error in errors
                 ]
                 for file, errors in filter_prefix(self.error_info_map).items()
