@@ -683,8 +683,8 @@ def process_options(args: List[str],
                         help="Disallow unconditional variable redefinition with a new type",
                         group=strictness_group)
 
-    add_invertible_flag('--no-implicit-reexport', default=True, dest='implicit_reexport',
-                        help="Treat imports as private unless aliased",
+    add_invertible_flag('--implicit-reexport', default=False,
+                        help="Don't treat imports as private unless aliased",
                         group=strictness_group)
 
     add_invertible_flag('--no-strict-equality', default=True, dest="strict_equality",
