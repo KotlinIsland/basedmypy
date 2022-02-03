@@ -450,8 +450,8 @@ def check_python_version(program: str) -> None:
     # Check for known bad Python versions.
     if sys.version_info[:2] < (3, 6):
         sys.exit(
-            "Running {name} with Python 3.5 or lower is not supported; "
-            "please upgrade to 3.6 or newer".format(name=program)
+            "Running {name} with Python 3.6 or lower is not supported; "
+            "please upgrade to 3.7 or newer".format(name=program)
         )
 
 
