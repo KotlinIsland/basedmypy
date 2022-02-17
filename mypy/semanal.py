@@ -1769,7 +1769,7 @@ class SemanticAnalyzer(
                         msg = f'Class cannot subclass "{base_expr.name}" (has type "Any")'
                     else:
                         msg = 'Class cannot subclass value of type "Any"'
-                    self.fail(msg, base_expr)
+                    self.fail(msg, base_expr, code=codes.NO_SUBCLASS_ANY)
                 info.fallback_to_any = True
             else:
                 msg = "Invalid base class"
