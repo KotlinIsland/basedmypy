@@ -48,7 +48,25 @@ MYPYC_OPT_IN = [MYPYC_RUN, MYPYC_RUN_MULTI]
 # time to run.
 cmds = {
     # Self type check
-    "self": [executable, "-m", "mypy", "--config-file", "mypy_self_check.ini", "-p", "mypy"],
+    "self": [
+        executable,
+        "-m",
+        "mypy",
+        "--config-file",
+        "mypy_self_check.ini",
+        "--baseline-file=",
+        "-p",
+        "mypy",
+    ],
+    "self_strict": [
+        executable,
+        "-m",
+        "mypy",
+        "--config-file",
+        "mypy_self_check_strict.ini",
+        "-p",
+        "mypy",
+    ],
     # Lint
     "lint": ["flake8", "-j0"],
     "format-black": ["black", "."],
