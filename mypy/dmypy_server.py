@@ -35,7 +35,7 @@ from mypy.server.update import FineGrainedBuildManager, refresh_suppressed_submo
 from mypy.suggestions import SuggestionEngine, SuggestionFailure
 from mypy.typestate import reset_global_state
 from mypy.util import FancyFormatter, count_stats
-from mypy.version import __version__
+from mypy.version import __based_version__
 
 MEM_PROFILE: Final = False  # If True, dump memory profile after initialization
 
@@ -329,7 +329,7 @@ class Server:
             # Signal that we need to restart if the options have changed
             if self.options_snapshot != options.snapshot():
                 return {"restart": "configuration changed"}
-            if __version__ != version:
+            if __based_version__ != version:
                 return {"restart": "mypy version changed"}
             if self.fine_grained_manager:
                 manager = self.fine_grained_manager.manager
