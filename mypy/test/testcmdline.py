@@ -30,7 +30,13 @@ import pytest
 python3_path = sys.executable
 
 # Files containing test case descriptions.
-cmdline_files = ["cmdline.test", "cmdline.pyproject.test", "reports.test", "envvars.test"]
+cmdline_files = [
+    "cmdline.test",
+    "cmdline-based-baseline.test",
+    "cmdline.pyproject.test",
+    "reports.test",
+    "envvars.test",
+]
 
 
 class PythonCmdlineSuite(DataSuite):
@@ -54,8 +60,11 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
             file.write(f"{s}\n")
     args = parse_args(testcase.input[0])
     custom_cwd = parse_cwd(testcase.input[1]) if len(testcase.input) > 1 else None
+    if "# dont-normalize-output:" in testcase.input:
+        testcase.normalize_output = False
     args.append("--show-traceback")
-    args.append("--legacy")
+    if "based" not in testcase.file.rsplit(os.sep)[-1]:
+        args.append("--legacy")
     if "--error-summary" not in args:
         args.append("--no-error-summary")
     if "--show-error-codes" not in args:
@@ -93,6 +102,7 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
     os.remove(program_path)
     # Compare actual output to expected.
     if testcase.output_files:
+        assert not testcase.output, "output not checked when outfile supplied"
         # Ignore stdout, but we insist on empty stderr and zero status.
         if err or result:
             raise AssertionError(
