@@ -11,7 +11,8 @@ class A:
     b: Untyped
 a1: A
 del a1.b  # E: Usage of untyped name "b" in typed context  [no-untyped-usage]
-del a1.b[1]  # E: Expression has type "Untyped"  [no-any-expr]
+del a1.b[1]  # E: Expression has type "Untyped"  [no-any-expr] \
+             # E: Expression has type "Untyped"  [no-any-expr]
 del a1.b.c  # E: Expression has type "Untyped"  [no-any-expr] \
             # E: Usage of untyped name "c" in typed context  [no-untyped-usage]
 a2: A
