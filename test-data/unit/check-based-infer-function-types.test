@@ -360,6 +360,7 @@ def foo(a=1):
 
 foo()  # E: Call to untyped function "foo" in typed context  [no-untyped-call]
 reveal_type(foo)  # E: Expression type contains "Any" (has type "(int) -> Untyped")  [no-any-expr] \
+                  # E: Expression type contains "Any" (has type "(int) -> Untyped")  [no-any-expr] \
                   # N: Revealed type is "def (a: int =) -> Untyped"
 
 def bar(a=1) -> None:
@@ -397,6 +398,7 @@ class B:
 
 b = B()
 reveal_type(b.f)  # E: Expression has type "Untyped"  [no-any-expr] \
+                  # E: Expression has type "Untyped"  [no-any-expr] \
                   # N: Revealed type is "Untyped"
 b.f = 1  # E: Usage of untyped name "f" in typed context  [no-untyped-usage]
 del b.f
