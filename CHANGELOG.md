@@ -1,6 +1,8 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Enhancements
+- Similar errors on the same line will now not be removed
 ### Fixes
 - Handle positional only `/` parameters in overload implementation inference
 
