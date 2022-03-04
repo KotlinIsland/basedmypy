@@ -264,10 +264,10 @@ class Errors:
             file = os.path.normpath(file)
             return remove_path_prefix(file, self.ignore_prefix)
 
-    def simple_path(self, file: str) -> str:
-        """Always transform to simple path"""
+    def common_path(self, file: str) -> str:
+        """Convert path to a cross platform standard for use with baseline"""
         file = os.path.normpath(file)
-        return remove_path_prefix(file, self.ignore_prefix)
+        return remove_path_prefix(file, self.ignore_prefix).replace("\\", "/")
 
     def set_file(self, file: str,
                  module: Optional[str],
@@ -797,7 +797,7 @@ class Errors:
             file.parent.mkdir()
         json.dump(
             {
-                self.simple_path(file): [
+                self.common_path(file): [
                     {
                         "line": error.line,
                         "code": error.code and error.code.code,
@@ -831,7 +831,7 @@ class Errors:
             return
         if path not in self.all_errors:
             self.all_errors[path] = self.error_info_map[path]
-        baseline_errors = self.baseline.get(self.simple_path(path))
+        baseline_errors = self.baseline.get(self.common_path(path))
         if not baseline_errors:
             return
         new_errors = []
