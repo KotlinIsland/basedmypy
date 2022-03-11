@@ -841,6 +841,7 @@ class Errors:
         # first pass for exact matches
         for error in self.sort_messages(self.error_info_map[path]):
             if error.code == codes.REVEAL:
+                new_errors.append(error)
                 continue
             for i, baseline_error in enumerate(baseline_errors):
                 if (
