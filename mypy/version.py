@@ -1,6 +1,7 @@
 import os
 
 from mypy import git
+from mypy.versionutil import VersionInfo
 
 # Base version.
 # - Release versions have the form "0.NNN".
@@ -9,22 +10,24 @@ from mypy import git
 __version__ = '0.940+dev'
 base_version = __version__
 
-# tuple[major, minor, patch, releaselevel, mypy version, mypy releaselevel, hash]
-__based_version_info__ = (
-    2,
-    0,
+# friendly version information
+based_version_info = VersionInfo(
+    1,
+    4,
     0,
     "dev",
+    0,
     __version__.split("+dev")[0],
-    "dev" if "+dev" in __version__ else "release",
-    None,
+    "dev" if "+dev" in __version__ else "final",
 )
-
-__based_version__ = ".".join(str(e) for e in __based_version_info__[:3])
+# simple string version with git info
+__based_version__ = based_version_info.simple_str()
+# simple string version without git info
+base_based_version = __based_version__
 
 mypy_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-if __based_version_info__[3] == 'dev' and git.is_git_repo(mypy_dir) and git.have_git():
-    __based_version__ += '+dev.' + git.git_revision(mypy_dir).decode('utf-8')
+if based_version_info.release_level == 'dev' and git.is_git_repo(mypy_dir) and git.have_git():
+    __based_version__ += '.' + git.git_revision(mypy_dir).decode('utf-8')
     if git.is_dirty(mypy_dir):
         __based_version__ += '.dirty'
 del mypy_dir

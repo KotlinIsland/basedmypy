@@ -53,7 +53,7 @@ from mypy.options import Options
 from mypy.parse import parse
 from mypy.stats import dump_type_stats
 from mypy.types import Type
-from mypy.version import __version__
+from mypy.version import __based_version__, __version__
 from mypy.plugin import Plugin, ChainedPlugin, ReportConfigContext
 from mypy.plugins.default import DefaultPlugin
 from mypy.fscache import FileSystemCache
@@ -246,7 +246,7 @@ def _build(sources: List[BuildSource],
                            source_set=source_set,
                            reports=reports,
                            options=options,
-                           version_id=__version__,
+                           version_id=__based_version__,
                            plugin=plugin,
                            plugins_snapshot=snapshot,
                            errors=errors,
