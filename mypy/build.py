@@ -232,6 +232,7 @@ def _build(sources: List[BuildSource],
                     options.enabled_error_codes,
                     options.disabled_error_codes,
                     options.many_errors_threshold)
+    load_baseline(options, errors, stdout)
     plugin, snapshot = load_plugins(options, errors, stdout, extra_plugins)
 
     # Add catch-all .gitignore to cache dir if we created it
@@ -996,6 +997,117 @@ def generate_deps_for_cache(manager: BuildManager,
         merge_dependencies(old_deps, mdeps)
 
     return rdeps
+
+
+def save_baseline(manager: BuildManager, sources: List[BuildSource]) -> None:
+    if not manager.options.baseline_file or (
+        (not manager.options.write_baseline and not manager.options.auto_baseline)
+        or (not manager.options.write_baseline and manager.options.auto_baseline and (
+            not manager.errors.num_messages()
+            or manager.errors.baseline_sources != [source.path for source in sources]
+        ))
+    ):
+        # Indicate that writing was canceled
+        manager.options.write_baseline = False
+        return
+    new_baseline = manager.errors.prepare_baseline_errors()
+    file = Path(manager.options.baseline_file)
+    if not new_baseline:
+        if file.exists():
+            file.unlink()
+            print("No errors, baseline file removed")
+        else:
+            print("No errors, no baseline to write")
+        # Indicate that writing was canceled
+        manager.options.write_baseline = False
+        return
+    if new_baseline == manager.errors.original_baseline:
+        return
+    if not file.parent.exists():
+        file.parent.mkdir(parents=True)
+    data: Mapping[str, object]
+    if (
+        manager.options.baseline_format == "1.3"
+        or manager.options.baseline_format == "default"
+    ):
+        data = {
+            "files": new_baseline,
+            "format": "1.3",
+            "sources": [source.path for source in sources],
+        }
+    elif manager.options.baseline_format == "1.2":
+        data = {
+            "__baseline_metadata__": {
+                "format": "1.2", "sources": [source.path for source in sources]
+            },
+            **new_baseline,
+        }
+    else:
+        raise Exception(
+            f"Invalid/Unsupported baseline file format {manager.options.baseline_format}"
+        )
+    json.dump(
+        data,
+        file.open("w"),
+        indent=2,
+        sort_keys=True,
+    )
+
+
+def load_baseline(options: Options, errors: Errors, stdout: TextIO) -> None:
+    if not options.baseline_file:
+        return
+
+    from mypy import main
+
+    formatter = util.FancyFormatter(stdout, stderr, options.show_error_codes)
+    file = Path(options.baseline_file)
+
+    if not file.exists():
+        if options.baseline_file != defaults.BASELINE_FILE:
+            msg = formatter.style(
+                f"error: Baseline file {options.baseline_file!r} not found", 'red',
+                bold=True
+            )
+            main.fail(msg, stderr, options)
+        return
+    try:
+        data: Dict[str, object] = json.load(file.open())
+    except JSONDecodeError:
+        msg = formatter.style(
+            f"error: Baseline file {options.baseline_file!r} contains invalid JSON",
+            'red', bold=True
+        )
+        main.fail(msg, stderr, options)
+    # try to detect format:
+    format_ = data.get("format")
+    if not format_:
+        metadata: Optional[Dict[str, object]] = data.get("__baseline_metadata__")
+        format_ = metadata and metadata.get("format")
+    if not format_:
+        format_ = "1.2"
+    if not options.write_baseline and options.baseline_format == "default":
+        options.baseline_format = format_
+    if format_ == "1.3":
+        baseline_errors = data.get("files")
+        sources = data.get("sources")
+    elif format_ == "1.2":
+        metadata = data.pop("__baseline_metadata__", None)
+        sources = metadata and metadata.get("sources") or ["None"]
+        baseline_errors = data
+    else:
+        raise Exception(f"Invalid/Unsupported baseline file format: {options.baseline_format}")
+    if baseline_errors and sources:
+        errors.initialize_baseline(baseline_errors, sources)
+        return
+    # deal with errors
+    if not options.write_baseline:
+        msg = formatter.style(
+            f"error: Baseline file {options.baseline_file!r} has an invalid data format.\n"
+            "Perhaps it was generated with an older version of basedmypy, see `--baseline-format`",
+            'red', bold=True
+        )
+        main.fail(msg, stderr, options)
 
 
 PLUGIN_SNAPSHOT_FILE: Final = "@plugins_snapshot.json"
@@ -2700,27 +2812,6 @@ def dispatch(sources: List[BuildSource],
         dump_graph(graph, stdout)
         return graph
 
-    if manager.options.baseline_file:
-        from mypy import main
-
-        formatter = util.FancyFormatter(stdout, stderr, manager.options.show_error_codes)
-
-        try:
-            res = manager.errors.load_baseline(Path(manager.options.baseline_file))
-        except JSONDecodeError:
-            msg = formatter.style(
-                f"error: Baseline file ({manager.options.baseline_file!r}) contains invalid JSON",
-                'red', bold=True
-            )
-            main.fail(msg, stderr, manager.options)
-
-        if not res and manager.options.baseline_file != defaults.BASELINE_FILE:
-            msg = formatter.style(
-                f"error: Baseline file ({manager.options.baseline_file!r}) not found", 'red',
-                bold=True
-            )
-            main.fail(msg, stderr, manager.options)
-
     # Fine grained dependencies that didn't have an associated module in the build
     # are serialized separately, so we read them after we load the graph.
     # We need to read them both for running in daemon mode and if we are generating
@@ -2747,6 +2838,8 @@ def dispatch(sources: List[BuildSource],
     # graph---we'll handle it all later.
     if not manager.use_fine_grained_cache():
         process_graph(graph, manager)
+        # update baseline
+        save_baseline(manager, sources)
         # Update plugins snapshot.
         write_plugins_snapshot(manager)
         manager.old_plugins_snapshot = manager.plugins_snapshot
@@ -3078,12 +3171,6 @@ def process_graph(graph: Graph, manager: BuildManager) -> None:
             else:
                 manager.log("Processing SCC of size %d (%s) as %s" % (size, scc_str, fresh_msg))
             process_stale_scc(graph, scc, manager)
-
-    if manager.options.baseline_file and (
-        manager.options.write_baseline or
-        not manager.errors.num_messages() and manager.options.auto_baseline
-    ):
-        manager.errors.save_baseline(Path(manager.options.baseline_file))
 
     sccs_left = len(fresh_scc_queue)
     nodes_left = sum(len(scc) for scc in fresh_scc_queue)

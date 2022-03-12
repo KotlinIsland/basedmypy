@@ -117,6 +117,7 @@ class Options:
         self.legacy = False
         self.write_baseline = False
         self.baseline_file = defaults.BASELINE_FILE
+        self.baseline_format = "default"
         self.auto_baseline = True
         self.default_return = False
 

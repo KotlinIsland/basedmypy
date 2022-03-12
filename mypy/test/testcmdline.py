@@ -24,6 +24,7 @@ python3_path = sys.executable
 # Files containing test case descriptions.
 cmdline_files = [
     'cmdline.test',
+    'cmdline-based-baseline.test',
     'cmdline.pyproject.test',
     'reports.test',
     'envvars.test',
@@ -50,7 +51,8 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
     args = parse_args(testcase.input[0])
     custom_cwd = parse_cwd(testcase.input[1]) if len(testcase.input) > 1 else None
     args.append('--show-traceback')
-    args.append('--legacy')
+    if 'based' not in testcase.file.rsplit(os.sep)[-1]:
+        args.append('--legacy')
     if '--error-summary' not in args:
         args.append('--no-error-summary')
     # Type check the program.

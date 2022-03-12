@@ -1,15 +1,13 @@
-import json
 import os.path
 import re
 import sys
 import traceback
 from copy import deepcopy
-from pathlib import Path
 
 from mypy.backports import OrderedDict
 from collections import defaultdict
 
-from typing import Tuple, List, TypeVar, Set, Dict, Optional, TextIO, Callable
+from typing import Tuple, List, TypeVar, Set, Dict, Optional, TextIO, Callable, cast
 from typing_extensions import Final, TypedDict
 
 from mypy.scope import Scope
@@ -189,6 +187,8 @@ class Errors:
     # Error baseline
     original_baseline: Dict[str, List[BaselineError]]
     baseline: Dict[str, List[BaselineError]]
+    # baseline metadata
+    baseline_sources: List[str]
     # All detected errors before baseline filter
     all_errors: Dict[str, List[ErrorInfo]]
 
@@ -219,6 +219,7 @@ class Errors:
         self.all_errors = {}
         self.original_baseline = {}
         self.baseline = {}
+        self.baseline_sources = []
         self.flushed_files = set()
         self.import_ctx = []
         self.function_or_member = [None]
@@ -790,17 +791,16 @@ class Errors:
             i += 1
         return res
 
-    def save_baseline(self, file: Path) -> None:
-        """Create/update a file that stores all errors"""
-        if not self.all_errors:
-            if not file.exists():
-                return
-            file.unlink()
-            print("No errors, baseline file removed")
-            return
-        if not file.parent.exists():
-            file.parent.mkdir()
-        self.baseline = {
+    def initialize_baseline(self, errors: Dict[str, List[object]], sources: List[str]):
+        """Initialize the baseline properties"""
+        errors_ = cast(Dict[str, List[BaselineError]], errors)
+        self.baseline = errors_
+        self.original_baseline = deepcopy(errors_)
+        self.baseline_sources = sources
+
+    def prepare_baseline_errors(self) -> Dict[str, List[BaselineError]]:
+        """Create a dict representing the error portion of an error baseline file"""
+        return {
             self.common_path(file): [
                 {
                     "code": error.code.code if error.code else None,
@@ -814,27 +814,6 @@ class Errors:
             ]
             for file, errors in self.all_errors.items()
         }
-        if self.baseline == self.original_baseline:
-            return
-        json.dump(
-            self.baseline,
-            file.open("w"),
-            indent=2,
-            sort_keys=True,
-        )
-
-    def load_baseline(self, file: Path) -> bool:
-        """Load baseline errors from baseline file
-
-        :raises JSONDecodeError: if the file contains invalid JSON
-        """
-
-        if not file.exists():
-            return False
-
-        self.baseline = json.load(file.open("r"))
-        self.original_baseline = deepcopy(self.baseline)
-        return True
 
     def filter_baseline(self, path: str) -> None:
         """Remove baseline errors from the error_info_map"""

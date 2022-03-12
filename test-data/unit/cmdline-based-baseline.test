@@ -1,0 +1,86 @@
+-- Tests for baseline
+-- ------------------------------
+-- See cmdline.test for specifics
+-- ----------------------------------------
+
+
+[case testWriteBaseline]
+# cmd: mypy --write-baseline --error-summary pkg
+[file pkg/a.py]
+1 + ""
+"" + 1
+[file .mypy/baseline.json]
+{
+  "sources": ["pkg"],
+  "files": {"pkg/a.py": [{"code": "operator", "line": 2, "message": "Unsupported operand types for + (\"str\" and \"int\")"}]}
+}
+[out]
+pkg/a.py:1:5: error: Unsupported operand types for + ("int" and "str")  [operator]
+Found 2 errors (1 new error) in 1 file (checked 1 source file)
+Baseline successfully written to .mypy/baseline.json
+== Return code: 0
+
+
+[case testAutoBaseline]
+# cmd: mypy --error-summary pkg
+[file pkg/a.py]
+1 + 1
+[file .mypy/baseline.json]
+{
+  "sources": ["pkg"],
+  "files": {"pkg/a.py": [{"main.py": [{"line": 1, "code": "code", "message": "message"}]}]}
+}
+[out]
+Success: no issues found in 1 source file
+== Return code: 0
+
+
+[case testBaselineFilter]
+# cmd: mypy --error-summary pkg
+[file pkg/a.py]
+1 + ""
+"" + 1
+[file .mypy/baseline.json]
+{
+  "sources": ["pkg"],
+  "files": {"pkg/a.py": [{"code": "operator", "line": 2, "message": "Unsupported operand types for + (\"str\" and \"int\")"}]}
+}
+[out]
+pkg/a.py:1:5: error: Unsupported operand types for + ("int" and "str")  [operator]
+Found 1 error in 1 file (checked 1 source file)
+
+
+[case testBlockers]
+# cmd: mypy --write-baseline --error-summary main
+[file main]
+ 1
+[out]
+main:1:2: error: unexpected indent  [syntax]
+Found 1 error in 1 file (errors prevented further checking)
+== Return code: 2
+
+
+[case testReveals]
+# cmd: mypy --error-summary pkg
+[file pkg/main.py]
+a: int
+reveal_type(a)
+[file .mypy/baseline.json]
+{"sources": ["pkg"], "files": {"main.py": [{"line": 1, "code": "misc", "message": "test"}]}}
+[out]
+pkg/main.py:2:13: note: Revealed type is "builtins.int"
+
+
+[case testBaselineFormat]
+# cmd: mypy --baseline-format 1.2 --error-summary pkg
+[file pkg/main.py]
+a: int = ''
+b: str = 1
+[file .mypy/baseline.json]
+{"pkg/main.py": [{"line": 1, "code": "assignment", "message": "Incompatible types in assignment (expression has type \"str\", variable has type \"int\")"}]}
+[out]
+pkg/main.py:2:10: error: Incompatible types in assignment (expression has type "int", variable has type "str")  [assignment]
+Found 1 error in 1 file (checked 1 source file)
+
+-- [case testNoWindowsPaths]
+-- make sure all paths in the baseline don't contain '\' separators

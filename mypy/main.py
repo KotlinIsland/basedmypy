@@ -535,7 +535,11 @@ def process_options(args: List[str],
     based_group.add_argument(
         '--baseline-file', action='store',
         help="Use baseline info in the given file"
-             "(defaults to '{}')".format(defaults.BASELINE_FILE))
+             f"(defaults to '{defaults.BASELINE_FILE}')")
+    based_group.add_argument(
+        '--baseline-format', action='store',
+        help="Baseline file format, for backwards compatibility"
+             " (defaults to the latest version)")
     add_invertible_flag(
         '--no-auto-baseline', default=True, group=based_group,
         dest="auto_baseline", help="Don't update the baseline automatically.")
