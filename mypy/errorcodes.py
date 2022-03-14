@@ -136,7 +136,12 @@ NAME_MATCH: Final = ErrorCode(
 UNSAFE_VARIANCE: Final = ErrorCode("unsafe-variance", "Incorrect usages of variance", "General")
 UNUSED_IGNORE: Final = ErrorCode("unused-ignore", "Ignore comment is unused", "General")
 
-DYNAMIC_TYPING: Final = ErrorCode("dynamic", "Usage of dynamic typing (Any)", "General")
+NO_ANY_EXPR: Final = ErrorCode("no-any-expr", "An expression contains Any", "General")
+NO_ANY_EXPLICIT: Final = ErrorCode("no-any-explicit", "Usage of the Any type", "General")
+NO_SUBCLASS_ANY: Final = ErrorCode("no-subclass-any", "Usage of Any as a class base", "General")
+NO_ANY_DECORATED: Final = ErrorCode(
+    "no-any-decorated", "Decorated function contains Any", "General")
+
 REVEAL: Final = ErrorCode("reveal", "Reveal types at check time", "General")
 
 NO_ERROR_CODE: Final = ErrorCode("no-error-code", "No error code specified in ignore comment",

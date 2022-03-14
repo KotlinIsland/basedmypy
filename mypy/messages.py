@@ -1214,7 +1214,7 @@ class MessageBuilder:
                   code=codes.VAR_ANNOTATED)
 
     def explicit_any(self, ctx: Context) -> None:
-        self.fail('Explicit "Any" is not allowed', ctx, code=codes.DYNAMIC_TYPING)
+        self.fail('Explicit "Any" is not allowed', ctx, code=codes.NO_ANY_EXPLICIT)
 
     def unexpected_typeddict_keys(
             self,
@@ -1314,7 +1314,7 @@ class MessageBuilder:
             message = 'Expression has type "Any"'
         else:
             message = 'Expression type contains "Any" (has type {})'.format(format_type(typ))
-        self.fail(message, context, code=codes.DYNAMIC_TYPING)
+        self.fail(message, context, code=codes.NO_ANY_EXPR)
 
     def incorrectly_returning_any(self, typ: Type, context: Context) -> None:
         message = 'Returning Any from function declared to return {}'.format(
@@ -1337,10 +1337,10 @@ class MessageBuilder:
         typ = get_proper_type(typ)
         if isinstance(typ, AnyType):
             self.fail("Function is untyped after decorator transformation", context,
-                      code=codes.DYNAMIC_TYPING)
+                      code=codes.NO_ANY_DECORATED)
         else:
             self.fail('Type of decorated function contains type "Any" ({})'.format(
-                format_type(typ)), context, code=codes.DYNAMIC_TYPING)
+                format_type(typ)), context, code=codes.NO_ANY_DECORATED)
 
     def typed_function_untyped_decorator(self, func_name: str, context: Context) -> None:
         self.fail('Untyped decorator makes function "{}" untyped'.format(func_name), context)
