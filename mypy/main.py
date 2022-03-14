@@ -147,16 +147,6 @@ def main(script_path: Optional[str],
         stdout.flush()
         code = 0
 
-    if (
-        options.auto_baseline
-        and not messages
-        and res and res.manager.errors.baseline != res.manager.errors.original_baseline
-    ):
-        stdout.write(
-            formatter.style(f"Baseline successfully updated at {options.baseline_file}\n",
-                            "green", bold=True))
-        stdout.flush()
-
     if options.install_types and not options.non_interactive:
         result = install_types(formatter, options, after_run=True, non_interactive=False)
         if result:
@@ -1074,6 +1064,12 @@ def process_options(args: List[str],
     if options.logical_deps:
         options.cache_fine_grained = True
 
+    # Store targets
+    options.targets = (
+        [f"module:{el}" for el in special_opts.modules]
+        + [f"package:{el}" for el in special_opts.packages]
+        + [f"file:{el}" for el in special_opts.files]
+    )
     # Set target.
     if special_opts.modules + special_opts.packages:
         options.build_type = BuildType.MODULE

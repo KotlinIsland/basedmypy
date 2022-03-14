@@ -7,7 +7,7 @@ from copy import deepcopy
 from mypy.backports import OrderedDict
 from collections import defaultdict
 
-from typing import Tuple, List, TypeVar, Set, Dict, Optional, TextIO, Callable, cast
+from typing import Tuple, List, TypeVar, Set, Dict, Optional, TextIO, Callable
 from typing_extensions import Final, TypedDict
 
 from mypy.scope import Scope
@@ -188,7 +188,7 @@ class Errors:
     original_baseline: Dict[str, List[BaselineError]]
     baseline: Dict[str, List[BaselineError]]
     # baseline metadata
-    baseline_sources: List[str]
+    baseline_targets: List[str]
     # All detected errors before baseline filter
     all_errors: Dict[str, List[ErrorInfo]]
 
@@ -219,7 +219,7 @@ class Errors:
         self.all_errors = {}
         self.original_baseline = {}
         self.baseline = {}
-        self.baseline_sources = []
+        self.baseline_targets = []
         self.flushed_files = set()
         self.import_ctx = []
         self.function_or_member = [None]
@@ -791,12 +791,13 @@ class Errors:
             i += 1
         return res
 
-    def initialize_baseline(self, errors: Dict[str, List[object]], sources: List[str]):
+    def initialize_baseline(
+        self, errors: Dict[str, List[BaselineError]], targets: List[str]
+    ) -> None:
         """Initialize the baseline properties"""
-        errors_ = cast(Dict[str, List[BaselineError]], errors)
-        self.baseline = errors_
-        self.original_baseline = deepcopy(errors_)
-        self.baseline_sources = sources
+        self.baseline = errors
+        self.original_baseline = deepcopy(errors)
+        self.baseline_targets = targets
 
     def prepare_baseline_errors(self) -> Dict[str, List[BaselineError]]:
         """Create a dict representing the error portion of an error baseline file"""
