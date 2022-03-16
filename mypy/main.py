@@ -719,7 +719,11 @@ def process_options(args: List[str],
                         help="Allow equality, identity, and container checks for"
                              " non-overlapping types",
                         group=strictness_group)
-
+    # --nonlocal-partial-types allows partial types spanning module top level and a function
+    # (implicitly defined in fine-grained incremental mode)
+    add_invertible_flag('--nonlocal-partial-types', default=True, dest="local_partial_types",
+                        help="Enable partial types in different scopes",
+                        group=strictness_group)
     strictness_group.add_argument(
         '--disable-error-code', metavar='NAME', action='append', default=[],
         help="Disable a specific error code")
@@ -876,9 +880,6 @@ def process_options(args: List[str],
     parser.add_argument('--dump-graph', action='store_true', help=argparse.SUPPRESS)
     # --semantic-analysis-only does exactly that.
     parser.add_argument('--semantic-analysis-only', action='store_true', help=argparse.SUPPRESS)
-    # --local-partial-types disallows partial types spanning module top level and a function
-    # (implicitly defined in fine-grained incremental mode)
-    parser.add_argument('--local-partial-types', action='store_true', help=argparse.SUPPRESS)
     # --logical-deps adds some more dependencies that are not semantically needed, but
     # may be helpful to determine relative importance of classes and functions for overall
     # type precision in a code base. It also _removes_ some deps, so this flag should be never
