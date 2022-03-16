@@ -37,7 +37,8 @@ from mypy.semanal import SemanticAnalyzer
 import mypy.semanal_main
 from mypy.checker import TypeChecker
 from mypy.indirection import TypeIndirectionVisitor
-from mypy.errors import Errors, CompileError, ErrorInfo, report_internal_error, BaselineError
+from mypy.errors import (Errors, CompileError, ErrorInfo, report_internal_error, BaselineError,
+                         UnknownBaselineError)
 from mypy.util import (
     DecodeError, decode_python_encoding, is_sub_path, get_mypy_comments, module_prefix,
     read_py_file, hash_digest, is_typeshed_file, is_stub_package_file, get_top_two_prefixes
@@ -1016,8 +1017,8 @@ def baseline_format_error(
     )
     main.fail(msg, stderr, options)
 
-#  Documenting baseline formats
 
+#  Documenting baseline formats
 UnknownBaseline = Dict[str, object]
 
 
@@ -1055,7 +1056,7 @@ def save_baseline(manager: BuildManager) -> None:
         # Indicate that writing was canceled
         manager.options.write_baseline = False
         return
-    new_baseline = manager.errors.prepare_baseline_errors()
+    new_baseline = manager.errors.prepare_baseline_errors(manager.options.baseline_format)
     file = Path(manager.options.baseline_file)
     if not new_baseline:
         if file.exists():
@@ -1071,10 +1072,7 @@ def save_baseline(manager: BuildManager) -> None:
     if not file.parent.exists():
         file.parent.mkdir(parents=True)
     data: UnknownBaseline
-    if (
-        manager.options.baseline_format == "1.3"
-        or manager.options.baseline_format == "default"
-    ):
+    if manager.options.baseline_format == "1.3":
         data = {
             "files": new_baseline,
             "format": "1.3",
@@ -1098,7 +1096,7 @@ def save_baseline(manager: BuildManager) -> None:
         sort_keys=True,
     )
     if not manager.options.write_baseline and manager.options.auto_baseline:
-        manager.stdout.write(f"Baseline successfully updated at {file}")
+        manager.stdout.write(f"Baseline successfully updated at {file}\n")
 
 
 def load_baseline(options: Options, errors: Errors, stdout: TextIO) -> None:
@@ -1122,7 +1120,7 @@ def load_baseline(options: Options, errors: Errors, stdout: TextIO) -> None:
         data: UnknownBaseline = json.load(file.open())
     except JSONDecodeError:
         msg = formatter.style(
-            f"error: Baseline file contains invalid JSON at {file}",
+            f"error: Invalid JSON in baseline file {file}",
             'red', bold=True
         )
         main.fail(msg, stderr, options)
@@ -1137,6 +1135,9 @@ def load_baseline(options: Options, errors: Errors, stdout: TextIO) -> None:
         baseline_format = "1.2"
     if not options.write_baseline and options.baseline_format == "default":
         options.baseline_format = baseline_format
+    # set default baseline format
+    if options.write_baseline and options.baseline_format == "default":
+        options.baseline_format = "1.3"
 
     # pull out data
     if baseline_format == "1.3":
@@ -1155,8 +1156,9 @@ def load_baseline(options: Options, errors: Errors, stdout: TextIO) -> None:
 
     if baseline_errors and targets:
         errors.initialize_baseline(
-            cast(Dict[str, List[BaselineError]], baseline_errors),
-            cast(List[str], targets)
+            cast(Dict[str, List[UnknownBaselineError]], baseline_errors),
+            cast(List[str], targets),
+            baseline_format,
         )
         return
 
@@ -1164,7 +1166,7 @@ def load_baseline(options: Options, errors: Errors, stdout: TextIO) -> None:
     if options.write_baseline:
         return
     msg = formatter.style(
-        f"error: Baseline file {options.baseline_file!r} has an invalid data format.\n"
+        f"error: Baseline file '{file}' has an invalid data format.\n"
         "Perhaps it was generated with an older version of basedmypy, see `--baseline-format`",
         'red', bold=True
     )

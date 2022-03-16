@@ -7,7 +7,7 @@ from copy import deepcopy
 from mypy.backports import OrderedDict
 from collections import defaultdict
 
-from typing import Tuple, List, TypeVar, Set, Dict, Optional, TextIO, Callable
+from typing import Tuple, List, TypeVar, Set, Dict, Optional, TextIO, Callable, cast
 from typing_extensions import Final, TypedDict
 
 from mypy.scope import Scope
@@ -120,11 +120,30 @@ ErrorTuple = Tuple[Optional[str],
                    Optional[ErrorCode]]
 
 
+class StoredBaselineError(TypedDict):
+    """Structure of an error while stored in a 1.3 baseline"""
+    code: Optional[str]
+    column: int
+    message: str
+    offset: int
+    target: Optional[str]
+
+
 class BaselineError(TypedDict):
     code: Optional[str]
     column: int
     line: int
     message: str
+    target: Optional[str]
+
+
+class UnknownBaselineError(TypedDict, total=False):
+    """Could be a 1.2 or a 1.3 error"""
+    code: Optional[str]
+    column: int
+    line: int
+    message: str
+    offset: int
     target: Optional[str]
 
 
@@ -792,16 +811,25 @@ class Errors:
         return res
 
     def initialize_baseline(
-        self, errors: Dict[str, List[BaselineError]], targets: List[str]
+        self, errors: Dict[str, List[UnknownBaselineError]],
+        targets: List[str], baseline_format: str
     ) -> None:
         """Initialize the baseline properties"""
-        self.baseline = errors
-        self.original_baseline = deepcopy(errors)
+        if baseline_format == "1.3":
+            for file in errors.values():
+                previous = 0
+                for error in file:
+                    previous = error["line"] = error["offset"] + previous
+        baseline_errors = cast(Dict[str, List[BaselineError]], errors)
+        self.baseline = baseline_errors
+        self.original_baseline = deepcopy(baseline_errors)
         self.baseline_targets = targets
 
-    def prepare_baseline_errors(self) -> Dict[str, List[BaselineError]]:
+    def prepare_baseline_errors(self, baseline_format: str) -> Dict[
+        str, List[UnknownBaselineError]
+    ]:
         """Create a dict representing the error portion of an error baseline file"""
-        return {
+        result: Dict[str, List[UnknownBaselineError]] = {
             self.common_path(file): [
                 {
                     "code": error.code.code if error.code else None,
@@ -815,6 +843,14 @@ class Errors:
             ]
             for file, errors in self.all_errors.items()
         }
+        if baseline_format == "1.3":
+            for file in result.values():
+                previous = 0
+                for error in file:
+                    error["offset"] = error["line"] - previous
+                    previous = error["line"]
+                    del error["line"]
+        return result
 
     def filter_baseline(self, path: str) -> None:
         """Remove baseline errors from the error_info_map"""

@@ -50,6 +50,8 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
             file.write('{}\n'.format(s))
     args = parse_args(testcase.input[0])
     custom_cwd = parse_cwd(testcase.input[1]) if len(testcase.input) > 1 else None
+    if "# dont-normalize-output:" in testcase.input:
+        testcase.normalize_output = False
     args.append('--show-traceback')
     if 'based' not in testcase.file.rsplit(os.sep)[-1]:
         args.append('--legacy')
