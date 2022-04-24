@@ -587,6 +587,13 @@ def process_options(
         help="Assume implicit default return type of None",
         group=based_group,
     )
+    add_invertible_flag(
+        "--ignore-any-from-error",
+        default=False,
+        dest="ignore_any_from_error",
+        help="Don't include Any type from errors in no-any-expr messages.",
+        group=based_group,
+    )
 
     config_group = parser.add_argument_group(
         title="Config file",
