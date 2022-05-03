@@ -5,7 +5,8 @@ from itertools import chain
 from contextlib import contextmanager
 from mypy.backports import OrderedDict
 
-from typing import Callable, List, Optional, Set, Tuple, Iterator, TypeVar, Iterable, Sequence
+from typing import Callable, List, Optional, Set, Tuple, Iterator, TypeVar, Iterable, Sequence, \
+    Union
 from typing_extensions import Final
 from mypy_extensions import DefaultNamedArg
 
@@ -26,7 +27,7 @@ from mypy.nodes import (
     TypeInfo, Context, SymbolTableNode, Var, Expression,
     get_nongen_builtins, check_arg_names, check_arg_kinds, ArgKind, ARG_POS, ARG_NAMED,
     ARG_OPT, ARG_NAMED_OPT, ARG_STAR, ARG_STAR2, TypeVarExpr, TypeVarLikeExpr, ParamSpecExpr,
-    TypeAlias, PlaceholderNode, SYMBOL_FUNCBASE_TYPES, Decorator, MypyFile
+    TypeAlias, PlaceholderNode, SYMBOL_FUNCBASE_TYPES, Decorator, MypyFile, FuncItem
 )
 from mypy.typetraverser import TypeTraverserVisitor
 from mypy.tvar_scope import TypeVarLikeScope
@@ -232,6 +233,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 return TypeVarType(
                     tvar_def.name, tvar_def.fullname, tvar_def.id, tvar_def.values,
                     tvar_def.upper_bound, tvar_def.variance, line=t.line, column=t.column,
+                    scopename=tvar_def.scopename,
                 )
             special = self.try_analyze_special_unbound_type(t, fullname)
             if special is not None:
@@ -984,7 +986,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         return list(zip(names, tvars))
 
     def bind_function_type_variables(
-        self, fun_type: CallableType, defn: Context
+        self, fun_type: CallableType, defn: Union[CallableType, FuncItem]
     ) -> Sequence[TypeVarLikeType]:
         """Find the type variables of the function type and bind them in our tvar_scope"""
         if fun_type.variables:
@@ -993,7 +995,10 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 assert var_node, "Binding for function type variable not found within function"
                 var_expr = var_node.node
                 assert isinstance(var_expr, TypeVarLikeExpr)
-                self.tvar_scope.bind_new(var.name, var_expr)
+                self.tvar_scope.bind_new(
+                    var.name, var_expr,
+                    scopename=var.scopename if isinstance(var, TypeVarType) else None
+                )
             return fun_type.variables
         typevars = self.infer_type_variables(fun_type)
         # Do not define a new type variable if already defined in scope.
@@ -1003,7 +1008,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         for name, tvar in typevars:
             if not self.tvar_scope.allow_binding(tvar.fullname):
                 self.fail('Type variable "{}" is bound by an outer class'.format(name), defn)
-            self.tvar_scope.bind_new(name, tvar)
+            self.tvar_scope.bind_new(name, tvar, scopename=defn.name)
             binding = self.tvar_scope.get_binding(tvar.fullname)
             assert binding is not None
             defs.append(binding)
@@ -1056,7 +1061,8 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 self.anal_array(var_def.values),
                 var_def.upper_bound.accept(self),
                 var_def.variance,
-                var_def.line
+                var_def.line,
+                scopename=var_def.scopename,
             )
         else:
             return var_def
