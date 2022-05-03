@@ -62,6 +62,7 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
     env = os.environ.copy()
     env.pop('COLUMNS', None)
     env['PYTHONPATH'] = PREFIX
+    env["__MYPY_UNDER_TEST__"] = "1"
     process = subprocess.Popen(fixed + args,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE,
