@@ -61,6 +61,7 @@ from mypy.types import (
     TypeVarLikeType,
     TypeVarType,
     UnboundType,
+    UntypedType,
     has_type_vars,
 )
 from mypy.util import get_unique_redefinition_name
@@ -169,7 +170,7 @@ class NamedTupleAnalyzer:
                 name = stmt.lvalues[0].name
                 items.append(name)
                 if stmt.type is None:
-                    types.append(AnyType(TypeOfAny.unannotated))
+                    types.append(UntypedType())
                 else:
                     # We never allow recursive types at function scope. Although it is
                     # possible to support this for named tuples, it is still tricky, and
@@ -402,7 +403,7 @@ class NamedTupleAnalyzer:
                 if not ok:
                     return [], [], [], typename, [], False
         if not types:
-            types = [AnyType(TypeOfAny.unannotated) for _ in items]
+            types = [UntypedType() for _ in items]
         underscore = [item for item in items if item.startswith("_")]
         if underscore:
             self.fail(

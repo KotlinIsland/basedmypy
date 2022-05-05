@@ -265,6 +265,7 @@ from mypy.types import (
     TypeVarType,
     UnboundType,
     UnpackType,
+    UntypedType,
     get_proper_type,
     get_proper_types,
     invalid_recursive_alias,
@@ -827,7 +828,7 @@ class SemanticAnalyzer(
                         defn.type = defn.type.copy_modified(ret_type=NoneType())
                 elif self.options.infer_function_types:
                     defn.type = CallableType(
-                        [AnyType(TypeOfAny.unannotated) for _ in defn.arg_kinds],
+                        [UntypedType() for _ in defn.arg_kinds],
                         defn.arg_kinds,
                         defn.arg_names,
                         NoneType(),
@@ -843,7 +844,7 @@ class SemanticAnalyzer(
                 elif self.options.infer_function_types:
                     self_type = fill_typevars_with_any(defn.info)
                     defn.type = CallableType(
-                        [AnyType(TypeOfAny.unannotated) for _ in defn.arg_kinds],
+                        [UntypedType() for _ in defn.arg_kinds],
                         defn.arg_kinds,
                         defn.arg_names,
                         self_type,
@@ -5386,7 +5387,7 @@ class SemanticAnalyzer(
         if args is not None:
             # TODO: assert len(args) == len(node.defn.type_vars)
             return Instance(node, args)
-        return Instance(node, [AnyType(TypeOfAny.unannotated)] * len(node.defn.type_vars))
+        return Instance(node, [UntypedType()] * len(node.defn.type_vars))
 
     def builtin_type(self, fully_qualified_name: str) -> Instance:
         """Legacy function -- use named_type() instead."""
@@ -6379,16 +6380,16 @@ def infer_fdef_types_from_defaults(defn: FuncDef | Decorator, self: SemanticAnal
                 if arg.variable.is_inferred and arg.initializer:
                     arg.initializer.accept(self)
                     typ = self.analyze_simple_literal_type(arg.initializer, False, do_bools=True)
-                arg_types.append(typ or AnyType(TypeOfAny.unannotated))
+                arg_types.append(typ or UntypedType())
         ret_type = None
         if self.options.default_return and self.options.disallow_untyped_defs:
             ret_type = NoneType()
         if any(not isinstance(get_proper_type(t), AnyType) for t in arg_types) or ret_type:
             defn.type = CallableType(
-                arg_types or [AnyType(TypeOfAny.unannotated) for _ in defn.arg_kinds],
+                arg_types or [UntypedType() for _ in defn.arg_kinds],
                 defn.arg_kinds,
                 defn.arg_names,
-                ret_type or AnyType(TypeOfAny.unannotated),
+                ret_type or UntypedType(),
                 self.named_type("builtins.function"),
                 line=defn.line,
                 column=defn.column,

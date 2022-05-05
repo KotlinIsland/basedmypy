@@ -57,6 +57,7 @@ from mypy.types import (
     UninhabitedType,
     UnionType,
     UnpackType,
+    UntypedType,
     get_proper_type,
     is_named_instance,
 )
@@ -1022,10 +1023,7 @@ def is_protocol_implementation(
                 subtype = (
                     NoneType()
                     if subtype.type is None
-                    else Instance(
-                        subtype.type,
-                        [AnyType(TypeOfAny.unannotated)] * len(subtype.type.type_vars),
-                    )
+                    else Instance(subtype.type, [UntypedType()] * len(subtype.type.type_vars))
                 )
             if not proper_subtype:
                 # Nominal check currently ignores arg names

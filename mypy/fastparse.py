@@ -113,6 +113,7 @@ from mypy.types import (
     TypeOfAny,
     UnboundType,
     UnionType,
+    UntypedType,
 )
 from mypy.util import bytes_to_human_readable_repr, unnamed_function
 
@@ -892,9 +893,7 @@ class ASTConverter:
                         # PEP 484 disallows both type annotations and type comments
                         self.fail(message_registry.DUPLICATE_TYPE_SIGNATURES, lineno, n.col_offset)
                     arg_types = [
-                        a.type_annotation
-                        if a.type_annotation is not None
-                        else AnyType(TypeOfAny.unannotated)
+                        a.type_annotation if a.type_annotation is not None else UntypedType()
                         for a in args
                     ]
                 else:
@@ -948,10 +947,10 @@ class ASTConverter:
                 )
             else:
                 func_type = CallableType(
-                    [a if a is not None else AnyType(TypeOfAny.unannotated) for a in arg_types],
+                    [a if a is not None else UntypedType() for a in arg_types],
                     arg_kinds,
                     arg_names,
-                    return_type if return_type is not None else AnyType(TypeOfAny.unannotated),
+                    return_type if return_type is not None else UntypedType(),
                     _dummy_fallback,
                 )
 

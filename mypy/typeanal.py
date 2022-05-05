@@ -84,6 +84,7 @@ from mypy.types import (
     UninhabitedType,
     UnionType,
     UnpackType,
+    UntypedType,
     bad_type_type_item,
     callable_with_ellipsis,
     flatten_nested_unions,
@@ -577,6 +578,8 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 self.fail("Unpack[...] requires exactly one type argument", t)
                 return AnyType(TypeOfAny.from_error)
             return UnpackType(self.anal_type(t.args[0]), line=t.line, column=t.column)
+        elif fullname == "basedtyping.Untyped":
+            return UntypedType(TypeOfAny.explicit)
         return None
 
     def get_omitted_any(self, typ: Type, fullname: str | None = None) -> AnyType:
@@ -1547,9 +1550,9 @@ def get_omitted_any(
                     code=codes.TYPE_ARG,
                 )
 
-        any_type = AnyType(TypeOfAny.from_omitted_generics, line=typ.line, column=typ.column)
+        any_type = UntypedType(TypeOfAny.from_omitted_generics, line=typ.line, column=typ.column)
     else:
-        any_type = AnyType(
+        any_type = UntypedType(
             TypeOfAny.from_omitted_generics, line=orig_type.line, column=orig_type.column
         )
     return any_type
@@ -1869,7 +1872,7 @@ class HasExplicitAny(TypeQuery[bool]):
         super().__init__(any)
 
     def visit_any(self, t: AnyType) -> bool:
-        return t.type_of_any == TypeOfAny.explicit
+        return t.type_of_any == TypeOfAny.explicit and not isinstance(t, UntypedType)
 
     def visit_typeddict_type(self, t: TypedDictType) -> bool:
         # typeddict is checked during TypedDict declaration, so don't typecheck it here.

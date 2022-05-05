@@ -62,6 +62,7 @@ from mypy.types import (
     TypeVarTupleType,
     TypeVarType,
     UnionType,
+    UntypedType,
     get_proper_type,
     has_type_vars,
 )
@@ -208,6 +209,9 @@ def _analyze_member_access(
     typ = get_proper_type(typ)
     if isinstance(typ, Instance):
         return analyze_instance_member_access(name, typ, mx, override_info)
+    elif isinstance(typ, UntypedType):
+        # The base object isn't typed.
+        return UntypedType()
     elif isinstance(typ, AnyType):
         # The base object has dynamic type.
         return AnyType(TypeOfAny.from_another_any, source_any=typ)

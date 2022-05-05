@@ -25,16 +25,15 @@ from mypy.nodes import (
 from mypy.options import Options
 from mypy.types import (
     ANNOTATED_TYPE_NAMES,
-    AnyType,
     CallableArgument,
     EllipsisType,
     ProperType,
     RawExpressionType,
     Type,
     TypeList,
-    TypeOfAny,
     UnboundType,
     UnionType,
+    UntypedType,
 )
 
 
@@ -136,7 +135,7 @@ def expr_to_unanalyzed_type(
 
         # Go through the constructor args to get its name and type.
         name = None
-        default_type = AnyType(TypeOfAny.unannotated)
+        default_type = UntypedType()
         typ: Type = default_type
         for i, arg in enumerate(expr.args):
             if expr.arg_names[i] is not None:

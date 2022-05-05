@@ -149,6 +149,7 @@ from mypy.types import (
     TypeVarType,
     UninhabitedType,
     UnionType,
+    UntypedType,
     flatten_nested_unions,
     get_proper_type,
     get_proper_types,
@@ -502,21 +503,59 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         ):
             if callee_type.implicit:
                 self.msg.untyped_function_call(callee_type, e)
-            elif not callee_type.fully_typed:
-                # check for partially typed defs
-                if isinstance(callee_type.definition, FuncDef):
-                    if callee_type.definition.info:
-                        callee_module = callee_type.definition.info.module_name
+            elif has_untyped_type(callee_type):
+                # Get module of the function, to get its settings
+                #  This is fairly sus, and I'm sure there are cases where it gets
+                #   the wrong module. We should instead set it in CallableType
+                if isinstance(e.callee, MemberExpr):
+                    if e.callee.kind is None:
+                        # class, kinda hacky
+                        it = get_proper_type(self.chk._type_maps[0][e.callee.expr])
+                        if isinstance(it, CallableType):
+                            # callable class reference
+                            ret_type_ = get_proper_type(it.ret_type)
+                            if isinstance(ret_type_, TupleType):
+                                callee_module = ret_type_.partial_fallback.type.module_name
+                            elif isinstance(ret_type_, Instance):
+                                callee_module = ret_type_.type.module_name
+                            else:
+                                callee_module = None
+                        elif isinstance(it, TypeType):
+                            # type reference
+                            if isinstance(it.item, TupleType):
+                                callee_module = it.item.partial_fallback.type.module_name
+                            elif isinstance(it.item, Instance):
+                                callee_module = it.item.type.module_name
+                            elif isinstance(it.item, UnionType):
+                                # TODO: have to figure out which part of the union has the Untyped
+                                callee_module = self.chk.tree.name
+                            else:
+                                callee_module = None
+                        elif isinstance(it, Instance):
+                            # instance reference
+                            callee_module = it.type.module_name
+                        elif isinstance(it, UnionType):
+                            # TODO: have to figure out which part of the union has the Untyped
+                            callee_module = self.chk.tree.name
+                        else:
+                            callee_module = None
                     else:
-                        callee_module = callee_type.definition.fullname.rpartition(".")[0]
+                        # module
+                        assert isinstance(e.callee.expr, RefExpr)
+                        callee_module = e.callee.expr.fullname
                 elif isinstance(e.callee, NameExpr):
                     assert e.callee.fullname
-                    callee_module = e.callee.fullname.rpartition(".")[0]
+                    if "." not in e.callee.fullname:
+                        # local def
+                        callee_module = self.chk.tree.name
+                    else:
+                        callee_module = e.callee.fullname.rpartition(".")[0]
                 elif isinstance(e.callee, MemberExpr) and isinstance(e.callee.expr, NameExpr):
                     assert e.callee.expr.fullname
                     callee_module = e.callee.expr.fullname.rpartition(".")[0]
                 else:
                     # If this branch gets hit then look for a new way to get the module name
+                    # TODO: test time error
                     callee_module = None
                 if callee_module:
                     callee_options = self.chk.options.per_module(callee_module)
@@ -1771,7 +1810,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         else:
             # In dynamically typed functions use implicit 'Any' types for
             # type variables.
-            inferred_args = [AnyType(TypeOfAny.unannotated)] * len(callee_type.variables)
+            inferred_args = [UntypedType()] * len(callee_type.variables)
         return self.apply_inferred_arguments(callee_type, inferred_args, context)
 
     def infer_function_type_arguments_pass2(
@@ -2643,7 +2682,9 @@ class ExpressionChecker(ExpressionVisitor[Type]):
     def check_any_type_call(self, args: list[Expression], callee: Type) -> tuple[Type, Type]:
         self.infer_arg_types_in_empty_context(args)
         callee = get_proper_type(callee)
-        if isinstance(callee, AnyType):
+        if isinstance(callee, UntypedType):
+            return UntypedType(), UntypedType()
+        elif isinstance(callee, AnyType):
             return (
                 AnyType(TypeOfAny.from_another_any, source_any=callee),
                 AnyType(TypeOfAny.from_another_any, source_any=callee),
@@ -4374,7 +4415,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         """
 
         if not self.chk.in_checked_function():
-            return AnyType(TypeOfAny.unannotated)
+            return UntypedType()
         elif len(e.call.args) == 0:
             if not e.info:
                 # This has already been reported by the semantic analyzer.
@@ -4703,6 +4744,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             self.msg.disallowed_any_type(typ, node)
 
         if not self.chk.in_checked_function() or self.chk.current_node_deferred:
+            # this is more of a placeholder I think
             return AnyType(TypeOfAny.unannotated)
         else:
             return typ
@@ -5020,6 +5062,11 @@ def has_any_type(
     return t.accept(HasAnyType(ignore_in_type_obj, ignore_any_from_error=ignore_any_from_error))
 
 
+def has_untyped_type(t: Type, ignore_in_type_obj: bool = False) -> bool:
+    """Whether ``t`` contains an untyped type"""
+    return t.accept(HasUntypedType())
+
+
 class HasAnyType(types.TypeQuery[bool]):
     def __init__(self, ignore_in_type_obj: bool, ignore_any_from_error: bool = False) -> None:
         super().__init__(any)
@@ -5042,6 +5089,17 @@ class HasAnyType(types.TypeQuery[bool]):
         if self.ignore_in_type_obj and t.is_type_obj():
             return False
         return super().visit_callable_type(t)
+
+
+class HasUntypedType(types.TypeQuery[bool]):
+    def __init__(self) -> None:
+        super().__init__(any)
+
+    def visit_any(self, t: AnyType) -> bool:
+        return isinstance(t, UntypedType) or t.type_of_any in (
+            TypeOfAny.unannotated,
+            TypeOfAny.from_omitted_generics,
+        )
 
 
 def has_coroutine_decorator(t: Type) -> bool:
