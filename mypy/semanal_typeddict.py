@@ -41,6 +41,7 @@ from mypy.types import (
     TypedDictType,
     TypeOfAny,
     TypeVarLikeType,
+    UntypedType,
     replace_alias_tvars,
 )
 
@@ -300,7 +301,7 @@ class TypedDictAnalyzer:
                 fields.append(name)
                 statements.append(stmt)
                 if stmt.type is None:
-                    types.append(AnyType(TypeOfAny.unannotated))
+                    types.append(UntypedType())
                 else:
                     analyzed = self.api.anal_type(
                         stmt.type,

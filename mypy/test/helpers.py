@@ -19,7 +19,7 @@ import pytest
 
 import mypy.api as api
 import mypy.version
-from mypy import defaults
+from mypy import defaults, errorcodes
 from mypy.main import process_options
 from mypy.options import Options
 from mypy.test.config import test_data_prefix, test_temp_dir
@@ -372,6 +372,7 @@ def parse_options(
         flag_list: list[str] = flags.group(1).split()
         if based:
             flag_list.insert(0, "--default-return")
+            flag_list.extend(["--enable-error-code", "no-untyped-usage"])
         flag_list.append("--no-site-packages")  # the tests shouldn't need an installed Python
         if "--local-partial-types" in flag_list:
             flag_list.remove("--local-partial-types")
@@ -387,6 +388,7 @@ def parse_options(
         options = Options()
         if based:
             options.default_return = True
+            options.enabled_error_codes.add(errorcodes.NO_UNTYPED_USAGE)
         else:
             # TODO: Enable strict optional in test cases by default
             #  (requires *many* test case changes)

@@ -2,7 +2,16 @@ from __future__ import annotations
 
 from mypy.expandtype import expand_type
 from mypy.nodes import TypeInfo
-from mypy.types import AnyType, Instance, TupleType, Type, TypeOfAny, TypeVarId, has_type_vars
+from mypy.types import (
+    AnyType,
+    Instance,
+    TupleType,
+    Type,
+    TypeOfAny,
+    TypeVarId,
+    UntypedType,
+    has_type_vars,
+)
 
 
 def map_instance_to_supertype(instance: Instance, superclass: TypeInfo) -> Instance:
@@ -101,7 +110,7 @@ def map_instance_to_direct_supertypes(instance: Instance, supertype: TypeInfo) -
     else:
         # Relationship with the supertype not specified explicitly. Use dynamic
         # type arguments implicitly.
-        any_type = AnyType(TypeOfAny.unannotated)
+        any_type = UntypedType()
         return [Instance(supertype, [any_type] * len(supertype.type_vars))]
 
 
