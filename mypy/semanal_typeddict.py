@@ -33,7 +33,7 @@ from mypy.nodes import (
 from mypy.options import Options
 from mypy.semanal_shared import SemanticAnalyzerInterface
 from mypy.typeanal import check_for_explicit_any, has_any_from_unimported_type
-from mypy.types import TPDICT_NAMES, AnyType, RequiredType, Type, TypedDictType, TypeOfAny
+from mypy.types import TPDICT_NAMES, RequiredType, Type, TypedDictType, UntypedType
 
 TPDICT_CLASS_ERROR: Final = (
     "Invalid statement in TypedDict definition; " 'expected "field_name: field_type"'
@@ -179,7 +179,7 @@ class TypedDictAnalyzer:
                 # Append name and type in this case...
                 fields.append(name)
                 if stmt.type is None:
-                    types.append(AnyType(TypeOfAny.unannotated))
+                    types.append(UntypedType())
                 else:
                     analyzed = self.api.anal_type(stmt.type, allow_required=True)
                     if analyzed is None:

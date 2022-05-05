@@ -12,6 +12,7 @@ from mypy.types import (
     Type,
     TypeOfAny,
     TypeVarType,
+    UntypedType,
     get_proper_type,
 )
 from mypy.typevars import has_no_typevars
@@ -92,7 +93,7 @@ def calculate_return_type(expr: Expression) -> Optional[ProperType]:
             typ = expr.node.type
             if typ is None:
                 # No signature -> default to Any.
-                return AnyType(TypeOfAny.unannotated)
+                return UntypedType()
             # Explicit Any return?
             if isinstance(typ, CallableType):
                 return get_proper_type(typ.ret_type)

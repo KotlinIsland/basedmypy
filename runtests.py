@@ -59,15 +59,6 @@ cmds = {
         "-p",
         "mypy",
     ],
-    "self_strict": [
-        executable,
-        "-m",
-        "mypy",
-        "--config-file",
-        "mypy_self_check_strict.ini",
-        "-p",
-        "mypy",
-    ],
     # Lint
     "lint": ["flake8", "-j0"],
     "format-black": ["black", "."],
