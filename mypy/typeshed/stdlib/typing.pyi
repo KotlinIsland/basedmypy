@@ -12,8 +12,6 @@ if sys.version_info >= (3, 7):
 if sys.version_info >= (3, 9):
     from types import GenericAlias
 
-Any = object()
-
 class TypeVar:
     __name__: str
     __bound__: Type[Any] | None
@@ -47,6 +45,7 @@ _T = TypeVar("_T")
 
 def overload(func: _F) -> _F: ...
 
+Any: _SpecialForm = ...
 Union: _SpecialForm = ...
 Optional: _SpecialForm = ...
 Tuple: _SpecialForm = ...
