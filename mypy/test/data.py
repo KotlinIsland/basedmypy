@@ -607,7 +607,7 @@ def pytest_pycollect_makeitem(collector: Any, name: str, obj: object) -> Any | N
             # Non-None result means this obj is a test case.
             # The collect method of the returned DataSuiteCollector instance will be called later,
             # with self.obj being obj.
-            return DataSuiteCollector.from_parent(  # type: ignore[no-untyped-call]
+            return DataSuiteCollector.from_parent(  # type: ignore[unused-ignore, no-untyped-call]
                 parent=collector, name=name
             )
     return None
@@ -647,7 +647,7 @@ def split_test_cases(
                 )
             )
         platform = platform_flag[1:] if platform_flag else None
-        yield DataDrivenTestCase.from_parent(
+        yield DataDrivenTestCase.from_parent(  # type: ignore[unused-ignore, no-untyped-call]
             parent=parent,
             suite=suite,
             file=file,

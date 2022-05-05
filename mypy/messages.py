@@ -41,6 +41,7 @@ from mypy.nodes import (
     Expression,
     FuncDef,
     IndexExpr,
+    MemberExpr,
     MypyFile,
     NameExpr,
     ReturnStmt,
@@ -108,6 +109,7 @@ TYPES_FOR_UNIMPORTED_HINTS: Final = {
     "typing.TypeVar",
     "typing.Union",
     "typing.cast",
+    "basedtyping.Untyped",
 }
 
 
@@ -581,15 +583,38 @@ class MessageBuilder:
         )
         return AnyType(TypeOfAny.from_error)
 
-    def partially_typed_function_call(self, callee: CallableType, context: Context) -> Type:
-        name = callable_name(callee) or "(unknown)"
+    def partially_typed_function_call(self, callee: CallableType, context: CallExpr):
+        name = callable_name(callee) or (
+            context.callee.name
+            if isinstance(context.callee, (NameExpr, MemberExpr))
+            else "(anonymous)"
+        )
         self.fail(
             f"Call to incomplete function {name} in typed context",
             context,
             code=codes.NO_UNTYPED_CALL,
+            notes=[f'Type is "{callee}"'],
         )
-        self.note(f'Type is "{callee}"', context)
-        return AnyType(TypeOfAny.from_error)
+
+    def untyped_indexed_assignment(self, context: IndexExpr):
+        # don't care about CallExpr because they are handled by partially_typed_function_call
+        if isinstance(context.base, (NameExpr, MemberExpr)):
+            message = f'Untyped indexed-assignment to "{context.base.name}" in typed context'
+            self.fail(message, context, code=codes.NO_UNTYPED_USAGE)
+
+    def untyped_name_usage(self, name: str | Expression, context: Context):
+        if isinstance(name, NameExpr):
+            name = name.name
+        elif not isinstance(name, str):
+            self.fail(
+                "Usage of untyped name in typed context", context, code=codes.NO_UNTYPED_USAGE
+            )
+            return
+        self.fail(
+            f'Usage of untyped name "{name}" in typed context',
+            context,
+            code=codes.NO_UNTYPED_USAGE,
+        )
 
     def incompatible_argument(
         self,
@@ -1794,7 +1819,7 @@ class MessageBuilder:
     def disallowed_any_type(self, typ: Type, context: Context) -> None:
         typ = get_proper_type(typ)
         if isinstance(typ, AnyType):
-            message = 'Expression has type "Any"'
+            message = f'Expression has type "{typ.describe()}"'
         else:
             message = f'Expression type contains "Any" (has type {format_type(typ)})'
         self.fail(message, context, code=codes.NO_ANY_EXPR)
@@ -2468,7 +2493,7 @@ def format_type_inner(
     elif isinstance(typ, NoneType):
         return "None"
     elif isinstance(typ, AnyType):
-        return "Any"
+        return typ.describe()
     elif isinstance(typ, DeletedType):
         return "<deleted>"
     elif isinstance(typ, UninhabitedType):
