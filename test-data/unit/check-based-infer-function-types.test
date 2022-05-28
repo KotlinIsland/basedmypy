@@ -5,9 +5,11 @@
 
 def f(): ...
 reveal_type(f)  # N: Revealed type is "def () -> Untyped"
+f()  # E: Call to untyped function "f" in typed context  [no-untyped-call]
 
 def g(i=1, b=""): ...
 reveal_type(g)  # N: Revealed type is "def (i: int =, b: str =) -> Untyped"
+g()  # E: Call to untyped function "g" in typed context  [no-untyped-call]
 
 class A1:
     def __new__(cls): ...
@@ -285,6 +287,74 @@ def bar(a=1) -> None:
 
 bar()
 reveal_type(bar)  # N: Revealed type is "def (a: int =)"
+
+
+[case inferPropertyTypes]
+# flags: --no-infer-function-types --no-default-return --no-check-untyped-defs
+class A:
+    @property
+    def f(self) -> int: ...
+    @f.setter
+    def f(self, value): ...
+    @f.deleter
+    def f(self): ...
+
+a = A()
+reveal_type(a.f)  # N: Revealed type is "int"
+a.f = ""  # E: Incompatible types in assignment (expression has type "str", variable has type "int")  [assignment]
+del a.f
+
+class B:
+    @property
+    def f(self): ...  # E: Function is missing a return type annotation  [no-untyped-def] \
+                      # N: Use "-> None" if function does not return a value \
+                      # E: Type of decorated function contains type "Any" ("(B) -> Untyped")  [no-any-decorated]
+    @f.setter
+    def f(self, value):
+        1 + ""
+    @f.deleter
+    def f(self): ...
+
+b = B()
+reveal_type(b.f)  # E: Expression has type "Untyped"  [no-any-expr] \
+                  # N: Revealed type is "Untyped"
+b.f = 1  # E: Usage of untyped name "f" in typed context  [no-untyped-usage]
+del b.f
+[builtins fixtures/property.pyi]
+
+
+[case testPropertyNoAnnotation]
+class A:
+    @property
+    def p(self): ...  # E: Property is missing a type annotation  [no-untyped-def]
+    @p.setter
+    def p(self, value): ...
+    @p.deleter
+    def p(self): ...
+
+a = A()
+reveal_type(a.p)  # N: Revealed type is "None"
+a.p = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "None")  [assignment]
+del a.p
+[builtins fixtures/property.pyi]
+
+
+[case testPropertyInheritInfer-xfail]
+# Overloaded overrides aren't supported yet, so this is only the getter
+# xfail because infer function types has been disabled for now.
+class A:
+    @property
+    def p(self) -> int: ...
+class B(A):
+    @property
+    def p(self):
+        1 + ""  # E: Unsupported operand types for + ("int" and "str")  [operator]
+        return 1
+
+b = B()
+reveal_type(b.p)  # N: Revealed type is "int"
+c = b.p
+[builtins fixtures/property.pyi]
 
 
 [case testDefaultReturnOverride-xfail]
