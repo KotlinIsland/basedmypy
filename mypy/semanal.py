@@ -229,7 +229,7 @@ from mypy.typeanal import (
     remove_dups,
     type_constructors,
 )
-from mypy.typeops import function_type, get_type_vars, infer_impl_from_parts
+from mypy.typeops import callable_type, function_type, get_type_vars, infer_impl_from_parts
 from mypy.types import (
     ASSERT_TYPE_NAMES,
     FINAL_DECORATOR_NAMES,
@@ -1241,11 +1241,55 @@ class SemanticAnalyzer(
                 if len(item.decorators) >= 1:
                     node = item.decorators[0]
                     if isinstance(node, MemberExpr):
+                        none_func = callable_type(
+                            item.func, self.named_type("builtins.function"), NoneType()
+                        )
+                        none_func.implicit = False
+                        untyped_func = callable_type(
+                            item.func,
+                            self.named_type("builtins.function"),
+                            UntypedType(TypeOfAny.explicit),
+                        )
                         if node.name == "setter":
                             # The first item represents the entire property.
                             first_item.var.is_settable_property = True
                             # Get abstractness from the original definition.
                             item.func.abstract_status = first_item.func.abstract_status
+                            # infer types from the getter
+                            if isinstance(first_item.func.type, CallableType):
+                                if not item.func.type:
+                                    item.func.type = none_func
+                                    if len(item.func.type.arg_types) == 2:
+                                        item.func.type.arg_types[1] = first_item.func.type.ret_type
+                                elif isinstance(item.func.type, CallableType):
+                                    if len(item.func.type.arg_types) == 2 and is_unannotated_any(
+                                        item.func.type.arg_types[1]
+                                    ):
+                                        item.func.type.arg_types[1] = first_item.func.type.ret_type
+                                    if is_unannotated_any(item.func.type.ret_type):
+                                        item.func.type.ret_type = NoneType()
+                            else:
+                                # set some boring defaults
+                                if not item.func.type:
+                                    item.func.type = untyped_func
+                                    item.func.type.arg_types[1] = UntypedType(TypeOfAny.explicit)
+                                    item.func.type.implicit = True
+                                elif isinstance(item.func.type, CallableType):
+                                    if len(item.func.type.arg_types) == 2 and is_unannotated_any(
+                                        item.func.type.arg_types[1]
+                                    ):
+                                        item.func.type.arg_types[1] = NoneType()
+                                    if is_unannotated_any(item.func.type.ret_type):
+                                        item.func.type.ret_type = NoneType()
+                        if node.name == "deleter":
+                            # infer types from the getter
+                            if first_item.func.type:
+                                if not item.type:
+                                    item.func.type = none_func
+                            else:
+                                if not item.func.type:
+                                    item.func.type = untyped_func
+                                    item.func.type.implicit = True
                     else:
                         self.fail(
                             f"Only supported top decorator is @{first_item.func.name}.setter", item
@@ -6393,6 +6437,7 @@ def infer_fdef_types_from_defaults(defn: FuncDef | Decorator, self: SemanticAnal
                 self.named_type("builtins.function"),
                 line=defn.line,
                 column=defn.column,
+                implicit=not self.options.disallow_untyped_defs,
             )
     elif defn.type:
         assert isinstance(defn.type, CallableType)
