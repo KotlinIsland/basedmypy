@@ -367,6 +367,10 @@ def assert_type(typ: type, value: object) -> None:
 def parse_options(program_text: str, testcase: DataDrivenTestCase,
                   incremental_step: int, based: bool = False) -> Options:
     """Parse comments like '# flags: --foo' in a test case."""
+    import mypy.options
+    # This is extremely sus as it's a global option shared by all tests.
+    #  But it seems to be okay (I tested it)
+    mypy.options._based = based
     options = Options()
     flags = re.search('# flags: (.*)$', program_text, flags=re.MULTILINE)
     if incremental_step > 1:
@@ -379,6 +383,7 @@ def parse_options(program_text: str, testcase: DataDrivenTestCase,
         flag_list: List[str] = flags.group(1).split()
         if based:
             flag_list.insert(0, '--default-return')
+            flag_list.extend(['--hide-column-numbers'])
         else:
             flag_list.extend(["--disable-error-code", "no-untyped-usage"])
         flag_list.append('--no-site-packages')  # the tests shouldn't need an installed Python
@@ -393,6 +398,7 @@ def parse_options(program_text: str, testcase: DataDrivenTestCase,
         flag_list = []
         options = Options()
         if based:
+            options.show_column_numbers = False
             options.default_return = True
         else:
             # TODO: Enable strict optional in test cases by default

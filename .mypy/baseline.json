@@ -2503,7 +2503,7 @@
         "code": "no-any-expr",
         "column": 42,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 439,
+        "offset": 440,
         "target": "mypy.checker.TypeChecker.check_overlapping_overloads"
       },
       {
@@ -2650,7 +2650,7 @@
         "code": "no-any-expr",
         "column": 60,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 14,
+        "offset": 15,
         "target": "mypy.checker.TypeChecker.visit_func_def"
       },
       {
@@ -2664,7 +2664,7 @@
         "code": "no-any-expr",
         "column": 41,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 3,
+        "offset": 2,
         "target": "mypy.checker.TypeChecker.visit_func_def"
       },
       {
@@ -2811,7 +2811,7 @@
         "code": "no-any-expr",
         "column": 63,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 59,
+        "offset": 62,
         "target": "mypy.checker.TypeChecker.check_func_def"
       },
       {
@@ -3366,7 +3366,7 @@
         "code": "no-any-expr",
         "column": 35,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 88,
+        "offset": 98,
         "target": "mypy.checkexpr.ExpressionChecker.method_fullname"
       },
       {
@@ -16692,7 +16692,7 @@
         "code": "no-any-expr",
         "column": 41,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 644,
+        "offset": 645,
         "target": "mypy.semanal.SemanticAnalyzer.analyze_func_def"
       },
       {
@@ -16783,28 +16783,28 @@
         "code": "no-any-expr",
         "column": 64,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 138,
+        "offset": 147,
         "target": "mypy.semanal.SemanticAnalyzer.analyze_property_with_multi_part_definition"
       },
       {
         "code": "no-any-expr",
         "column": 64,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 7,
+        "offset": 5,
         "target": "mypy.semanal.SemanticAnalyzer.analyze_property_with_multi_part_definition"
       },
       {
         "code": "no-any-expr",
         "column": 64,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 17,
+        "offset": 14,
         "target": "mypy.semanal.SemanticAnalyzer.analyze_property_with_multi_part_definition"
       },
       {
         "code": "no-any-expr",
         "column": 31,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 72,
+        "offset": 67,
         "target": "mypy.semanal.SemanticAnalyzer.check_classvar_in_signature"
       },
       {
@@ -16846,7 +16846,7 @@
         "code": "truthy-bool",
         "column": 15,
         "message": "\"call\" has type \"CallExpr\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 934,
+        "offset": 940,
         "target": "mypy.semanal.SemanticAnalyzer.extract_typevarlike_name"
       },
       {
@@ -23850,14 +23850,14 @@
         "code": "no-any-expr",
         "column": 31,
         "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 67,
+        "offset": 71,
         "target": "mypy.test.helpers.parse_options"
       },
       {
         "code": "no-any-expr",
         "column": 12,
         "message": "Expression type contains \"Any\" (has type \"set[Any (from unimported type)]\")",
-        "offset": 22,
+        "offset": 24,
         "target": "mypy.test.helpers.parse_options"
       },
       {
@@ -23954,14 +23954,14 @@
         "code": "no-any-expr",
         "column": 33,
         "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 136,
+        "offset": 142,
         "target": "mypy.test.testcheck.TypeCheckSuite.run_case"
       },
       {
         "code": "no-any-expr",
         "column": 11,
         "message": "Expression type contains \"Any\" (has type \"Literal[False] | Untyped\")",
-        "offset": 105,
+        "offset": 106,
         "target": "mypy.test.testcheck.TypeCheckSuite.run_case_once"
       },
       {
@@ -24177,7 +24177,7 @@
         "code": "no-any-expr",
         "column": 19,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 92,
+        "offset": 90,
         "target": "mypy.test.testfinegrained.FineGrainedSuite.run_check"
       },
       {
@@ -24802,7 +24802,7 @@
         "code": "redundant-expr",
         "column": 15,
         "message": "Left operand of \"and\" is always true",
-        "offset": 213,
+        "offset": 211,
         "target": "mypy.test.testsemanal.TypeInfoMap.__str__"
       }
     ],
@@ -25674,7 +25674,7 @@
         "code": "no-any-expr",
         "column": 29,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 83,
+        "offset": 84,
         "target": "mypy.typeops.type_object_type_from_function"
       },
       {
@@ -25842,7 +25842,7 @@
         "code": "no-any-expr",
         "column": 53,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 62,
+        "offset": 74,
         "target": "mypy.typeops.infer_impl_from_parts"
       },
       {
