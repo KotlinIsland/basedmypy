@@ -1059,7 +1059,9 @@ class SemanticAnalyzer(
                 else:
                     non_overload_indexes.append(i)
         if self.options.infer_function_types and impl and not non_overload_indexes:
-            infer_impl_from_parts(impl, types, self.named_type("builtins.function"))
+            infer_impl_from_parts(
+                impl, types, self.named_type("builtins.function"), self.named_type
+            )
         return types, impl, non_overload_indexes
 
     def handle_missing_overload_decorators(

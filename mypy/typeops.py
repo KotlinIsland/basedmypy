@@ -7,7 +7,20 @@ NOTE: These must not be accessed from mypy.nodes or mypy.types to avoid import
 import itertools
 import sys
 from collections import defaultdict
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Set, Tuple, TypeVar, Union, cast
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from typing_extensions import Type as TypingType
 
@@ -988,7 +1001,12 @@ def separate_union_literals(t: UnionType) -> Tuple[Sequence[LiteralType], Sequen
     return literal_items, union_items
 
 
-def infer_impl_from_parts(impl: OverloadPart, types: List[CallableType], fallback: Instance):
+def infer_impl_from_parts(
+    impl: OverloadPart,
+    types: List[CallableType],
+    fallback: Instance,
+    named_type: Callable[[str, List[Type]], Type],
+):
     impl_func = impl if isinstance(impl, FuncDef) else impl.func
     # infer the types of the impl from the overload types
     arg_types: Dict[str, List[Type]] = defaultdict(list)
@@ -999,8 +1017,13 @@ def infer_impl_from_parts(impl: OverloadPart, types: List[CallableType], fallbac
                 if arg_name and arg_name in impl_func.arg_names:
                     if arg_type not in arg_types[arg_name]:
                         arg_types[arg_name].append(arg_type)
-        if tp.ret_type not in ret_types:
-            ret_types.append(tp.ret_type)
+        t = get_proper_type(tp.ret_type)
+        if isinstance(t, Instance) and t.type.fullname == "typing.Coroutine":
+            ret_type = t.args[2]
+        else:
+            ret_type = tp.ret_type
+        if ret_type not in ret_types:
+            ret_types.append(ret_type)
     arg_types2 = {name: UnionType.make_union(it) for name, it in arg_types.items()}
     res_arg_types = [
         arg_types2[arg_name]
@@ -1009,6 +1032,12 @@ def infer_impl_from_parts(impl: OverloadPart, types: List[CallableType], fallbac
         for arg_name, arg_kind in zip(impl_func.arg_names, impl_func.arg_kinds)
     ]
     ret_type = UnionType.make_union(ret_types)
+
+    if impl_func.is_coroutine:
+        # if the impl is a coroutine, then assume the parts are also, if not need annotation
+        any_type = AnyType(TypeOfAny.special_form)
+        ret_type = named_type("typing.Coroutine", [any_type, any_type, ret_type])
+
     # use unanalyzed_type because we would have already tried to infer from defaults
     if impl_func.unanalyzed_type:
         assert isinstance(impl_func.unanalyzed_type, CallableType)
