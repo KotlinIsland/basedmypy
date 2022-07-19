@@ -1,6 +1,8 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Enhancements
+- Unionize at type joins instead of common ancestor
 
 ## [1.4.0]
 ### Added

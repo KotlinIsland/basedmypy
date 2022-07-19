@@ -4512,7 +4512,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             return
 
         exc_type = self.named_type("builtins.BaseException")
-        expected_type_items = [exc_type, TypeType(exc_type)]
+        expected_type_items: list[Type] = [exc_type, TypeType(exc_type)]
         if optional:
             # This is used for `x` part in a case like `raise e from x`,
             # where we allow `raise e from None`.
