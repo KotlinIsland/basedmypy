@@ -18,6 +18,7 @@ from mypy.subtypes import (
 from mypy.nodes import INVARIANT, COVARIANT, CONTRAVARIANT
 import mypy.typeops
 from mypy.state import state
+import mypy.options
 
 
 class InstanceJoiner:
@@ -119,34 +120,35 @@ def join_simple(declaration: Optional[Type], s: Type, t: Type) -> ProperType:
     declaration = get_proper_type(declaration)
     s = get_proper_type(s)
     t = get_proper_type(t)
+    value = _union_join(s, t)
+    if not value:
+        if (s.can_be_true, s.can_be_false) != (t.can_be_true, t.can_be_false):
+            # if types are restricted in different ways, use the more general versions
+            s = mypy.typeops.true_or_false(s)
+            t = mypy.typeops.true_or_false(t)
 
-    if (s.can_be_true, s.can_be_false) != (t.can_be_true, t.can_be_false):
-        # if types are restricted in different ways, use the more general versions
-        s = mypy.typeops.true_or_false(s)
-        t = mypy.typeops.true_or_false(t)
+        if isinstance(s, AnyType):
+            return s
 
-    if isinstance(s, AnyType):
-        return s
+        if isinstance(s, ErasedType):
+            return t
 
-    if isinstance(s, ErasedType):
-        return t
+        if is_proper_subtype(s, t):
+            return t
 
-    if is_proper_subtype(s, t):
-        return t
+        if is_proper_subtype(t, s):
+            return s
 
-    if is_proper_subtype(t, s):
-        return s
+        if isinstance(declaration, UnionType):
+            return mypy.typeops.make_simplified_union([s, t])
 
-    if isinstance(declaration, UnionType):
-        return mypy.typeops.make_simplified_union([s, t])
+        if isinstance(s, NoneType) and not isinstance(t, NoneType):
+            s, t = t, s
 
-    if isinstance(s, NoneType) and not isinstance(t, NoneType):
-        s, t = t, s
+        if isinstance(s, UninhabitedType) and not isinstance(t, UninhabitedType):
+            s, t = t, s
 
-    if isinstance(s, UninhabitedType) and not isinstance(t, UninhabitedType):
-        s, t = t, s
-
-    value = t.accept(TypeJoinVisitor(s))
+        value = t.accept(TypeJoinVisitor(s))
     if declaration is None or is_subtype(value, declaration):
         return value
 
@@ -163,17 +165,33 @@ def trivial_join(s: Type, t: Type) -> ProperType:
         return object_or_any_from_type(get_proper_type(t))
 
 
+def _union_join(l: ProperType, r: ProperType) -> Optional[ProperType]:
+    if (
+        isinstance(l, PlaceholderType)
+        or isinstance(r, PlaceholderType)
+        or not mypy.options._based
+    ):
+        return None
+    return r if is_proper_subtype(l, r) else mypy.typeops.make_simplified_union([l, r])
+
+
 def join_types(s: Type, t: Type, instance_joiner: Optional[InstanceJoiner] = None) -> ProperType:
     """Return the least upper bound of s and t.
 
     For example, the join of 'int' and 'object' is 'object'.
     """
+
     if mypy.typeops.is_recursive_pair(s, t):
         # This case can trigger an infinite recursion, general support for this will be
         # tricky so we use a trivial join (like for protocols).
         return trivial_join(s, t)
     s = get_proper_type(s)
     t = get_proper_type(t)
+
+    r = _union_join(s, t)
+    if r:
+        return r
+    del r
 
     if (s.can_be_true, s.can_be_false) != (t.can_be_true, t.can_be_false):
         # if types are restricted in different ways, use the more general versions

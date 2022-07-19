@@ -1120,6 +1120,7 @@ def load_baseline(options: Options, errors: Errors, stdout: TextIO) -> None:
         # if format hasn't been found yet, it can only be 1.2
         baseline_format = "1.2"
     if not options.write_baseline and options.baseline_format == "default":
+        assert isinstance(baseline_format, str)
         options.baseline_format = baseline_format
     # set default baseline format
     if options.write_baseline and options.baseline_format == "default":
@@ -1141,6 +1142,7 @@ def load_baseline(options: Options, errors: Errors, stdout: TextIO) -> None:
         baseline_format_error(options.baseline_format, stdout, options)
 
     if baseline_errors and targets:
+        assert isinstance(baseline_format, str)
         errors.initialize_baseline(
             cast(Dict[str, List[UnknownBaselineError]], baseline_errors),
             cast(List[str], targets),
