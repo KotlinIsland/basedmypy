@@ -3726,7 +3726,7 @@
       {
         "code": "no-any-expr",
         "column": 20,
-        "message": "Expression type contains \"Any\" (has type \"Literal[True] | str | Any | None\")",
+        "message": "Expression type contains \"Any\" (has type \"True | str | Any | None\")",
         "offset": 1,
         "target": "mypy.checkstrformat.StringFormatterChecker.check_specs_in_format_call"
       },
@@ -5156,7 +5156,7 @@
       {
         "code": "no-any-expr",
         "column": 24,
-        "message": "Expression type contains \"Any\" (has type \"Literal[False] | Any\")",
+        "message": "Expression type contains \"Any\" (has type \"False | Any\")",
         "offset": 0,
         "target": "mypy.config_parser.destructure_overrides"
       },
@@ -11546,7 +11546,7 @@
         "code": "no-any-expr",
         "column": 30,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 329,
+        "offset": 330,
         "target": "mypy.join.TypeJoinVisitor.visit_callable_type"
       },
       {
@@ -13460,7 +13460,7 @@
         "code": "no-any-expr",
         "column": 30,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 272,
+        "offset": 277,
         "target": "mypy.messages.format_type_inner"
       },
       {
@@ -16472,7 +16472,7 @@
       {
         "code": "no-any-expr",
         "column": 20,
-        "message": "Expression type contains \"Any\" (has type \"Literal[True] | Any\")",
+        "message": "Expression type contains \"Any\" (has type \"True | Any\")",
         "offset": 2,
         "target": "mypy.semanal.SemanticAnalyzer._get_node_for_class_scoped_import"
       },
@@ -23263,7 +23263,7 @@
       {
         "code": "no-any-expr",
         "column": 11,
-        "message": "Expression type contains \"Any\" (has type \"Literal[False] | Untyped\")",
+        "message": "Expression type contains \"Any\" (has type \"False | Untyped\")",
         "offset": 107,
         "target": "mypy.test.testcheck.TypeCheckSuite.run_case_once"
       },
@@ -26694,7 +26694,7 @@
         "code": "no-any-expr",
         "column": 23,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 95,
+        "offset": 97,
         "target": "mypy.types.strip_type"
       },
       {
@@ -32464,7 +32464,7 @@
       {
         "code": "no-any-expr",
         "column": 7,
-        "message": "Expression type contains \"Any\" (has type \"Literal[False] | Untyped\")",
+        "message": "Expression type contains \"Any\" (has type \"False | Untyped\")",
         "offset": 59,
         "target": "mypyc.test.testutil.assert_test_output"
       },

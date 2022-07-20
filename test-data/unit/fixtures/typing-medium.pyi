@@ -52,7 +52,7 @@ class Generator(Iterator[T], Generic[T, U, V]):
     def __iter__(self) -> 'Generator[T, U, V]': pass
 
 class Sequence(Iterable[T_co]):
-    def __getitem__(self, n: Any) -> T_co: pass
+    def __getitem__(self, n: Any) -> T_co: pass  # type: ignore[no-any-explicit, unused-ignore]
 
 class Mapping(Iterable[T], Generic[T, T_co]):
     def __getitem__(self, key: T) -> T_co: pass
@@ -66,6 +66,6 @@ class SupportsFloat(Protocol):
 class ContextManager(Generic[T]):
     def __enter__(self) -> T: pass
     # Use Any because not all the precise types are in the fixtures.
-    def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> Any: pass
+    def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> Any: pass  # type: ignore[no-any-explicit, unused-ignore]
 
 TYPE_CHECKING = 1
