@@ -27,11 +27,12 @@ from mypy.state import state
 from mypy.subtypes import is_more_precise, is_proper_subtype, is_same_type, is_subtype
 from mypy.test.helpers import Suite, assert_equal, assert_type, skip
 from mypy.test.typefixture import InterfaceTypeFixture, TypeFixture
-from mypy.typeops import false_only, make_simplified_union, true_only
+from mypy.typeops import false_only, make_simplified_intersection, make_simplified_union, true_only
 from mypy.types import (
     AnyType,
     CallableType,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     Overloaded,
@@ -345,6 +346,20 @@ class TypeOpsSuite(Suite):
         assert is_proper_subtype(UnionType([fx.a, fx.b]), UnionType([fx.a, fx.b, fx.c]))
         assert not is_proper_subtype(UnionType([fx.a, fx.b]), UnionType([fx.b, fx.c]))
 
+        assert is_proper_subtype(IntersectionType([fx.a, fx.b]), fx.a)
+        assert not is_proper_subtype(fx.a, IntersectionType([fx.a, fx.b]))
+        assert not is_proper_subtype(
+            IntersectionType([fx.a, fx.b]), IntersectionType([fx.a, fx.b, fx.c])
+        )
+        assert is_proper_subtype(IntersectionType([fx.a, fx.b]), IntersectionType([fx.a, fx.b]))
+        assert is_proper_subtype(
+            IntersectionType([fx.a, fx.b, fx.c]), IntersectionType([fx.a, fx.b])
+        )
+        assert not is_proper_subtype(
+            IntersectionType([fx.a, fx.b]), IntersectionType([fx.b, fx.c])
+        )
+        assert is_proper_subtype(IntersectionType([fx.a, fx.b]), IntersectionType([fx.b, fx.a]))
+
     def test_is_proper_subtype_covariance(self) -> None:
         fx_co = self.fx_co
 
@@ -619,6 +634,29 @@ class TypeOpsSuite(Suite):
     def assert_simplified_union(self, original: list[Type], union: Type) -> None:
         assert_equal(make_simplified_union(original), union)
         assert_equal(make_simplified_union(list(reversed(original))), union)
+
+    def test_simplified_intersection(self) -> None:
+        fx = self.fx
+
+        self.assert_simplified_intersection([fx.a, fx.a], fx.a)
+        self.assert_simplified_intersection([fx.a, fx.b], fx.b)
+        self.assert_simplified_intersection([fx.a, fx.d], IntersectionType([fx.a, fx.d]))
+        self.assert_simplified_intersection([fx.a, fx.uninhabited], fx.uninhabited)
+        self.assert_simplified_intersection([fx.ga, fx.gs2a], fx.gs2a)
+        self.assert_simplified_intersection([fx.ga, fx.gsab], IntersectionType([fx.ga, fx.gsab]))
+        self.assert_simplified_intersection([fx.ga, fx.gsba], fx.gsba)
+        self.assert_simplified_intersection(
+            [fx.a, IntersectionType([fx.d])], IntersectionType([fx.a, fx.d])
+        )
+        self.assert_simplified_intersection([fx.a, IntersectionType([fx.a])], fx.a)
+        self.assert_simplified_intersection(
+            [fx.b, IntersectionType([fx.c, IntersectionType([fx.d])])],
+            IntersectionType([fx.b, fx.c, fx.d]),
+        )
+
+    def assert_simplified_intersection(self, original: list[Type], intersection: Type) -> None:
+        assert_equal(make_simplified_intersection(original), intersection)
+        assert_equal(make_simplified_intersection(list(reversed(original))), intersection)
 
     # Helpers
 

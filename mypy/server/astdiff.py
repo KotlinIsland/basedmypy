@@ -80,6 +80,7 @@ from mypy.types import (
     DeletedType,
     ErasedType,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     Overloaded,
@@ -461,6 +462,13 @@ class SnapshotTypeVisitor(TypeVisitor[SnapshotItem]):
         items = {snapshot_type(item) for item in typ.items}
         normalized = tuple(sorted(items))
         return ("UnionType", normalized)
+
+    def visit_intersection_type(self, typ: IntersectionType) -> SnapshotItem:
+        # Sort and remove duplicates so that we can use equality to test for
+        # equivalent intersection type snapshots.
+        items = {snapshot_type(item) for item in typ.items}
+        normalized = tuple(sorted(items))
+        return "IntersectionType", normalized
 
     def visit_overloaded(self, typ: Overloaded) -> SnapshotItem:
         return ("Overloaded", snapshot_types(typ.items))

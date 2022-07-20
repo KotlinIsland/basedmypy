@@ -66,7 +66,7 @@ We can also use ``assert`` to narrow types in the same context:
   .. code-block:: python
 
      def function(arg: int):
-         # error: Subclass of "int" and "str" cannot exist:
+         # error: Intersection "int & str" cannot exist:
          # would have incompatible method signatures
          assert isinstance(arg, str)
 

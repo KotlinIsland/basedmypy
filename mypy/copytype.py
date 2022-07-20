@@ -8,6 +8,7 @@ from mypy.types import (
     DeletedType,
     ErasedType,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     Overloaded,
@@ -118,6 +119,9 @@ class TypeShallowCopier(TypeVisitor[ProperType]):
 
     def visit_union_type(self, t: UnionType) -> ProperType:
         return self.copy_common(t, UnionType(t.items))
+
+    def visit_intersection_type(self, t: IntersectionType) -> ProperType:
+        return self.copy_common(t, IntersectionType(t.items))
 
     def visit_overloaded(self, t: Overloaded) -> ProperType:
         return self.copy_common(t, Overloaded(items=t.items))

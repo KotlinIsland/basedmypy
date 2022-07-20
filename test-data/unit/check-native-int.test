@@ -148,8 +148,8 @@ def meet(c1: Callable[[T], None], c2: Callable[[T], None]) -> T:
 def ff(x: float) -> None: pass
 def fi32(x: i32) -> None: pass
 
-reveal_type(meet(ff, fi32))  # N: Revealed type is "<nothing>"
-reveal_type(meet(fi32, ff))  # N: Revealed type is "<nothing>"
+reveal_type(meet(ff, fi32))  # N: Revealed type is "builtins.float & mypy_extensions.i32"
+reveal_type(meet(fi32, ff))  # N: Revealed type is "mypy_extensions.i32 & builtins.float"
 [builtins fixtures/dict.pyi]
 
 [case testNativeIntForLoopRange]

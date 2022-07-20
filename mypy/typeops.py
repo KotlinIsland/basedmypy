@@ -37,6 +37,7 @@ from mypy.types import (
     FormalArgument,
     FunctionLike,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     Overloaded,
@@ -552,6 +553,99 @@ def _remove_redundant_union_items(items: list[Type], keep_erased: bool) -> list[
                 tj, item, keep_erased_types=keep_erased, ignore_promotions=True
             ):
                 # We found a redundant item in the union.
+                removed.add(j)
+                cbt = cbt or tj.can_be_true
+                cbf = cbf or tj.can_be_false
+        # if deleted subtypes had more general truthiness, use that
+        if not item.can_be_true and cbt:
+            items[i] = true_or_false(item)
+        elif not item.can_be_false and cbf:
+            items[i] = true_or_false(item)
+
+    return [items[i] for i in range(len(items)) if i not in removed]
+
+
+def make_simplified_intersection(
+    items: Sequence[Type], line: int = -1, column: int = -1, *, keep_erased: bool = False
+) -> ProperType:
+    """Build intersection type with redundant intersection items removed.
+
+    If only a single item remains, this may return a non-intersection type.
+
+    Examples:
+
+    * [int, str] -> Intersection[int, str]
+    * [int, object] -> int
+    * [int, int] -> int
+    * [int, Any] -> Intersection[int, Any] (Any types are not simplified away!)
+    * [Any, Any] -> Any
+    * [int, Intersection[bytes, str]] -> Intersection[int, bytes, str]
+
+    Note: This must NOT be used during semantic analysis, since TypeInfos may not
+          be fully initialized.
+
+    The keep_erased flag is used for type inference against intersection types
+    containing type variables. If set to True, keep all ErasedType items.
+    """
+    # Step 1: expand all nested intersections
+    items = flatten_nested_unions(items, type_type=IntersectionType)
+
+    # Step 2: fast path for single item
+    if len(items) == 1:
+        return get_proper_type(items[0])
+
+    # Step 3: remove redundant intersections
+    simplified_set: Sequence[Type] = _remove_redundant_intersection_items(items, keep_erased)
+
+    # Step 4: If more than one literal exists in the intersection, it's never
+    if sum(isinstance(get_proper_type(item), LiteralType) for item in simplified_set) > 1:
+        return UninhabitedType(line=line, column=column)
+
+    result = get_proper_type(IntersectionType.make_intersection(simplified_set, line, column))
+
+    # Step 5: At last, we erase any (inconsistent) extra attributes on instances.
+
+    # Initialize with None instead of an empty set as a micro-optimization. The set
+    # is needed very rarely, so we try to avoid constructing it.
+    extra_attrs_set: set[ExtraAttrs] | None = None
+    for item in items:
+        instance = try_getting_instance_fallback(item)
+        if instance and instance.extra_attrs:
+            if extra_attrs_set is None:
+                extra_attrs_set = {instance.extra_attrs}
+            else:
+                extra_attrs_set.add(instance.extra_attrs)
+
+    if extra_attrs_set is not None and len(extra_attrs_set) > 1:
+        fallback = try_getting_instance_fallback(result)
+        if fallback:
+            fallback.extra_attrs = None
+
+    return result
+
+
+def _remove_redundant_intersection_items(items: list[Type], keep_erased: bool) -> list[Type]:
+    from mypy.subtypes import is_proper_subtype
+
+    removed: set[int] = set()
+
+    for i, item in enumerate(items):
+        if i in removed:
+            continue
+
+        # Keep track of the truthiness info for deleted subtypes which can be relevant
+        cbt = cbf = False
+        for j, tj in enumerate(items):
+            if (
+                i == j
+                # avoid further checks if this item was already marked redundant.
+                or j in removed
+            ):
+                continue
+            if is_proper_subtype(
+                item, tj, keep_erased_types=keep_erased, ignore_promotions=True
+            ):
+                # We found a redundant item in the Intersection.
                 removed.add(j)
                 cbt = cbt or tj.can_be_true
                 cbf = cbf or tj.can_be_false

@@ -432,8 +432,8 @@ def f(x: A) -> None:
         x.y
 [builtins fixtures/isinstancelist.pyi]
 [out]
-<m.<subclass of "A" and "B">.y> -> m.f
-<m.A> -> <m.f>, m.A, m.f
+<m.A.__await__> -> <m.A>
+<m.A> -> <m.f>, m.A, m.f, typing.Awaitable
 <m.B> -> m.B, m.f
 
 [case testAttributeWithClassType1]
