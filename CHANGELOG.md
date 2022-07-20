@@ -1,6 +1,8 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Added
+- `Intersection` type
 
 ## [1.7.0]
 ### Added

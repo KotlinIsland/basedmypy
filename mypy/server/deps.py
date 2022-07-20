@@ -150,6 +150,7 @@ from mypy.types import (
     ErasedType,
     FunctionLike,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     Overloaded,
@@ -1083,6 +1084,12 @@ class TypeTriggersVisitor(TypeVisitor[List[str]]):
         return []
 
     def visit_union_type(self, typ: UnionType) -> list[str]:
+        triggers = []
+        for item in typ.items:
+            triggers.extend(self.get_type_triggers(item))
+        return triggers
+
+    def visit_intersection_type(self, typ: IntersectionType) -> List[str]:
         triggers = []
         for item in typ.items:
             triggers.extend(self.get_type_triggers(item))

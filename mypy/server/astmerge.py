@@ -87,6 +87,7 @@ from mypy.types import (
     EllipsisType,
     ErasedType,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     Overloaded,
@@ -523,6 +524,10 @@ class TypeReplaceVisitor(SyntheticTypeVisitor[None]):
         pass
 
     def visit_union_type(self, typ: UnionType) -> None:
+        for item in typ.items:
+            item.accept(self)
+
+    def visit_intersection_type(self, typ: IntersectionType):
         for item in typ.items:
             item.accept(self)
 

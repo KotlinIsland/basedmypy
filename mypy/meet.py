@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Callable
 
+import mypy.options
 from mypy import join
 from mypy.erasetype import erase_type
 from mypy.maptype import map_instance_to_supertype
@@ -13,7 +14,12 @@ from mypy.subtypes import (
     is_same_type,
     is_subtype,
 )
-from mypy.typeops import is_recursive_pair, make_simplified_union, tuple_fallback
+from mypy.typeops import (
+    is_recursive_pair,
+    make_simplified_intersection,
+    make_simplified_union,
+    tuple_fallback,
+)
 from mypy.types import (
     MYPYC_NATIVE_INT_NAMES,
     AnyType,
@@ -22,6 +28,7 @@ from mypy.types import (
     ErasedType,
     FunctionLike,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     Overloaded,
@@ -64,8 +71,12 @@ def trivial_meet(s: Type, t: Type) -> ProperType:
             return NoneType()
 
 
-def meet_types(s: Type, t: Type) -> ProperType:
+def meet_types(s: Type, t: Type, intersect=False) -> ProperType:
     """Return the greatest lower bound of two types."""
+    if mypy.options._based and intersect:
+        # TODO: always intersect at meets
+        return make_simplified_intersection([s, t])
+
     if is_recursive_pair(s, t):
         # This case can trigger an infinite recursion, general support for this will be
         # tricky, so we use a trivial meet (like for protocols).
@@ -139,13 +150,14 @@ def narrow_declared_type(declared: Type, narrowed: Type) -> Type:
     if is_enum_overlapping_union(declared, narrowed):
         return original_narrowed
     elif not is_overlapping_types(declared, narrowed, prohibit_none_typevar_overlap=True):
-        if state.strict_optional:
-            return UninhabitedType()
-        else:
-            return NoneType()
+        return IntersectionType([declared, narrowed])
     elif isinstance(narrowed, UnionType):
         return make_simplified_union(
             [narrow_declared_type(declared, x) for x in narrowed.relevant_items()]
+        )
+    elif isinstance(narrowed, IntersectionType):
+        return make_simplified_intersection(
+            [narrow_declared_type(declared, x) for x in narrowed.items]
         )
     elif isinstance(narrowed, AnyType):
         return original_narrowed
@@ -219,7 +231,7 @@ def get_possible_variants(typ: Type) -> list[Type]:
             return [typ.upper_bound]
     elif isinstance(typ, ParamSpecType):
         return [typ.upper_bound]
-    elif isinstance(typ, UnionType):
+    elif isinstance(typ, (UnionType, IntersectionType)):
         return list(typ.items)
     elif isinstance(typ, Overloaded):
         # Note: doing 'return typ.items()' makes mypy
@@ -650,6 +662,11 @@ class TypeMeetVisitor(TypeVisitor[ProperType]):
         else:
             meets = [meet_types(x, self.s) for x in t.items]
         return make_simplified_union(meets)
+
+    def visit_intersection_type(self, t: IntersectionType) -> ProperType:
+        raise NotImplementedError(
+            "This message should never appear, if you have encountered it, please raise an issue. Context: TypeMeetVisitor.visit_intersection_type"
+        )
 
     def visit_none_type(self, t: NoneType) -> ProperType:
         if state.strict_optional:

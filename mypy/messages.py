@@ -70,6 +70,7 @@ from mypy.types import (
     DeletedType,
     FunctionLike,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     Overloaded,
@@ -1952,7 +1953,10 @@ class MessageBuilder:
     def impossible_intersection(
         self, formatted_base_class_list: str, reason: str, context: Context
     ) -> None:
-        template = "Subclass of {} cannot exist: would have {}"
+        if mypy.options._based:
+            template = "Intersection of {} cannot exist: would have {}"
+        else:
+            template = "Subclass of {} cannot exist: would have {}"
         self.fail(
             template.format(formatted_base_class_list, reason), context, code=codes.UNREACHABLE
         )
@@ -2487,6 +2491,8 @@ def format_type_inner(
                 s = f"Union[{format_list(typ.items)}]"
 
             return s
+    elif isinstance(typ, IntersectionType):
+        return " & ".join((format(typ) for typ in typ.items))
     elif isinstance(typ, NoneType):
         return "None"
     elif isinstance(typ, AnyType):

@@ -5,3 +5,4 @@
 # will slow down tests.
 
 Untyped = 0
+Intersection = 1

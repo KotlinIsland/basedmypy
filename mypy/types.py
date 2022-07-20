@@ -2258,6 +2258,29 @@ class Overloaded(FunctionLike):
         return Overloaded([CallableType.deserialize(t) for t in data["items"]])
 
 
+class NamedOverloaded(Overloaded):
+    slots = ("_name",)
+
+    def __init__(self, items: list[CallableType], name: str):
+        self._name = name
+        super().__init__(items)
+
+    def get_name(self) -> str:
+        return self._name
+
+    def serialize(self) -> JsonDict:
+        return {
+            ".class": "NamedOverloaded",
+            "items": [t.serialize() for t in self.items],
+            "_name": self._name,
+        }
+
+    @classmethod
+    def deserialize(cls, data: JsonDict) -> NamedOverloaded:
+        assert data[".class"] == "NamedOverloaded"
+        return NamedOverloaded([CallableType.deserialize(t) for t in data["items"]], data["_name"])
+
+
 class TupleType(ProperType):
     """The tuple type Tuple[T1, ..., Tn] (at least one type argument).
 
@@ -2763,6 +2786,67 @@ class UnionType(ProperType):
         return UnionType([deserialize_type(t) for t in data["items"]])
 
 
+class IntersectionType(ProperType):
+    """Experimental intersection type"""
+
+    __slots__ = ("items", "is_evaluated", "uses_based_syntax")
+
+    def __init__(
+        self,
+        items: Sequence[Type],
+        line: int = -1,
+        column: int = -1,
+        is_evaluated=True,
+        uses_based_syntax=False,
+    ):
+        super().__init__(line, column)
+        self.items = flatten_nested_unions(items, type_type=IntersectionType)
+        self.can_be_true = any(item.can_be_true for item in items)
+        self.can_be_false = any(item.can_be_false for item in items)
+        self.is_evaluated = is_evaluated
+        self.uses_based_syntax = uses_based_syntax
+
+    def __hash__(self) -> int:
+        return hash(frozenset(self.items))
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, IntersectionType):
+            return NotImplemented
+        return frozenset(self.items) == frozenset(other.items)
+
+    @overload
+    @staticmethod
+    def make_intersection(
+        items: Sequence[ProperType], line: int = ..., column: int = ...
+    ) -> ProperType:
+        ...
+
+    @overload
+    @staticmethod
+    def make_intersection(items: Sequence[Type], line: int = ..., column: int = ...) -> Type:
+        ...
+
+    @staticmethod
+    def make_intersection(items: Sequence[Type], line: int = -1, column: int = -1) -> Type:
+        if len(items) > 1:
+            return IntersectionType(items, line, column)
+        elif len(items) == 1:
+            return items[0]
+        else:
+            return UninhabitedType()
+
+    def accept(self, visitor: "TypeVisitor[T]") -> T:
+        return visitor.visit_intersection_type(self)
+
+    def serialize(self) -> JsonDict:
+        return {".class": "IntersectionType", "items": [t.serialize() for t in self.items]}
+
+    @classmethod
+    def deserialize(cls, data: JsonDict) -> "IntersectionType":
+        assert data[".class"] == "IntersectionType"
+        return IntersectionType([deserialize_type(t) for t in data["items"]])
+
+
 class PartialType(ProperType):
     """Type such as List[?] where type arguments are unknown, or partial None type.
 
@@ -2874,6 +2958,12 @@ class TypeType(ProperType):
         if isinstance(item, UnionType):
             return UnionType.make_union(
                 [TypeType.make_normalized(union_item) for union_item in item.items],
+                line=line,
+                column=column,
+            )
+        if isinstance(item, IntersectionType):
+            return IntersectionType.make_intersection(
+                [TypeType.make_normalized(intersection_item) for intersection_item in item.items],
                 line=line,
                 column=column,
             )
@@ -3314,6 +3404,9 @@ class TypeStrVisitor(SyntheticTypeVisitor[str]):
             return f"Union[{s}]"
         return self.union_str(t.items)
 
+    def visit_intersection_type(self, t: IntersectionType) -> str:
+        return " & ".join(t.accept(self) for t in t.items)
+
     def visit_partial_type(self, t: PartialType) -> str:
         if t.type is None:
             return "<partial None>"
@@ -3540,7 +3633,9 @@ def _flattened(types: Iterable[Type]) -> Iterable[Type]:
 
 
 def flatten_nested_unions(
-    types: Sequence[Type], handle_type_alias_type: bool = True
+    types: Sequence[Type],
+    handle_type_alias_type: bool = True,
+    type_type: type[UnionType | IntersectionType] = UnionType,
 ) -> list[Type]:
     """Flatten nested unions in a type list."""
     if not isinstance(types, list):
@@ -3549,15 +3644,18 @@ def flatten_nested_unions(
         typelist = cast("list[Type]", types)
 
     # Fast path: most of the time there is nothing to flatten
-    if not any(isinstance(t, (TypeAliasType, UnionType)) for t in typelist):  # type: ignore[misc]
+    if not any(isinstance(t, (TypeAliasType, type_type)) for t in typelist):  # type: ignore[misc]
         return typelist
 
     flat_items: list[Type] = []
     for t in typelist:
         tp = get_proper_type(t) if handle_type_alias_type else t
-        if isinstance(tp, ProperType) and isinstance(tp, UnionType):
+        if isinstance(tp, ProperType) and isinstance(tp, type_type):
             flat_items.extend(
-                flatten_nested_unions(tp.items, handle_type_alias_type=handle_type_alias_type)
+                flatten_nested_unions(
+                    cast(Union[UnionType, IntersectionType], tp).items,
+                    handle_type_alias_type=handle_type_alias_type,
+                )
             )
         else:
             # Must preserve original aliases when possible.

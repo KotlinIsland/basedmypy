@@ -7,6 +7,7 @@ from mypy.types import (
     AnyType,
     CallableType,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneTyp,
     Overloaded,
@@ -117,6 +118,8 @@ class Mapper:
             return none_rprimitive
         elif isinstance(typ, UnionType):
             return RUnion.make_simplified_union([self.type_to_rtype(item) for item in typ.items])
+        elif isinstance(typ, IntersectionType):
+            return object_rprimitive
         elif isinstance(typ, AnyType):
             return object_rprimitive
         elif isinstance(typ, TypeType):

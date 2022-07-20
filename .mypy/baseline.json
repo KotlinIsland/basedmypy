@@ -1987,7 +1987,7 @@
         "code": "no-any-expr",
         "column": 42,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 679,
+        "offset": 681,
         "src": "if isinstance(inner_type, CallableType):",
         "target": "mypy.checker.TypeChecker.check_overlapping_overloads"
       },
@@ -2371,7 +2371,7 @@
         "code": "no-any-expr",
         "column": 56,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 719,
+        "offset": 721,
         "src": "assert isinstance(called_type, (CallableType, Overloaded))",
         "target": "mypy.checker.TypeChecker.find_isinstance_check_helper"
       },
@@ -2427,7 +2427,7 @@
         "code": "no-any-expr",
         "column": 27,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 578,
+        "offset": 591,
         "src": "if isinstance(typ, CallableType):",
         "target": "mypy.checker.TypeChecker.add_any_attribute_to_type"
       },
@@ -2493,7 +2493,7 @@
         "code": "no-any-expr",
         "column": 34,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 347,
+        "offset": 354,
         "src": "if isinstance(result, CallableType) and isinstance(  # type: ignore[misc]",
         "target": "mypy.checkexpr.ExpressionChecker.analyze_ref_expr"
       },
@@ -2621,7 +2621,7 @@
         "code": "no-any-expr",
         "column": 49,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 245,
+        "offset": 249,
         "src": "assert isinstance(node.type, CallableType)",
         "target": "mypy.checkexpr.ExpressionChecker.can_return_none"
       },
@@ -2733,15 +2733,23 @@
         "code": "no-any-expr",
         "column": 33,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 349,
+        "offset": 360,
         "src": "if not all(isinstance(c, CallableType) for c in types):",
         "target": "mypy.checkexpr.ExpressionChecker.combine_function_signatures"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 55,
+        "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
+        "offset": 198,
+        "src": "if isinstance(get_proper_type(res[1]), CallableType):",
+        "target": "mypy.checkexpr.ExpressionChecker.check_intersection_call"
       },
       {
         "code": "possibly-undefined",
         "column": 16,
         "message": "Name \"left_map\" may be undefined",
-        "offset": 1005,
+        "offset": 851,
         "src": "and left_map is None",
         "target": "mypy.checkexpr"
       },
@@ -2871,7 +2879,7 @@
         "code": "possibly-undefined",
         "column": 26,
         "message": "Name \"impl\" may be undefined",
-        "offset": 362,
+        "offset": 366,
         "src": "if isinstance(impl.type, CallableType)",
         "target": "mypy.checkmember"
       },
@@ -2887,7 +2895,7 @@
         "code": "no-any-expr",
         "column": 48,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 199,
+        "offset": 216,
         "src": "if isinstance(getattr_type, CallableType):",
         "target": "mypy.checkmember.analyze_member_var_access"
       },
@@ -4751,7 +4759,7 @@
         "code": "unreachable",
         "column": 20,
         "message": "Statement is unreachable",
-        "offset": 398,
+        "offset": 399,
         "src": "merged_option = None",
         "target": "mypy.constraints.any_constraints"
       },
@@ -4823,7 +4831,7 @@
         "code": "no-any-expr",
         "column": 35,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 211,
+        "offset": 217,
         "src": "if isinstance(self.actual, CallableType):",
         "target": "mypy.constraints.ConstraintBuilderVisitor.visit_overloaded"
       },
@@ -4841,7 +4849,7 @@
         "code": "no-any-explicit",
         "column": 44,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 127,
+        "offset": 131,
         "src": "return self.copy_common(t, TypeType(cast(Any, t.item)))",
         "target": "mypy.copytype.TypeShallowCopier.visit_type_type"
       },
@@ -6629,7 +6637,7 @@
         "code": "no-any-expr",
         "column": 26,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 132,
+        "offset": 133,
         "src": "if isinstance(callee, CallableType):",
         "target": "mypy.expandtype.freshen_function_type_vars"
       },
@@ -6687,7 +6695,7 @@
         "code": "no-any-explicit",
         "column": 8,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 191,
+        "offset": 192,
         "src": "NamedExpr = Any",
         "target": "mypy.fastparse"
       },
@@ -9253,17 +9261,41 @@
       },
       {
         "code": "no-any-expr",
-        "column": 32,
+        "column": 33,
         "message": "Expression type contains \"Any\" (has type \"type[BitOr]\")",
         "offset": 11,
-        "src": "if not isinstance(n.op, ast3.BitOr):",
+        "src": "if not isinstance(n.op, (ast3.BitOr, ast3.BitAnd)):",
+        "target": "mypy.fastparse.TypeConverter.visit_BinOp"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 33,
+        "message": "Expression type contains \"Any\" (has type \"(type[BitOr], type[BitAnd])\")",
+        "offset": 0,
+        "src": "if not isinstance(n.op, (ast3.BitOr, ast3.BitAnd)):",
+        "target": "mypy.fastparse.TypeConverter.visit_BinOp"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 45,
+        "message": "Expression type contains \"Any\" (has type \"type[BitAnd]\")",
+        "offset": 0,
+        "src": "if not isinstance(n.op, (ast3.BitOr, ast3.BitAnd)):",
+        "target": "mypy.fastparse.TypeConverter.visit_BinOp"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 28,
+        "message": "Expression type contains \"Any\" (has type \"type[BitAnd]\")",
+        "offset": 4,
+        "src": "if isinstance(n.op, ast3.BitAnd):",
         "target": "mypy.fastparse.TypeConverter.visit_BinOp"
       },
       {
         "code": "no-any-expr",
         "column": 22,
         "message": "Expression has type \"Any\"",
-        "offset": 14,
+        "offset": 18,
         "src": "if isinstance(n.value, bool):",
         "target": "mypy.fastparse.TypeConverter.visit_NameConstant"
       },
@@ -9539,7 +9571,7 @@
         "code": "truthy-bool",
         "column": 15,
         "message": "Member \"defn\" has type \"ClassDef\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 70,
+        "offset": 71,
         "src": "if info.defn:",
         "target": "mypy.fixup.NodeFixer.visit_type_info"
       },
@@ -9635,7 +9667,7 @@
         "code": "no-any-explicit",
         "column": 4,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 63,
+        "offset": 67,
         "src": "def visit_void(self, o: Any) -> None:",
         "target": "mypy.fixup.TypeFixer.visit_void"
       }
@@ -9679,7 +9711,7 @@
         "code": "no-any-expr",
         "column": 30,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 380,
+        "offset": 387,
         "src": "if isinstance(self.s, CallableType) and is_similar_callables(t, self.s):",
         "target": "mypy.join.TypeJoinVisitor.visit_callable_type"
       },
@@ -10549,7 +10581,7 @@
         "code": "no-any-expr",
         "column": 60,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 438,
+        "offset": 441,
         "src": "if isinstance(left, TypeType) and isinstance(right, CallableType):",
         "target": "mypy.meet.is_overlapping_types"
       },
@@ -10589,7 +10621,7 @@
         "code": "no-any-expr",
         "column": 64,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 239,
+        "offset": 244,
         "src": "if isinstance(self.s, Parameters) or isinstance(self.s, CallableType):",
         "target": "mypy.meet.TypeMeetVisitor.visit_parameters"
       },
@@ -10905,7 +10937,7 @@
         "code": "no-any-expr",
         "column": 41,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 410,
+        "offset": 411,
         "src": "if isinstance(original_type, CallableType) and original_type.is_type_obj():",
         "target": "mypy.messages.MessageBuilder.has_no_attr"
       },
@@ -11137,7 +11169,7 @@
         "code": "unreachable",
         "column": 16,
         "message": "Statement is unreachable",
-        "offset": 356,
+        "offset": 359,
         "src": "return",
         "target": "mypy.messages.MessageBuilder.report_protocol_problems"
       },
@@ -11233,7 +11265,7 @@
         "code": "no-any-expr",
         "column": 30,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 323,
+        "offset": 325,
         "src": "elif isinstance(func, CallableType):",
         "target": "mypy.messages.format_type_inner"
       },
@@ -12130,10 +12162,18 @@
         "target": "mypy.options.Options.__init__"
       },
       {
+        "code": "var-annotated",
+        "column": 12,
+        "message": "Need type annotation for \"d\"",
+        "offset": 40,
+        "src": "d = dict(getattr(self, \"__dict__\", ()))",
+        "target": "mypy.options.Options.snapshot"
+      },
+      {
         "code": "no-any-expr",
         "column": 17,
         "message": "Expression type contains \"Any\" (has type \"Any | ()\")",
-        "offset": 40,
+        "offset": 0,
         "src": "d = dict(getattr(self, \"__dict__\", ()))",
         "target": "mypy.options.Options.snapshot"
       },
@@ -12538,7 +12578,7 @@
       {
         "code": "unreachable",
         "column": 20,
-        "message": "Subclass of \"TupleType\" and \"LiteralType\" cannot exist: would have incompatible method signatures",
+        "message": "Intersection of \"TupleType & LiteralType\" cannot exist: would have incompatible method signatures",
         "offset": 465,
         "src": "elif isinstance(ctx.type, LiteralType):",
         "target": "mypy.plugins.default.tuple_mul_callback"
@@ -14049,7 +14089,7 @@
         "code": "unreachable",
         "column": 8,
         "message": "Statement is unreachable",
-        "offset": 224,
+        "offset": 225,
         "src": "if node.type:",
         "target": "mypy.server.astdiff.snapshot_definition"
       }
@@ -14059,7 +14099,7 @@
         "code": "unreachable",
         "column": 12,
         "message": "Statement is unreachable",
-        "offset": 297,
+        "offset": 298,
         "src": "node.analyzed = self.fixup(node.analyzed)",
         "target": "mypy.server.astmerge.NodeReplaceVisitor.visit_call_expr"
       }
@@ -14079,7 +14119,7 @@
         "code": "unreachable",
         "column": 24,
         "message": "Statement is unreachable",
-        "offset": 506,
+        "offset": 507,
         "src": "fname = init.node.fullname",
         "target": "mypy.server.deps.DependencyVisitor.visit_assignment_stmt"
       },
@@ -14095,7 +14135,7 @@
         "code": "no-any-expr",
         "column": 57,
         "message": "Expression type contains \"Any\" (has type \"(Untyped) -> Any\")",
-        "offset": 84,
+        "offset": 90,
         "src": "for trigger, targets in sorted(all_deps.items(), key=lambda x: x[0]):",
         "target": "mypy.server.deps.dump_all_dependencies"
       },
@@ -18997,7 +19037,7 @@
         "code": "no-any-expr",
         "column": 29,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 623,
+        "offset": 630,
         "src": "if isinstance(right, CallableType):",
         "target": "mypy.subtypes.SubtypeVisitor.visit_instance"
       },
@@ -19037,7 +19077,7 @@
         "code": "no-any-expr",
         "column": 29,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 127,
+        "offset": 132,
         "src": "if isinstance(right, CallableType):",
         "target": "mypy.subtypes.SubtypeVisitor.visit_type_type"
       },
@@ -21733,7 +21773,7 @@
         "code": "no-any-expr",
         "column": 29,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 899,
+        "offset": 937,
         "src": "assert isinstance(j, CallableType)",
         "target": "mypy.test.testtypes.JoinSuite.test_simple_type_objects"
       }
@@ -21743,7 +21783,7 @@
         "code": "no-any-explicit",
         "column": 12,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 248,
+        "offset": 253,
         "src": "cast(Any, t.partial_fallback.accept(self)),",
         "target": "mypy.type_visitor.TypeTranslator.visit_tuple_type"
       },
@@ -21775,7 +21815,7 @@
         "code": "no-any-expr",
         "column": 35,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 25,
+        "offset": 28,
         "src": "assert isinstance(new, CallableType)  # type: ignore[misc]",
         "target": "mypy.type_visitor.TypeTranslator.visit_overloaded"
       },
@@ -21793,7 +21833,7 @@
         "code": "no-any-expr",
         "column": 31,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 1293,
+        "offset": 1310,
         "src": "assert isinstance(ret, CallableType)",
         "target": "mypy.typeanal.TypeAnalyser.analyze_callable_type"
       }
@@ -21803,7 +21843,7 @@
         "code": "no-any-expr",
         "column": 29,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 158,
+        "offset": 159,
         "src": "if isinstance(signature, CallableType):",
         "target": "mypy.typeops.type_object_type_from_function"
       },
@@ -21827,7 +21867,7 @@
         "code": "no-any-expr",
         "column": 34,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 240,
+        "offset": 362,
         "src": "if isinstance(callee, CallableType):",
         "target": "mypy.typeops._get_type_special_method_bool_ret_type"
       },
@@ -23165,6 +23205,62 @@
         "code": "no-any-expr",
         "column": 15,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
+        "offset": 14,
+        "src": "return {",
+        "target": "mypy.types.NamedOverloaded.serialize"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 12,
+        "message": "Expression type contains \"Any\" (has type \"(str, list[Any])\")",
+        "offset": 2,
+        "src": "\"items\": [t.serialize() for t in self.items],",
+        "target": "mypy.types.NamedOverloaded.serialize"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 22,
+        "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
+        "offset": 0,
+        "src": "\"items\": [t.serialize() for t in self.items],",
+        "target": "mypy.types.NamedOverloaded.serialize"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 15,
+        "message": "Expression has type \"Any\"",
+        "offset": 6,
+        "src": "assert data[\".class\"] == \"NamedOverloaded\"",
+        "target": "mypy.types.NamedOverloaded.deserialize"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 32,
+        "message": "Expression has type \"Any\"",
+        "offset": 1,
+        "src": "return NamedOverloaded([CallableType.deserialize(t) for t in data[\"items\"]], data[\"_name\"])",
+        "target": "mypy.types.NamedOverloaded.deserialize"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 32,
+        "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
+        "offset": 0,
+        "src": "return NamedOverloaded([CallableType.deserialize(t) for t in data[\"items\"]], data[\"_name\"])",
+        "target": "mypy.types.NamedOverloaded.deserialize"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 57,
+        "message": "Expression has type \"Any\"",
+        "offset": 0,
+        "src": "return NamedOverloaded([CallableType.deserialize(t) for t in data[\"items\"]], data[\"_name\"])",
+        "target": "mypy.types.NamedOverloaded.deserialize"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 15,
+        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
         "offset": 71,
         "src": "return {",
         "target": "mypy.types.TupleType.serialize"
@@ -23349,6 +23445,54 @@
         "code": "no-any-expr",
         "column": 15,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
+        "offset": 56,
+        "src": "return {\".class\": \"IntersectionType\", \"items\": [t.serialize() for t in self.items]}",
+        "target": "mypy.types.IntersectionType.serialize"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 46,
+        "message": "Expression type contains \"Any\" (has type \"(str, list[Any])\")",
+        "offset": 0,
+        "src": "return {\".class\": \"IntersectionType\", \"items\": [t.serialize() for t in self.items]}",
+        "target": "mypy.types.IntersectionType.serialize"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 56,
+        "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
+        "offset": 0,
+        "src": "return {\".class\": \"IntersectionType\", \"items\": [t.serialize() for t in self.items]}",
+        "target": "mypy.types.IntersectionType.serialize"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 15,
+        "message": "Expression has type \"Any\"",
+        "offset": 4,
+        "src": "assert data[\".class\"] == \"IntersectionType\"",
+        "target": "mypy.types.IntersectionType.deserialize"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 33,
+        "message": "Expression has type \"Any\"",
+        "offset": 1,
+        "src": "return IntersectionType([deserialize_type(t) for t in data[\"items\"]])",
+        "target": "mypy.types.IntersectionType.deserialize"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 50,
+        "message": "Expression has type \"Any\"",
+        "offset": 0,
+        "src": "return IntersectionType([deserialize_type(t) for t in data[\"items\"]])",
+        "target": "mypy.types.IntersectionType.deserialize"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 15,
+        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
         "offset": 131,
         "src": "return {\".class\": \"TypeType\", \"item\": self.item.serialize()}",
         "target": "mypy.types.TypeType.serialize"
@@ -23413,7 +23557,7 @@
         "code": "no-any-expr",
         "column": 23,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 112,
+        "offset": 115,
         "src": "if isinstance(typ, CallableType):",
         "target": "mypy.types.strip_type"
       },
@@ -23445,7 +23589,7 @@
         "code": "no-any-expr",
         "column": 15,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 192,
+        "offset": 197,
         "src": "names: Final = globals().copy()",
         "target": "mypy.types"
       },
@@ -25897,7 +26041,7 @@
         "code": "no-any-expr",
         "column": 29,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 114,
+        "offset": 115,
         "src": "elif isinstance(typ, CallableType):",
         "target": "mypyc.irbuild.mapper.Mapper.type_to_rtype"
       },
@@ -25905,7 +26049,7 @@
         "code": "no-any-expr",
         "column": 33,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 40,
+        "offset": 42,
         "src": "if isinstance(fdef.type, CallableType):",
         "target": "mypyc.irbuild.mapper.Mapper.fdef_to_sig"
       }

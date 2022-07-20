@@ -12,7 +12,12 @@ import mypy.checker
 import mypy.errorcodes as codes
 from mypy import applytype, erasetype, join, message_registry, nodes, operators, types
 from mypy.argmap import ArgTypeExpander, map_actuals_to_formals, map_formals_to_actuals
-from mypy.checkmember import analyze_member_access, type_object_type
+from mypy.checkmember import (
+    MemberContext,
+    analyze_member_access,
+    report_missing_attribute,
+    type_object_type,
+)
 from mypy.checkstrformat import StringFormatterChecker
 from mypy.erasetype import erase_type, remove_instance_last_known_values, replace_meta_vars
 from mypy.errors import ErrorWatcher, report_internal_error
@@ -22,7 +27,7 @@ from mypy.literals import literal
 from mypy.maptype import map_instance_to_supertype
 from mypy.meet import is_overlapping_types, narrow_declared_type
 from mypy.message_registry import ErrorMessage
-from mypy.messages import MessageBuilder
+from mypy.messages import MessageBuilder, format_type_inner
 from mypy.nodes import (
     ARG_NAMED,
     ARG_POS,
@@ -115,6 +120,7 @@ from mypy.typeops import (
     fixup_partial_type,
     function_type,
     is_literal_type_like,
+    make_simplified_intersection,
     make_simplified_union,
     simple_literal_type,
     true_only,
@@ -132,8 +138,10 @@ from mypy.types import (
     ExtraAttrs,
     FunctionLike,
     Instance,
+    IntersectionType,
     LiteralType,
     LiteralValue,
+    NamedOverloaded,
     NoneType,
     Overloaded,
     ParamSpecFlavor,
@@ -627,6 +635,8 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         ret_type = get_proper_type(ret_type)
         if isinstance(ret_type, UnionType):
             ret_type = make_simplified_union(ret_type.items)
+        if isinstance(ret_type, IntersectionType):
+            ret_type = make_simplified_intersection(ret_type.items)
         if isinstance(ret_type, UninhabitedType) and not ret_type.ambiguous:
             self.chk.binder.unreachable()
         # Warn on calls to functions that always return None. The check
@@ -1375,6 +1385,10 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             return self.check_any_type_call(args, callee)
         elif isinstance(callee, UnionType):
             return self.check_union_call(callee, args, arg_kinds, arg_names, context)
+        elif isinstance(callee, IntersectionType):
+            return self.check_intersection_call(
+                callee, args, arg_kinds, arg_names, context, object_type
+            )
         elif isinstance(callee, Instance):
             call_function = analyze_member_access(
                 "__call__",
@@ -2833,6 +2847,50 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             ]
 
         return (make_simplified_union([res[0] for res in results]), callee)
+
+    def check_intersection_call(
+        self,
+        callee: IntersectionType,
+        args: list[Expression],
+        arg_kinds: list[ArgKind],
+        arg_names: Sequence[str | None] | None,
+        context: Context,
+        object_type: Type | None = None,
+    ) -> tuple[Type, Type]:
+        def flatten_overloads(
+            t: IntersectionType | FunctionLike, result: list[Type] | None = None
+        ) -> list[Type]:
+            if result is None:
+                result = []
+            for item in t.items:
+                proper_item = get_proper_type(item)
+                if isinstance(proper_item, FunctionLike):
+                    result.extend(proper_item.items)
+                else:
+                    result.append(item)
+            return result
+
+        with self.msg.disable_type_names(), self.msg.filter_errors(save_filtered_errors=True):
+            results: list[CallableType] = []
+            for subtype in flatten_overloads(callee):
+                res = self.check_call(subtype, args, arg_kinds, context, arg_names)
+                if isinstance(get_proper_type(res[1]), CallableType):
+                    results.append(cast(CallableType, res[1]))
+        if not results:
+            report_missing_attribute(
+                callee,
+                callee,
+                "__call__",
+                MemberContext(
+                    False, False, True, callee, context, self.chk.msg, self.chk, None, None
+                ),
+            )
+            return AnyType(TypeOfAny.from_error), callee
+        if isinstance(context, CallExpr) and isinstance(context.callee, MemberExpr):
+            name = f"{context.callee.name} of {object_type}"
+        else:
+            name = format_type_inner(callee, 0, None)
+        return self.check_call(NamedOverloaded(results, name), args, arg_kinds, context, arg_names)
 
     def visit_member_expr(self, e: MemberExpr, is_lvalue: bool = False) -> Type:
         """Visit member expression (of form e.id)."""

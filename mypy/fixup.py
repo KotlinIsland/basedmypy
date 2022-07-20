@@ -26,6 +26,7 @@ from mypy.types import (
     AnyType,
     CallableType,
     Instance,
+    IntersectionType,
     LiteralType,
     Overloaded,
     Parameters,
@@ -330,6 +331,10 @@ class TypeFixer(TypeVisitor[None]):
         if ut.items:
             for it in ut.items:
                 it.accept(self)
+
+    def visit_intersection_type(self, it: IntersectionType):
+        for item in it.items:
+            item.accept(self)
 
     def visit_void(self, o: Any) -> None:
         pass  # Nothing to descend into.

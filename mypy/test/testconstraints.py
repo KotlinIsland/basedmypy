@@ -5,7 +5,7 @@ import pytest
 from mypy.constraints import SUBTYPE_OF, SUPERTYPE_OF, Constraint, infer_constraints
 from mypy.test.helpers import Suite
 from mypy.test.typefixture import TypeFixture
-from mypy.types import Instance, TupleType, UnpackType
+from mypy.types import Instance, IntersectionType, TupleType, UnpackType
 
 
 class ConstraintsSuite(Suite):
@@ -159,3 +159,16 @@ class ConstraintsSuite(Suite):
             Instance(fx.std_tuplei, [fx.a]),
             SUPERTYPE_OF,
         )
+
+    def test_intersection(self):
+        fx = self.fx
+        assert set(
+            infer_constraints(
+                IntersectionType([fx.t, fx.d]), IntersectionType([fx.a, fx.d]), SUPERTYPE_OF
+            )
+        ) == {Constraint(fx.t, SUPERTYPE_OF, fx.a)}
+        assert set(
+            infer_constraints(
+                IntersectionType([fx.t, fx.d]), IntersectionType([fx.a, fx.d]), SUBTYPE_OF
+            )
+        ) == {Constraint(fx.t, SUBTYPE_OF, fx.a)}

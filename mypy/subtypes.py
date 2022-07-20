@@ -37,6 +37,7 @@ from mypy.types import (
     FormalArgument,
     FunctionLike,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     NormalizedCallableType,
@@ -334,6 +335,20 @@ def _is_subtype(
         elif is_subtype_of_item:
             return True
         # otherwise, fall through
+    if isinstance(right, IntersectionType) and not isinstance(left, IntersectionType):
+        if proper_subtype:
+            if all(
+                is_proper_subtype(orig_left, item, subtype_context=subtype_context)
+                for item in right.items
+            ):
+                return True
+        else:
+            if all(
+                is_subtype(orig_left, item, subtype_context=subtype_context)
+                for item in right.items
+            ):
+                return True
+
     return left.accept(SubtypeVisitor(orig_right, subtype_context, proper_subtype))
 
 
@@ -930,6 +945,11 @@ class SubtypeVisitor(TypeVisitor[bool]):
             return True
 
         return all(self._is_subtype(item, self.orig_right) for item in left.items)
+
+    def visit_intersection_type(self, left: IntersectionType) -> bool:
+        if isinstance(self.right, IntersectionType):
+            return all(self._is_subtype(left, item) for item in self.right.items)
+        return any(self._is_subtype(item, self.orig_right) for item in left.items)
 
     def visit_partial_type(self, left: PartialType) -> bool:
         # This is indeterminate as we don't really know the complete type yet.

@@ -14,6 +14,7 @@ from mypy.types import (
     ErasedType,
     FunctionLike,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     Overloaded,
@@ -488,6 +489,21 @@ class ExpandTypeVisitor(TypeVisitor[Type]):
         # can cause recursion, so we just remove strict duplicates.
         simplified = UnionType.make_union(
             remove_trivial(flatten_nested_unions(expanded)), t.line, t.column
+        )
+        # This call to get_proper_type() is unfortunate but is required to preserve
+        # the invariant that ProperType will stay ProperType after applying expand_type(),
+        # otherwise a single item union of a type alias will break it. Note this should not
+        # cause infinite recursion since pathological aliases like A = Union[A, B] are
+        # banned at the semantic analysis level.
+        return get_proper_type(simplified)
+
+    def visit_intersection_type(self, t: IntersectionType) -> Type:
+        expanded = self.expand_types(t.items)
+        # After substituting for type variables in t.items, some resulting types
+        # might be subtypes of others, however calling  make_simplified_intersection()
+        # can cause recursion, so we just remove strict duplicates.
+        simplified = IntersectionType.make_intersection(
+            flatten_nested_unions(expanded, type_type=IntersectionType), t.line, t.column
         )
         # This call to get_proper_type() is unfortunate but is required to preserve
         # the invariant that ProperType will stay ProperType after applying expand_type(),

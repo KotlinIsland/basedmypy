@@ -64,7 +64,7 @@ def solve_constraints(
                 if top is None:
                     top = c.target
                 else:
-                    top = meet_types(top, c.target)
+                    top = meet_types(top, c.target, intersect=True)
 
         p_top = get_proper_type(top)
         p_bottom = get_proper_type(bottom)

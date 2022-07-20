@@ -9,6 +9,7 @@ from mypy.types import (
     DeletedType,
     ErasedType,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     Overloaded,
@@ -127,6 +128,12 @@ class EraseTypeVisitor(TypeVisitor[ProperType]):
         from mypy.typeops import make_simplified_union
 
         return make_simplified_union(erased_items)
+
+    def visit_intersection_type(self, t: IntersectionType) -> ProperType:
+        erased_items = [erase_type(item) for item in t.items]
+        from mypy.typeops import make_simplified_intersection
+
+        return make_simplified_intersection(erased_items)
 
     def visit_type_type(self, t: TypeType) -> ProperType:
         return TypeType.make_normalized(t.item.accept(self), line=t.line)

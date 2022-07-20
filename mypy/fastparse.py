@@ -105,6 +105,7 @@ from mypy.types import (
     CallableType,
     EllipsisType,
     Instance,
+    IntersectionType,
     ProperType,
     RawExpressionType,
     TupleType,
@@ -382,7 +383,7 @@ def parse_type_string(
             node.original_str_expr = expr_string
             node.original_str_fallback = expr_fallback_name
             return node
-        elif isinstance(node, UnionType):
+        elif isinstance(node, (UnionType, IntersectionType)):
             return node
         else:
             return RawExpressionType(expr_string, expr_fallback_name, line, column)
@@ -1903,11 +1904,19 @@ class TypeConverter:
         return UnboundType(n.id, line=self.line, column=self.convert_column(n.col_offset))
 
     def visit_BinOp(self, n: ast3.BinOp) -> Type:
-        if not isinstance(n.op, ast3.BitOr):
+        if not isinstance(n.op, (ast3.BitOr, ast3.BitAnd)):
             return self.invalid_type(n)
-
         left = self.visit(n.left)
         right = self.visit(n.right)
+        if isinstance(n.op, ast3.BitAnd):
+            return IntersectionType(
+                [left, right],
+                line=self.line,
+                column=self.convert_column(n.col_offset),
+                is_evaluated=self.is_evaluated,
+                uses_based_syntax=True,
+            )
+
         return UnionType(
             [left, right],
             line=self.line,

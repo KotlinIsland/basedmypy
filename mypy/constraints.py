@@ -18,6 +18,7 @@ from mypy.types import (
     DeletedType,
     ErasedType,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     Overloaded,
@@ -225,6 +226,10 @@ def _infer_constraints(template: Type, actual: Type, direction: int) -> list[Con
         template = mypy.typeops.make_simplified_union(template.items, keep_erased=True)
     if isinstance(actual, UnionType):
         actual = mypy.typeops.make_simplified_union(actual.items, keep_erased=True)
+    if isinstance(template, IntersectionType):
+        template = mypy.typeops.make_simplified_intersection(template.items, keep_erased=True)
+    if isinstance(actual, IntersectionType):
+        actual = mypy.typeops.make_simplified_intersection(actual.items, keep_erased=True)
 
     # Ignore Any types from the type suggestion engine to avoid them
     # causing us to infer Any in situations where a better job could
@@ -290,12 +295,43 @@ def _infer_constraints(template: Type, actual: Type, direction: int) -> list[Con
             return handle_recursive_union(template, actual, direction)
         return []
 
+    if direction == SUBTYPE_OF and isinstance(actual, IntersectionType):
+        return any_constraints(
+            [
+                infer_constraints_if_possible(template, a_item, direction, preserve_typevars=True)
+                for a_item in actual.items
+            ],
+            eager=True,
+        )
+
+    if direction == SUPERTYPE_OF and isinstance(actual, IntersectionType):
+        items = simplify_away_incomplete_types(actual.items)
+        return any_constraints(
+            [infer_constraints(template, a_item, direction) for a_item in items], eager=True
+        )
+    if direction == SUBTYPE_OF and isinstance(template, IntersectionType):
+        return any_constraints(
+            [
+                infer_constraints_if_possible(t_item, actual, direction)
+                for t_item in template.items
+            ],
+            eager=False,
+        )
+    if direction == SUPERTYPE_OF and isinstance(template, IntersectionType):
+        return any_constraints(
+            [
+                infer_constraints_if_possible(t_item, actual, direction, preserve_typevars=True)
+                for t_item in template.items
+            ],
+            eager=False,
+        )
+
     # Remaining cases are handled by ConstraintBuilderVisitor.
     return template.accept(ConstraintBuilderVisitor(actual, direction))
 
 
 def infer_constraints_if_possible(
-    template: Type, actual: Type, direction: int
+    template: Type, actual: Type, direction: int, preserve_typevars=False
 ) -> list[Constraint] | None:
     """Like infer_constraints, but return None if the input relation is
     known to be unsatisfiable, for example if template=List[T] and actual=int.
@@ -312,6 +348,7 @@ def infer_constraints_if_possible(
         direction == SUPERTYPE_OF
         and isinstance(template, TypeVarType)
         and not mypy.subtypes.is_subtype(actual, erase_typevars(template.upper_bound))
+        and not preserve_typevars
     ):
         # This is not caught by the above branch because of the erase_typevars() call,
         # that would return 'Any' for a type variable.
@@ -648,7 +685,6 @@ class ConstraintBuilderVisitor(TypeVisitor[List[Constraint]]):
             if self.direction == SUBTYPE_OF and template.type.has_base(instance.type.fullname):
                 mapped = map_instance_to_supertype(template, instance.type)
                 tvars = mapped.type.defn.type_vars
-
                 if instance.type.has_type_var_tuple_type:
                     assert instance.type.type_var_tuple_prefix is not None
                     assert instance.type.type_var_tuple_suffix is not None
@@ -665,7 +701,6 @@ class ConstraintBuilderVisitor(TypeVisitor[List[Constraint]]):
                         self.direction,
                     )
                     res.extend(unpack_constraints)
-
                     tvars_prefix, _, tvars_suffix = split_with_prefix_and_suffix(
                         tuple(tvars),
                         instance.type.type_var_tuple_prefix,
@@ -1080,6 +1115,9 @@ class ConstraintBuilderVisitor(TypeVisitor[List[Constraint]]):
             "Unexpected UnionType in ConstraintBuilderVisitor"
             " (should have been handled in infer_constraints)"
         )
+
+    def visit_intersection_type(self, template: IntersectionType) -> list[Constraint]:
+        return []
 
     def visit_type_alias_type(self, template: TypeAliasType) -> list[Constraint]:
         assert False, f"This should be never called, got {template}"

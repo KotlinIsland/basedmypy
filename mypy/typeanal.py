@@ -55,6 +55,7 @@ from mypy.types import (
     EllipsisType,
     ErasedType,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     Overloaded,
@@ -538,6 +539,9 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         elif fullname == "typing.Union":
             items = self.anal_array(t.args)
             return UnionType.make_union(items)
+        elif fullname == "basedtyping.Intersection":
+            items = self.anal_array(t.args)
+            return IntersectionType.make_intersection(items)
         elif fullname == "typing.Optional":
             if len(t.args) != 1:
                 self.fail(
@@ -1130,6 +1134,19 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         ):
             self.fail("X | Y syntax for unions requires Python 3.10", t, code=codes.SYNTAX)
         return UnionType(self.anal_array(t.items), t.line)
+
+    def visit_intersection_type(self, t: IntersectionType) -> Type:
+        if (
+            t.uses_based_syntax is True
+            and t.is_evaluated is True
+            and not self.always_allow_new_syntax
+        ):
+            self.fail(
+                '"X & Y" syntax for intersections requires __future__.annotations or quoted types',
+                t,
+                code=codes.VALID_TYPE,
+            )
+        return IntersectionType(self.anal_array(t.items), t.line)
 
     def visit_partial_type(self, t: PartialType) -> Type:
         assert False, "Internal error: Unexpected partial type"

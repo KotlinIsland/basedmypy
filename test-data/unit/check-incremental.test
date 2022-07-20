@@ -5272,7 +5272,7 @@ reveal_type(Foo().x)
 [builtins fixtures/isinstance.pyi]
 [out]
 [out2]
-tmp/b.py:2: note: Revealed type is "a.<subclass of "A" and "B">"
+tmp/b.py:2: note: Revealed type is "a.A & a.B"
 
 [case testIsInstanceAdHocIntersectionIncrementalNoChangeSameName]
 import b
@@ -5295,7 +5295,7 @@ reveal_type(Foo().x)
 [builtins fixtures/isinstance.pyi]
 [out]
 [out2]
-tmp/b.py:2: note: Revealed type is "a.<subclass of "B" and "B">"
+tmp/b.py:2: note: Revealed type is "c.B & a.B"
 
 
 [case testIsInstanceAdHocIntersectionIncrementalNoChangeTuple]
@@ -5317,7 +5317,7 @@ reveal_type(Foo().x)
 [builtins fixtures/isinstance.pyi]
 [out]
 [out2]
-tmp/b.py:2: note: Revealed type is "a.<subclass of "tuple" and "B">"
+tmp/b.py:2: note: Revealed type is "builtins.tuple[builtins.int, ...] & a.B"
 
 [case testIsInstanceAdHocIntersectionIncrementalIsInstanceChange]
 import c
@@ -5351,9 +5351,9 @@ from b import y
 reveal_type(y)
 [builtins fixtures/isinstance.pyi]
 [out]
-tmp/c.py:2: note: Revealed type is "a.<subclass of "A" and "B">"
+tmp/c.py:2: note: Revealed type is "a.A & a.B"
 [out2]
-tmp/c.py:2: note: Revealed type is "a.<subclass of "A" and "C">"
+tmp/c.py:2: note: Revealed type is "a.A & a.C"
 
 [case testIsInstanceAdHocIntersectionIncrementalUnderlyingObjChang]
 import c
@@ -5379,9 +5379,9 @@ from b import y
 reveal_type(y)
 [builtins fixtures/isinstance.pyi]
 [out]
-tmp/c.py:2: note: Revealed type is "b.<subclass of "A" and "B">"
+tmp/c.py:2: note: Revealed type is "a.A & a.B"
 [out2]
-tmp/c.py:2: note: Revealed type is "b.<subclass of "A" and "C">"
+tmp/c.py:2: note: Revealed type is "a.A & a.C"
 
 [case testIsInstanceAdHocIntersectionIncrementalIntersectionToUnreachable]
 import c
@@ -5412,7 +5412,7 @@ from b import z
 reveal_type(z)
 [builtins fixtures/isinstance.pyi]
 [out]
-tmp/c.py:2: note: Revealed type is "a.<subclass of "A" and "B">"
+tmp/c.py:2: note: Revealed type is "a.A & a.B"
 [out2]
 tmp/c.py:2: note: Revealed type is "a.A"
 
@@ -5447,7 +5447,7 @@ reveal_type(z)
 [out]
 tmp/c.py:2: note: Revealed type is "a.A"
 [out2]
-tmp/c.py:2: note: Revealed type is "a.<subclass of "A" and "B">"
+tmp/c.py:2: note: Revealed type is "a.A & a.B"
 
 [case testStubFixupIssues]
 import a

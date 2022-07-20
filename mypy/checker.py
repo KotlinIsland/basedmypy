@@ -168,6 +168,7 @@ from mypy.typeops import (
     get_type_vars,
     is_literal_type_like,
     is_singleton_type,
+    make_simplified_intersection,
     make_simplified_union,
     map_type_from_supertype,
     true_only,
@@ -188,6 +189,7 @@ from mypy.types import (
     ErasedType,
     FunctionLike,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     Overloaded,
@@ -279,6 +281,10 @@ class PartialTypeScope(NamedTuple):
     map: dict[Var, Context]
     is_function: bool
     is_local: bool
+
+
+class InvalidTypeType(Exception):
+    """For when an invalid TypeType appears."""
 
 
 class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
@@ -5126,7 +5132,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
 
     def intersect_instances(
         self, instances: tuple[Instance, Instance], errors: list[tuple[str, str]]
-    ) -> Instance | None:
+    ) -> IntersectionType | Instance | None:
         """Try creating an ad-hoc intersection of the given instances.
 
         Note that this function does *not* try and create a full-fledged
@@ -5178,8 +5184,8 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         def _make_fake_typeinfo_and_full_name(
             base_classes_: list[Instance], curr_module_: MypyFile
         ) -> tuple[TypeInfo, str]:
-            names_list = pretty_seq([x.type.name for x in base_classes_], "and")
-            short_name = f"<subclass of {names_list}>"
+            names_list = pretty_seq([x.type.name for x in base_classes_], "&")
+            short_name = f"{names_list}"
             full_name_ = gen_unique_name(short_name, curr_module_.names)
             cdef, info_ = self.make_fake_typeinfo(
                 curr_module_.fullname, full_name_, short_name, base_classes_
@@ -5190,7 +5196,9 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         # We use the pretty_names_list for error messages but can't
         # use it for the real name that goes into the symbol table
         # because it can have dots in it.
-        pretty_names_list = pretty_seq(format_type_distinctly(*base_classes, bare=True), "and")
+        pretty_names_list = " & ".join(format_type_distinctly(*base_classes, bare=True))
+        pretty_names_list = f'"{pretty_names_list}"'
+        bases = base_classes
         try:
             info, full_name = _make_fake_typeinfo_and_full_name(base_classes, curr_module)
             with self.msg.filter_errors() as local_errors:
@@ -5210,7 +5218,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             return None
 
         curr_module.names[full_name] = SymbolTableNode(GDEF, info)
-        return Instance(info, [], extra_attrs=instances[0].extra_attrs or instances[1].extra_attrs)
+        return IntersectionType(bases)
 
     def intersect_instance_callable(self, typ: Instance, callable_type: CallableType) -> Instance:
         """Creates a fake type that represents the intersection of an Instance and a CallableType.
@@ -6659,16 +6667,37 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         if isinstance(vartype, TypeVarType):
             vartype = vartype.upper_bound
         vartype = get_proper_type(vartype)
-        if isinstance(vartype, UnionType):
-            union_list = []
-            for t in get_proper_types(vartype.items):
-                if isinstance(t, TypeType):
-                    union_list.append(t.item)
-                else:
-                    # This is an error that should be reported earlier
-                    # if we reach here, we refuse to do any type inference.
-                    return {}, {}
-            vartype = UnionType(union_list)
+
+        def search_type_type(it: ProperType) -> ProperType:
+            if isinstance(it, UnionType):
+                union_list = []
+                for t in get_proper_types(it.items):
+                    t = search_type_type(t)
+                    if isinstance(t, TypeType):
+                        union_list.append(t.item)
+                    else:
+                        raise InvalidTypeType
+                return UnionType(union_list)
+            elif isinstance(it, IntersectionType):
+                intersection_list = []
+                for t in get_proper_types(it.items):
+                    t = search_type_type(t)
+                    if isinstance(t, TypeType):
+                        intersection_list.append(t.item)
+                    else:
+                        # This is an error that should be reported earlier
+                        # if we reach here, we refuse to do any type inference.
+                        raise InvalidTypeType
+                return IntersectionType(intersection_list)
+            return it
+
+        if isinstance(vartype, (UnionType, IntersectionType)):
+            try:
+                vartype = search_type_type(vartype)
+            except InvalidTypeType:
+                # This is an error that should be reported earlier
+                # if we reach here, we refuse to do any type inference.
+                return {}, {}
         elif isinstance(vartype, TypeType):
             vartype = vartype.item
         elif isinstance(vartype, Instance) and vartype.type.is_metaclass():
@@ -6735,7 +6764,20 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         errors: list[tuple[str, str]] = []
         for v in possible_expr_types:
             if not isinstance(v, Instance):
-                return yes_type, no_type
+                if not isinstance(v, IntersectionType):
+                    return yes_type, no_type
+                for t in possible_target_types:
+                    for v_item in v.items:
+                        v_type = get_proper_type(v_item)
+                        if isinstance(v_type, Instance) and self.intersect_instances(
+                            (v_type, t), errors
+                        ):
+                            break
+                    else:
+                        continue
+                    # Not necessarily a valid Intersection, but who asked????
+                    out.append(make_simplified_intersection((*v.items, t)))
+                break
             for t in possible_target_types:
                 intersection = self.intersect_instances((v, t), errors)
                 if intersection is None:
@@ -7189,7 +7231,7 @@ def convert_to_typetype(type_map: TypeMap) -> TypeMap:
         if isinstance(t, TypeVarType):
             t = t.upper_bound
         # TODO: should we only allow unions of instances as per PEP 484?
-        if not isinstance(get_proper_type(t), (UnionType, Instance)):
+        if not isinstance(get_proper_type(t), (UnionType, IntersectionType, Instance)):
             # unknown type; error was likely reported earlier
             return {}
         converted_type_map[expr] = TypeType.make_normalized(typ)

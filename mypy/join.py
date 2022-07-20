@@ -24,6 +24,7 @@ from mypy.types import (
     ErasedType,
     FunctionLike,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     Overloaded,
@@ -294,6 +295,12 @@ class TypeJoinVisitor(TypeVisitor[ProperType]):
             return t
         else:
             return mypy.typeops.make_simplified_union([self.s, t])
+
+    def visit_intersection_type(self, t: IntersectionType) -> ProperType:
+        if is_proper_subtype(self.s, t):
+            return t
+        else:
+            return mypy.typeops.make_simplified_intersection([self.s, t])
 
     def visit_any(self, t: AnyType) -> ProperType:
         return t

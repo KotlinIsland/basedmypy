@@ -41,6 +41,7 @@ from mypy.typeops import (
     erase_to_bound,
     function_type,
     get_type_vars,
+    make_simplified_intersection,
     make_simplified_union,
     supported_self_type,
     tuple_fallback,
@@ -53,6 +54,7 @@ from mypy.types import (
     DeletedType,
     FunctionLike,
     Instance,
+    IntersectionType,
     LiteralType,
     NoneType,
     Overloaded,
@@ -227,6 +229,8 @@ def _analyze_member_access(
         return AnyType(TypeOfAny.from_another_any, source_any=typ)
     elif isinstance(typ, UnionType):
         return analyze_union_member_access(name, typ, mx)
+    elif isinstance(typ, IntersectionType):
+        return analyze_intersection_member_access(name, typ, mx)
     elif isinstance(typ, FunctionLike) and typ.is_type_obj():
         return analyze_type_callable_member_access(name, typ, mx)
     elif isinstance(typ, TypeType):
@@ -462,6 +466,23 @@ def analyze_union_member_access(name: str, typ: UnionType, mx: MemberContext) ->
             item_mx = mx.copy_modified(self_type=subtype)
             results.append(_analyze_member_access(name, subtype, item_mx))
     return make_simplified_union(results)
+
+
+def analyze_intersection_member_access(
+    name: str, typ: IntersectionType, mx: MemberContext
+) -> Type:
+    results = []
+    for subtype in typ.items:
+        with mx.msg.filter_errors(save_filtered_errors=True) as f:
+            # Self types should be bound to every individual item of an intersection.
+            item_mx = mx.copy_modified(self_type=subtype)
+            res = _analyze_member_access(name, subtype, item_mx)
+            if not f.has_new_errors():
+                results.append(res)
+    if not results:
+        report_missing_attribute(typ, typ, name, mx)
+        return AnyType(TypeOfAny.from_error)
+    return make_simplified_intersection(results)
 
 
 def analyze_none_member_access(name: str, typ: NoneType, mx: MemberContext) -> Type:
