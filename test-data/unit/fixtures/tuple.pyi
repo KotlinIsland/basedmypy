@@ -43,6 +43,6 @@ class list(Sequence[T], Generic[T]):
 
 def isinstance(x: object, t: type) -> bool: pass
 
-def sum(iterable: Iterable[T], start: T = ...) -> T: pass
+def sum(iterable: Iterable[T], start: T = None) -> T: pass  # type: ignore[assignment, unused-ignore]
 
 class BaseException: pass

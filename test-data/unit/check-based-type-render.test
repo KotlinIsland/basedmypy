@@ -23,3 +23,16 @@ a: list
 reveal_type(a)  # N: Revealed type is "list[Untyped]"
 b: List[Any]
 reveal_type(b)  # N: Revealed type is "list[Any]"
+
+
+[case testRenderBareLiterals]
+# flags: --python-version 3.10
+from typing import Literal
+
+a: Literal['1'] = 2  # E: Incompatible types in assignment (expression has type "2", variable has type "'1'")  [assignment]
+reveal_type(a)  # N: Revealed type is "'1'"
+b: Literal[1, 2, 3] = 4  # E: Incompatible types in assignment (expression has type "4", variable has type "1 | 2 | 3")  [assignment]
+reveal_type(b)  # N: Revealed type is "1 | 2 | 3"
+c: Literal[1, 2, 3] | str = 4  # E: Incompatible types in assignment (expression has type "4", variable has type "1 | 2 | 3 | str")  [assignment]
+reveal_type(c)  # N: Revealed type is "1 | 2 | 3 | str"
+[typing fixtures/typing-medium.pyi]
