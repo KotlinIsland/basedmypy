@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Enhancements
 - Unionize at type joins instead of common ancestor
+- Render Literal types better in output messages
 
 ## [1.4.0]
 ### Added
