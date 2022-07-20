@@ -3276,6 +3276,8 @@ class TypeStrVisitor(SyntheticTypeVisitor[str]):
         return repr(t.literal_value)
 
     def visit_literal_type(self, t: LiteralType) -> str:
+        if mypy.options._based:
+            return t.value_repr()
         return f"Literal[{t.value_repr()}]"
 
     def visit_union_type(self, t: UnionType) -> str:
