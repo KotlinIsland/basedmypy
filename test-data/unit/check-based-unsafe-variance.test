@@ -1,0 +1,16 @@
+[case testUnsafeVarianceCo]
+from helper import T_out
+from typing import Generic
+class G(Generic[T_out]):
+    def f(self, t: T_out): ...  # E: This usage of this covariant type variable is unsafe as an input parameter.$NL\
+                                     If this is intentional and you know what you are doing, you can ignore this \
+                                     line with 'unsafe-variance'  [unsafe-variance]
+
+
+[case testUnsafeVarianceContra]
+from helper import T_in
+from typing import Generic
+class G(Generic[T_in]):
+    def f(self) -> T_in: ...  # E: This usage of this contravariant type variable is unsafe as a return type.$NL\
+                                   If this is intentional and you know what you are doing, you can ignore this line \
+                                   with 'unsafe-variance'  [unsafe-variance]

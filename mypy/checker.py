@@ -1260,9 +1260,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 if isinstance(typ.ret_type, TypeVarType):
                     if typ.ret_type.variance == CONTRAVARIANT:
                         self.fail(
-                            message_registry.RETURN_TYPE_CANNOT_BE_CONTRAVARIANT,
-                            typ.ret_type,
-                            code=codes.UNSAFE_VARIANCE,
+                            message_registry.RETURN_TYPE_CANNOT_BE_CONTRAVARIANT, typ.ret_type
                         )
                     self.check_unbound_return_typevar(typ)
 
@@ -1369,11 +1367,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                             ctx: Context = arg_type
                             if ctx.line < 0:
                                 ctx = typ
-                            self.fail(
-                                message_registry.FUNCTION_PARAMETER_CANNOT_BE_COVARIANT,
-                                ctx,
-                                code=codes.UNSAFE_VARIANCE,
-                            )
+                            self.fail(message_registry.FUNCTION_PARAMETER_CANNOT_BE_COVARIANT, ctx)
                     if typ.arg_kinds[i] == nodes.ARG_STAR:
                         if not isinstance(arg_type, ParamSpecType):
                             # builtins.tuple[T] is typing.Tuple[T, ...]
