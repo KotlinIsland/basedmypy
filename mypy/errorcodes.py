@@ -160,8 +160,10 @@ UNUSED_AWAITABLE: Final = ErrorCode(
     "General",
     default_enabled=False,
 )
-UNSAFE_VARIANCE: Final = ErrorCode("unsafe-variance", "Incorrect usages of variance", "General")
-UNUSED_IGNORE: Final = ErrorCode("unused-ignore", "Ignore comment is unused", "General")
+UNSAFE_VARIANCE: Final[ErrorCode] = ErrorCode(
+    "unsafe-variance", "Incorrect usages of variance", "General"
+)
+UNUSED_IGNORE: Final[ErrorCode] = ErrorCode("unused-ignore", "Ignore comment is unused", "General")
 
 NO_ANY_EXPR: Final = ErrorCode("no-any-expr", "An expression contains Any", "General")
 NO_ANY_EXPLICIT: Final = ErrorCode("no-any-explicit", "Usage of the Any type", "General")
