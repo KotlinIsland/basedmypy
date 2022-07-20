@@ -1803,8 +1803,13 @@ def format_type_inner(typ: Type,
         s = f"TypedDict({{{', '.join(items)}}})"
         return s
     elif isinstance(typ, LiteralType):
+        if mypy.options._based:
+            return format_literal_value(typ)
         return f'Literal[{format_literal_value(typ)}]'
     elif isinstance(typ, UnionType):
+        if mypy.options._based:
+            return " | ".join(format(item) for item in typ.items)
+
         literal_items, union_items = separate_union_literals(typ)
 
         # Coalesce multiple Literal[] members. This also changes output order.
@@ -1815,14 +1820,9 @@ def format_type_inner(typ: Type,
             )
 
             if len(union_items) == 1 and isinstance(get_proper_type(union_items[0]), NoneType):
-                if mypy.options._based:
-                    return f'{literal_str} | None'
-                else:
-                    return f'Optional[{literal_str}]'
+                return f'Optional[{literal_str}]'
             elif union_items:
-                if not mypy.options._based:
-                    return f'Union[{format_list(union_items)}, {literal_str}]'
-                return f'{format_union(union_items)} | {literal_str}'
+                return f'Union[{format_list(union_items)}, {literal_str}]'
             else:
                 return literal_str
         else:
@@ -1832,15 +1832,9 @@ def format_type_inner(typ: Type,
                                      for t in typ.items) == 1)
             if print_as_optional:
                 rest = [t for t in typ.items if not isinstance(get_proper_type(t), NoneType)]
-                if mypy.options._based:
-                    return f'{format(rest[0])} | None'
-                else:
-                    return f'Optional[{format(rest[0])}]'
+                return f'Optional[{format(rest[0])}]'
             else:
-                if mypy.options._based:
-                    s = format_union(typ.items)
-                else:
-                    s = f'Union[{format_list(typ.items)}]'
+                s = f'Union[{format_list(typ.items)}]'
 
             return s
     elif isinstance(typ, NoneType):

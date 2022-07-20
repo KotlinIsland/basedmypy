@@ -1,6 +1,8 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Enhancements
+- Render Literal types better in output messages
 
 ## [1.4.0]
 ### Added
