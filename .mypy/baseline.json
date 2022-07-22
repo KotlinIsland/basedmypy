@@ -11914,7 +11914,7 @@
         "code": "no-any-expr",
         "column": 66,
         "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 184,
+        "offset": 189,
         "target": "mypy.main.process_options"
       },
       {
@@ -14324,7 +14324,7 @@
         "code": "no-any-unimported",
         "column": 8,
         "message": "Type of variable becomes \"set[Any (from unimported type)]\" due to an unfollowed import",
-        "offset": 217,
+        "offset": 218,
         "target": "mypy.options.Options.__init__"
       },
       {
@@ -16291,7 +16291,7 @@
         "code": "truthy-bool",
         "column": 15,
         "message": "\"call\" has type \"CallExpr\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 938,
+        "offset": 939,
         "target": "mypy.semanal.SemanticAnalyzer.extract_typevarlike_name"
       },
       {
@@ -16396,7 +16396,7 @@
         "code": "no-any-expr",
         "column": 37,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 562,
+        "offset": 577,
         "target": "mypy.semanal.SemanticAnalyzer.create_getattr_var"
       },
       {

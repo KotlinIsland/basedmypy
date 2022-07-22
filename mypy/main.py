@@ -555,6 +555,11 @@ def process_options(args: List[str],
         '--incomplete-is-typed', group=based_group, default=False,
         help="Partially typed/incomplete functions in this module are considered typed"
              " for untyped call errors.")
+    based_group.add_argument(
+        '--disable-implicit-typing-globals', action="store_false",
+        dest="implicit_typing_globals",
+        help="Disallow using members from `typing` in annotations without imports."
+    )
 
     config_group = parser.add_argument_group(
         title='Config file',

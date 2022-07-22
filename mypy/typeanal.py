@@ -178,7 +178,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         return typ
 
     def visit_unbound_type_nonoptional(self, t: UnboundType, defining_literal: bool) -> Type:
-        sym = self.lookup_qualified(t.name, t)
+        sym = self.lookup_qualified(t.name, t, annotation=True)
         if sym is not None:
             node = sym.node
             if isinstance(node, PlaceholderNode):
@@ -696,7 +696,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
 
     def anal_type_guard(self, t: Type) -> Optional[Type]:
         if isinstance(t, UnboundType):
-            sym = self.lookup_qualified(t.name, t)
+            sym = self.lookup_qualified(t.name, t, annotation=True)
             if sym is not None and sym.node is not None:
                 return self.anal_type_guard_arg(t, sym.node.fullname)
         # TODO: What if it's an Instance? Then use t.type.fullname?
@@ -1141,7 +1141,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         """Find the type variables of the function type and bind them in our tvar_scope"""
         if fun_type.variables:
             for var in fun_type.variables:
-                var_node = self.lookup_qualified(var.name, defn)
+                var_node = self.lookup_qualified(var.name, defn, annotation=True)
                 assert var_node, "Binding for function type variable not found within function"
                 var_expr = var_node.node
                 assert isinstance(var_expr, TypeVarLikeExpr)
@@ -1440,11 +1440,17 @@ def flatten_tvars(ll: Iterable[List[T]]) -> List[T]:
     return remove_dups(chain.from_iterable(ll))
 
 
+class _LookupFn(Protocol):
+    def __call__(
+        self, __a: str, __b: Context, __c: bool = ..., annotation: bool = ...
+    ) -> Optional[SymbolTableNode]: ...
+
+
 class TypeVarLikeQuery(TypeQuery[TypeVarLikeList]):
     """Find TypeVar and ParamSpec references in an unbound type."""
 
     def __init__(self,
-                 lookup: Callable[[str, Context], Optional[SymbolTableNode]],
+                 lookup: _LookupFn,
                  scope: 'TypeVarLikeScope',
                  *,
                  include_callables: bool = True,
@@ -1474,7 +1480,7 @@ class TypeVarLikeQuery(TypeQuery[TypeVarLikeList]):
                     node = n
                     name = base
         if node is None:
-            node = self.lookup(name, t)
+            node = self.lookup(name, t, annotation=True)
         if node and isinstance(node.node, TypeVarLikeExpr) and (
                 self.include_bound_tvars or self.scope.get_binding(node) is None):
             assert isinstance(node.node, TypeVarLikeExpr)

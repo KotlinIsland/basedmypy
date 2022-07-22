@@ -34,7 +34,8 @@ class SemanticAnalyzerCoreInterface:
 
     @abstractmethod
     def lookup_qualified(self, name: str, ctx: Context,
-                         suppress_errors: bool = False) -> Optional[SymbolTableNode]:
+                         suppress_errors: bool = False
+                         , annotation: bool = False) -> Optional[SymbolTableNode]:
         raise NotImplementedError
 
     @abstractmethod

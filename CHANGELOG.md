@@ -4,6 +4,10 @@
 
 ## [1.4.0]
 ### Added
+- When `__future__.annotations`, all `typing`s are usable without imports
+
+## [Unreleased]
+### Added
 - `ignore_any_from_errors` option to suppress `no-any-expr` messages from other errors
 - Function types are inferred from Overloads, overrides and default values. (no overrides for now sorry)
 - Infer Property types
