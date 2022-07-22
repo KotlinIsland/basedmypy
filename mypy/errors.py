@@ -977,7 +977,7 @@ class Errors:
                     del error["line"]
         return result
 
-    def filter_baseline(self, path: str) -> None:
+    def filter_baseline(self, path: str, as_notes: bool) -> None:
         """Remove baseline errors from the error_info_map"""
         if path not in self.error_info_map:
             return
@@ -1001,8 +1001,12 @@ class Errors:
                         clean_baseline_message(error.message) ==
                         clean_baseline_message(baseline_error["message"])
                 ):
-                    ignored_notes.extend([id(note) for note in error.notes])
                     del baseline_errors[i]
+                    if as_notes:
+                        new_errors.append(error)
+                        error.severity = "note"
+                    else:
+                        ignored_notes.extend([id(note) for note in error.notes])
                     break
             else:
                 new_errors.append(error)
@@ -1023,8 +1027,12 @@ class Errors:
                         clean_baseline_message(baseline_error["message"]) and
                         abs(error.line - baseline_error["line"]) < 100
                 ):
-                    ignored_notes.extend([id(note) for note in error.notes])
                     del baseline_errors[i]
+                    if as_notes:
+                        error.severity = "note"
+                        new_errors.append(error)
+                    else:
+                        ignored_notes.extend([id(note) for note in error.notes])
                     break
             else:
                 new_errors.append(error)

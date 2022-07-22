@@ -3388,7 +3388,7 @@ def process_stale_scc(graph: Graph, scc: List[str], manager: BuildManager) -> No
         for id in stale:
             graph[id].transitive_error = True
     for id in stale:
-        manager.errors.filter_baseline(graph[id].xpath)
+        manager.errors.filter_baseline(graph[id].xpath, manager.options.baseline_as_notes)
         # show new errors only
         manager.flush_errors(
             manager.errors.file_messages(graph[id].xpath),

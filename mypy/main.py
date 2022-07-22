@@ -538,6 +538,9 @@ def process_options(args: List[str],
     add_invertible_flag(
         '--no-auto-baseline', default=True, group=based_group,
         dest="auto_baseline", help="Don't update the baseline automatically.")
+    add_invertible_flag(
+        '--baseline-as-notes', group=based_group, default=False,
+        help="Output the baselined errors as notes (useful for IDEs).")
     based_group.add_argument(
         '--legacy', action='store_true',
         help="Disable all based functionality")
