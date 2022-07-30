@@ -1,6 +1,8 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Added
+- Support using `TypeVar`s in the bounds of other `TypeVar`s
 ### Enhancements
 - Similar errors on the same line will now not be removed
 - Render generic upper bound with `: ` instead of ` <: `

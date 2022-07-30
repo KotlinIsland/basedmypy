@@ -6753,6 +6753,7 @@ class CollectArgTypeVarTypes(TypeTraverserVisitor):
         self.arg_types: set[TypeVarType] = set()
 
     def visit_type_var(self, t: TypeVarType) -> None:
+        t.upper_bound.accept(self)
         self.arg_types.add(t)
 
 
