@@ -99,6 +99,9 @@ def apply_generic_arguments(
         if type is None:
             continue
 
+        # apply concrete bounds
+        tvar.upper_bound = expand_type(tvar.upper_bound, id_to_type)
+
         target_type = get_target_type(
             tvar, type, callable, report_incompatible_typevar_value, context, skip_unsatisfied
         )

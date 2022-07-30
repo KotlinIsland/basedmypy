@@ -1517,6 +1517,12 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                     defn,
                     code=codes.VALID_TYPE,
                 )
+            # update inner type vars
+            typ = get_proper_type(tvar.upper_bound)
+            if isinstance(typ, Instance):
+                typ.args = tuple(it.accept(self) for it in typ.args)
+            if isinstance(typ, UnboundType):
+                tvar.upper_bound = tvar.upper_bound.accept(self)
             binding = self.tvar_scope.bind_new(name, tvar, scopename=defn.name)
             defs.append(binding)
 
@@ -1903,6 +1909,9 @@ class TypeVarLikeQuery(TypeQuery[TypeVarLikeList]):
             and self.scope.get_binding(node) is None
         ):
             assert isinstance(node.node, TypeVarLikeExpr)
+            upper_bound = get_proper_type(node.node.upper_bound)
+            if isinstance(upper_bound, (Instance, UnboundType)):
+                return upper_bound.accept(self) + [(name, node.node)]
             return [(name, node.node)]
         elif not self.include_callables and self._seems_like_callable(t):
             return []

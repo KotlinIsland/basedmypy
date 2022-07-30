@@ -1,0 +1,43 @@
+[case testNestedTypeVarBound]
+from typing import TypeVar, List
+
+T = TypeVar("T", bound=int)
+L = TypeVar("L", bound=List[T])
+
+def foo(l: L) -> T:
+    return l[0]
+
+reveal_type(foo([True]))  # N: Revealed type is "bool"
+foo([""])  # E: Value of type variable "T" of "foo" cannot be "str"  [type-var]
+
+
+[case testNestedTypeVarConstraint-xfail]
+from typing import TypeVar, Iterable
+
+E = TypeVar("E", int, str)
+I = TypeVar("I", bound=Iterable[T])
+
+def foo(i: I, e: E) -> I:
+    assert i[0] == e
+    return i
+
+reveal_type(foo([True], True))  # N: Revealed type is "list[int]"
+reveal_type(foo(["my"], "py"))  # N: Revealed type is "list[str]"
+reveal_type(foo(["my"], 10))  # E: argument 2 is bad
+reveal_type(foo([None], None))  # E: "I of foo" cannot be "list[None]"
+
+
+[case testNestedTypeVarConstraint2-xfail]
+from typing import TypeVar, Iterable, Set
+
+T = TypeVar("T", bound=int)
+C = TypeVar("L", Sequence[T], Mapping[T, T])
+
+def foo(c: C, t: T) -> C:
+    assert c[0] == t
+    return c
+
+reveal_type(foo([True], True))  # N: Revealed type is "Sequence[bool]"
+reveal_type(foo(["my"], "py"))  # E: "T of foo" can't be "str"
+reveal_type(foo({1: 1}, "10"))  # E: bad arg 2
+reveal_type(foo({True: True}, True))  # N: Mapping[bool]
