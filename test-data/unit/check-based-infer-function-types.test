@@ -172,6 +172,60 @@ def foo(a="1") -> None:
 reveal_type(foo)  # N: Revealed type is "Overload(def (a: int), def (a: str =))"
 
 
+[case testOverloadMixedPositionalKeyword]
+from typing import overload
+
+@overload
+def f(a: int, *, b: str): ...
+@overload
+def f(z: int, /, b: str): ...
+
+def f(a, b):
+    reveal_type(a)
+    reveal_type(b)
+[out]
+main:6: error: invalid syntax  [syntax]
+[out version>=3.8]
+main:9: note: Revealed type is "int | int"
+main:10: note: Revealed type is "str"
+
+
+[case testOverloadMixedPositional]
+from typing import overload
+
+@overload
+def f(a: int, b: str): ...
+@overload
+def f(z: str, /, b: str): ...
+
+def f(a, b):
+    reveal_type(a)
+    reveal_type(b)
+[out]
+main:6: error: invalid syntax  [syntax]
+[out version>=3.8]
+main:9: note: Revealed type is "int | str"
+main:10: note: Revealed type is "str"
+
+
+[case testOverloadPositionalDifferentPosition]
+from typing import overload
+
+@overload
+def f(x: int, /, b: int): ...
+@overload
+def f(y: str, z: str, /): ...
+
+def f(a, b):
+    reveal_type(a)
+    reveal_type(b)
+[out]
+main:4: error: invalid syntax  [syntax]
+[out version>=3.8]
+main:9: note: Revealed type is "int | str"
+main:10: note: Revealed type is "int | str"
+
+
 [case testVariadic]
 # flags: --allow-any-expr --disable-error-code truthy-bool --implicit-optional
 from typing import overload
@@ -202,6 +256,32 @@ def f(**kwargs):  # E: Function is missing a type annotation for one or more arg
     return 1 # E: No return value expected  [return-value]
 [builtins fixtures/dict.pyi]
 
+
+[case testInferOverloadWithPositionalOnly]
+from typing import overload
+
+@overload
+def foo(a: int, /): ...
+@overload
+def foo(a: str, /): ...
+
+def foo(a):
+    reveal_type(a)
+
+@overload
+def bar(x: int, /, b: str): ...
+@overload
+def bar(y: None, /, b: ellipsis): ...
+
+def bar(z, b):
+    reveal_type(z)
+    reveal_type(b)
+[out]
+main:4: error: invalid syntax  [syntax]
+[out version>=3.8]
+main:9: note: Revealed type is "int | str"
+main:17: note: Revealed type is "int | None"
+main:18: note: Revealed type is "str | ellipsis"
 
 [case testOverrideOverload-xfail]
 # this is turned off for now
