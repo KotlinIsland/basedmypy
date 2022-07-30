@@ -1,6 +1,10 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Fixes
+- Handle positional only `/` parameters in overload implementation inference
+
+## [1.5.0]
 ### Added
 - Allow literal `int`, `bool` and `Enum`s without `Literal`
 ### Enhancements
