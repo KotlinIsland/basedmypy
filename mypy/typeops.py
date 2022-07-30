@@ -1030,11 +1030,18 @@ def infer_impl_from_parts(
 ):
     impl_func = impl if isinstance(impl, FuncDef) else impl.func
     # infer the types of the impl from the overload types
-    arg_types: dict[str, list[Type]] = defaultdict(list)
+    arg_types: dict[str | int, list[Type]] = defaultdict(list)
     ret_types = []
     for tp in types:
-        for arg_type, arg_name, impl_kind in zip(tp.arg_types, tp.arg_names, tp.arg_kinds):
-            if arg_name in impl_func.arg_names:
+        for i, arg_type in enumerate(tp.arg_types):
+            arg_name = tp.arg_names[i]
+            if not arg_name:  # if it's positional only
+                if arg_type not in arg_types[i]:
+                    arg_types[i].append(arg_type)
+            else:
+                if arg_name in impl_func.arg_names:
+                    if arg_type not in arg_types[arg_name]:
+                        arg_types[arg_name].append(arg_type)
                 if arg_name and arg_name in impl_func.arg_names:
                     if arg_type not in arg_types[arg_name]:
                         arg_types[arg_name].append(arg_type)
@@ -1045,13 +1052,13 @@ def infer_impl_from_parts(
             ret_type = tp.ret_type
         if ret_type not in ret_types:
             ret_types.append(ret_type)
-    arg_types2 = {name: UnionType.make_union(it) for name, it in arg_types.items()}
     res_arg_types = [
-        arg_types2[arg_name]
-        if arg_name in arg_types2 and arg_kind not in (ARG_STAR, ARG_STAR2)
+        UnionType.make_union((arg_types[arg_name_] if arg_name_ else []) + arg_types[i])
+        if arg_kind not in (ARG_STAR, ARG_STAR2)
         else UntypedType()
-        for arg_name, arg_kind in zip(impl_func.arg_names, impl_func.arg_kinds)
+        for i, (arg_name_, arg_kind) in enumerate(zip(impl_func.arg_names, impl_func.arg_kinds))
     ]
+
     ret_type = UnionType.make_union(ret_types)
 
     if impl_func.is_coroutine:
