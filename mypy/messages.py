@@ -2412,6 +2412,8 @@ def format_type_inner(
         if typ.is_noreturn:
             return "NoReturn"
         else:
+            if mypy.options._based:
+                return "Never"
             return "<nothing>"
     elif isinstance(typ, TypeType):
         if not mypy.options._based:

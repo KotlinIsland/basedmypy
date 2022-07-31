@@ -2966,6 +2966,8 @@ class TypeStrVisitor(SyntheticTypeVisitor[str]):
         return "None"
 
     def visit_uninhabited_type(self, t: UninhabitedType) -> str:
+        if mypy.options._based:
+            return "Never"
         return "<nothing>"
 
     def visit_erased_type(self, t: ErasedType) -> str:
