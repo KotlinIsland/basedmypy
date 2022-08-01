@@ -47,9 +47,9 @@ def f1(a: List): ...
 def f2(a: List[Untyped]): ...
 a = [1]
 f1(a)  # E: Call to incomplete function "f1" in typed context  [no-untyped-call] \
-       # N: Type is "def (a: list[Untyped])"
+       # N: Type is "def (a: list[Untyped]) -> None"
 f2(a)  # E: Call to incomplete function "f2" in typed context  [no-untyped-call] \
-       # N: Type is "def (a: list[Untyped])"
+       # N: Type is "def (a: list[Untyped]) -> None"
 
 
 [case testIncompleteCall]

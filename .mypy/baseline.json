@@ -2440,7 +2440,7 @@
         "code": "no-any-expr",
         "column": 56,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 241,
+        "offset": 235,
         "target": "mypy.checker.TypeChecker.check_for_missing_annotations"
       },
       {
@@ -11406,7 +11406,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"((...) -> _T) -> _lru_cache_wrapper[_T]\")",
+        "message": "Expression type contains \"Any\" (has type \"[_T] ((...) -> _T) -> _lru_cache_wrapper[_T]\")",
         "offset": 162,
         "target": "mypy.find_sources"
       }
@@ -13194,7 +13194,7 @@
         "code": "no-any-expr",
         "column": 41,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 376,
+        "offset": 378,
         "target": "mypy.messages.MessageBuilder.has_no_attr"
       },
       {
@@ -13488,14 +13488,14 @@
         "code": "no-any-expr",
         "column": 30,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 289,
+        "offset": 294,
         "target": "mypy.messages.format_type_inner"
       },
       {
         "code": "redundant-expr",
         "column": 12,
         "message": "Left operand of \"and\" is always true",
-        "offset": 170,
+        "offset": 173,
         "target": "mypy.messages.pretty_callable"
       },
       {
@@ -13530,7 +13530,7 @@
         "code": "redundant-expr",
         "column": 7,
         "message": "Left operand of \"and\" is always true",
-        "offset": 175,
+        "offset": 178,
         "target": "mypy.messages.find_defining_module"
       },
       {
@@ -13680,7 +13680,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"((...) -> _T) -> _lru_cache_wrapper[_T]\")",
+        "message": "Expression type contains \"Any\" (has type \"[_T] ((...) -> _T) -> _lru_cache_wrapper[_T]\")",
         "offset": 157,
         "target": "mypy.modulefinder"
       },
@@ -19810,7 +19810,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"((...) -> _T) -> _SingleDispatchCallable[_T]\")",
+        "message": "Expression type contains \"Any\" (has type \"[_T] ((...) -> _T) -> _SingleDispatchCallable[_T]\")",
         "offset": 17,
         "target": "mypy.stubtest"
       },
@@ -24264,21 +24264,21 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(_FT) -> _FT\")",
+        "message": "Expression type contains \"Any\" (has type \"[_FT: (...) -> Any] (_FT) -> _FT\")",
         "offset": 49,
         "target": "mypy.test.teststubgen"
       },
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(_FT) -> _FT\")",
+        "message": "Expression type contains \"Any\" (has type \"[_FT: (...) -> Any] (_FT) -> _FT\")",
         "offset": 26,
         "target": "mypy.test.teststubgen"
       },
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(_FT) -> _FT\")",
+        "message": "Expression type contains \"Any\" (has type \"[_FT: (...) -> Any] (_FT) -> _FT\")",
         "offset": 25,
         "target": "mypy.test.teststubgen"
       },
@@ -24306,14 +24306,14 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(_FT) -> _FT\")",
+        "message": "Expression type contains \"Any\" (has type \"[_FT: (...) -> Any] (_FT) -> _FT\")",
         "offset": 436,
         "target": "mypy.test.teststubgen"
       },
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(_FT) -> _FT\")",
+        "message": "Expression type contains \"Any\" (has type \"[_FT: (...) -> Any] (_FT) -> _FT\")",
         "offset": 16,
         "target": "mypy.test.teststubgen"
       },
@@ -25287,7 +25287,7 @@
         "code": "no-any-expr",
         "column": 53,
         "message": "Expression type contains \"Any\" (has type \"type[CallableType]\")",
-        "offset": 75,
+        "offset": 82,
         "target": "mypy.typeops.infer_impl_from_parts"
       },
       {
@@ -25303,7 +25303,7 @@
         "code": "no-any-explicit",
         "column": 0,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 43,
+        "offset": 44,
         "target": "mypy.types"
       },
       {
@@ -25512,14 +25512,14 @@
       {
         "code": "no-any-return",
         "column": 8,
-        "message": "Returning Any from function declared to return \"T\"",
+        "message": "Returning Any from function declared to return \"T@accept\"",
         "offset": 33,
         "target": "mypy.types.CallableArgument.accept"
       },
       {
         "code": "no-any-return",
         "column": 8,
-        "message": "Returning Any from function declared to return \"T\"",
+        "message": "Returning Any from function declared to return \"T@accept\"",
         "offset": 25,
         "target": "mypy.types.TypeList.accept"
       },
@@ -26597,7 +26597,7 @@
       {
         "code": "no-any-return",
         "column": 8,
-        "message": "Returning Any from function declared to return \"T\"",
+        "message": "Returning Any from function declared to return \"T@accept\"",
         "offset": 124,
         "target": "mypy.types.RawExpressionType.accept"
       },
@@ -26618,7 +26618,7 @@
       {
         "code": "no-any-return",
         "column": 8,
-        "message": "Returning Any from function declared to return \"T\"",
+        "message": "Returning Any from function declared to return \"T@accept\"",
         "offset": 23,
         "target": "mypy.types.StarType.accept"
       },
@@ -26667,7 +26667,7 @@
       {
         "code": "no-any-return",
         "column": 8,
-        "message": "Returning Any from function declared to return \"T\"",
+        "message": "Returning Any from function declared to return \"T@accept\"",
         "offset": 54,
         "target": "mypy.types.EllipsisType.accept"
       },
@@ -26688,7 +26688,7 @@
       {
         "code": "no-any-return",
         "column": 8,
-        "message": "Returning Any from function declared to return \"T\"",
+        "message": "Returning Any from function declared to return \"T@accept\"",
         "offset": 29,
         "target": "mypy.types.PlaceholderType.accept"
       },
@@ -26696,7 +26696,7 @@
         "code": "unreachable",
         "column": 12,
         "message": "Statement is unreachable",
-        "offset": 160,
+        "offset": 165,
         "target": "mypy.types.TypeStrVisitor.visit_type_var"
       },
       {
@@ -26724,7 +26724,7 @@
         "code": "truthy-bool",
         "column": 11,
         "message": "Member \"partial_fallback\" has type \"Instance\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 84,
+        "offset": 94,
         "target": "mypy.types.TypeStrVisitor.visit_tuple_type"
       },
       {
@@ -31084,21 +31084,21 @@
       {
         "code": "no-any-expr",
         "column": 22,
-        "message": "Expression type contains \"Any\" (has type \"(F) -> F\")",
+        "message": "Expression type contains \"Any\" (has type \"[F: (...) -> Any] (F) -> F\")",
         "offset": 0,
         "target": "mypyc.irbuild.main"
       },
       {
         "code": "no-any-expr",
         "column": 22,
-        "message": "Expression type contains \"Any\" (has type \"(F) -> F\")",
+        "message": "Expression type contains \"Any\" (has type \"[F: (...) -> Any] (F) -> F\")",
         "offset": 0,
         "target": "mypyc.irbuild.main"
       },
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"(F) -> F\")",
+        "message": "Expression type contains \"Any\" (has type \"[F: (...) -> Any] (F) -> F\")",
         "offset": 3,
         "target": "mypyc.irbuild.main"
       }
@@ -31347,7 +31347,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(_FT) -> _FT\")",
+        "message": "Expression type contains \"Any\" (has type \"[_FT: (...) -> Any] (_FT) -> _FT\")",
         "offset": 15,
         "target": "mypyc.test.test_external"
       }
