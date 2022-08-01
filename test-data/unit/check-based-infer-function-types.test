@@ -20,8 +20,8 @@ class B1(A1):
 
 reveal_type(A1.__new__)  # N: Revealed type is "def (cls: type[__main__.A1]) -> Untyped"
 reveal_type(B1.__new__)  # N: Revealed type is "def (cls: type[__main__.B1]) -> Untyped"
-reveal_type(A1.__init__)  # N: Revealed type is "def (self: __main__.A1)"
-reveal_type(B1.__init__)  # N: Revealed type is "def (self: __main__.B1)"
+reveal_type(A1.__init__)  # N: Revealed type is "def (self: __main__.A1) -> None"
+reveal_type(B1.__init__)  # N: Revealed type is "def (self: __main__.B1) -> None"
 
 class A2:
     def __new__(cls, a: int): ...
@@ -32,8 +32,8 @@ class B2(A2):
 
 reveal_type(A2.__new__)  # N: Revealed type is "def (cls: type[__main__.A2], a: int) -> __main__.A2"
 reveal_type(B2.__new__)  # N: Revealed type is "def (cls: type[__main__.B2], a: int) -> __main__.B2"
-reveal_type(A2.__init__)  # N: Revealed type is "def (self: __main__.A2, a: int)"
-reveal_type(B2.__init__)  # N: Revealed type is "def (self: __main__.B2, a: int)"
+reveal_type(A2.__init__)  # N: Revealed type is "def (self: __main__.A2, a: int) -> None"
+reveal_type(B2.__init__)  # N: Revealed type is "def (self: __main__.B2, a: int) -> None"
 
 
 [case testInferFunctionTypesComplete-xfail]
@@ -46,8 +46,8 @@ class B1(A1):
 
 reveal_type(A1.__new__)  # N: Revealed type is "def (cls: type[__main__.A1]) -> __main__.A1"
 reveal_type(B1.__new__)  # N: Revealed type is "def (cls: type[__main__.B1]) -> __main__.B1"
-reveal_type(A1.__init__)  # N: Revealed type is "def (self: __main__.A1)"
-reveal_type(B1.__init__)  # N: Revealed type is "def (self: __main__.B1)"
+reveal_type(A1.__init__)  # N: Revealed type is "def (self: __main__.A1) -> None"
+reveal_type(B1.__init__)  # N: Revealed type is "def (self: __main__.B1) -> None"
 
 class A2:
     def __new__(cls, a: int): ...
@@ -58,21 +58,21 @@ class B2(A2):
 
 reveal_type(A2.__new__)  # N: Revealed type is "def (cls: type[__main__.A2], a: int) -> __main__.A2"
 reveal_type(B2.__new__)  # N: Revealed type is "def (cls: type[__main__.B2], a: int) -> __main__.B2"
-reveal_type(A2.__init__)  # N: Revealed type is "def (self: __main__.A2, a: int)"
-reveal_type(B2.__init__)  # N: Revealed type is "def (self: __main__.B2, a: int)"
+reveal_type(A2.__init__)  # N: Revealed type is "def (self: __main__.A2, a: int) -> None"
+reveal_type(B2.__init__)  # N: Revealed type is "def (self: __main__.B2, a: int) -> None"
 
 
 [case testDefaultInstance-xfail]
 class A: ...
 def f(a=A()): ...
-reveal_type(f)  # N: Revealed type is "def (a: __main__.A =)"
+reveal_type(f)  # N: Revealed type is "def (a: __main__.A =) -> None"
 
 class B:
     def foo(self, a: object): ...
 class C(B):
     def foo(self, a=A()): ...
 
-reveal_type(C.foo)  # N: Revealed type is "def (self: __main__.C, a: object =)"
+reveal_type(C.foo)  # N: Revealed type is "def (self: __main__.C, a: object =) -> None"
 
 
 [case testDontInferFunctionTypes]
@@ -105,7 +105,7 @@ class B2(A2):
 
 reveal_type(A2.__new__)  # N: Revealed type is "def (cls: type[__main__.A2], a: int) -> Untyped"
 reveal_type(B2.__new__)  # N: Revealed type is "def (cls: type[__main__.B2], a: Untyped) -> Untyped"
-reveal_type(A2.__init__)  # N: Revealed type is "def (self: __main__.A2, a: int)"
+reveal_type(A2.__init__)  # N: Revealed type is "def (self: __main__.A2, a: int) -> None"
 reveal_type(B2.__init__)  # N: Revealed type is "def (self: __main__.B2, a: Untyped) -> Untyped"
 
 
@@ -169,7 +169,7 @@ def foo(a='1') -> None:
 def foo(a="1") -> None:
     reveal_type(a)  # N: Revealed type is "int | str"
 
-reveal_type(foo)  # N: Revealed type is "Overload(def (a: int), def (a: str =))"
+reveal_type(foo)  # N: Revealed type is "Overload(def (a: int) -> None, def (a: str =) -> None)"
 
 
 [case testOverloadMixedPositionalKeyword]
@@ -338,7 +338,7 @@ reveal_type(A.f)  # N: Revealed type is "Overload(def (self: __main__.A, f: int)
 reveal_type(B.f)  # N: Revealed type is "Overload(def (self: __main__.B, f: int) -> str, def (self: __main__.B, f: str) -> int)"
 reveal_type(C.f)  # N: Revealed type is "Overload(def (self: __main__.C, f: int) -> str, def (self: __main__.C, f: str) -> int)"
 reveal_type(D.f)  # N: Revealed type is "Overload(def (self: __main__.D, f: int) -> str, def (self: __main__.D, f: str) -> int)"
-reveal_type(E.f)  # N: Revealed type is "def (self: __main__.E, f: str)"
+reveal_type(E.f)  # N: Revealed type is "def (self: __main__.E, f: str) -> None"
 reveal_type(F.f)  # N: Revealed type is "Overload(def (self: __main__.F, f: int) -> str, def (self: __main__.F, f: str) -> int)"
 reveal_type(G.f)  # N: Revealed type is "Overload(def (self: __main__.G, f: int) -> str, def (self: __main__.G, f: str) -> int)"
 
@@ -367,7 +367,7 @@ def bar(a=1) -> None:
     1 + ""  # E: Unsupported operand types for + ("int" and "str")  [operator]
 
 bar()
-reveal_type(bar)  # N: Revealed type is "def (a: int =)"
+reveal_type(bar)  # N: Revealed type is "def (a: int =) -> None"
 
 
 [case inferPropertyTypes]
@@ -467,4 +467,4 @@ def deco(func: T) -> T: ...
 @deco
 def b(b=True) -> None: ...
 
-reveal_type(b)  # N: Revealed type is "def (b: bool =)"
+reveal_type(b)  # N: Revealed type is "def (b: bool =) -> None"
