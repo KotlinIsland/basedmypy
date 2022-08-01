@@ -3137,6 +3137,8 @@ class TypeStrVisitor(SyntheticTypeVisitor[str]):
                     s += f" -> TypeGuard[{t.type_guard.accept(self)}]"
                 else:
                     s += f" -> {t.ret_type.accept(self)}"
+            elif mypy.options._based:
+                s += " -> None"
 
             s = self.render_callable_type_params(t, lambda x: x.accept(self)) + s
 
