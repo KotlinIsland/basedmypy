@@ -83,6 +83,7 @@ from mypy.types import (
     TypeOfAny,
     TypeStrVisitor,
     TypeType,
+    TypeVarLikeType,
     TypeVarTupleType,
     TypeVarType,
     UnboundType,
@@ -2256,7 +2257,11 @@ def format_callable_args(
 
 
 def format_type_inner(
-    typ: Type, verbosity: int, fullnames: set[str] | None, module_names: bool = False
+    typ: Type,
+    verbosity: int,
+    fullnames: set[str] | None,
+    module_names: bool = False,
+    disable_own_scope: Sequence[TypeVarLikeType] = (),
 ) -> str:
     """
     Convert a type to a relatively short string suitable for error messages.
@@ -2264,18 +2269,14 @@ def format_type_inner(
     Args:
       verbosity: a coarse grained control on the verbosity of the type
       fullnames: a set of names that should be printed in full
+      disable_own_scope: TypeVars to disable scope names
     """
 
     def format(typ: Type) -> str:
-        return format_type_inner(typ, verbosity, fullnames)
+        return format_type_inner(typ, verbosity, fullnames, disable_own_scope=disable_own_scope)
 
     def format_list(types: Sequence[Type]) -> str:
         return ", ".join(format(typ) for typ in types)
-
-    def format_union(types: Sequence[Type]) -> str:
-        if not mypy.options._based:
-            return format_list(types)
-        return " | ".join(format(typ) for typ in types)
 
     def format_literal_value(typ: LiteralType) -> str:
         if typ.is_enum_literal():
@@ -2329,7 +2330,7 @@ def format_type_inner(
         return f"Unpack[{format(typ.type)}]"
     elif isinstance(typ, TypeVarType):
         # This is similar to non-generic instance types.
-        if mypy.options._based:
+        if mypy.options._based and typ.scopename and typ not in disable_own_scope:
             return f"{typ.name}@{typ.scopename}"
         return typ.name
     elif isinstance(typ, TypeVarTupleType):
@@ -2409,11 +2410,11 @@ def format_type_inner(
     elif isinstance(typ, DeletedType):
         return "<deleted>"
     elif isinstance(typ, UninhabitedType):
+        if mypy.options._based:
+            return "Never"
         if typ.is_noreturn:
             return "NoReturn"
         else:
-            if mypy.options._based:
-                return "Never"
             return "<nothing>"
     elif isinstance(typ, TypeType):
         if not mypy.options._based:
@@ -2426,6 +2427,8 @@ def format_type_inner(
             # return type (this always works).
             return format(TypeType.make_normalized(erase_type(func.items[0].ret_type)))
         elif isinstance(func, CallableType):
+            if func.variables:
+                disable_own_scope = func.variables
             if func.type_guard is not None:
                 return_type = f"TypeGuard[{format(func.type_guard)}]"
             else:
@@ -2444,7 +2447,8 @@ def format_type_inner(
             )
             if not mypy.options._based:
                 return f"Callable[[{args}], {return_type}]"
-            return f"({args}) -> {return_type}"
+            args = TypeStrVisitor.render_callable_type_params(func, format) + f"({args})"
+            return f"{args} -> {return_type}"
         else:
             # Use a simple representation for function types; proper
             # function types may result in long and difficult-to-read

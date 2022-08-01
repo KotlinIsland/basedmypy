@@ -8,6 +8,7 @@ from abc import abstractmethod
 from typing import (
     TYPE_CHECKING,
     Any,
+    Callable,
     ClassVar,
     Dict,
     Generator,
@@ -3137,33 +3138,41 @@ class TypeStrVisitor(SyntheticTypeVisitor[str]):
                 else:
                     s += f" -> {t.ret_type.accept(self)}"
 
-            if t.variables:
-                vs = []
-                for var in t.variables:
-                    if isinstance(var, TypeVarType):
-                        # We reimplement TypeVarType.__repr__ here in order to support id_mapper.
-                        if (
-                            mypy.options._based
-                            and var.scopename
-                            and t.name
-                            and var.scopename != t.name.split(" ")[0]
-                        ):
-                            name = f"{var.name} (from {var.scopename})"
-                        else:
-                            name = var.name
-                        if var.values:
-                            vals = f"({', '.join(val.accept(self) for val in var.values)})"
-                            vs.append(f"{name} in {vals}")
-                        elif not is_named_instance(var.upper_bound, "builtins.object"):
-                            vs.append(f"{name} <: {var.upper_bound.accept(self)}")
-                        else:
-                            vs.append(name)
-                    else:
-                        # For other TypeVarLikeTypes, just use the name
-                        vs.append(var.name)
-                s = f"[{', '.join(vs)}] {s}"
+            s = self.render_callable_type_params(t, lambda x: x.accept(self)) + s
 
             return f"def {s}"
+
+    @staticmethod
+    def render_callable_type_params(t: CallableType, renderer: Callable[[Type], str]) -> str:
+        if not t.variables:
+            return ""
+        vs = []
+        for var in t.variables:
+            if isinstance(var, TypeVarType):
+                # We reimplement TypeVarType.__repr__ here in order to support id_mapper.
+                if (
+                    mypy.options._based
+                    and var.scopename
+                    and t.name
+                    and var.scopename != t.name.split(" ")[0]
+                ):
+                    name = f"{var.name} (from {var.scopename})"
+                else:
+                    name = var.name
+                if var.values:
+                    vals = f"({', '.join(renderer(val) for val in var.values)})"
+                    vs.append(f"{name} in {vals}")
+                elif not is_named_instance(var.upper_bound, "builtins.object"):
+                    if mypy.options._based:
+                        vs.append(f"{name}: {renderer(var.upper_bound)}")
+                    else:
+                        vs.append(f"{name} <: {renderer(var.upper_bound)}")
+                else:
+                    vs.append(name)
+            else:
+                # For other TypeVarLikeTypes, just use the name
+                vs.append(var.name)
+        return f"[{', '.join(vs)}] "
 
     def visit_overloaded(self, t: Overloaded) -> str:
         a = []
