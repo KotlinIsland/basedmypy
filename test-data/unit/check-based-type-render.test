@@ -14,6 +14,17 @@ class A(Generic[T2]):
 
 reveal_type(A.f)  # N: Revealed type is "def [T2 (from A), T] (self: __main__.A[T2], t: T, t2: T2) -> T | T2"
 reveal_type(A[int]().f)  # N: Revealed type is "def [T] (t: T, t2: int) -> T | int"
+A.f = 1  # E: Cannot assign to a method  [assignment] \
+         # E: Incompatible types in assignment (expression has type "int", variable has type "[T2 (from A), T] (A[T2], T, T2) -> T | T2")  [assignment]
+
+
+[case testGenericFunction]
+from typing import TypeVar
+T = TypeVar("T", bound=int)
+
+def foo(t: T) -> T: ...
+reveal_type(foo)  # N: Revealed type is "def [T: int] (t: T) -> T"
+foo = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "[T: int] (T) -> T")  [assignment]
 
 
 [case testRenderAny]
@@ -47,14 +58,18 @@ from typing import TypeVar
 T = TypeVar("T", bound=int)
 
 def foo(t: T): ...
-reveal_type(foo)  # N: Revealed type is "def[T: int](t: T)"
+reveal_type(foo)  # N: Revealed type is "def [T: int] (t: T)"
 
 
 [case testInferredNever]
-a: bool
-if a: ...
-elif not a: ...
-else:
-    reveal_type(a)  # N: Revealed type is "Never"
-                    # E: Statement is unreachable  [unreachable]
+a: int = []  # E: Incompatible types in assignment (expression has type "list[Never]", variable has type "int")  [assignment]
+reveal_type([])  # N: Revealed type is "list[Never]"
 
+
+[case testNoReturnAsNever]
+from typing import NoReturn
+a: NoReturn = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "Never")  [assignment]
+def b() -> NoReturn: ...
+reveal_type(a)  # N: Revealed type is "Never"
+reveal_type(b)  # N: Revealed type is "def () -> Never"
+b = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "() -> Never")  [assignment]
