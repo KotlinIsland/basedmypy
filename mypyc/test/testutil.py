@@ -103,9 +103,8 @@ def build_ir_for_single_file2(
     compiler_options = compiler_options or CompilerOptions(capi_version=(3, 5))
     import mypy.options
 
-    mypy.options._based = False
+    mypy.options._based = "test"
     options = Options()
-    options.legacy = True
     options.show_traceback = True
     options.use_builtins_fixtures = True
     options.strict_optional = True

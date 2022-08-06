@@ -16,7 +16,7 @@ class ArgSuite(Suite):
     def test_coherence(self) -> None:
         import mypy.options
 
-        mypy.options._based = False
+        mypy.options._based = "test"
         options = Options()
         _, parsed_options = process_options([], require_targets=False)
         # FIX: test this too. Requires changing working dir to avoid finding 'setup.cfg'

@@ -63,7 +63,7 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
         testcase.normalize_output = False
     args.append("--show-traceback")
     if "based" not in testcase.file.rsplit(os.sep)[-1]:
-        args.append("--legacy")
+        args.append("--legacy-test")
     if "--error-summary" not in args:
         args.append("--no-error-summary")
     # Type check the program.

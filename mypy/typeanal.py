@@ -18,6 +18,7 @@ from typing import (
 
 from typing_extensions import Final, Protocol
 
+import mypy.options
 from mypy import errorcodes as codes, message_registry, nodes
 from mypy.backports import OrderedDict
 from mypy.errorcodes import ErrorCode
@@ -687,7 +688,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             value = sym.node.name
             # it's invalid to use in an expression, ie: a TypeAlias
             if not defining_literal:
-                if not self.options.bare_literals:
+                if not mypy.options._based == "test":
                     base_enum_short_name = sym.node.info.name
                     msg = message_registry.INVALID_TYPE_RAW_ENUM_VALUE.format(
                         base_enum_short_name, value
@@ -948,7 +949,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         if self.report_invalid_types:
             msg = None
             if t.base_type_name in ("builtins.int", "builtins.bool"):
-                if not self.options.bare_literals:
+                if not mypy.options._based == "test":
                     # The only time it makes sense to use an int or bool is inside of
                     # a literal type.
                     msg = f"Invalid type: try using Literal[{repr(t.literal_value)}] instead?"
@@ -988,7 +989,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             self.nesting_level
             and t.bare_literal
             and not (self.api.is_future_flag_set("annotations") or self.api.is_stub_file)
-            and self.options.bare_literals
+            and mypy.options._based == "test"
         ):
             self.fail(
                 f'"{t}" is a bare literal and shouldn\'t be used in a type operation without'

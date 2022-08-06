@@ -696,7 +696,7 @@ class StubgenPythonSuite(DataSuite):
         print(testcase.name)
         print(testcase.file)
         if "based" not in testcase.file.split(os.sep)[-1]:
-            options.legacy = True
+            options.legacy = "test"
         modules = self.parse_modules(source)
         out_dir = "out"
         try:

@@ -25,7 +25,7 @@ def test_error_stream(testcase: DataDrivenTestCase) -> None:
     """
     import mypy.options
 
-    mypy.options._based = False
+    mypy.options._based = "test"
     options = Options()
     options.show_traceback = True
 

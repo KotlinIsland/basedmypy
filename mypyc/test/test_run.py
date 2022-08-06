@@ -176,9 +176,8 @@ class TestRun(MypycDataSuite):
 
         from mypy import options as mypy_options
 
-        mypy_options._based = False
+        mypy_options._based = "test"
         options = Options()
-        options.legacy = True
         options.use_builtins_fixtures = True
         options.show_traceback = True
         options.strict_optional = True

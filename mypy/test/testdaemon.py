@@ -43,7 +43,7 @@ def test_daemon(testcase: DataDrivenTestCase) -> None:
         cmd = cmd[1:].strip()
         cmd = cmd.replace("{python}", sys.executable)
         if cmd.split()[1] in ("start", "restart", "run"):
-            cmd = cmd.replace("-- ", "-- --legacy ")
+            cmd = cmd.replace("-- ", "-- --legacy-test ")
         sts, output = run_cmd(cmd)
         output_lines = output.splitlines()
         output_lines = normalize_error_messages(output_lines)

@@ -3,7 +3,7 @@ import re
 import sys
 from typing import Any, Callable, Dict, List, Mapping, Optional, Pattern, Set, Tuple
 
-from typing_extensions import TYPE_CHECKING, Final
+from typing_extensions import TYPE_CHECKING, Final, Literal
 
 from mypy import defaults
 from mypy.backports import OrderedDict
@@ -64,7 +64,7 @@ OPTIONS_AFFECTING_CACHE: Final = (PER_MODULE_OPTIONS | {"platform", "bazel", "pl
     "debug_cache"
 }
 
-_based = True
+_based: bool | Literal["test"] = True
 
 
 def flip_if_not_based(b: bool) -> bool:
@@ -120,7 +120,6 @@ class Options:
         self.exclude: List[str] = []
 
         # Based options
-        self.legacy = False
         self.write_baseline = False
         self.baseline_file = defaults.BASELINE_FILE
         # TODO make this a tuple or something that will make comparisons easier
@@ -131,7 +130,7 @@ class Options:
         self.targets: List[str] = []
         self.ignore_any_from_error = True
         self.incomplete_is_typed = flip_if_not_based(False)
-        self.bare_literals = flip_if_not_based(True)
+        self.union_at_join = flip_if_not_based(True)
 
         # disallow_any options
         self.disallow_any_generics = flip_if_not_based(True)

@@ -193,7 +193,11 @@ def trivial_join(s: Type, t: Type) -> ProperType:
 
 
 def _union_join(l: ProperType, r: ProperType) -> Optional[ProperType]:
-    if isinstance(l, PlaceholderType) or isinstance(r, PlaceholderType) or not mypy.options._based:
+    if (
+        isinstance(l, PlaceholderType)
+        or isinstance(r, PlaceholderType)
+        or not mypy.options._based == "test"
+    ):
         return None
     return r if is_proper_subtype(l, r) else mypy.typeops.make_simplified_union([l, r])
 

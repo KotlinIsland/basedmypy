@@ -580,6 +580,7 @@ def process_options(
     based_group.add_argument(
         "--legacy", action="store_true", help="Disable all based functionality"
     )
+    based_group.add_argument("--legacy-test", action="store_true", help=argparse.SUPPRESS)
     add_invertible_flag(
         "--default-return",
         default=False,
@@ -1257,6 +1258,9 @@ def process_options(
 
     if dummy.legacy:
         mypy.options._based = False
+
+    if dummy.legacy_test:
+        mypy.options._based = "test"
 
     based_enabled_codes = (
         {

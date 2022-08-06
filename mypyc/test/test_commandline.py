@@ -45,7 +45,7 @@ class TestCommandLine(MypycDataSuite):
         try:
             # Compile program
             cmd = subprocess.run(
-                [sys.executable, "-m", "mypyc", "--legacy", *args],
+                [sys.executable, "-m", "mypyc", "--legacy-test", *args],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 cwd="tmp",
