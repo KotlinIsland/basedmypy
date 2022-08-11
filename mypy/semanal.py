@@ -3162,7 +3162,7 @@ class SemanticAnalyzer(
     ) -> Type | None:
         """Return builtins.int if rvalue is an int literal, etc.
         If this is a 'Final' context, we return "Literal[...]" instead."""
-        if self.options.semantic_analysis_only or self.function_stack:
+        if self.options.semantic_analysis_only or self.function_stack and not do_bools:
             # Skip this if we're only doing the semantic analysis pass.
             # This is mostly to avoid breaking unit tests.
             # Also skip inside a function; this is to avoid confusing
