@@ -9,6 +9,7 @@
 ### Fixes
 - Handle positional only `/` parameters in overload implementation inference
 - Render inferred literal without `?`
+- Fix infer from defaults for inner functions
 
 ## [1.5.0]
 ### Added
