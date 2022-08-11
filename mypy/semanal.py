@@ -3437,7 +3437,7 @@ class SemanticAnalyzer(
 
         If this is a 'Final' context, we return "Literal[...]" instead.
         """
-        if self.function_stack:
+        if self.function_stack and not do_bools:
             # Skip inside a function; this is to avoid confusing
             # the code that handles dead code due to isinstance()
             # inside type variables with value restrictions (like

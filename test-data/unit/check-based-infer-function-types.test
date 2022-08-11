@@ -468,3 +468,9 @@ def deco(func: T) -> T: ...
 def b(b=True) -> None: ...
 
 reveal_type(b)  # N: Revealed type is "def (b: bool =) -> None"
+
+
+[case testInferFromDefaultNested]
+def f1():
+    def f2(a=True): ...
+    reveal_type(f2)  # N: Revealed type is "def (a: bool =) -> None"
