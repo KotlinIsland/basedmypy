@@ -8,12 +8,13 @@ Test cases can provide a custom driver.py that overrides this file.
 """
 
 import sys
+
 import native
 
 failures = []
 
 for name in dir(native):
-    if name.startswith('test_'):
+    if name.startswith("test_"):
         test_func = getattr(native, name)
         try:
             test_func()
@@ -21,11 +22,11 @@ for name in dir(native):
             failures.append(sys.exc_info())
 
 if failures:
-    from traceback import print_exception, format_tb
     import re
+    from traceback import format_tb, print_exception
 
     def extract_line(tb):
-        formatted = '\n'.join(format_tb(tb))
+        formatted = "\n".join(format_tb(tb))
         m = re.search('File "(native|driver).py", line ([0-9]+), in (test_|<module>)', formatted)
         if m is None:
             return "0"

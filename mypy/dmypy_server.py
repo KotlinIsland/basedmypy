@@ -546,7 +546,7 @@ class Server:
         changed += self.find_added_suppressed(
             self.fine_grained_manager.graph, set(), manager.search_paths
         )
-        manager.search_paths = compute_search_paths(sources, manager.options, manager.data_dir)
+        manager.search_paths = compute_search_paths(sources, manager.options, manager.typeshed_dir)
         t1 = time.time()
         manager.log(f"fine-grained increment: find_changed: {t1 - t0:.3f}s")
         messages = self.fine_grained_manager.update(changed, removed)
@@ -576,7 +576,7 @@ class Server:
 
         self.update_sources(sources)
         changed_paths = self.fswatcher.find_changed()
-        manager.search_paths = compute_search_paths(sources, manager.options, manager.data_dir)
+        manager.search_paths = compute_search_paths(sources, manager.options, manager.typeshed_dir)
 
         t1 = time.time()
         manager.log(f"fine-grained increment: find_changed: {t1 - t0:.3f}s")

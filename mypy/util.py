@@ -41,7 +41,7 @@ with importlib_resources.path(
     "mypy",  # mypy-c doesn't support __package__
     "py.typed",  # a marker file for type information, we assume typeshed to live in the same dir
 ) as _resource:
-    TYPESHED_DIR: Final = str(_resource.parent / "typeshed")
+    TYPESHED_DIR: Final = str(_resource.parent / "basedtypeshed")
 
 
 ENCODING_RE: Final = re.compile(rb"([ \t\v]*#.*(\r\n?|\n))??[ \t\v]*#.*coding[:=][ \t]*([-\w.]+)")
@@ -801,6 +801,42 @@ def is_stub_package_file(file: str) -> bool:
 
 def unnamed_function(name: Optional[str]) -> bool:
     return name is not None and name == "_"
+
+
+def python_executable_prefix(v: str) -> List[str]:
+    if sys.platform == "win32":
+        # on Windows, all Python executables are named `python`. To handle this, there
+        # is the `py` launcher, which can be passed a version e.g. `py -3.8`, and it will
+        # execute an installed Python 3.8 interpreter. See also:
+        # https://docs.python.org/3/using/windows.html#python-launcher-for-windows
+        return ["py", "-{}".format(v)]
+    else:
+        return ["python{}".format(v)]
+
+
+class PythonExecutableInferenceError(Exception):
+    """Represents a failure to infer the version or executable while searching."""
+
+
+def _python_executable_from_version(python_version: Tuple[int, int]) -> str:
+    if sys.version_info[:2] == python_version:
+        return sys.executable
+    str_ver = ".".join(map(str, python_version))
+    try:
+        sys_exe = (
+            subprocess.check_output(
+                python_executable_prefix(str_ver) + ["-c", "import sys; print(sys.executable)"],
+                stderr=subprocess.STDOUT,
+            )
+            .decode()
+            .strip()
+        )
+        return sys_exe
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        raise PythonExecutableInferenceError(
+            "failed to find a Python executable matching version {},"
+            " perhaps try --python-executable, or --no-site-packages?".format(python_version)
+        ) from e
 
 
 # TODO: replace with uses of perf_counter_ns when support for py3.6 is dropped

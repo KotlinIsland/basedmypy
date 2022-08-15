@@ -11,7 +11,7 @@ from typing import Iterator, List, Tuple
 import filelock
 
 import mypy.api
-from mypy.test.config import package_path, pip_lock, pip_timeout, test_temp_dir
+from mypy.test.config import PREFIX, package_path, pip_lock, pip_timeout, test_temp_dir
 from mypy.test.data import DataDrivenTestCase, DataSuite
 from mypy.test.helpers import assert_string_arrays_equal, perform_file_operations
 
@@ -50,7 +50,16 @@ def install_package(
     pkg: str, python_executable: str = sys.executable, use_pip: bool = True, editable: bool = False
 ) -> None:
     """Install a package from test-data/packages/pkg/"""
-    working_dir = os.path.join(package_path, pkg)
+    install_self(os.path.join(package_path, pkg), python_executable, use_pip, editable)
+
+
+def install_self(
+    working_dir: str,
+    python_executable: str = sys.executable,
+    use_pip: bool = True,
+    editable: bool = False,
+) -> None:
+    """Installs a package at the given ``working_dir``"""
     with tempfile.TemporaryDirectory() as dir:
         if use_pip:
             install_cmd = [python_executable, "-m", "pip", "install"]
@@ -95,6 +104,7 @@ def test_pep561(testcase: DataDrivenTestCase) -> None:
     assert pkgs != [], "No packages to install for PEP 561 test?"
     with virtualenv(python) as venv:
         venv_dir, python_executable = venv
+        install_self(PREFIX, python_executable, use_pip, editable)
         for pkg in pkgs:
             install_package(pkg, python_executable, use_pip, editable)
 

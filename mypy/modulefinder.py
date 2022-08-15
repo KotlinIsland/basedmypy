@@ -27,6 +27,7 @@ from mypy.fscache import FileSystemCache
 from mypy.nodes import MypyFile
 from mypy.options import Options
 from mypy.stubinfo import is_legacy_bundled_package
+from mypy.util import _python_executable_from_version
 
 
 # Paths to be searched in find_module().
@@ -187,7 +188,9 @@ class FindModuleCache:
         if options:
             custom_typeshed_dir = options.custom_typeshed_dir
         self.stdlib_py_versions = stdlib_py_versions or load_stdlib_py_versions(
-            custom_typeshed_dir
+            custom_typeshed_dir,
+            (options and options.python_executable)
+            or _python_executable_from_version(sys.version_info[:2]),
         )
 
     def clear(self) -> None:
@@ -686,16 +689,16 @@ def mypy_path() -> List[str]:
 
 
 def default_lib_path(
-    data_dir: str, pyversion: Tuple[int, int], custom_typeshed_dir: Optional[str]
+    typeshed_dir: str, pyversion: Tuple[int, int], custom_typeshed_dir: Optional[str]
 ) -> List[str]:
     """Return default standard library search paths."""
     path: List[str] = []
 
     if custom_typeshed_dir:
-        typeshed_dir = os.path.join(custom_typeshed_dir, "stdlib")
+        typeshed_stdlib_dir = os.path.join(custom_typeshed_dir, "stdlib")
         mypy_extensions_dir = os.path.join(custom_typeshed_dir, "stubs", "mypy-extensions")
-        versions_file = os.path.join(typeshed_dir, "VERSIONS")
-        if not os.path.isdir(typeshed_dir) or not os.path.isfile(versions_file):
+        versions_file = os.path.join(typeshed_stdlib_dir, "VERSIONS")
+        if not os.path.isdir(typeshed_stdlib_dir) or not os.path.isfile(versions_file):
             print(
                 "error: --custom-typeshed-dir does not point to a valid typeshed ({})".format(
                     custom_typeshed_dir
@@ -703,12 +706,13 @@ def default_lib_path(
             )
             sys.exit(2)
     else:
-        auto = os.path.join(data_dir, "stubs-auto")
+        # TODO: figure out what this is
+        auto = os.path.join(typeshed_dir, "stubs-auto")
         if os.path.isdir(auto):
-            data_dir = auto
-        typeshed_dir = os.path.join(data_dir, "typeshed", "stdlib")
-        mypy_extensions_dir = os.path.join(data_dir, "typeshed", "stubs", "mypy-extensions")
-    path.append(typeshed_dir)
+            typeshed_dir = auto
+        typeshed_stdlib_dir = os.path.join(typeshed_dir, "stdlib")
+        mypy_extensions_dir = os.path.join(typeshed_dir, "stubs", "mypy-extensions")
+    path.append(typeshed_stdlib_dir)
 
     # Get mypy-extensions stubs from typeshed, since we treat it as an
     # "internal" library, similar to typing and typing-extensions.
@@ -720,8 +724,8 @@ def default_lib_path(
     if not path:
         print(
             "Could not resolve typeshed subdirectories. Your mypy install is broken.\n"
-            "Python executable is located at {}.\nMypy located at {}".format(
-                sys.executable, data_dir
+            "Python executable is located at {}.\nTypeshed located at {}".format(
+                sys.executable, typeshed_dir
             ),
             file=sys.stderr,
         )
@@ -738,9 +742,7 @@ def get_search_dirs(python_executable: Optional[str]) -> Tuple[List[str], List[s
     lru_cache the results.
     """
 
-    if python_executable is None:
-        return ([], [])
-    elif python_executable == sys.executable:
+    if python_executable is None or python_executable == sys.executable:
         # Use running Python's package dirs
         sys_path, site_packages = pyinfo.getsearchdirs()
     else:
@@ -761,7 +763,10 @@ def get_search_dirs(python_executable: Optional[str]) -> Tuple[List[str], List[s
 
 
 def compute_search_paths(
-    sources: List[BuildSource], options: Options, data_dir: str, alt_lib_path: Optional[str] = None
+    sources: List[BuildSource],
+    options: Options,
+    typeshed_dir: str,
+    alt_lib_path: Optional[str] = None,
 ) -> SearchPaths:
     """Compute the search paths as specified in PEP 561.
 
@@ -774,7 +779,7 @@ def compute_search_paths(
     # Determine the default module search path.
     lib_path = collections.deque(
         default_lib_path(
-            data_dir, options.python_version, custom_typeshed_dir=options.custom_typeshed_dir
+            typeshed_dir, options.python_version, custom_typeshed_dir=options.custom_typeshed_dir
         )
     )
 
@@ -847,7 +852,23 @@ def compute_search_paths(
     )
 
 
-def load_stdlib_py_versions(custom_typeshed_dir: Optional[str]) -> StdlibVersions:
+def get_typeshed_dir(python_executable: Optional[str] = None) -> str:
+    packages_dirs = get_search_dirs(python_executable)[1]
+    typeshed_dir_name = "basedtypeshed"
+    for dir in packages_dirs:
+        result = os.path.join(dir, typeshed_dir_name)
+        if os.path.isdir(result):
+            return result
+    else:
+        raise RuntimeError(
+            "failed to find site-packages directory with basedtypeshed in it. "
+            f"found the following packages: {[os.listdir(dir) for dir in packages_dirs]}"
+        )
+
+
+def load_stdlib_py_versions(
+    custom_typeshed_dir: Optional[str], python_executable: Optional[str] = None
+) -> StdlibVersions:
     """Return dict with minimum and maximum Python versions of stdlib modules.
 
     The contents look like
@@ -855,7 +876,7 @@ def load_stdlib_py_versions(custom_typeshed_dir: Optional[str]) -> StdlibVersion
 
     None means there is no maximum version.
     """
-    typeshed_dir = custom_typeshed_dir or os.path.join(os.path.dirname(__file__), "typeshed")
+    typeshed_dir = custom_typeshed_dir or get_typeshed_dir(python_executable)
     stdlib_dir = os.path.join(typeshed_dir, "stdlib")
     result = {}
 

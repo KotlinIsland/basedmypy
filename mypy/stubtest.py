@@ -46,7 +46,13 @@ import mypy.version
 from mypy import nodes
 from mypy.config_parser import parse_config_file
 from mypy.options import Options
-from mypy.util import FancyFormatter, bytes_to_human_readable_repr, is_dunder, plural_s
+from mypy.util import (
+    FancyFormatter,
+    _python_executable_from_version,
+    bytes_to_human_readable_repr,
+    is_dunder,
+    plural_s,
+)
 
 
 class Missing:
@@ -1472,7 +1478,9 @@ def get_stub(module: str) -> Optional[nodes.MypyFile]:
 
 
 def get_typeshed_stdlib_modules(
-    custom_typeshed_dir: Optional[str], version_info: Optional[Tuple[int, int]] = None
+    custom_typeshed_dir: Optional[str],
+    version_info: Optional[Tuple[int, int]] = None,
+    python_executable_or_none: Optional[str] = None,
 ) -> List[str]:
     """Returns a list of stdlib modules in typeshed (for current Python version)."""
     stdlib_py_versions = mypy.modulefinder.load_stdlib_py_versions(custom_typeshed_dir)
@@ -1492,10 +1500,16 @@ def get_typeshed_stdlib_modules(
                 return version_info >= minver and (maxver is None or version_info <= maxver)
         return False
 
+    python_executable: str = python_executable_or_none or _python_executable_from_version(
+        version_info
+    )
+    stdlib_py_versions = mypy.modulefinder.load_stdlib_py_versions(
+        custom_typeshed_dir, python_executable
+    )
     if custom_typeshed_dir:
         typeshed_dir = Path(custom_typeshed_dir)
     else:
-        typeshed_dir = Path(mypy.build.default_data_dir()) / "typeshed"
+        typeshed_dir = Path(mypy.modulefinder.get_typeshed_dir())
     stdlib_dir = typeshed_dir / "stdlib"
 
     modules = []

@@ -2,12 +2,21 @@
 
 from contextlib import contextmanager
 from typing import (
-    Any, Iterator, TypeVar, Generator, Optional, List, Tuple, Sequence,
-    Union, Callable,
+    Any,
+    Callable,
+    Generator,
+    Iterator,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
 )
 
+
 @contextmanager
-def assertRaises(typ: type, msg: str = '') -> Iterator[None]:
+def assertRaises(typ: type, msg: str = "") -> Iterator[None]:
     try:
         yield
     except Exception as e:
@@ -16,13 +25,15 @@ def assertRaises(typ: type, msg: str = '') -> Iterator[None]:
     else:
         assert False, f"Expected {typ.__name__} but got no exception"
 
-T = TypeVar('T')
-U = TypeVar('U')
-V = TypeVar('V')
 
-def run_generator(gen: Generator[T, V, U],
-                  inputs: Optional[List[V]] = None,
-                  p: bool = False) -> Tuple[Sequence[T], Union[U, str]]:
+T = TypeVar("T")
+U = TypeVar("U")
+V = TypeVar("V")
+
+
+def run_generator(
+    gen: Generator[T, V, U], inputs: Optional[List[V]] = None, p: bool = False
+) -> Tuple[Sequence[T], Union[U, str]]:
     res: List[T] = []
     i = -1
     while True:
@@ -41,7 +52,8 @@ def run_generator(gen: Generator[T, V, U],
         res.append(val)
         i += 1
 
-F = TypeVar('F', bound=Callable)
+
+F = TypeVar("F", bound=Callable)
 
 
 # Wrap a mypyc-generated function in a real python function, to allow it to be
@@ -49,4 +61,5 @@ F = TypeVar('F', bound=Callable)
 def make_python_function(f: F) -> F:
     def g(*args: Any, **kwargs: Any) -> Any:
         return f(*args, **kwargs)
+
     return g  # type: ignore

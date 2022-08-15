@@ -1,3 +1,4 @@
+basedtypeshed @ git+https://github.com/KotlinIsland/basedtypeshed.git@51667387d97675997af045c5aa51140c3dd39f56
 basedtyping>=0.0.1
 typing_extensions>=3.10
 mypy_extensions>=0.4.3

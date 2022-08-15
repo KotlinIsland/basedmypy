@@ -2979,8 +2979,9 @@ class F(M):
 
 [case testLimitLegacyStubErrorVolume]
 # flags: --disallow-any-expr --soft-error-limit=5
-import certifi # E: Cannot find implementation or library stub for module named "certifi" \
-               # N: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+import certifi # E: Library stubs not installed for "certifi" (or incompatible with Python 3.6) \
+               # N: Hint: "python3 -m pip install types-certifi" \
+               # N: (or run "mypy --install-types" to install all missing stub packages) \
 certifi.x  # E: Expression has type "Any"
 certifi.x  # E: Expression has type "Any"
 certifi.x  # E: Expression has type "Any"
@@ -3015,7 +3016,9 @@ import xyz4  # E: Cannot find implementation or library stub for module named "x
 
 [case testUnlimitedStubErrorVolume]
 # flags: --disallow-any-expr --soft-error-limit=-1
-import certifi # E: Cannot find implementation or library stub for module named "certifi" \
+import certifi # E: Library stubs not installed for "certifi" (or incompatible with Python 3.6) \
+               # N: Hint: "python3 -m pip install types-certifi" \
+               # N: (or run "mypy --install-types" to install all missing stub packages) \
                # N: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
 certifi.x  # E: Expression has type "Any"
 certifi.x  # E: Expression has type "Any"

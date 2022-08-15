@@ -47,7 +47,7 @@ class GraphSuite(Suite):
         fscache = FileSystemCache()
         search_paths = SearchPaths((), (), (), ())
         manager = BuildManager(
-            data_dir="",
+            typeshed_dir="",
             search_paths=search_paths,
             ignore_prefix="",
             source_set=BuildSourceSet([]),

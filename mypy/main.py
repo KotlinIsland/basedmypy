@@ -331,7 +331,7 @@ def infer_python_executable(options: Options, special_opts: argparse.Namespace) 
 
     if python_executable is None:
         if not special_opts.no_executable and not options.no_site_packages:
-            python_executable = _python_executable_from_version(options.python_version)
+            python_executable = util._python_executable_from_version(options.python_version)
     options.python_executable = python_executable
 
 

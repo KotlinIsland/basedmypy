@@ -96,6 +96,7 @@ from mypy.modulefinder import (
     ModuleSearchResult,
     SearchPaths,
     compute_search_paths,
+    get_typeshed_dir,
 )
 from mypy.nodes import Expression
 from mypy.options import Options
@@ -229,17 +230,17 @@ def _build(
         # This seems the most reasonable place to tune garbage collection.
         gc.set_threshold(150 * 1000)
 
-    data_dir = default_data_dir()
+    typeshed_dir = get_typeshed_dir(options.python_executable)
     fscache = fscache or FileSystemCache()
 
-    search_paths = compute_search_paths(sources, options, data_dir, alt_lib_path)
+    search_paths = compute_search_paths(sources, options, typeshed_dir, alt_lib_path)
 
     reports = None
     if options.report_dirs:
         # Import lazily to avoid slowing down startup.
         from mypy.report import Reports  # noqa
 
-        reports = Reports(data_dir, options.report_dirs)
+        reports = Reports(default_data_dir(), options.report_dirs)
 
     source_set = BuildSourceSet(sources)
     cached_read = fscache.read
@@ -265,7 +266,7 @@ def _build(
     #
     # Ignore current directory prefix in error messages.
     manager = BuildManager(
-        data_dir,
+        typeshed_dir,
         search_paths,
         ignore_prefix=os.getcwd(),
         source_set=source_set,
@@ -314,7 +315,7 @@ def _build(
 
 
 def default_data_dir() -> str:
-    """Returns directory containing typeshed directory."""
+    """Returns mypy package directory"""
     return os.path.dirname(__file__)
 
 
@@ -574,7 +575,7 @@ class BuildManager:
     out by dispatch().
 
     Attributes:
-      data_dir:        Mypy data directory (contains stubs)
+      typeshed_dir:    Typeshed directory (contains stubs & stdlib directories)
       search_paths:    SearchPaths instance indicating where to look for modules
       modules:         Mapping of module ID to MypyFile (shared by the passes)
       semantic_analyzer:
@@ -610,7 +611,7 @@ class BuildManager:
 
     def __init__(
         self,
-        data_dir: str,
+        typeshed_dir: str,
         search_paths: SearchPaths,
         ignore_prefix: str,
         source_set: BuildSourceSet,
@@ -629,7 +630,7 @@ class BuildManager:
         self.stdout = stdout
         self.stderr = stderr
         self.start_time = time.time()
-        self.data_dir = data_dir
+        self.typeshed_dir = typeshed_dir
         self.errors = errors
         self.errors.set_ignore_prefix(ignore_prefix)
         self.search_paths = search_paths

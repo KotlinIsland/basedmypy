@@ -1,2 +1,3 @@
 from typing import Iterable, List
+
 def ex(a: Iterable[str]) -> List[str]: ...

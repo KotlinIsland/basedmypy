@@ -1,6 +1,7 @@
 from typing import ClassVar
 
 from typing import overload
+
 PI: float
 
 class Point:
