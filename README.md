@@ -14,6 +14,9 @@ Based features include:
 - Typesafe by default (optional and dynamic typing still supported)
 - Baseline functionality
 - Default return type of `None` instead of `Any`
+- Infer type from default value
+- Infer overload types
+- Bare literals
 
 See the [changelog](CHANGELOG.md) for a comprehensive list.
 
