@@ -89,17 +89,17 @@ def check_sdist(dist: Path, version: str) -> None:
         hashless_version = match.group(1) if match else version
         from types import ModuleType
 
-        version = ModuleType("version")
+        version_module = ModuleType("version")
         versionutil = ModuleType("versionutil")
         exec(versionutil_py_contents, versionutil.__dict__)
         sys.modules["mypy.versionutil"] = versionutil
         version_py_contents = re.sub("from mypy import git\n", "", version_py_contents).split(
             "mypy_dir "
         )[0]
-        exec(version_py_contents, version.__dict__)
+        exec(version_py_contents, version_module.__dict__)
 
         assert (
-            hashless_version == version.__based_version__
+            hashless_version == version_module.__based_version__
         ), "Version does not match version.py in sdist"
 
 
