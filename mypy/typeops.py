@@ -1083,7 +1083,12 @@ def infer_impl_from_parts(
         )
     else:
         impl_func.type = CallableType(
-            res_arg_types, impl_func.arg_kinds, impl_func.arg_names, ret_type, fallback
+            res_arg_types,
+            impl_func.arg_kinds,
+            impl_func.arg_names,
+            ret_type,
+            fallback,
+            definition=impl_func,
         )
 
 
