@@ -832,6 +832,7 @@ class SemanticAnalyzer(
                         defn.arg_names,
                         NoneType(),
                         self.named_type("builtins.function"),
+                        definition=defn,
                         implicit=True,
                     )
             if defn.name == "__new__" and self.options.infer_function_types:
@@ -848,6 +849,7 @@ class SemanticAnalyzer(
                         defn.arg_names,
                         self_type,
                         self.named_type("builtins.function"),
+                        definition=defn,
                         implicit=True,
                     )
             self.prepare_method_signature(defn, self.type)
@@ -6413,6 +6415,7 @@ def infer_fdef_types_from_defaults(defn: FuncDef | Decorator, self: SemanticAnal
                 defn.arg_names,
                 ret_type or UntypedType(),
                 self.named_type("builtins.function"),
+                definition=defn,
                 line=defn.line,
                 column=defn.column,
                 implicit=not self.options.disallow_untyped_defs,

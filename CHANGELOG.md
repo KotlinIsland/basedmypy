@@ -1,6 +1,11 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Fixes
+- Errors regarding inferred functions didn't have a note (#394)
+- Type ignored calls to incomplete functions left a phantom note (#395)
+
+## [1.6.0]
 ### Added
 - Support using `TypeVar`s in the bounds of other `TypeVar`s
 ### Enhancements
