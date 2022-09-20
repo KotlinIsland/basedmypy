@@ -31,3 +31,15 @@ allow_incomplete_defs = True
 allow_untyped_defs = True
 \[mypy-b]
 incomplete_is_typed = True
+
+
+[case typeIgnoreWorksProperly]
+# This test is to check that the `notes` param on `mypy.errors.Errors.report` works correctly
+def f(a, b: int = 1): ...  # type: ignore[no-untyped-def]
+f(
+1)  # type: ignore[no-untyped-call]
+[out]
+main:3: error: Call to incomplete function "f" in typed context  [no-untyped-call]
+main:3: note: Type is "def (a: Untyped, b: int =) -> None"
+main:4: error: Unused "type: ignore" comment  [unused-ignore]
+[out version>=3.8]

@@ -511,9 +511,11 @@ class Errors:
                 "note",
                 msg,
                 code=info.code,
-                blocker=False,
-                only_once=False,
-                allow_dups=False,
+                blocker=info.blocker,
+                only_once=info.only_once,
+                allow_dups=info.allow_dups,
+                origin=info.origin,
+                target=info.target,
             )
             self.add_error_info(note)
             info.notes.append(note)
