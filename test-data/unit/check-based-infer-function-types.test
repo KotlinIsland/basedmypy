@@ -474,3 +474,8 @@ reveal_type(b)  # N: Revealed type is "def (b: bool =) -> None"
 def f1():
     def f2(a=True): ...
     reveal_type(f2)  # N: Revealed type is "def (a: bool =) -> None"
+
+
+[case testNotesAppearForInferredFunction]
+def f(): ...  # N: "f" defined here
+f(x=1)  # E: Unexpected keyword argument "x" for "f"  [call-arg]
