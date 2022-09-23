@@ -173,6 +173,7 @@ reveal_type(foo)  # N: Revealed type is "Overload(def (a: int) -> None, def (a: 
 
 
 [case testOverloadMixedPositionalKeyword]
+# flags: --python-version 3.8
 from typing import overload
 
 @overload
@@ -184,13 +185,14 @@ def f(a, b):
     reveal_type(a)
     reveal_type(b)
 [out]
-main:6: error: invalid syntax  [syntax]
+main:7: error: invalid syntax; you likely need to run mypy using Python 3.8 or newer  [syntax]
 [out version>=3.8]
-main:9: note: Revealed type is "int | int"
-main:10: note: Revealed type is "str"
+main:10: note: Revealed type is "int | int"
+main:11: note: Revealed type is "str"
 
 
 [case testOverloadMixedPositional]
+# flags: --python-version 3.8
 from typing import overload
 
 @overload
@@ -202,13 +204,14 @@ def f(a, b):
     reveal_type(a)
     reveal_type(b)
 [out]
-main:6: error: invalid syntax  [syntax]
+main:7: error: invalid syntax; you likely need to run mypy using Python 3.8 or newer  [syntax]
 [out version>=3.8]
-main:9: note: Revealed type is "int | str"
-main:10: note: Revealed type is "str"
+main:10: note: Revealed type is "int | str"
+main:11: note: Revealed type is "str"
 
 
 [case testOverloadPositionalDifferentPosition]
+# flags: --python-version 3.8
 from typing import overload
 
 @overload
@@ -220,10 +223,10 @@ def f(a, b):
     reveal_type(a)
     reveal_type(b)
 [out]
-main:4: error: invalid syntax  [syntax]
+main:5: error: invalid syntax; you likely need to run mypy using Python 3.8 or newer  [syntax]
 [out version>=3.8]
-main:9: note: Revealed type is "int | str"
 main:10: note: Revealed type is "int | str"
+main:11: note: Revealed type is "int | str"
 
 
 [case testVariadic]
@@ -258,6 +261,7 @@ def f(**kwargs):  # E: Function is missing a type annotation for one or more arg
 
 
 [case testInferOverloadWithPositionalOnly]
+# flags: --python-version 3.8
 from typing import overload
 
 @overload
@@ -277,11 +281,11 @@ def bar(z, b):
     reveal_type(z)
     reveal_type(b)
 [out]
-main:4: error: invalid syntax  [syntax]
+main:5: error: invalid syntax; you likely need to run mypy using Python 3.8 or newer  [syntax]
 [out version>=3.8]
-main:9: note: Revealed type is "int | str"
-main:17: note: Revealed type is "int | None"
-main:18: note: Revealed type is "str | ellipsis"
+main:10: note: Revealed type is "int | str"
+main:18: note: Revealed type is "int | None"
+main:19: note: Revealed type is "str | ellipsis"
 
 [case testOverrideOverload-xfail]
 # this is turned off for now
