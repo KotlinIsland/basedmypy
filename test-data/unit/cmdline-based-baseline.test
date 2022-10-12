@@ -12,6 +12,8 @@ pkg/a.py:1:1: error: Name "a" is not defined  [name-defined]
 Found 1 error (1 new error) in 1 file (checked 1 source file)
 Baseline successfully written to a/b
 == Return code: 0
+
+
 -- TODO merge this with the first one?
 [case testWriteBaseline2]
 # cmd: mypy --write-baseline --baseline-file a/b pkg
@@ -51,6 +53,8 @@ Found 2 errors (1 new error) in 1 file (checked 1 source file)
 Baseline successfully written to .mypy/baseline.json
 == Return code: 0
 -- TODO merge this with the first one?
+
+
 [case testRewriteBaseline2]
 # cmd: mypy --write-baseline --error-summary pkg
 # dont-normalize-output:
@@ -99,6 +103,21 @@ Success: no issues found in 1 source file
 == Return code: 0
 
 
+[case testRewriteNoChange]
+# cmd: mypy --write-baseline --error-summary pkg
+[file pkg/a.py]
+a
+[file .mypy/baseline.json]
+{
+"__baseline_metadata__": {"targets": ["file:pkg"]},
+"pkg/a.py": [{"code": "name-defined", "column": 0, "line": 1, "message": "Name \"a\" is not defined", "target": "a"}]
+}
+[out]
+Found 1 error (0 new errors) in 1 file (checked 1 source file)
+Baseline successfully written to .mypy/baseline.json
+== Return code: 0
+
+
 [case testAutoBaselineRemoves]
 # cmd: mypy --error-summary pkg
 [file pkg/a.py]
@@ -111,6 +130,7 @@ Success: no issues found in 1 source file
 No errors, baseline file removed
 Success: no issues found in 1 source file
 == Return code: 0
+
 
 [case testAutoBaselineDoesntActivateWithErrors]
 # cmd: mypy --error-summary pkg
@@ -155,6 +175,8 @@ a
 "__baseline_metadata__": {"targets": ["file:pkg"]},
 "pkg/a.py": [{"code": "name-defined", "column": 0, "line": 1, "message": "Name \"a\" is not defined", "target": "a"}]
 }
+
+
 [case testAutoBaselineDoesntMessageWhenSame2]
 # cmd: mypy --error-summary pkg
 [file pkg/a.py]
