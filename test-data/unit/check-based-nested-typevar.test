@@ -11,11 +11,45 @@ reveal_type(foo([True]))  # N: Revealed type is "bool"
 foo([""])  # E: Value of type variable "T" of "foo" cannot be "str"  [type-var]
 
 
+[case testParamSpecEllipsis]
+from typing import TypeVar, Generic
+from typing_extensions import ParamSpec
+
+P = ParamSpec('P')
+T = TypeVar("T")
+
+class C(Generic[P]): ...
+CT = TypeVar("CT", bound=C[...])  # type: ignore[no-any-explicit]
+
+def f(ct: CT): ...  # E: Explicit "Any" is not allowed  [no-any-explicit]
+[builtins fixtures/tuple.pyi]
+
+
+[case testParamSpecWithNestedTypeVar-xfail]
+from typing import TypeVar, Generic, Callable
+from typing_extensions import ParamSpec
+
+P = ParamSpec('P')
+T = TypeVar("T")
+
+class C(Generic[P]):
+    c: Callable[P, int]
+CT = TypeVar("CT", bound=C[T])
+
+def f(t: T, ct: CT) -> int:
+    ct(1)  # E: what the?
+    return ct(t)
+
+f(1, C[str]())  # E: What the?
+f(1, C[int]())
+[builtins fixtures/tuple.pyi]
+
+
 [case testNestedTypeVarConstraint-xfail]
 from typing import TypeVar, Iterable
 
 E = TypeVar("E", int, str)
-I = TypeVar("I", bound=Iterable[T])
+I = TypeVar("I", bound=Iterable[E])
 
 def foo(i: I, e: E) -> I:
     assert i[0] == e
