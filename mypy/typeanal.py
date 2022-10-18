@@ -1397,7 +1397,11 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             # update inner type vars
             typ = get_proper_type(tvar.upper_bound)
             if isinstance(typ, Instance):
-                typ.args = tuple(it.accept(self) for it in typ.args)
+                # We only `accept` `UnboundType` here to catch `TypeVar`s,
+                #  other things could be sus
+                typ.args = tuple(
+                    it.accept(self) if isinstance(it, UnboundType) else it for it in typ.args
+                )
             if isinstance(typ, UnboundType):
                 tvar.upper_bound = tvar.upper_bound.accept(self)
             self.tvar_scope.bind_new(name, tvar, scopename=defn.name)
