@@ -189,9 +189,6 @@ class TypeCheckSuite(DataSuite):
         else:
             raise AssertionError()
 
-        # BASED: inject sussy new line
-        # This is to enable newlines characters in expected error messages
-        output = [it.replace("$NL", "\n") for it in output]
         if output != a and testcase.config.getoption("--update-data", False):
             update_testcase_output(testcase, a)
         assert_string_arrays_equal(output, a, msg.format(testcase.file, testcase.line))
