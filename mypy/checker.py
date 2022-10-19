@@ -1292,6 +1292,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                         self.fail(
                             message_registry.RETURN_TYPE_CANNOT_BE_CONTRAVARIANT, typ.ret_type
                         )
+                        self.note(message_registry.UNSAFE_VARIANCE_NOTE, typ.ret_type)
                     self.check_unbound_return_typevar(typ)
 
                 # Check that Generator functions have the appropriate return type.
@@ -1375,6 +1376,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                             if ctx.line < 0:
                                 ctx = typ
                             self.fail(message_registry.FUNCTION_PARAMETER_CANNOT_BE_COVARIANT, ctx)
+                            self.note(message_registry.UNSAFE_VARIANCE_NOTE, ctx)
                     # Need to store arguments again for the expanded item.
                     store_argument_type(item, i, typ, self.named_generic_type)
 
