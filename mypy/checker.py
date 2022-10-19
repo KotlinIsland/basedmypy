@@ -1257,6 +1257,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                         self.fail(
                             message_registry.RETURN_TYPE_CANNOT_BE_CONTRAVARIANT, typ.ret_type
                         )
+                        self.note(message_registry.UNSAFE_VARIANCE_NOTE, typ.ret_type)
                     self.check_unbound_return_typevar(typ)
 
                 # Check that Generator functions have the appropriate return type.
@@ -1340,6 +1341,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                             if ctx.line < 0:
                                 ctx = typ
                             self.fail(message_registry.FUNCTION_PARAMETER_CANNOT_BE_COVARIANT, ctx)
+                            self.note(message_registry.UNSAFE_VARIANCE_NOTE, ctx)
                     if typ.arg_kinds[i] == nodes.ARG_STAR:
                         if not isinstance(arg_type, ParamSpecType):
                             # builtins.tuple[T] is typing.Tuple[T, ...]
