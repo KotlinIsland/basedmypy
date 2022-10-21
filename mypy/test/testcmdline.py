@@ -63,11 +63,12 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
     if "# dont-normalize-output:" in testcase.input:
         testcase.normalize_output = False
     args.append("--show-traceback")
-    if "based" not in testcase.file.rsplit(os.sep)[-1]:
+    based = "based" in testcase.file.rsplit(os.sep)[-1]
+    if not based:
         args.append("--legacy")
     if "--error-summary" not in args:
         args.append("--no-error-summary")
-    if "--show-error-codes" not in args:
+    if "--show-error-codes" not in args and not based:
         args.append("--hide-error-codes")
     if "--disallow-empty-bodies" not in args:
         args.append("--allow-empty-bodies")
