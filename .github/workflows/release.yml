@@ -1,0 +1,59 @@
+name: PyPI and GitHub Pages publish
+
+on:
+  release:
+    types: [prereleased, released]
+
+jobs:
+  release:
+    name: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      TOXENV: docs
+      TOX_SKIP_MISSING_INTERPRETERS: False
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'
+      - name: Install tox
+        run: pip install --upgrade 'setuptools!=50' tox==3.24.5
+      - name: Setup tox environment
+        run: tox -e ${{ env.TOXENV }} --notest
+      - name: Build docs
+        run: tox -e ${{ env.TOXENV }} --skip-pkg-install
+
+      # upload docs to pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: './.tox/docs_out/'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
+
+      - name: PyPI publish
+        id: pypi
+        shell: bash
+        run: |
+          out=$(python misc/upload-pypi.py ${{ github.event.release.tag_name }} <<EOF | tee /dev/fd/2
+          __token__
+          ${{ secrets.PYPI_TOKEN }}
+          EOF
+          )
+          DIST_PATH=$(out | grep -Po "(?<=Temporary target directory: ).*")/dist
+          echo "::set-output name=dist_path::$DIST_PATH"
+
+      # Upload artifact as a release asset
+      - name: Upload Release Asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload ${{ github.event.release.tag_name }} ${{ steps.pypi.outputs.dist_path }}/*
