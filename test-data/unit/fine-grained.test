@@ -5542,10 +5542,10 @@ def T() -> None:
     pass
 [out]
 ==
-main:4: error: "C" expects no type arguments, but 1 given
 main:5: error: Free type variable expected in Generic[...]
 main:6: error: Function "a.T" is not valid as a type
 main:6: note: Perhaps you need "Callable[...]" or a callback protocol?
+main:9: error: "C" expects no type arguments, but 1 given
 main:9: error: "C" expects no type arguments, but 1 given
 main:9: error: Function "a.T" is not valid as a type
 main:9: note: Perhaps you need "Callable[...]" or a callback protocol?
@@ -5577,10 +5577,10 @@ import T
 [out]
 ==
 ==
-main:4: error: "C" expects no type arguments, but 1 given
 main:5: error: Free type variable expected in Generic[...]
 main:6: error: Module "T" is not valid as a type
 main:6: note: Perhaps you meant to use a protocol matching the module structure?
+main:9: error: "C" expects no type arguments, but 1 given
 main:9: error: "C" expects no type arguments, but 1 given
 main:9: error: Module "T" is not valid as a type
 main:9: note: Perhaps you meant to use a protocol matching the module structure?
@@ -5636,8 +5636,8 @@ from typing import TypeVar
 T = int
 [out]
 ==
-main:4: error: "C" expects no type arguments, but 1 given
 main:5: error: Free type variable expected in Generic[...]
+main:9: error: "C" expects no type arguments, but 1 given
 main:9: error: "C" expects no type arguments, but 1 given
 main:12: error: Bad number of arguments for type alias, expected: 0, given: 1
 
