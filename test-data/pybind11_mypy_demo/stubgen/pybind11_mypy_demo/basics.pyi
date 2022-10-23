@@ -3,6 +3,8 @@ from typing import ClassVar
 from typing import overload
 PI: float
 
+s
+
 class Point:
     class AngleUnit:
         __members__: ClassVar[dict] = ...  # read-only
