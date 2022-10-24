@@ -568,7 +568,7 @@ def process_options(
         "--baseline-format",
         action="store",
         help="Baseline file format, for backwards compatibility"
-        " (defaults to the latest version)",
+             " (defaults to the latest version)",
     )
     add_invertible_flag(
         "--no-auto-baseline",
@@ -606,7 +606,7 @@ def process_options(
         group=based_group,
         default=False,
         help="Partially typed/incomplete functions in this module are considered typed"
-        " for untyped call errors.",
+             " for untyped call errors.",
     )
     add_invertible_flag(
         "--bare-literals", default=True, help="Allow bare literals.", group=based_group
@@ -615,20 +615,20 @@ def process_options(
     config_group = parser.add_argument_group(
         title="Config file",
         description="Use a config file instead of command line arguments. "
-        "This is useful if you are using many flags or want "
-        "to set different options per each module.",
+                    "This is useful if you are using many flags or want "
+                    "to set different options per each module.",
     )
     config_group.add_argument(
         "--config-file",
         help="Configuration file, must have a [mypy] section "
-        "(defaults to {})".format(", ".join(defaults.CONFIG_FILES)),
+             "(defaults to {})".format(", ".join(defaults.CONFIG_FILES)),
     )
     add_invertible_flag(
         "--no-warn-unused-configs",
         default=True,
         dest="warn_unused_configs",
         help="Don't warn about unused '[mypy-<pattern>]' or "
-        "'[[tool.mypy.overrides]]' config sections",
+             "'[[tool.mypy.overrides]]' config sections",
         group=config_group,
     )
 
@@ -658,7 +658,7 @@ def process_options(
         action="store",
         metavar="EXECUTABLE",
         help="Python executable used for finding PEP 561 compliant installed"
-        " packages and stubs",
+             " packages and stubs",
         dest="special-opts:python_executable",
     )
     imports_group.add_argument(
@@ -676,9 +676,9 @@ def process_options(
     platform_group = parser.add_argument_group(
         title="Platform configuration",
         description="Type check code assuming it will be run under certain "
-        "runtime conditions. By default, mypy assumes your code "
-        "will be run using the same operating system and Python "
-        "version you are using to run mypy itself.",
+                    "runtime conditions. By default, mypy assumes your code "
+                    "will be run using the same operating system and Python "
+                    "version you are using to run mypy itself.",
     )
     platform_group.add_argument(
         "--python-version",
@@ -700,7 +700,7 @@ def process_options(
         action="store",
         metavar="PLATFORM",
         help="Type check special-cased code for the given OS platform "
-        "(defaults to sys.platform)",
+             "(defaults to sys.platform)",
     )
     platform_group.add_argument(
         "--always-true",
@@ -767,16 +767,16 @@ def process_options(
     untyped_group = parser.add_argument_group(
         title="Untyped definitions and calls",
         description="Configure how untyped definitions and calls are handled. "
-        "Note: by default, mypy ignores any untyped function definitions "
-        "and assumes any calls to such functions have a return "
-        "type of 'Any'.",
+                    "Note: by default, mypy ignores any untyped function definitions "
+                    "and assumes any calls to such functions have a return "
+                    "type of 'Any'.",
     )
     add_invertible_flag(
         "--allow-untyped-calls",
         default=True,
         dest="disallow_untyped_calls",
         help="Allow calling functions without type annotations"
-        " from functions with type annotations",
+             " from functions with type annotations",
         group=untyped_group,
     )
     add_invertible_flag(
@@ -784,7 +784,7 @@ def process_options(
         default=True,
         dest="disallow_untyped_defs",
         help="Allow defining functions without type annotations"
-        " or with incomplete type annotations",
+             " or with incomplete type annotations",
         group=untyped_group,
     )
     add_invertible_flag(
@@ -812,8 +812,8 @@ def process_options(
     none_group = parser.add_argument_group(
         title="None and Optional handling",
         description="Adjust how values of type 'None' are handled. For more context on "
-        "how mypy handles values of type 'None', see: "
-        "https://mypy.readthedocs.io/en/stable/kinds_of_types.html#no-strict-optional",
+                    "how mypy handles values of type 'None', see: "
+                    "https://mypy.readthedocs.io/en/stable/kinds_of_types.html#no-strict-optional",
     )
     add_invertible_flag(
         "--implicit-optional",
@@ -953,7 +953,7 @@ def process_options(
         "--show-error-end",
         default=False,
         help="Show end line/end column numbers in error messages."
-        " This implies --show-column-numbers",
+             " This implies --show-column-numbers",
         group=error_group,
     )
     add_invertible_flag(
@@ -966,8 +966,8 @@ def process_options(
         "--pretty",
         default=False,
         help="Use visually nicer output in error messages:"
-        " Use soft word wrap, show source code snippets,"
-        " and show error location markers",
+             " Use soft word wrap, show source code snippets,"
+             " and show error location markers",
         group=error_group,
     )
     add_invertible_flag(
@@ -1001,10 +1001,10 @@ def process_options(
     incremental_group = parser.add_argument_group(
         title="Incremental mode",
         description="Adjust how mypy incrementally type checks and caches modules. "
-        "Mypy caches type information about modules into a cache to "
-        "let you speed up future invocations of mypy. Also see "
-        "mypy's daemon mode: "
-        "mypy.readthedocs.io/en/stable/mypy_daemon.html#mypy-daemon",
+                    "Mypy caches type information about modules into a cache to "
+                    "let you speed up future invocations of mypy. Also see "
+                    "mypy's daemon mode: "
+                    "mypy.readthedocs.io/en/stable/mypy_daemon.html#mypy-daemon",
     )
     incremental_group.add_argument(
         "-i", "--incremental", action="store_true", help=argparse.SUPPRESS
@@ -1020,7 +1020,7 @@ def process_options(
         action="store",
         metavar="DIR",
         help="Store module cache info in the given folder in incremental mode "
-        "(defaults to '{}')".format(defaults.CACHE_DIR),
+             "(defaults to '{}')".format(defaults.CACHE_DIR),
     )
     add_invertible_flag(
         "--sqlite-cache",
@@ -1082,7 +1082,7 @@ def process_options(
         "--warn-incomplete-stub",
         default=False,
         help="Warn if missing type annotation in typeshed, only relevant with"
-        " --disallow-untyped-defs or --disallow-incomplete-defs enabled",
+             " --disallow-untyped-defs or --disallow-incomplete-defs enabled",
         group=internals_group,
     )
     internals_group.add_argument(
@@ -1092,7 +1092,7 @@ def process_options(
         dest="shadow_file",
         action="append",
         help="When encountering SOURCE_FILE, read and type check "
-        "the contents of SHADOW_FILE instead.",
+             "the contents of SHADOW_FILE instead.",
     )
     internals_group.add_argument("--fast-exit", action="store_true", help=argparse.SUPPRESS)
     internals_group.add_argument(
@@ -1227,7 +1227,7 @@ def process_options(
     code_group = parser.add_argument_group(
         title="Running code",
         description="Specify the code you want to type check. For more details, see "
-        "mypy.readthedocs.io/en/stable/running_mypy.html#running-mypy",
+                    "mypy.readthedocs.io/en/stable/running_mypy.html#running-mypy",
     )
     add_invertible_flag(
         "--explicit-package-bases",
@@ -1297,11 +1297,12 @@ def process_options(
 
     based_enabled_codes = (
         {
+            "no-untyped-usage",
+            "partially-defined",
             "redundant-expr",
             "truthy-bool",
             "ignore-without-code",
             "unused-awaitable",
-            "no-untyped-usage",
         }
         if mypy.options._based
         else set()
@@ -1363,7 +1364,7 @@ def process_options(
                 special_opts.modules + special_opts.packages,
                 special_opts.command,
                 special_opts.files,
-            ]
+                ]
         )
         if code_methods == 0 and not options.install_types:
             parser.error("Missing target module, package, files, or command.")
