@@ -768,6 +768,8 @@ class StubGenerator(mypy.traverser.TraverserVisitor):
             retname = None  # implicit Any
         elif o.name in KNOWN_MAGIC_METHODS_RETURN_TYPES:
             retname = KNOWN_MAGIC_METHODS_RETURN_TYPES[o.name]
+            if not self.legacy and retname == "None":
+                retname = ""
         elif has_yield_expression(o):
             self.add_abc_import("Generator")
             yield_name = "None"
