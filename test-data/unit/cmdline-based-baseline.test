@@ -300,6 +300,7 @@ reveal_type(a)
 [out]
 pkg/main.py:2:13: note: Revealed type is "int"
 Success: no issues found in 1 source file
+== Return code: 0
 
 
 [case testRevealLocals]
@@ -314,6 +315,7 @@ def foo() -> None:
 pkg/main.py:3:5: note: Revealed local types are:
 pkg/main.py:3:5: note:     a: int
 Success: no issues found in 1 source file
+== Return code: 0
 
 
 [case testBaselineFormat1_2]
