@@ -696,8 +696,6 @@ class StubgenPythonSuite(DataSuite):
                 f.write(content)
 
         options = self.parse_flags(source, extra)
-        print(testcase.name)
-        print(testcase.file)
         if "based" not in testcase.file.split(os.sep)[-1]:
             options.legacy = True
         modules = self.parse_modules(source)
