@@ -81,6 +81,7 @@ def flip_if_not_based(b: bool) -> bool:
     """
     return b if _based else not b
 
+
 # Features that are currently incomplete/experimental
 TYPE_VAR_TUPLE: Final = "TypeVarTuple"
 UNPACK: Final = "Unpack"
