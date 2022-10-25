@@ -14,7 +14,7 @@ base_version = __version__
 
 # friendly version information
 based_version_info = VersionInfo(
-    1, 6, 0, "dev", 0, __version__.split("+dev")[0], "dev" if "+dev" in __version__ else "final"
+    1, 7, 0, "dev", 0, __version__.split("+dev")[0], "dev" if "+dev" in __version__ else "final"
 )
 # simple string version with git info
 __based_version__ = based_version_info.simple_str()
