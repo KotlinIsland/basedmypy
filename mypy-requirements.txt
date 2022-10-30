@@ -1,5 +1,5 @@
 # NOTE: this needs to be kept in sync with the "requires" list in pyproject.toml
-basedtyping>=0.0.1
+basedtyping>=0.0.2
 typing_extensions>=3.10
 mypy_extensions>=1.0.0
 typed_ast>=1.4.0,<2; python_version<'3.8'
