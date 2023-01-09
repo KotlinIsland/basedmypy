@@ -1298,7 +1298,7 @@ def process_options(
     based_enabled_codes = (
         {
             "no-untyped-usage",
-            "partially-defined",
+            "possibly-undefined",
             "redundant-expr",
             "truthy-bool",
             "ignore-without-code",

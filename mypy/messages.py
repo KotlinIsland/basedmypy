@@ -2395,7 +2395,9 @@ def format_type_inner(
             base_str = itype.type.name
         if not itype.args:
             # No type arguments, just return the type name
-            return TypeStrVisitor.strip_builtins(base_str)
+            if not verbosity:
+                return TypeStrVisitor.strip_builtins(base_str)
+            return base_str
         elif itype.type.fullname == "builtins.tuple":
             item_type_str = format(itype.args[0])
             if not mypy.options._based:

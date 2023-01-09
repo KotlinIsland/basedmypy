@@ -1857,7 +1857,7 @@ _testTupleWithDifferentArgsPy310.py:17: note: Revealed type is "Union[builtins.t
 _testTupleWithDifferentArgsPy310.py:18: note: Revealed type is "Tuple[builtins.float, builtins.str]"
 _testTupleWithDifferentArgsPy310.py:19: note: Revealed type is "builtins.tuple[builtins.float, ...]"
 _testTupleWithDifferentArgsPy310.py:20: note: Revealed type is "builtins.list[Tuple[builtins.int, builtins.str]]"
-_testTupleWithDifferentArgsPy310.py:26: error: Invalid type: try using Literal[1] instead?
+_testTupleWithDifferentArgsPy310.py:26: error: "1" is a bare literal and cannot be used here, try Literal[1] instead?
 _testTupleWithDifferentArgsPy310.py:27: error: Unexpected "..."
 _testTupleWithDifferentArgsPy310.py:30: note: Revealed type is "builtins.tuple[builtins.object, ...]"
 

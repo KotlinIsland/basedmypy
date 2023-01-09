@@ -663,7 +663,7 @@ def split_test_cases(
         line_no += data.count("\n") + 1
 
         # Record existing tests to prevent duplicates:
-        test_names.update({name})
+        test_names.update({name})  # type: ignore[no-untyped-call]
 
 
 class DataSuiteCollector(pytest.Class):

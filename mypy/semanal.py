@@ -50,7 +50,7 @@ Some important properties:
 
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from typing import Any, Callable, Collection, Iterable, Iterator, List, TypeVar, cast
 from typing_extensions import Final, TypeAlias as _TypeAlias
 
@@ -3433,13 +3433,13 @@ class SemanticAnalyzer(
         )
 
     def analyze_simple_literal_type(
-        self, rvalue: Expression, is_final: bool, do_bools=False
+        self, rvalue: Expression, is_final: bool, do_inner=False
     ) -> Type | None:
         """Return builtins.int if rvalue is an int literal, etc.
 
         If this is a 'Final' context, we return "Literal[...]" instead.
         """
-        if self.function_stack and not do_bools:
+        if self.function_stack and not do_inner:
             # Skip inside a function; this is to avoid confusing
             # the code that handles dead code due to isinstance()
             # inside type variables with value restrictions (like
@@ -4974,6 +4974,10 @@ class SemanticAnalyzer(
             expr.analyzed = OpExpr("divmod", expr.args[0], expr.args[1])
             expr.analyzed.line = expr.line
             expr.analyzed.accept(self)
+        elif refers_to_fullname(expr.callee, "typing.TypeVar"):
+            for a, a_name in zip(expr.args, expr.arg_names):
+                with self.allow_unbound_tvars_set() if a_name == "bound" else nullcontext():
+                    a.accept(self)
         else:
             # Normal call expression.
             for a in expr.args:
@@ -6808,7 +6812,7 @@ def infer_fdef_types_from_defaults(defn: FuncDef | Decorator, self: SemanticAnal
                 typ = None
                 if arg.variable.is_inferred and arg.initializer:
                     arg.initializer.accept(self)
-                    typ = self.analyze_simple_literal_type(arg.initializer, False, do_bools=True)
+                    typ = self.analyze_simple_literal_type(arg.initializer, False, do_inner=True)
                 arg_types.append(typ or UntypedType())
         ret_type = None
         if self.options.default_return and self.options.disallow_untyped_defs:
@@ -6843,7 +6847,7 @@ def infer_fdef_types_from_defaults(defn: FuncDef | Decorator, self: SemanticAnal
                 if is_unannotated_any(defn.type.arg_types[i]):
                     if arg.variable.is_inferred and arg.initializer:
                         ret = self.analyze_simple_literal_type(
-                            arg.initializer, False, do_bools=True
+                            arg.initializer, False, do_inner=True
                         )
                         if ret:
                             defn.type.arg_types[i] = ret

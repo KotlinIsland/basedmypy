@@ -91,6 +91,7 @@ def run_cmd(input: str) -> tuple[int, str]:
         input = sys.executable + " -m" + input
     env = os.environ.copy()
     env["PYTHONPATH"] = PREFIX
+    env["__MYPY_UNDER_TEST__"] = "1"
     try:
         output = subprocess.check_output(
             input, shell=True, stderr=subprocess.STDOUT, text=True, cwd=test_temp_dir, env=env
