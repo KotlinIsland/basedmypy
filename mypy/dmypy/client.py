@@ -14,6 +14,7 @@ import pickle
 import sys
 import time
 import traceback
+from argparse import RawTextHelpFormatter
 from typing import Any, Callable, Mapping, NoReturn
 
 from mypy.dmypy_os import alive, kill
@@ -32,7 +33,10 @@ class AugmentedHelpFormatter(argparse.RawDescriptionHelpFormatter):
 
 
 parser = argparse.ArgumentParser(
-    prog="dmypy", description="Client for mypy daemon mode", fromfile_prefix_chars="@"
+    prog="dmypy",
+    description="Client for mypy daemon mode",
+    fromfile_prefix_chars="@",
+    formatter_class=RawTextHelpFormatter,
 )
 parser.set_defaults(action=None)
 parser.add_argument(
@@ -42,7 +46,7 @@ parser.add_argument(
     "-V",
     "--version",
     action="version",
-    version=f"Basedmypy Daemon {__based_version__}\n" f"Based on %(prog)s {__version__}",
+    version=f"Basedmypy Daemon {__based_version__}\nBased on %(prog)s {__version__}",
     help="Show program's version number and exit",
 )
 subparsers = parser.add_subparsers()
@@ -248,6 +252,7 @@ p.add_argument(
     "flags", metavar="FLAG", nargs="*", type=str, help="Regular mypy flags (precede with --)"
 )
 p.add_argument("--options-data", help=argparse.SUPPRESS)
+p.add_argument("--legacy", action="store_true", help=argparse.SUPPRESS)
 help_parser = p = subparsers.add_parser("help")
 
 del p
@@ -606,7 +611,11 @@ def do_hang(args: argparse.Namespace) -> None:
 def do_daemon(args: argparse.Namespace) -> None:
     """Serve requests in the foreground."""
     # Lazy import so this import doesn't slow down other commands.
+    import mypy.options
     from mypy.dmypy_server import Server, process_start_options
+
+    if args.legacy:
+        mypy.options._based = False
 
     if args.options_data:
         from mypy.options import Options
@@ -622,6 +631,9 @@ def do_daemon(args: argparse.Namespace) -> None:
     else:
         options = process_start_options(args.flags, allow_sources=False)
         timeout = args.timeout
+    if args.legacy:
+        if not os.getenv("__MYPY_UNDER_TEST__"):
+            mypy.options._based = True
     Server(options, args.status_file, timeout=timeout).serve()
 
 

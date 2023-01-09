@@ -488,6 +488,9 @@ def expand_unpack_with_variables(
     """
     if isinstance(t.type, TypeVarTupleType):
         repl = get_proper_type(variables.get(t.type.id, t))
+        if isinstance(repl, UnionType):
+            # the type was joined (based) instead of `meet`ed, get the right hand side
+            repl = get_proper_type(repl.items[1])
         if isinstance(repl, TupleType):
             return repl.items
         elif isinstance(repl, Instance) and repl.type.fullname == "builtins.tuple":

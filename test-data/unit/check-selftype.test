@@ -1401,7 +1401,8 @@ reveal_type(var)  # N: Revealed type is "Any"
 def foo() -> Self: ...  # E: Self type is only allowed in annotations within class definition
 reveal_type(foo)  # N: Revealed type is "def () -> Any"
 
-bad: Callable[[Self], Self]  # E: Self type is only allowed in annotations within class definition
+bad: Callable[[Self], Self]  # E: Self type is only allowed in annotations within class definition \
+                             # E: Self type is only allowed in annotations within class definition
 reveal_type(bad)  # N: Revealed type is "def (Any) -> Any"
 
 def func() -> None:
