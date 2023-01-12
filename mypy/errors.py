@@ -140,9 +140,9 @@ class ErrorInfo:
 
 
 # Type used internally to represent errors:
-#   (path, line, column, end_line, end_column, severity, message, allow_dups, code)
+#   (path, line, column, end_line, end_column, severity, message, allow_dups, code, target, src)
 ErrorTuple: _TypeAlias = Tuple[
-    Optional[str], int, int, int, int, str, str, bool, Optional[ErrorCode]
+    Optional[str], int, int, int, int, str, str, bool, Optional[ErrorCode], Optional[str], str
 ]
 
 
@@ -205,13 +205,14 @@ class ErrorWatcher:
 
 
 class StoredBaselineError(TypedDict):
-    """Structure of an error while stored in a 1.3 baseline"""
+    """Structure of an error while stored in a baseline file"""
 
     code: Optional[str]
     column: int
     message: str
     offset: int
     target: Optional[str]
+    src: str
 
 
 class BaselineError(TypedDict):
@@ -220,17 +221,7 @@ class BaselineError(TypedDict):
     line: int
     message: str
     target: Optional[str]
-
-
-class UnknownBaselineError(TypedDict, total=False):
-    """Could be a 1.2 or a 1.3 error"""
-
-    code: Optional[str]
-    column: int
-    line: int
-    message: str
-    offset: int
-    target: Optional[str]
+    src: str
 
 
 class Errors:
@@ -299,12 +290,13 @@ class Errors:
     _watchers: list[ErrorWatcher] = []
 
     # Error baseline
-    original_baseline: dict[str, list[UnknownBaselineError]]
+    original_baseline: dict[str, list[StoredBaselineError]]
     baseline: dict[str, list[BaselineError]]
+    filtered_baseline = False
     # baseline metadata
     baseline_targets: list[str]
     # All detected errors before baseline filter
-    all_errors: dict[str, list[ErrorInfo]]
+    all_errors: dict[str, list[ErrorTuple]]
 
     def __init__(
         self,
@@ -337,6 +329,7 @@ class Errors:
         self.all_errors = {}
         self.original_baseline = {}
         self.baseline = {}
+        self.baseline_errors: list[ErrorTuple] = []
         self.baseline_targets = []
         self.flushed_files = set()
         self.import_ctx = []
@@ -862,7 +855,7 @@ class Errors:
         )
 
     def format_messages(
-        self, error_info: list[ErrorInfo], source_lines: list[str] | None
+        self, error_info: list[ErrorInfo], source_lines: list[str] | None, path: str
     ) -> list[str]:
         """Return a string list that represents the error messages.
 
@@ -872,8 +865,12 @@ class Errors:
         """
         a: list[str] = []
         error_info = [info for info in error_info if not info.hidden]
-        errors = self.render_messages(self.sort_messages(error_info))
+        errors = self.render_messages(
+            self.sort_messages(error_info), source_lines, self.simplify_path(path)
+        )
         errors = self.remove_duplicates(errors)
+        errors = self.filter_baseline(errors, path)
+        self.filtered_baseline = bool(errors)
         for (
             file,
             line,
@@ -884,6 +881,8 @@ class Errors:
             message,
             allow_dups,
             code,
+            _,
+            _,
         ) in errors:
             s = ""
             if file is not None:
@@ -929,7 +928,7 @@ class Errors:
                     a.append(" " * (DEFAULT_SOURCE_OFFSET + column) + marker)
         return a
 
-    def file_messages(self, path: str, all_errors: bool = False) -> list[str]:
+    def file_messages(self, path: str) -> list[str]:
         """Return a string list of new error messages from a given file.
 
         Use a form suitable for displaying to the user.
@@ -937,13 +936,8 @@ class Errors:
         if path not in self.error_info_map:
             return []
         self.flushed_files.add(path)
-        source_lines = None
-        if self.pretty:
-            assert self.read_source
-            source_lines = self.read_source(path)
-        if all_errors:
-            return self.format_messages(self.all_errors[path], source_lines)
-        return self.format_messages(self.error_info_map[path], source_lines)
+        source_lines = self.read_source and self.read_source(path)
+        return self.format_messages(self.error_info_map[path], source_lines, path)
 
     def new_messages(self) -> list[str]:
         """Return a string list of new error messages.
@@ -966,7 +960,12 @@ class Errors:
             info.target for errs in self.error_info_map.values() for info in errs if info.target
         }
 
-    def render_messages(self, errors: list[ErrorInfo]) -> list[ErrorTuple]:
+    def render_messages(
+        self,
+        errors: list[ErrorInfo],
+        source_lines: list[str] | None = None,
+        current_file: str | None = None,
+    ) -> list[ErrorTuple]:
         """Translate the messages into a sequence of tuples.
 
         Each tuple is of form (path, line, col, severity, message, allow_dups, code).
@@ -999,7 +998,19 @@ class Errors:
                     # simplify path.
                     path = remove_path_prefix(path, self.ignore_prefix)
                     result.append(
-                        (None, -1, -1, -1, -1, "note", fmt.format(path, line), e.allow_dups, None)
+                        (
+                            None,
+                            -1,
+                            -1,
+                            -1,
+                            -1,
+                            "note",
+                            fmt.format(path, line),
+                            e.allow_dups,
+                            None,
+                            None,
+                            "",
+                        )
                     )
                     i -= 1
 
@@ -1012,7 +1023,19 @@ class Errors:
                 if e.function_or_member is None:
                     if e.type is None:
                         result.append(
-                            (file, -1, -1, -1, -1, "note", "At top level:", e.allow_dups, None)
+                            (
+                                file,
+                                -1,
+                                -1,
+                                -1,
+                                -1,
+                                "note",
+                                "At top level:",
+                                e.allow_dups,
+                                None,
+                                None,
+                                "",
+                            )
                         )
                     else:
                         result.append(
@@ -1026,6 +1049,8 @@ class Errors:
                                 f'In class "{e.type}":',
                                 e.allow_dups,
                                 None,
+                                None,
+                                "",
                             )
                         )
                 else:
@@ -1041,6 +1066,8 @@ class Errors:
                                 f'In function "{e.function_or_member}":',
                                 e.allow_dups,
                                 None,
+                                None,
+                                "",
                             )
                         )
                     else:
@@ -1057,18 +1084,49 @@ class Errors:
                                 ),
                                 e.allow_dups,
                                 None,
+                                None,
+                                "",
                             )
                         )
             elif e.type != prev_type:
                 if e.type is None:
                     result.append(
-                        (file, -1, -1, -1, -1, "note", "At top level:", e.allow_dups, None)
+                        (
+                            file,
+                            -1,
+                            -1,
+                            -1,
+                            -1,
+                            "note",
+                            "At top level:",
+                            e.allow_dups,
+                            None,
+                            None,
+                            "",
+                        )
                     )
                 else:
                     result.append(
-                        (file, -1, -1, -1, -1, "note", f'In class "{e.type}":', e.allow_dups, None)
+                        (
+                            file,
+                            -1,
+                            -1,
+                            -1,
+                            -1,
+                            "note",
+                            f'In class "{e.type}":',
+                            e.allow_dups,
+                            None,
+                            None,
+                            "",
+                        )
                     )
-
+            src = (
+                file == current_file
+                and source_lines
+                and e.line > 0
+                and source_lines[e.line - 1].strip()
+            ) or ""
             if isinstance(e.message, ErrorMessage):
                 result.append(
                     (
@@ -1081,6 +1139,8 @@ class Errors:
                         e.message.value,
                         e.allow_dups,
                         e.code,
+                        e.target,
+                        src,
                     )
                 )
             else:
@@ -1095,6 +1155,8 @@ class Errors:
                         e.message,
                         e.allow_dups,
                         e.code,
+                        e.target,
+                        src,
                     )
                 )
 
@@ -1170,100 +1232,100 @@ class Errors:
         return res
 
     def initialize_baseline(
-        self,
-        errors: dict[str, list[UnknownBaselineError]],
-        targets: list[str],
-        baseline_format: str,
+        self, errors: dict[str, list[StoredBaselineError]], targets: list[str]
     ) -> None:
         """Initialize the baseline properties"""
         self.original_baseline = deepcopy(errors)
-        if baseline_format == "1.3":
-            for file in errors.values():
-                previous = 0
-                for error in file:
-                    previous = error["line"] = error["offset"] + previous
+        for file in errors.values():
+            previous = 0
+            for error in file:
+                try:
+                    previous = error["line"] = error["offset"] + previous  # type: ignore[typeddict-unknown-key]
+                except KeyError:
+                    raise TypeError("baseline")
         baseline_errors = cast(Dict[str, List[BaselineError]], errors)
         self.baseline = baseline_errors
         self.baseline_targets = targets
 
-    def prepare_baseline_errors(
-        self, baseline_format: str
-    ) -> dict[str, list[UnknownBaselineError]]:
+    def prepare_baseline_errors(self) -> dict[str, list[StoredBaselineError]]:
         """Create a dict representing the error portion of an error baseline file"""
-        result: dict[str, list[UnknownBaselineError]] = {
+        result = {
             self.common_path(file): [
                 {
-                    "code": error.code.code if error.code else None,
-                    "column": error.column,
-                    "line": error.line,
-                    "message": error.message,
-                    "target": error.target,
+                    "code": error[8].code if error[8] else None,
+                    "column": error[2],
+                    "line": error[1],
+                    "message": error[6],
+                    "target": error[9],
+                    "src": self.read_source
+                    and cast(List[str], self.read_source(file))[error[1] - 1].strip(),
                 }
-                for error in self.sort_messages(errors)
+                for error in errors
                 # don't store reveal errors
-                if error.code != codes.REVEAL
+                if error[8] != codes.REVEAL and error[5] == "error"
             ]
             for file, errors in self.all_errors.items()
         }
-        if baseline_format == "1.3":
-            for file in result.values():
-                previous = 0
-                for error in file:
-                    error["offset"] = error["line"] - previous
-                    previous = error["line"]
-                    del error["line"]
-        return result
+        for file in result.values():
+            previous = 0
+            for error in file:
+                error["offset"] = cast(int, error["line"]) - previous
+                previous = cast(int, error["line"])
+                del error["line"]
+        return cast(Dict[str, List[StoredBaselineError]], result)
 
-    def filter_baseline(self, path: str) -> None:
-        """Remove baseline errors from the error_info_map"""
-        if path not in self.error_info_map:
-            return
-        if path not in self.all_errors:
-            self.all_errors[path] = self.error_info_map[path]
+    def filter_baseline(self, errors: list[ErrorTuple], path: str) -> list[ErrorTuple]:
+        """Remove baseline errors and store the unmatched errors in all_errors"""
         baseline_errors = self.baseline.get(self.common_path(path))
+        self.all_errors[path] = errors
         if not baseline_errors:
-            return
+            return errors
         new_errors = []
-        ignored_notes = []
-        # first pass for exact matches
-        for error in self.sort_messages(self.error_info_map[path]):
-            if error.code == codes.REVEAL:
+        filtered = False
+        # first pass for exact matches (line, message, src)
+        for error in errors:
+            if error[8] == codes.REVEAL:
                 new_errors.append(error)
                 continue
-            if id(error) in ignored_notes:
+            if filtered and error[5] == "note":
                 continue
-            for i, baseline_error in enumerate(baseline_errors):
-                if error.line == baseline_error["line"] and clean_baseline_message(
-                    error.message
-                ) == clean_baseline_message(baseline_error["message"]):
-                    ignored_notes.extend([id(note) for note in error.notes])
-                    del baseline_errors[i]
-                    break
-            else:
-                new_errors.append(error)
-        # second pass for rough matches
-        new_errors, temp = [], new_errors
-        ignored_notes = []
-        for error in temp:
-            if error.code == codes.REVEAL:
-                new_errors.append(error)
-                continue
-            if id(error) in ignored_notes:
-                continue
+            filtered = False
             for i, baseline_error in enumerate(baseline_errors):
                 if (
-                    error.line == baseline_error["line"]
-                    and (error.code and error.code.code) == baseline_error["code"]
-                    or clean_baseline_message(error.message)
+                    error[1] == baseline_error["line"]
+                    and clean_baseline_message(error[6])
                     == clean_baseline_message(baseline_error["message"])
-                    and abs(error.line - baseline_error["line"]) < 100
+                    and error[10] == baseline_error["src"]
                 ):
-                    ignored_notes.extend([id(note) for note in error.notes])
+                    filtered = True
                     del baseline_errors[i]
                     break
             else:
                 new_errors.append(error)
-        self.error_info_map[path] = new_errors
+        # second pass for rough matches (line, code) or (line < 100, message, src)
+        filtered = False
+        new_errors, temp = [], new_errors
+        for error in temp:
+            if error[8] == codes.REVEAL:
+                new_errors.append(error)
+                continue
+            if filtered and error[5] == "note":
+                continue
+            filtered = False
+            for i, baseline_error in enumerate(baseline_errors):
+                if (
+                    error[1] == baseline_error["line"]
+                    and (error[8] and error[8].code) == baseline_error["code"]
+                    or clean_baseline_message(error[6])
+                    == clean_baseline_message(baseline_error["message"])
+                    and abs(error[1] - baseline_error["line"]) < 100
+                    and error[10] == baseline_error["src"]
+                ):
+                    del baseline_errors[i]
+                    break
+            else:
+                new_errors.append(error)
+        return new_errors
 
 
 def clean_baseline_message(message: str) -> str:

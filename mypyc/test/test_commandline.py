@@ -45,6 +45,7 @@ class TestCommandLine(MypycDataSuite):
 
         env = os.environ.copy()
         env["PYTHONPATH"] = base_path
+        env["__MYPY_UNDER_TEST__"] = "1"
 
         out = b""
         try:
