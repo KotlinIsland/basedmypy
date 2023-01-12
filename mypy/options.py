@@ -139,8 +139,6 @@ class Options:
         self.legacy = False
         self.write_baseline = False
         self.baseline_file = defaults.BASELINE_FILE
-        # TODO make this a tuple or something that will make comparisons easier
-        self.baseline_format = "default"
         self.auto_baseline = True
         self.default_return = False
         self.infer_function_types = flip_if_not_based(True)

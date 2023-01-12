@@ -43,7 +43,6 @@ from typing import (
     Sequence,
     TextIO,
     TypeVar,
-    Union,
     cast,
 )
 from typing_extensions import Final, TypeAlias as _TypeAlias
@@ -52,14 +51,7 @@ from mypy_extensions import TypedDict
 
 import mypy.semanal_main
 from mypy.checker import TypeChecker
-from mypy.errors import (
-    BaselineError,
-    CompileError,
-    ErrorInfo,
-    Errors,
-    UnknownBaselineError,
-    report_internal_error,
-)
+from mypy.errors import CompileError, ErrorInfo, Errors, StoredBaselineError, report_internal_error
 from mypy.indirection import TypeIndirectionVisitor
 from mypy.messages import MessageBuilder
 from mypy.nodes import Import, ImportAll, ImportBase, ImportFrom, MypyFile, SymbolTable, TypeInfo
@@ -1066,39 +1058,17 @@ def generate_deps_for_cache(manager: BuildManager, graph: Graph) -> dict[str, di
     return rdeps
 
 
-def baseline_format_error(baseline_format: str, stdout: TextIO, options: Options) -> NoReturn:
-    # TODO: cleanup this call to main
-    from mypy import main
-
-    formatter = util.FancyFormatter(stdout, stderr, False)
-
-    msg = formatter.style(
-        f"Invalid/Unsupported baseline file format: {baseline_format}", "red", bold=True
-    )
-    main.fail(msg, stderr, options)
-
-
 #  Documenting baseline formats
 UnknownBaseline = Dict[str, object]
 
 
-class BaselineFormat1_3(TypedDict):
-    targets: List[str]
-    version: str
-    files: Dict[str, List[BaselineError]]
+class BaselineType(TypedDict):
+    targets: list[str]
+    format: str
+    files: dict[str, list[StoredBaselineError]]
 
 
-class BaselineMetadata(TypedDict):
-    targets: List[str]
-    version: str
-
-
-BaselineFormat1_2 = Dict[str, Union[BaselineMetadata, List[BaselineError]]]
-
-BaselineType = Union[BaselineFormat1_3, BaselineFormat1_2]
-
-
-def save_baseline(manager: BuildManager) -> None:
+def save_baseline(manager: BuildManager):
     if (
         not manager.options.baseline_file
         or not (manager.options.write_baseline or manager.options.auto_baseline)
@@ -1106,7 +1076,7 @@ def save_baseline(manager: BuildManager) -> None:
             manager.options.auto_baseline
             and not manager.options.write_baseline
             and (
-                manager.errors.num_messages()
+                manager.errors.filtered_baseline
                 or manager.errors.baseline_targets != manager.options.targets
             )
         )
@@ -1114,7 +1084,7 @@ def save_baseline(manager: BuildManager) -> None:
         # Indicate that writing was canceled
         manager.options.write_baseline = False
         return
-    new_baseline = manager.errors.prepare_baseline_errors(manager.options.baseline_format)
+    new_baseline = manager.errors.prepare_baseline_errors()
     file = Path(manager.options.baseline_file)
     if not new_baseline:
         if file.exists():
@@ -1129,17 +1099,13 @@ def save_baseline(manager: BuildManager) -> None:
         return
     if not file.parent.exists():
         file.parent.mkdir(parents=True)
-    data: UnknownBaseline
-    if manager.options.baseline_format == "1.3":
-        data = {"files": new_baseline, "format": "1.3", "targets": manager.options.targets}
-    elif manager.options.baseline_format == "1.2":
-        data = {
-            "__baseline_metadata__": {"format": "1.2", "targets": manager.options.targets},
-            **new_baseline,
-        }
-    else:
-        baseline_format_error(manager.options.baseline_format, manager.stdout, manager.options)
-    json.dump(data, file.open("w"), indent=2, sort_keys=True)
+    data: BaselineType = {
+        "files": new_baseline,
+        "format": "1.7",
+        "targets": manager.options.targets,
+    }
+    with file.open("w") as f:
+        json.dump(data, f, indent=2, sort_keys=True)
     if not manager.options.write_baseline and manager.options.auto_baseline:
         manager.stdout.write(f"Baseline successfully updated at {file}\n")
 
@@ -1157,65 +1123,66 @@ def load_baseline(options: Options, errors: Errors, stdout: TextIO) -> None:
         if options.baseline_file != defaults.BASELINE_FILE and not options.write_baseline:
             msg = formatter.style(f"error: Baseline file not found at {file}", "red", bold=True)
             main.fail(msg, stderr, options)
-        else:
-            if options.baseline_format == "default":
-                options.baseline_format = "1.3"
         return
     try:
-        data: UnknownBaseline = json.load(file.open())
+        data = json.load(file.open())
     except JSONDecodeError:
         msg = formatter.style(f"error: Invalid JSON in baseline file {file}", "red", bold=True)
         main.fail(msg, stderr, options)
 
+    def error(msg: str | None = None) -> bool:
+        if msg is None:
+            if options.write_baseline:
+                msg = (
+                    f"error: Baseline file '{file}' has an invalid data format.\n"
+                    "It's content is being ignored while a new baseline is being written."
+                )
+            else:
+                msg = (
+                    f"error: Baseline file '{file}' has an invalid data format.\n"
+                    "It should be regenerated with `--write-baseline`."
+                )
+        msg = formatter.style(msg, "red", bold=True)
+        if options.write_baseline:
+            stdout.write(msg)
+            return True
+        main.fail(msg, stderr, options)
+
+    # Validate data
+    if not isinstance(data, dict) and error():
+        return
     # try to detect format:
     baseline_format = data.get("format")
     if not baseline_format:
         metadata = data.get("__baseline_metadata__")
         baseline_format = metadata.get("format") if isinstance(metadata, dict) else None
-    if not baseline_format:
-        # if format hasn't been found yet, it can only be 1.2
-        baseline_format = "1.2"
-    if not options.write_baseline and options.baseline_format == "default":
-        assert isinstance(baseline_format, str)
-        options.baseline_format = baseline_format
-    # set default baseline format
-    if options.write_baseline and options.baseline_format == "default":
-        options.baseline_format = "1.3"
+
+    if baseline_format is None and error():
+        return
+    elif baseline_format != "1.7":
+        if not options.write_baseline:
+            error(
+                f"error: Baseline file '{file}' was generated with an old version of basedmypy.\n"
+                "It should be regenerated with `--write-baseline`."
+            )
+        return
+    if (
+        not isinstance(data.get("files"), dict) or not isinstance(data.get("targets"), list)
+    ) and error():
+        return
 
     # pull out data
-    if baseline_format == "1.3":
-        baseline_errors = data.get("files", [])
-        targets = data.get("targets")
-    elif baseline_format == "1.2":
-        metadata = data.pop("__baseline_metadata__", None)
-        targets = None
-        if isinstance(metadata, dict):
-            targets = metadata.get("targets")
-        if targets is None:
-            targets = ["None"]
-        baseline_errors = data
-    else:
-        baseline_format_error(options.baseline_format, stdout, options)
-
+    baseline_errors = data.get("files", {})
+    targets = data.get("targets")
     if baseline_errors and targets:
-        assert isinstance(baseline_format, str)
-        errors.initialize_baseline(
-            cast(Dict[str, List[UnknownBaselineError]], baseline_errors),
-            cast(List[str], targets),
-            baseline_format,
-        )
-        return
-
-    # deal with errors
-    if options.write_baseline:
-        return
-    msg = formatter.style(
-        f"error: Baseline file '{file}' has an invalid data format.\n"
-        "Perhaps it was generated with an older version of basedmypy, see `--baseline-format`",
-        "red",
-        bold=True,
-    )
-    main.fail(msg, stderr, options)
+        try:
+            errors.initialize_baseline(
+                cast(Dict[str, List[StoredBaselineError]], baseline_errors),
+                cast(List[str], targets),
+            )
+        except TypeError:
+            if error():
+                return
 
 
 PLUGIN_SNAPSHOT_FILE: Final = "@plugins_snapshot.json"
@@ -3618,12 +3585,7 @@ def process_stale_scc(graph: Graph, scc: list[str], manager: BuildManager) -> No
         for id in stale:
             graph[id].transitive_error = True
     for id in stale:
-        manager.errors.filter_baseline(graph[id].xpath)
-        # show new errors only
         manager.flush_errors(manager.errors.file_messages(graph[id].xpath), False)
-        if manager.options.write_baseline:
-            # collect but don't show old errors
-            manager.flush_errors(manager.errors.file_messages(graph[id].xpath, True), True)
         graph[id].write_cache()
         graph[id].mark_as_rechecked()
 

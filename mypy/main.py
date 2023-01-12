@@ -115,25 +115,18 @@ def main(
     if messages and n_notes < len(messages):
         code = 2 if blockers else 1
     if options.error_summary:
+        if options.write_baseline and res:
+            new_errors = n_errors
+            n_files = len(res.manager.errors.all_errors)
+            total = []
+            # This is stupid, but it's just to remove the dupes from the unfiltered errors
+            for errors in res.manager.errors.all_errors.values():
+                temp = res.manager.errors.render_messages(errors)
+                total.extend(res.manager.errors.remove_duplicates(temp))
+            n_errors = len([error for error in total if error[5] == "error"])
+        else:
+            new_errors = -1
         if n_errors:
-            if options.write_baseline and res:
-                new_errors = 0
-                for errors in res.manager.errors.error_info_map.values():
-                    new_errors += len(
-                        [
-                            error
-                            for error in res.manager.errors.remove_duplicates(
-                                res.manager.errors.render_messages(
-                                    res.manager.errors.sort_messages(
-                                        [error for error in errors if not error.hidden]
-                                    )
-                                )
-                            )
-                            if error[5] == "error"
-                        ]
-                    )
-            else:
-                new_errors = -1
             summary = formatter.format_error(
                 n_errors,
                 n_files,
@@ -191,8 +184,7 @@ def run_build(
     def flush_errors(new_messages: list[str], serious: bool) -> None:
         if options.pretty:
             new_messages = formatter.fit_in_terminal(new_messages)
-        if not options.write_baseline or serious:
-            messages.extend(new_messages)
+        messages.extend(new_messages)
         if options.non_interactive or (options.write_baseline and serious):
             # Collect messages and possibly show them later.
             return
@@ -563,12 +555,6 @@ def process_options(
         "--baseline-file",
         action="store",
         help="Use baseline info in the given file" f"(defaults to '{defaults.BASELINE_FILE}')",
-    )
-    based_group.add_argument(
-        "--baseline-format",
-        action="store",
-        help="Baseline file format, for backwards compatibility"
-        " (defaults to the latest version)",
     )
     add_invertible_flag(
         "--no-auto-baseline",
@@ -1393,8 +1379,8 @@ def process_options(
 
     # Process `--enable-error-code` and `--disable-error-code` flags
     disabled_codes = set(options.disable_error_code)
-    enabled_codes = set(options.enable_error_code) | (based_enabled_codes - disabled_codes)
-
+    options.enable_error_code.extend(sorted(based_enabled_codes - disabled_codes))
+    enabled_codes = set(options.enable_error_code)
     valid_error_codes = set(error_codes.keys())
 
     invalid_codes = (enabled_codes | disabled_codes) - valid_error_codes
