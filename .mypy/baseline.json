@@ -10719,7 +10719,7 @@
         "code": "no-any-expr",
         "column": 16,
         "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 253,
+        "offset": 260,
         "target": "mypy.main.process_options"
       },
       {
@@ -12528,7 +12528,7 @@
         "code": "no-any-expr",
         "column": 23,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 580,
+        "offset": 590,
         "target": "mypy.modulefinder.FindModuleCache._is_compatible_stub_package"
       },
       {
@@ -13278,7 +13278,7 @@
         "code": "no-any-explicit",
         "column": 8,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 357,
+        "offset": 359,
         "target": "mypy.options.Options.__init__"
       },
       {
@@ -22333,7 +22333,7 @@
         "code": "no-any-expr",
         "column": 11,
         "message": "Expression has type \"Any (from unimported type)\"",
-        "offset": 47,
+        "offset": 48,
         "target": "mypy.test.testcmdline.PythonCmdlineSuite.run_case"
       },
       {

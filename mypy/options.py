@@ -44,6 +44,7 @@ PER_MODULE_OPTIONS: Final = {
     "follow_imports",
     "ignore_errors",
     "ignore_missing_imports",
+    "ignore_missing_py_typed",
     "implicit_optional",
     "implicit_reexport",
     "local_partial_types",
@@ -147,6 +148,7 @@ class Options:
         self.ignore_any_from_error = True
         self.incomplete_is_typed = flip_if_not_based(False)
         self.bare_literals = flip_if_not_based(True)
+        self.ignore_missing_py_typed = False
 
         # disallow_any options
         self.disallow_any_generics = flip_if_not_based(True)

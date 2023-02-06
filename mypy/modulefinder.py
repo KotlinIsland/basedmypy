@@ -85,7 +85,7 @@ class ModuleNotFoundReason(Enum):
         elif self is ModuleNotFoundReason.FOUND_WITHOUT_TYPE_HINTS:
             msg = (
                 'Skipping analyzing "{module}": module is installed, but missing library stubs '
-                "or py.typed marker"
+                "or py.typed marker. To work around this error, see the 'ignore_missing_py_typed' option"
             )
             notes = [doc_link]
         elif self is ModuleNotFoundReason.APPROVED_STUBS_NOT_INSTALLED:
@@ -322,9 +322,9 @@ class FindModuleCache:
         return version >= min_version and (max_version is None or version <= max_version)
 
     def _find_module_non_stub_helper(
-        self, components: list[str], pkg_dir: str
+        self, components: list[str], pkg_dir: str, ignore_missing_py_typed=False
     ) -> OnePackageDir | ModuleNotFoundReason:
-        plausible_match = False
+        plausible_match: OnePackageDir | None = None
         dir_path = pkg_dir
         for index, component in enumerate(components):
             dir_path = os.path.join(dir_path, component)
@@ -333,7 +333,7 @@ class FindModuleCache:
             elif not plausible_match and (
                 self.fscache.isdir(dir_path) or self.fscache.isfile(dir_path + ".py")
             ):
-                plausible_match = True
+                plausible_match = os.path.join(pkg_dir, *components[:-1]), index == 0
             # If this is not a directory then we can't traverse further into it
             if not self.fscache.isdir(dir_path):
                 break
@@ -346,7 +346,11 @@ class FindModuleCache:
         if approved_stub_package_exists(".".join(components[:2])):
             return ModuleNotFoundReason.APPROVED_STUBS_NOT_INSTALLED
         if plausible_match:
-            return ModuleNotFoundReason.FOUND_WITHOUT_TYPE_HINTS
+            return (
+                plausible_match
+                if ignore_missing_py_typed
+                else ModuleNotFoundReason.FOUND_WITHOUT_TYPE_HINTS
+            )
         else:
             return ModuleNotFoundReason.NOT_FOUND
 
@@ -453,7 +457,13 @@ class FindModuleCache:
                             third_party_stubs_dirs.append((path, True))
                     else:
                         third_party_stubs_dirs.append((path, True))
-            non_stub_match = self._find_module_non_stub_helper(components, pkg_dir)
+            ignore_missing_py_typed = (
+                self.options
+                and self.options.clone_for_module(".".join(components)).ignore_missing_py_typed
+            )
+            non_stub_match = self._find_module_non_stub_helper(
+                components, pkg_dir, ignore_missing_py_typed or False
+            )
             if isinstance(non_stub_match, ModuleNotFoundReason):
                 if non_stub_match is ModuleNotFoundReason.FOUND_WITHOUT_TYPE_HINTS:
                     found_possible_third_party_missing_type_hints = True
