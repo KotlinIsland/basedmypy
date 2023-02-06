@@ -611,6 +611,13 @@ def process_options(
     add_invertible_flag(
         "--bare-literals", default=True, help="Allow bare literals.", group=based_group
     )
+    add_invertible_flag(
+        "--ignore-missing-py-typed",
+        default=False,
+        help="Use types from a package, even if it doesn't have a py.typed. "
+        "You probably want to set this on a module override",
+        group=based_group,
+    )
 
     config_group = parser.add_argument_group(
         title="Config file",
