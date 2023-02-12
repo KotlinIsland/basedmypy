@@ -1054,4 +1054,4 @@ A.f = h  # OK
 class A:
     def f(self) -> None: pass
 def h(self: A) -> None: pass
-A.f = h  # type: ignore[assignment]  # E: Unused "type: ignore" comment, use narrower [method-assign] instead of [assignment]
+A.f = h  # type: ignore[assignment]  # E: Unused "type: ignore" comment, use narrower [method-assign] instead of [assignment]  [unused-ignore]
