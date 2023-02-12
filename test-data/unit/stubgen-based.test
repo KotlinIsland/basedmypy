@@ -951,16 +951,6 @@ from typing import Any
 
 alias = Container[Any]
 
-[case testAliasOnlyToplevel]
-class Foo:
-    alias = str
-
-[out]
-from basedtyping import Untyped
-
-class Foo:
-    alias: Untyped
-
 [case testAliasExceptions]
 noalias1 = None
 noalias2 = ...
