@@ -1,9 +1,17 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+
+## [1.7.0]
+### Added
+- `ignore-missing-py-typed` to use types even if there is no `py.typed` (#337)
 ### Fixes
 - Errors regarding inferred functions didn't have a note (#394)
 - Type ignored calls to incomplete functions left a phantom note (#395)
+- Fix incorrect plural in summary message (#386)
+### Enhancements
+- Baseline now stores the source code for better matching (#415)
+- Duplicates are no longer stored in the baseline (#231)
 
 ## [1.6.0]
 ### Added
