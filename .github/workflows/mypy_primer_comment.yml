@@ -48,35 +48,41 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const MAX_CHARACTERS = 30000
+            const MAX_CHARACTERS = 261544
             const MAX_CHARACTERS_PER_PROJECT = MAX_CHARACTERS / 3
 
             const fs = require('fs')
             let data = fs.readFileSync('fulldiff.txt', { encoding: 'utf8' })
 
-            function truncateIfNeeded(original, maxLength) {
+            function truncateIfNeeded(original, maxLength, suffix='') {
+              maxLength -= suffix.length
               if (original.length <= maxLength) {
-                return original
+                return original + suffix
               }
+              suffix += '\n\n... (truncated {lines_truncated} lines) ...'
               let truncated = original.substring(0, maxLength)
               // further, remove last line that might be truncated
               truncated = truncated.substring(0, truncated.lastIndexOf('\n'))
               let lines_truncated = original.split('\n').length - truncated.split('\n').length
-              return `${truncated}\n\n... (truncated ${lines_truncated} lines) ...`
+              return `${truncated}${suffix.replace("{lines_truncated}", lines_truncated)}`
             }
 
-            const projects = data.split('\n\n')
-            // don't let one project dominate
-            data = projects.map(project => truncateIfNeeded(project, MAX_CHARACTERS_PER_PROJECT)).join('\n\n')
-            // posting comment fails if too long, so truncate
-            data = truncateIfNeeded(data, MAX_CHARACTERS)
-
+            if (data.length >= MAX_CHARACTERS) {
+                const projects = data.split('\n\n')
+                // don't let one project dominate
+                data = projects.map(project => truncateIfNeeded(project, MAX_CHARACTERS_PER_PROJECT)).join('\n\n')
+            }
             console.log("Diff from mypy_primer:")
             console.log(data)
 
             let body
             if (data.trim()) {
-              body = 'Diff from [mypy_primer](https://github.com/hauntsaninja/mypy_primer), showing the effect of this PR on open source code:\n```diff\n' + data + '```'
+              data = '```diff\n' + data
+              if (data.split('\n').length > 500) {
+                data = '<details><summary></summary>\n\n' + data + '```'
+              }
+              body = 'Diff from [mypy_primer](https://github.com/hauntsaninja/mypy_primer), showing the effect of this PR on open source code:\n' + data
+              body = truncateIfNeeded(body, MAX_CHARACTERS, data.split('\n').length > 500 ? '```</details>' : '')
             } else {
               body = 'According to [mypy_primer](https://github.com/hauntsaninja/mypy_primer), this change has no effect on the checked open source code. 🤖🎉'
             }
