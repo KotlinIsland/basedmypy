@@ -20,7 +20,7 @@ class ArgSuite(Suite):
 
         mypy.options._based = False
         options = Options()
-        _, parsed_options = process_options([], require_targets=False)
+        _, parsed_options = process_options(["--no-strict"], require_targets=False)
         # FIX: test this too. Requires changing working dir to avoid finding 'setup.cfg'
         options.config_file = parsed_options.config_file
         assert_equal(options.snapshot(), parsed_options.snapshot())

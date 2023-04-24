@@ -5040,7 +5040,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             and not always_allow_any
             and not self.chk.is_stub
             and self.chk.in_checked_function()
-            and has_any_type(typ, ignore_any_from_error=self.chk.options.ignore_any_from_error)
+            and has_any_type(typ, ignore_any_from_error=self.chk.options.hide_any_from_error)
             and not self.chk.current_node_deferred
         ):
             self.msg.disallowed_any_type(typ, node)

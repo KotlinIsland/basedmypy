@@ -145,16 +145,16 @@ class Options:
         self.exclude: list[str] = []
 
         # Based options
-        self.legacy = False
         self.write_baseline = False
         self.baseline_file = defaults.BASELINE_FILE
         self.auto_baseline = True
-        self.default_return = False
-        self.infer_function_types = flip_if_not_based(True)
-        self.targets: list[str] = []
-        self.ignore_any_from_error = True
+        self.default_return = True
+        self.infer_function_types = True
+        self._targets: list[str] = []
+        """This is private so that it's not included in the snapshot"""
+        self.hide_any_from_error = True
         self.incomplete_is_typed = flip_if_not_based(False)
-        self.bare_literals = flip_if_not_based(True)
+        self.bare_literals = True
         self.ignore_missing_py_typed = False
 
         # disallow_any options

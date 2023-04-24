@@ -4147,7 +4147,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                         self.msg.untyped_name_usage(rvalue.name, rvalue)
                     elif self.options.disallow_any_expr and isinstance(rvalue_type_, AnyType):
                         # TODO: this could probably be extracted to a common call
-                        if self.options.ignore_any_from_error and (
+                        if self.options.hide_any_from_error and (
                             rvalue_type_.type_of_any == TypeOfAny.from_error
                             or rvalue_type_.type_of_any == TypeOfAny.from_another_any
                             and rvalue_type_.source_any

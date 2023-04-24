@@ -191,7 +191,9 @@ class TestRun(MypycDataSuite):
 
         mypy_options._based = False
         options = Options()
-        options.legacy = True
+        options.default_return = False
+        options.infer_function_types = False
+        options.bare_literals = False
         options.use_builtins_fixtures = True
         options.show_traceback = True
         options.strict_optional = True

@@ -389,28 +389,38 @@ foo()
 {
   "files": {
     "pkg/main.py": [
-      {
-        "code": "no-untyped-def",
-        "column": 1,
-        "message": "Function is missing a type annotation",
-        "offset": 1,
-        "src": "def foo(a=b):",
-        "target": "test"
-      },{
-        "code": "no-untyped-def",
-        "column": 1,
-        "message": "Name \"b\" is not defined",
-        "offset": 0,
-        "src": "def foo(a=b):",
-        "target": "test"
-      },{
-        "code": "no-untyped-def",
-        "column": 1,
-        "message": "Call to untyped function \"foo\" in typed context",
-        "offset": 2,
-        "src": "foo()",
-        "target": "test"
-      }
+        {
+            "code": "no-untyped-def",
+            "column": 0,
+            "message": "Function is missing a type annotation for one or more arguments",
+            "offset": 1,
+            "src": "def foo(a=b):",
+            "target": "test.foo"
+        },
+        {
+            "code": "name-defined",
+            "column": 10,
+            "message": "Name \"b\" is not defined",
+            "offset": 0,
+            "src": "def foo(a=b):",
+            "target": "test"
+        },
+        {
+            "code": "no-untyped-call",
+            "column": 0,
+            "message": "Call to incomplete function \"foo\" in typed context",
+            "offset": 2,
+            "src": "foo()",
+            "target": "test"
+        },
+        {
+            "code": "no-untyped-call",
+            "column": 0,
+            "message": "Type is \"def (a: Untyped =) -> None\"",
+            "offset": 0,
+            "src": "foo()",
+            "target": "test"
+        }
     ]
   },
   "format": "1.7",
@@ -432,67 +442,87 @@ def foo(a=b):
 foo()
 [file .mypy/baseline.json]
 {
-  "files": {
-    "pkg/main.py": [
-      {
-        "code": "no-untyped-def",
-        "column": 1,
-        "message": "Function is missing a type annotation",
-        "offset": 1,
-        "src": "def foo(a=b):",
-        "target": "test"
-      },{
-        "code": "no-untyped-def",
-        "column": 1,
-        "message": "Name \"b\" is not defined",
-        "offset": 0,
-        "src": "def foo(a=b):",
-        "target": "test"
-      },{
-        "code": "no-untyped-def",
-        "column": 1,
-        "message": "Call to untyped function \"foo\" in typed context",
-        "offset": 2,
-        "src": "foo()",
-        "target": "test"
-      }
+    "files": {
+        "pkg/main.py": [
+            {
+                "code": "no-untyped-def",
+                "column": 0,
+                "message": "Function is missing a type annotation for one or more arguments",
+                "offset": 1,
+                "src": "def foo(a=b):",
+                "target": "test.foo"
+            },
+            {
+                "code": "name-defined",
+                "column": 10,
+                "message": "Name \"b\" is not defined",
+                "offset": 0,
+                "src": "def foo(a=b):",
+                "target": "test"
+            },
+            {
+                "code": "no-untyped-call",
+                "column": 0,
+                "message": "Call to incomplete function \"foo\" in typed context",
+                "offset": 2,
+                "src": "foo()",
+                "target": "test"
+            },
+            {
+                "code": "no-untyped-call",
+                "column": 0,
+                "message": "Type is \"def (a: Untyped =) -> None\"",
+                "offset": 0,
+                "src": "foo()",
+                "target": "test"
+            }
+        ]
+    },
+    "format": "1.7",
+    "targets": [
+        "package:pkg"
     ]
-  },
-  "format": "1.7",
-  "targets": [
-    "package:pkg"
-  ]
 }
 [outfile .mypy/baseline.json]
 {
-  "files": {
-    "pkg/main.py": [
-      {
-        "code": "no-untyped-def",
-        "column": 1,
-        "message": "Function is missing a type annotation",
-        "offset": 1,
-        "src": "def foo(a=b):",
-        "target": "test"
-      },{
-        "code": "no-untyped-def",
-        "column": 1,
-        "message": "Name \"b\" is not defined",
-        "offset": 0,
-        "src": "def foo(a=b):",
-        "target": "test"
-      },{
-        "code": "no-untyped-def",
-        "column": 1,
-        "message": "Call to untyped function \"foo\" in typed context",
-        "offset": 2,
-        "src": "foo()",
-        "target": "test"
-      }
+    "files": {
+        "pkg/main.py": [
+            {
+                "code": "no-untyped-def",
+                "column": 0,
+                "message": "Function is missing a type annotation for one or more arguments",
+                "offset": 1,
+                "src": "def foo(a=b):",
+                "target": "test.foo"
+            },
+            {
+                "code": "name-defined",
+                "column": 10,
+                "message": "Name \"b\" is not defined",
+                "offset": 0,
+                "src": "def foo(a=b):",
+                "target": "test"
+            },
+            {
+                "code": "no-untyped-call",
+                "column": 0,
+                "message": "Call to incomplete function \"foo\" in typed context",
+                "offset": 2,
+                "src": "foo()",
+                "target": "test"
+            },
+            {
+                "code": "no-untyped-call",
+                "column": 0,
+                "message": "Type is \"def (a: Untyped =) -> None\"",
+                "offset": 0,
+                "src": "foo()",
+                "target": "test"
+            }
+        ]
+    },
+    "format": "1.7",
+    "targets": [
+        "package:pkg"
     ]
-  },
-  "format": "1.7",
-  "targets": [
-    "package:pkg"
-  ]
 }

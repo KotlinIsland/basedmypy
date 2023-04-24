@@ -563,21 +563,25 @@ def process_options(
         dest="auto_baseline",
         help="Don't update the baseline automatically.",
     )
-    based_group.add_argument(
-        "--legacy", action="store_true", help="Disable all based functionality"
+    add_invertible_flag(
+        "--no-strict",
+        default=True,
+        dest="special-opts:strict",
+        help="Remove based strictness (inverse: --strict)",
+        group=based_group,
     )
     add_invertible_flag(
-        "--default-return",
-        default=False,
+        "--no-default-return",
+        default=True,
         dest="default_return",
         help="Assume implicit default return type of None",
         group=based_group,
     )
     add_invertible_flag(
-        "--ignore-any-from-error",
-        default=False,
-        dest="ignore_any_from_error",
-        help="Don't include Any type from errors in no-any-expr messages.",
+        "--show-any-from-error",
+        default=True,
+        dest="hide_any_from_error",
+        help="Include Any type from errors in no-any-expr messages.",
         group=based_group,
     )
     add_invertible_flag(
@@ -590,12 +594,16 @@ def process_options(
     add_invertible_flag(
         "--incomplete-is-typed",
         group=based_group,
-        default=False,
+        default=True,
         help="Partially typed/incomplete functions in this module are considered typed"
         " for untyped call errors.",
     )
     add_invertible_flag(
-        "--bare-literals", default=True, help="Allow bare literals.", group=based_group
+        "--no-bare-literals",
+        default=True,
+        dest="bare_literals",
+        help="Disallow bare literals.",
+        group=based_group,
     )
     add_invertible_flag(
         "--ignore-missing-py-typed",
@@ -1281,8 +1289,7 @@ def process_options(
     if config_file and not os.path.exists(config_file):
         parser.error(f"Cannot find config file '{config_file}'")
 
-    if dummy.legacy:
-        mypy.options._based = False
+    mypy.options._based = dummy.__dict__["special-opts:strict"]
 
     based_enabled_codes = (
         {
@@ -1299,7 +1306,7 @@ def process_options(
 
     options = Options()
 
-    if dummy.legacy:
+    if not dummy.__dict__["special-opts:strict"]:
         if not os.getenv("__MYPY_UNDER_TEST__"):
             mypy.options._based = True
 
@@ -1451,7 +1458,7 @@ def process_options(
         )
 
     # Store targets
-    options.targets = (
+    options._targets = (
         [f"module:{el}" for el in special_opts.modules]
         + [f"package:{el}" for el in special_opts.packages]
         + [f"file:{el}" for el in special_opts.files]

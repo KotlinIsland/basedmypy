@@ -108,7 +108,7 @@ def build_ir_for_single_file2(
 
     mypy.options._based = False
     options = Options()
-    options.legacy = True
+    options.default_return = False
     options.show_traceback = True
     options.hide_error_codes = True
     options.use_builtins_fixtures = True

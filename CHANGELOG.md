@@ -3,6 +3,8 @@
 ## [Unreleased]
 ### Added
 - Deprecate python 3.7 support (#457)
+- Removed `--legacy` flag in favour of `--no-strict` (#445)
+- `default-return` is now enabled by default (#445)
 ### Enhancements
 - Removed `Any` from the typings for `re.Match` group functions. (#459)
 ### Fixes

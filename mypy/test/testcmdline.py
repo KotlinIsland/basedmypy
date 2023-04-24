@@ -67,7 +67,8 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
     args.append("--show-traceback")
     based = "based" in testcase.file.rsplit(os.sep)[-1]
     if not based:
-        args.append("--legacy")
+        args.append("--no-strict")
+        args.append("--no-default-return")
     if "--error-summary" not in args:
         args.append("--no-error-summary")
     if "--show-error-codes" not in args and not based:

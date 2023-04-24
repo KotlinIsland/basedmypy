@@ -253,6 +253,7 @@ p.add_argument(
 )
 p.add_argument("--options-data", help=argparse.SUPPRESS)
 p.add_argument("--legacy", action="store_true", help=argparse.SUPPRESS)
+"""This is just here for running tests"""
 help_parser = p = subparsers.add_parser("help")
 
 del p

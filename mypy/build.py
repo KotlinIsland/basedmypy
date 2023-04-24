@@ -1067,7 +1067,7 @@ def save_baseline(manager: BuildManager):
             and not manager.options.write_baseline
             and (
                 manager.errors.filtered_baseline
-                or manager.errors.baseline_targets != manager.options.targets
+                or manager.errors.baseline_targets != manager.options._targets
             )
         )
     ):
@@ -1092,7 +1092,7 @@ def save_baseline(manager: BuildManager):
     data: BaselineType = {
         "files": new_baseline,
         "format": "1.7",
-        "targets": manager.options.targets,
+        "targets": manager.options._targets,
     }
     with file.open("w") as f:
         json.dump(data, f, indent=2, sort_keys=True)

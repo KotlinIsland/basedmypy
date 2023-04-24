@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 
+import mypy.options
 from mypy import build
 from mypy.errors import CompileError
 from mypy.modulefinder import BuildSource
@@ -28,7 +29,10 @@ class TypeExportSuite(DataSuite):
                 mask = "(" + line[2:].strip() + ")$"
 
             src = "\n".join(testcase.input)
+            mypy.options._based = False
             options = Options()
+            options.default_return = False
+            options.infer_function_types = False
             options.strict_optional = False  # TODO: Enable strict optional checking
             options.use_builtins_fixtures = True
             options.show_traceback = True

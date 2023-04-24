@@ -4009,7 +4009,7 @@
         "code": "no-any-expr",
         "column": 11,
         "message": "Expression has type \"Any\"",
-        "offset": 275,
+        "offset": 276,
         "src": "if not args.action:",
         "target": "mypy.dmypy.client.main"
       },
@@ -9169,7 +9169,7 @@
         "code": "no-any-expr",
         "column": 16,
         "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 246,
+        "offset": 254,
         "src": "default=[],",
         "target": "mypy.main.process_options"
       },
@@ -9271,18 +9271,26 @@
       },
       {
         "code": "no-any-expr",
-        "column": 7,
-        "message": "Expression has type \"Any\"",
+        "column": 26,
+        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
         "offset": 2,
-        "src": "if dummy.legacy:",
+        "src": "mypy.options._based = dummy.__dict__[\"special-opts:strict\"]",
         "target": "mypy.main.process_options"
       },
       {
         "code": "no-any-expr",
-        "column": 7,
+        "column": 11,
+        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
+        "offset": 17,
+        "src": "if not dummy.__dict__[\"special-opts:strict\"]:",
+        "target": "mypy.main.process_options"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 11,
         "message": "Expression has type \"Any\"",
-        "offset": 18,
-        "src": "if dummy.legacy:",
+        "offset": 0,
+        "src": "if not dummy.__dict__[\"special-opts:strict\"]:",
         "target": "mypy.main.process_options"
       },
       {
@@ -18981,7 +18989,7 @@
         "code": "no-any-expr",
         "column": 7,
         "message": "Expression has type \"Untyped\"",
-        "offset": 106,
+        "offset": 117,
         "src": "if testcase.config.getoption(\"--mypy-verbose\"):",
         "target": "mypy.test.helpers.parse_options"
       },
@@ -19065,7 +19073,7 @@
         "code": "no-any-expr",
         "column": 13,
         "message": "Expression type contains \"Any\" (has type \"int | Any\")",
-        "offset": 45,
+        "offset": 46,
         "src": "result = process.returncode",
         "target": "mypy.test.testcmdline.test_python_cmdline"
       },
@@ -19131,7 +19139,7 @@
         "code": "no-any-expr",
         "column": 15,
         "message": "Expression type contains \"Any\" (has type \"(int, Any)\")",
-        "offset": 97,
+        "offset": 99,
         "src": "return err.returncode, err.output",
         "target": "mypy.test.testdaemon.run_cmd"
       },
@@ -20395,7 +20403,7 @@
         "code": "truthy-bool",
         "column": 39,
         "message": "Expression has type \"Type\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 61,
+        "offset": 65,
         "src": "if node.line != -1 and map[node]:",
         "target": "mypy.test.testtypegen.TypeExportSuite.run_case"
       },
@@ -24907,7 +24915,7 @@
         "code": "no-any-expr",
         "column": 12,
         "message": "Expression has type \"Any\"",
-        "offset": 44,
+        "offset": 46,
         "src": "self.get_separate(\"\\n\".join(testcase.input), incremental_step)",
         "target": "mypyc.test.test_run.TestRun.run_case_step"
       },

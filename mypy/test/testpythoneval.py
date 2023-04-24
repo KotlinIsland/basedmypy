@@ -55,8 +55,9 @@ def test_python_evaluation(testcase: DataDrivenTestCase, cache_dir: str) -> None
         "--no-error-summary",
         "--hide-error-codes",
         "--allow-empty-bodies",
+        "--no-infer-function-types",
         "--force-uppercase-builtins",
-        "--legacy",
+        "--no-strict",
     ]
     interpreter = python3_path
     mypy_cmdline.append(f"--python-version={'.'.join(map(str, PYTHON3_VERSION))}")

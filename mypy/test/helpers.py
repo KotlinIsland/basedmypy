@@ -379,6 +379,13 @@ def parse_options(
             flag_list.insert(0, "--default-return")
             flag_list.append("--hide-column-numbers")
             flag_list.extend(["--enable-error-code", "no-untyped-usage"])
+        else:
+            flag_list = [
+                "--no-default-return",
+                "--no-infer-function-types",
+                "--no-bare-literals",
+                "--no-strict",
+            ] + flag_list
         flag_list.append("--no-site-packages")  # the tests shouldn't need an installed Python
         if "--local-partial-types" in flag_list:
             flag_list.remove("--local-partial-types")
@@ -397,6 +404,10 @@ def parse_options(
             options.default_return = True
             options.enabled_error_codes.update({errorcodes.NO_UNTYPED_USAGE})
         else:
+            options.strict_optional = True
+            options.bare_literals = False
+            options.default_return = False
+            options.infer_function_types = False
             # TODO: Enable strict optional in test cases by default
             #  (requires *many* test case changes)
             options.strict_optional = False

@@ -824,7 +824,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 fallback=Instance(sym.node.info, [], line=t.line, column=t.column),
                 line=t.line,
                 column=t.column,
-                bare_literal=True,
+                bare_literal=not defining_literal,
             )
             if t.expression:
                 return result
