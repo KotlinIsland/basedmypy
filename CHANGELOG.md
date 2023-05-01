@@ -1,6 +1,8 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Added
+- Deprecate python 3.7 support (#457)
 ### Enhancements
 - Removed `Any` from the typings for `re.Match` group functions. (#459)
 ### Fixes

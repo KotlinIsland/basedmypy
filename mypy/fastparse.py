@@ -118,123 +118,77 @@ from mypy.types import (
 )
 from mypy.util import bytes_to_human_readable_repr, safe, unnamed_function
 
-try:
-    # pull this into a final variable to make mypyc be quiet about the
-    # the default argument warning
-    PY_MINOR_VERSION: Final = sys.version_info[1]
+# pull this into a final variable to make mypyc be quiet about the
+# the default argument warning
+PY_MINOR_VERSION: Final = sys.version_info[1]
 
-    # Check if we can use the stdlib ast module instead of typed_ast.
-    if sys.version_info >= (3, 8):
-        import ast as ast3
+import ast as ast3
 
-        assert (
-            "kind" in ast3.Constant._fields
-        ), f"This 3.8.0 alpha ({sys.version.split()[0]}) is too old; 3.8.0a3 required"
-        # TODO: Num, Str, Bytes, NameConstant, Ellipsis are deprecated in 3.8.
-        # TODO: Index, ExtSlice are deprecated in 3.9.
-        from ast import (
-            AST,
-            Attribute,
-            Bytes,
-            Call,
-            Ellipsis as ast3_Ellipsis,
-            Expression as ast3_Expression,
-            FunctionType,
-            Index,
-            Name,
-            NameConstant,
-            Num,
-            Starred,
-            Str,
-            UnaryOp,
-            USub,
-        )
+assert (
+    "kind" in ast3.Constant._fields
+), f"This 3.8.0 alpha ({sys.version.split()[0]}) is too old; 3.8.0a3 required"
+# TODO: Num, Str, Bytes, NameConstant, Ellipsis are deprecated in 3.8.
+# TODO: Index, ExtSlice are deprecated in 3.9.
+from ast import (
+    AST,
+    Attribute,
+    Bytes,
+    Call,
+    Ellipsis as ast3_Ellipsis,
+    Expression as ast3_Expression,
+    FunctionType,
+    Index,
+    Name,
+    NameConstant,
+    Num,
+    Starred,
+    Str,
+    UnaryOp,
+    USub,
+)
 
-        def ast3_parse(
-            source: str | bytes, filename: str, mode: str, feature_version: int = PY_MINOR_VERSION
-        ) -> AST:
-            return ast3.parse(
-                source,
-                filename,
-                mode,
-                type_comments=True,  # This works the magic
-                feature_version=feature_version,
-            )
 
-        NamedExpr = ast3.NamedExpr
-        Constant = ast3.Constant
-    else:
-        from typed_ast import ast3
-        from typed_ast.ast3 import (
-            AST,
-            Attribute,
-            Bytes,
-            Call,
-            Ellipsis as ast3_Ellipsis,
-            Expression as ast3_Expression,
-            FunctionType,
-            Index,
-            Name,
-            NameConstant,
-            Num,
-            Starred,
-            Str,
-            UnaryOp,
-            USub,
-        )
+def ast3_parse(
+    source: str | bytes, filename: str, mode: str, feature_version: int = PY_MINOR_VERSION
+) -> AST:
+    return ast3.parse(
+        source,
+        filename,
+        mode,
+        type_comments=True,  # This works the magic
+        feature_version=feature_version,
+    )
 
-        def ast3_parse(
-            source: str | bytes, filename: str, mode: str, feature_version: int = PY_MINOR_VERSION
-        ) -> AST:
-            return ast3.parse(source, filename, mode, feature_version=feature_version)
 
-        # These don't exist before 3.8
-        NamedExpr = Any
-        Constant = Any
+NamedExpr = ast3.NamedExpr
+Constant = ast3.Constant
 
-    if sys.version_info >= (3, 10):
-        Match = ast3.Match
-        MatchValue = ast3.MatchValue
-        MatchSingleton = ast3.MatchSingleton
-        MatchSequence = ast3.MatchSequence
-        MatchStar = ast3.MatchStar
-        MatchMapping = ast3.MatchMapping
-        MatchClass = ast3.MatchClass
-        MatchAs = ast3.MatchAs
-        MatchOr = ast3.MatchOr
-        AstNode = Union[ast3.expr, ast3.stmt, ast3.pattern, ast3.ExceptHandler]
-    else:
-        Match = Any
-        MatchValue = Any
-        MatchSingleton = Any
-        MatchSequence = Any
-        MatchStar = Any
-        MatchMapping = Any
-        MatchClass = Any
-        MatchAs = Any
-        MatchOr = Any
-        AstNode = Union[ast3.expr, ast3.stmt, ast3.ExceptHandler]
-    if sys.version_info >= (3, 11):
-        TryStar = ast3.TryStar
-    else:
-        TryStar = Any
-except ImportError:
-    try:
-        from typed_ast import ast35  # type: ignore[attr-defined]  # noqa: F401
-    except ImportError:
-        print(
-            "The typed_ast package is not installed.\n"
-            "You can install it with `python3 -m pip install typed-ast`.",
-            file=sys.stderr,
-        )
-    else:
-        print(
-            "You need a more recent version of the typed_ast package.\n"
-            "You can update to the latest version with "
-            "`python3 -m pip install -U typed-ast`.",
-            file=sys.stderr,
-        )
-    sys.exit(1)
+if sys.version_info >= (3, 10):
+    Match = ast3.Match
+    MatchValue = ast3.MatchValue
+    MatchSingleton = ast3.MatchSingleton
+    MatchSequence = ast3.MatchSequence
+    MatchStar = ast3.MatchStar
+    MatchMapping = ast3.MatchMapping
+    MatchClass = ast3.MatchClass
+    MatchAs = ast3.MatchAs
+    MatchOr = ast3.MatchOr
+    AstNode = Union[ast3.expr, ast3.stmt, ast3.pattern, ast3.ExceptHandler]
+else:
+    Match = Any
+    MatchValue = Any
+    MatchSingleton = Any
+    MatchSequence = Any
+    MatchStar = Any
+    MatchMapping = Any
+    MatchClass = Any
+    MatchAs = Any
+    MatchOr = Any
+    AstNode = Union[ast3.expr, ast3.stmt, ast3.ExceptHandler]
+if sys.version_info >= (3, 11):
+    TryStar = ast3.TryStar
+else:
+    TryStar = Any
 
 N = TypeVar("N", bound=Node)
 
@@ -976,15 +930,9 @@ class ASTConverter:
             func_type.line = lineno
 
         if n.decorator_list:
-            if sys.version_info < (3, 8):
-                # Before 3.8, [typed_]ast the line number points to the first decorator.
-                # In 3.8, it points to the 'def' line, where we want it.
-                deco_line = lineno
-                lineno += len(n.decorator_list)  # this is only approximately true
-            else:
-                # Set deco_line to the old pre-3.8 lineno, in order to keep
-                # existing "# type: ignore" comments working:
-                deco_line = n.decorator_list[0].lineno
+            # Set deco_line to the old pre-3.8 lineno, in order to keep
+            # existing "# type: ignore" comments working:
+            deco_line = n.decorator_list[0].lineno
 
             var = Var(func_def.name)
             var.is_ready = False
@@ -1115,12 +1063,8 @@ class ASTConverter:
         cdef.decorators = self.translate_expr_list(n.decorator_list)
         # Set lines to match the old mypy 0.700 lines, in order to keep
         # existing "# type: ignore" comments working:
-        if sys.version_info < (3, 8):
-            cdef.line = n.lineno + len(n.decorator_list)
-            cdef.deco_line = n.lineno
-        else:
-            cdef.line = n.lineno
-            cdef.deco_line = n.decorator_list[0].lineno if n.decorator_list else None
+        cdef.line = n.lineno
+        cdef.deco_line = n.decorator_list[0].lineno if n.decorator_list else None
         cdef.column = n.col_offset
         cdef.end_line = getattr(n, "end_lineno", None)
         cdef.end_column = getattr(n, "end_col_offset", None)
@@ -1575,7 +1519,7 @@ class ASTConverter:
         # to allow mypyc to support f-strings with format specifiers and conversions.
         val_exp = self.visit(n.value)
         val_exp.set_line(n.lineno, n.col_offset)
-        conv_str = "" if n.conversion is None or n.conversion < 0 else "!" + chr(n.conversion)
+        conv_str = "" if n.conversion < 0 else "!" + chr(n.conversion)
         format_string = StrExpr("{" + conv_str + ":{}}")
         format_spec_exp = self.visit(n.format_spec) if n.format_spec is not None else StrExpr("")
         format_string.set_line(n.lineno, n.col_offset)
@@ -2027,10 +1971,10 @@ class TypeConverter:
             for s in dims:
                 if getattr(s, "col_offset", None) is None:
                     if isinstance(s, ast3.Index):
-                        s.col_offset = s.value.col_offset  # type: ignore[attr-defined]
+                        s.col_offset = s.value.col_offset
                     elif isinstance(s, ast3.Slice):
                         assert s.lower is not None
-                        s.col_offset = s.lower.col_offset  # type: ignore[attr-defined]
+                        s.col_offset = s.lower.col_offset
             sliceval = ast3.Tuple(dims, n.ctx)
 
         empty_tuple_index = False

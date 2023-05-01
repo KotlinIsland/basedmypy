@@ -40,8 +40,6 @@ typecheck_files = find_test_files(pattern="check-*.test", exclude=based_files)
 
 
 # Tests that use Python 3.8-only AST features (like expression-scoped ignores):
-if sys.version_info < (3, 8):
-    typecheck_files.remove("check-python38.test")
 if sys.version_info < (3, 9):
     typecheck_files.remove("check-python39.test")
 if sys.version_info < (3, 10):

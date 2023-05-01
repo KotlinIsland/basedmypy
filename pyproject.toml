@@ -9,7 +9,6 @@ requires = [
     "basedtyping>=0.0.3",
     "typing_extensions>=3.10",
     "mypy_extensions>=1.0.0",
-    "typed_ast>=1.4.0,<2; python_version<'3.8'",
     "tomli>=1.1.0; python_version<'3.11'",
     # the following is from build-requirements.txt
     "types-psutil",
@@ -20,7 +19,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 99
-target-version = ["py37", "py38", "py39", "py310", "py311"]
+target-version = ["py38", "py39", "py310", "py311"]
 skip-magic-trailing-comma = true
 force-exclude = '''
 ^/mypy/typeshed|

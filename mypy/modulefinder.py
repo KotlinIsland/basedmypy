@@ -900,4 +900,5 @@ def typeshed_py_version(options: Options) -> tuple[int, int]:
     """Return Python version used for checking whether module supports typeshed."""
     # Typeshed no longer covers Python 3.x versions before 3.7, so 3.7 is
     # the earliest we can support.
-    return max(options.python_version, (3, 7))
+    # I don't care, 3.8
+    return max(options.python_version, (3, 8))
