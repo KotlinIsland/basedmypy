@@ -1421,6 +1421,7 @@ with A() as c:  # type: int, int  # E: Syntax error in type annotation # N: Sugg
 
 with A() as d:  # type: Union[int, str]
     reveal_type(d)  # N: Revealed type is "Union[builtins.int, builtins.str]"
+[builtins fixtures/tuple.pyi]
 
 [case testWithStmtTupleTypeComment]
 

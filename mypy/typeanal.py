@@ -7,6 +7,7 @@ from contextlib import contextmanager
 from typing import Callable, Iterable, Iterator, List, Sequence, Tuple, TypeVar
 from typing_extensions import Final, Protocol
 
+import mypy.options
 from mypy import errorcodes as codes, message_registry, nodes
 from mypy.errorcodes import ErrorCode
 from mypy.messages import MessageBuilder, format_type_bare, quote_type_string, wrong_type_arg_count
@@ -1030,7 +1031,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
     def visit_tuple_type(self, t: TupleType) -> Type:
         # Types such as (t1, t2, ...) only allowed in assignment statements. They'll
         # generate errors elsewhere, and Tuple[t1, t2, ...] must be used instead.
-        if t.implicit and not self.allow_tuple_literal:
+        if not mypy.options._based and t.implicit and not self.allow_tuple_literal:
             self.fail("Syntax error in type annotation", t, code=codes.SYNTAX)
             if len(t.items) == 0:
                 self.note(
