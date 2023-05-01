@@ -2400,6 +2400,7 @@ f(b=4) # E: Missing positional argument "a" in call to "f"
 [case testMissingArgumentsError]
 def f(a, b, c, d=None) -> None: pass
 f(1, d=3) # E: Missing positional arguments "b", "c" in call to "f"
+[builtins fixtures/tuple.pyi]
 
 [case testReturnTypeLineNumberWithDecorator]
 def dec(f): pass
@@ -2407,6 +2408,7 @@ def dec(f): pass
 @dec
 def test(a: str) -> (str,): # E: Syntax error in type annotation # N: Suggestion: Is there a spurious trailing comma?
     return None
+[builtins fixtures/tuple.pyi]
 
 [case testReturnTypeLineNumberNewLine]
 def fn(a: str

@@ -50,12 +50,14 @@ x: 'a b'  # E: Invalid type comment or annotation  [valid-type]
 for v in x:  # type: int, int  # E: Syntax error in type annotation  [syntax] \
     # N: Suggestion: Use Tuple[T1, ..., Tn] instead of (T1, ..., Tn)
     pass
+[builtins fixtures/tuple.pyi]
 
 [case testErrorCodeSyntaxErrorIgnoreNote]
 # This is a bit inconsistent -- syntax error would be more logical?
 x: 'a b'  # type: ignore[valid-type]
 for v in x:  # type: int, int  # type: ignore[syntax]
     pass
+[builtins fixtures/tuple.pyi]
 
 [case testErrorCodeIgnore1]
 'x'.foobar  # type: ignore[attr-defined]

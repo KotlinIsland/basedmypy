@@ -322,6 +322,7 @@ if int():
 [out]
 main:2:11: error: Syntax error in type annotation
 main:2:11: note: Suggestion: Is there a spurious trailing comma?
+[builtins fixtures/tuple.pyi]
 
 [case testColumnSyntaxErrorInTypeAnnotation2]
 if int():
