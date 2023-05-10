@@ -642,9 +642,7 @@ def _remove_redundant_intersection_items(items: list[Type], keep_erased: bool) -
                 or j in removed
             ):
                 continue
-            if is_proper_subtype(
-                item, tj, keep_erased_types=keep_erased, ignore_promotions=True
-            ):
+            if is_proper_subtype(item, tj, keep_erased_types=keep_erased, ignore_promotions=True):
                 # We found a redundant item in the Intersection.
                 removed.add(j)
                 cbt = cbt or tj.can_be_true
