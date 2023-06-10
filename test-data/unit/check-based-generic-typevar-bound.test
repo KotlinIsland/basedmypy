@@ -1,4 +1,4 @@
-[case testNestedTypeVarBound]
+[case testGenericTypeVarBound]
 from typing import TypeVar, List
 
 T = TypeVar("T", bound=int)
@@ -25,7 +25,7 @@ def f(ct: CT): ...  # E: Explicit "Any" is not allowed  [no-any-explicit]
 [builtins fixtures/tuple.pyi]
 
 
-[case testParamSpecWithNestedTypeVar-xfail]
+[case testParamSpecWithGenericTypeVar-xfail]
 from typing import TypeVar, Generic, Callable
 from typing_extensions import ParamSpec
 
@@ -45,7 +45,7 @@ f(1, C[int]())
 [builtins fixtures/tuple.pyi]
 
 
-[case testNestedTypeVarConstraint-xfail]
+[case testGenericTypeVarConstraint-xfail]
 from typing import TypeVar, Iterable
 
 E = TypeVar("E", int, str)
@@ -61,7 +61,7 @@ reveal_type(foo(["my"], 10))  # E: argument 2 is bad
 reveal_type(foo([None], None))  # E: "I of foo" cannot be "list[None]"
 
 
-[case testNestedTypeVarConstraint2-xfail]
+[case testGenericTypeVarConstraint2-xfail]
 from typing import TypeVar, Iterable, Set
 
 T = TypeVar("T", bound=int)

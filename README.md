@@ -137,9 +137,11 @@ def f(name: str):
 
 reveal_type(f)  # (str) -> None
 ```
-### Nested TypeVars
+### Generic TypeVar Bounds
 
-With nested `TypeVar`s you are able to have functions with polymorphic generic parameters.
+Basedmpy allows the bounds of `TypeVar`s to be generic.
+
+So you are able to have functions with polymorphic generic parameters.
 
 ```py
 E = TypeVar("E")
