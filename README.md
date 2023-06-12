@@ -185,6 +185,15 @@ Infer the type of a function parameter from it's default value.
 def f(a=1, b=True):
     reveal_type((a, b))  # (int, bool)
 ```
+
+# Tuple Literal Types
+
+Basedmypy allows denotation of tuple types with tuple literals.
+
+```py
+a: (int, str) = (1, "a")
+```
+
 ### Better Types in Messages
 
 ```py
@@ -205,6 +214,7 @@ Basedmypy shows
 Revealed type is "(T@f, str | 1 | 2)"
 Revealed type is "def [T: int] (a: T, b: str | 1 | 2) -> Never"
 ```
+
 ### Ignore Unused Type Ignores
 
 In code that is targeting multiple versions of python or multiple platforms it is difficult
@@ -216,6 +226,7 @@ The `unused-ignore` error code can be used for this situation.
 if sys.platform != "linux":
   foo()  # type: ignore[misc, unused-ignore]
 ```
+
 
 Got a question or found a bug?
 ----------------------------------

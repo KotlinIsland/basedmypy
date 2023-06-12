@@ -194,6 +194,15 @@ Infer the type of a function parameter from it's default value.
     def f(a=1, b=True):
         reveal_type((a, b))  # (int, bool)
 
+Tuple Literal Types
+-------------------
+
+Basedmypy allows denotation of tuple types with tuple literals.
+
+.. code-block:: python
+
+    a: (int, str) = (1, "a")
+
 Better Types in Messages
 ------------------------
 
