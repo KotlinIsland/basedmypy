@@ -1,4 +1,3 @@
-# Based  <img src="docs/source/mypy_light.svg" alt="mypy logo" width="300px"/>
 
 [![Discord](https://img.shields.io/discord/948915247073349673?logo=discord)](https://discord.gg/7y9upqPrk2)
 [![Stable Version](https://img.shields.io/pypi/v/basedmypy?color=blue)](https://pypi.org/project/basedmypy/)
@@ -7,11 +6,13 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
-Basedmypy: Based Static Typing for Python
-=========================================
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="/docs/static/logo-dark.png">
+  <img alt="Amon Gus." src="/docs/static/logo-light.png">
+</picture>
 
-What is basedmypy?
--------------
+# Based Static Typing for Python
+
 Basedmypy is a fork of mypy that adds based functionality and breaks
 compatibility with the cringe parts of pep 484.
 

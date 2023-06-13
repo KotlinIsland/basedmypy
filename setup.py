@@ -31,9 +31,11 @@ long_description = """
 Basedmypy -- Based Static Typing for Python
 ===========================================
 
+.. image:: https://raw.githubusercontent.com/KotlinIsland/basedmypy/master/docs/static/logo.png
+
 Ever tried to use pythons type system and thought to yourself "This doesn't seem based".
 
-Well fret no longer as basedmypy got you covered!
+Well fret no longer as basedmypy has got you covered!
 
 Baseline
 --------
