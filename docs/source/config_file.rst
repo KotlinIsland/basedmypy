@@ -153,6 +153,111 @@ assume here is some 3rd party library you've installed and are importing. These 
     module ``somelibrary``. This is useful if ``somelibrary`` is some 3rd party library
     missing type hints.
 
+.. _config-file-based:
+
+Based features
+**************
+
+.. confval:: default_return
+
+    :type: boolean
+    :default: True
+
+    Causes an unannotated return type to be inferred as ``None``.
+
+    .. code-block:: python
+
+        def foo(i: int):
+            print(i)
+
+        reveal_type(foo)  # revealed type is "def(int) -> None"
+
+    It is required to disable this option for any dependencies that are not utilizing it, as they likely have untyped returns.
+
+    .. code-block:: toml
+
+        [[tool.mypy-overrides]]
+        module = ["pytest.*"]
+        default_return = false
+
+    This plays conservatively with :confval:`allow_untyped_defs <disallow_untyped_defs>` and :confval:`allow_incomplete_defs <disallow_untyped_defs>`.
+
+    .. code-block:: python
+
+        # mypy: allow-incomplete-defs, allow-untyped-defs
+        def foo(): ... # def() -> Any
+        def bar(a, b): ... # def(Any, Any) -> Any
+        def foo(a: int, b): ... # def(int, Any) -> None
+
+.. confval:: bare_literals
+
+    :type: boolean
+    :default: True
+
+    With this feature it is legal to use a literal ``int``, ``bool`` or ``Enum``
+    in a type position when it is safe to do so. This safety is determined by
+    whether ``__future__.annotations`` is active, if the file is a stub,
+    if the literal is used in a type operation, and if the literal is used
+    in an expression position (``TypeVar`` etc).
+
+.. confval:: incomplete_is_typed
+
+    :type: boolean
+    :default: False
+
+    A flag that assists with :confval:`disallow_untyped_calls` to partial functions, it indicates
+    that a partially typed function should be regarded as fully typed. This flag
+    is different to most other options in that it applies to where the function
+    is defined, not where it is called from.
+
+.. confval:: no_untyped_usage
+
+    :type: boolean
+    :default: True
+
+    ``Untyped`` is a specialized form of ``Any`` that can he helpful when gradually adopting type annotations:
+
+    .. code-block:: python
+
+        a: Untyped
+
+        a = 1  # error: usage of untyped name
+        b = a  # error: usage of untyped name
+
+    Basedmypy can now detect usage of partially typed functions:
+
+    .. code-block:: python
+
+        def foo(a, b=1): ...  # inferred as def (a: Untyped, b: int = ...)
+        def bar(a: int, b): ...  # inferred as def (a: int, b: Untyped)
+
+        foo(1, 2)  # error: call to incomplete function
+        foo(1, 2)  # error: call to incomplete function
+
+
+.. confval:: ignore_any_from_error
+
+    :type: boolean
+    :default: True
+
+    Often times, a small error can cause hundreds of errors, this feature helps to
+    surface only Any expressions that aren't from errors.
+
+
+.. confval:: ignore_missing_py_typed
+
+    :type: boolean
+    :default: False
+
+    Use the types from a package, even if it doesn't have a ``py.typed`` file.
+
+    You probably want to set this on a module override.
+
+    .. code-block:: toml
+
+        [[tool.mypy.overrides]]
+        module = ["someuntypedmodule.*"]
+        ignore_missing_py_typed = true
 
 .. _config-file-import-discovery:
 

@@ -3,10 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to mypy documentation!
+Welcome to the basedmypy docs!
 ==============================
 
-Mypy is a static type checker for Python.
+Basedmypy is a static type checker for Python that is built on top of the work done
+by the `mypy project <https://github.com/python/mypy>`_.
 
 Type checkers help ensure that you're using variables and functions in your code
 correctly. With mypy, add type hints (:pep:`484`)
@@ -54,6 +55,13 @@ Contents
    getting_started
    cheat_sheet_py3
    existing_code
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Basedmypy
+
+   baseline
+   based_features
 
 .. _overview-type-system-reference:
 
@@ -108,8 +116,8 @@ Contents
    :hidden:
    :caption: Project Links
 
-   GitHub <https://github.com/python/mypy>
-   Website <https://mypy-lang.org/>
+   GitHub <https://github.com/KotlinIsland/basedmypy>
+   Discord <https://discord.gg/7y9upqPrk2>
 
 Indices and tables
 ==================

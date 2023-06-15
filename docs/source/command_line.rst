@@ -121,6 +121,65 @@ Config file
     (This requires turning off incremental mode using :option:`--no-incremental`.)
 
 
+.. _baseline_features:
+
+
+Baseline interaction
+********************
+
+The following flags are used to interact with the baseline functionality.
+
+You can read more :ref:`here <baseline>`.
+
+.. option:: --write-baseline
+
+    Run mypy and create/update the baseline file with the errors found.
+
+.. option:: --baseline-file
+
+    The path of the baseline file to use. Default is ``./.mypy/baseline.json``.
+
+    You can specify :option:`--baseline-file= <--baseline-file>` (with no filename) to indicate that no baseline should be used:
+
+    .. code-block:: shell
+
+        > mypy demo.py --baseline-file=
+
+.. option:: --auto-baseline
+
+    Inverse: ``--no-auto-baseline``
+
+    Enabled by default, this feature will update the baseline file automatically if there are no new errors encountered.
+
+.. _cli_based_features:
+
+Based features
+**************
+
+.. option:: --default-return
+
+    See :confval:`default_return`.
+
+.. option:: --bare-literals
+
+    See :confval:`bare_literals`.
+
+.. option:: --incomplete-is-typed
+
+    See :confval:`incomplete_is_typed`.
+
+.. option:: --no-untyped-usage
+
+    See :confval:`no_untyped_usage`.
+
+.. option:: --ignore-any-from-error
+
+    See :confval:`ignore_any_from_error`.
+
+.. option:: --ignore-missing-py-typed
+
+    See :confval:`ignore_missing_py_typed`
+
 .. _import-discovery:
 
 Import discovery

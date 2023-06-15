@@ -7,6 +7,16 @@ This section explains how to get started using mypy with an existing,
 significant codebase that has little or no type annotations. If you are
 a beginner, you can skip this section.
 
+Baseline
+--------
+
+The baseline functionality can store and ignore all currently existing type
+errors such that you will only see errors coming from new code.
+
+See :ref:`baseline`
+
+Basedmypy recommends this strategy, but alternatives are listed below.
+
 Start small
 -----------
 

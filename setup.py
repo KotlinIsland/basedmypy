@@ -33,9 +33,12 @@ Basedmypy -- Based Static Typing for Python
 
 .. image:: https://raw.githubusercontent.com/KotlinIsland/basedmypy/master/docs/static/logo-light.png
 
-Ever tried to use pythons type system and thought to yourself "This doesn't seem based".
+Basedmypy is a type checker that is built on top of the work done by the
+`mypy project <https://github.com/python/mypy>`_. It adds based functionality and breaks compatibility with
+the cringe parts of pep 484.
 
-Well fret no longer as basedmypy has got you covered!
+Based features
+==============
 
 Baseline
 --------
@@ -44,25 +47,28 @@ Basedmypy has baseline, baseline is based! It allows you to adopt new strictness
 without the burden of fixing up every usage, just save all current errors to the baseline
 file and deal with them later.
 
+Consider the following:
+
 .. code-block:: python
 
     def foo(a):
         print(a)
 
-.. code-block:: bash
+.. code-block:: text
 
-    > mypy test.py
-    error: missing typehints !!!!!
-    Epic fail bro!
+    > mypy demo.py
+    demo.py:1: error: missing typehints
+    Failed: errors found in source file
 
-    > mypy --write-baseline test.py
-    test.py:1:1: error: Function is missing a type annotation for one or more arguments  [no-untyped-def]
+
+    > mypy --write-baseline demo.py
+    demo.py:1: error: missing typehints
     Baseline successfully written to .mypy/baseline.json
 
-    > mypy test.py
+    > mypy demo.py
     Success: no issues found in 1 source file
 
-Then on subsequent runs the existing errors will be filtered out.
+Then on subsequent runs the existing errors will be filtered out:
 
 .. code-block:: python
 
@@ -72,17 +78,17 @@ Then on subsequent runs the existing errors will be filtered out.
     def bar(b: str, c: int) -> bool:
         return b + c
 
-.. code-block:: bash
+.. code-block:: text
 
-    > mypy test.py
-    test.py:4:5: error: Returning Any from function declared to return "bool"  [no-any-return]
-    test.py:4:16: error: Unsupported operand types for + ("str" and "int")  [operator]
+    > mypy demo.py
+    demo.py:4:5: error: Returning Any from function declared to return "bool"  [no-any-return]
+    demo.py:4:16: error: Unsupported operand types for + ("str" and "int")  [operator]
     Found 2 errors in 1 file (checked 1 source file)
 
 Intersection Types
 ------------------
 
-Using the ``&`` operator or ``basedtyping.Intersection`` you can denote intersection types.
+Using the ``&`` operator or ``basedtyping.Intersection`` you can denote intersection types:
 
 .. code-block:: python
 
@@ -101,7 +107,7 @@ Using the ``&`` operator or ``basedtyping.Intersection`` you can denote intersec
 Type Joins
 ----------
 
-Mypy joins types like so:
+Mypy joins types to their common base type:
 
 .. code-block:: python
 
@@ -120,7 +126,7 @@ Basedmypy joins types into unions instead:
 Bare Literals
 -------------
 
-``Literal`` is so cumbersome! just use a bare literal instead.
+``Literal`` is so cumbersome! just use a bare literal instead:
 
 .. code-block:: python
 
@@ -134,7 +140,8 @@ Bare Literals
 Default Return Type
 -------------------
 
-With the ``default_return`` option, the default return type of functions becomes ``None`` instead of `Any`.
+The default return type of functions is ``None`` instead of ``Any``:
+(configurable with the ``default_return`` option.)
 
 .. code-block:: python
 
@@ -143,7 +150,7 @@ With the ``default_return`` option, the default return type of functions becomes
 
     reveal_type(f)  # (str) -> None
 
-Generic TypeVar Bounds
+Generic ``TypeVar`` Bounds
 ----------------------
 
 Basedmpy allows the bounds of ``TypeVar``\\s to be generic.
@@ -165,7 +172,7 @@ So you are able to have functions with polymorphic generic parameters.
 Overload Implementation Inference
 ---------------------------------
 
-Specifying types in overload implementations is completely redundant! basedmypy will infer them.
+The types in overload implementations (including properties) can be inferred:
 
 .. code-block:: python
 
@@ -189,7 +196,7 @@ Specifying types in overload implementations is completely redundant! basedmypy 
 Infer Function Parameters
 -------------------------
 
-Infer the type of a function parameter from it's default value.
+Infer the type of a function parameter from it's default value:
 
 .. code-block:: python
 
@@ -199,14 +206,16 @@ Infer the type of a function parameter from it's default value.
 Tuple Literal Types
 -------------------
 
-Basedmypy allows denotation of tuple types with tuple literals.
+Basedmypy allows denotation of tuple types with tuple literals:
 
 .. code-block:: python
 
     a: (int, str) = (1, "a")
 
-Better Types in Messages
-------------------------
+Types in Messages
+-----------------
+
+Basedmypy makes significant changes to error and info messages, consider:
 
 .. code-block:: python
 
@@ -226,19 +235,6 @@ Basedmypy shows::
 
     Revealed type is "(T@f, str | 1 | 2)"
     Revealed type is "def [T: int] (a: T, b: str | 1 | 2) -> Never"
-
-Ignore Unused Type Ignores
---------------------------
-
-In code that is targeting multiple versions of python or multiple platforms it is difficult
-to work with `type: ignore` comments and use the `warn_unused_ignore` option.
-
-The ``unused-ignore`` error code can be used for this situation.
-
-.. code-block:: python
-
-    if sys.platform != "linux":
-      foo()  # type: ignore[misc, unused-ignore]
 """.lstrip()
 
 
@@ -434,7 +430,7 @@ setup(
     include_package_data=True,
     project_urls={
         "News": "https://github.com/KotlinIsland/basedmypy/releases",
-        "Documentation": "https://github.com/KotlinIsland/basedmypy/wiki",
+        "Documentation": "https://KotlinIsland.github.io/basedmypy",
         "Repository": "https://github.com/KotlinIsland/basedmypy",
         "Discord": "https://discord.gg/7y9upqPrk2",
     },

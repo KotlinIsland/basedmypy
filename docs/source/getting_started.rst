@@ -6,6 +6,8 @@ Getting started
 This chapter introduces some core concepts of mypy, including function
 annotations, the :py:mod:`typing` module, stub files, and more.
 
+Anyone familiar with mypy should feel comfortable working with basedmypy.
+
 If you're looking for a quick intro, see the
 :ref:`mypy cheatsheet <cheat-sheet-py3>`.
 
@@ -13,16 +15,22 @@ If you're unfamiliar with the concepts of static and dynamic type checking,
 be sure to read this chapter carefully, as the rest of the documentation
 may not make much sense otherwise.
 
-Installing and running mypy
-***************************
+Installing and running basedmypy
+********************************
 
-Mypy requires Python 3.7 or later to run.  You can install mypy using pip:
+Basedmypy cannot be installed alongside mypy, which must be uninstalled first:
 
 .. code-block:: shell
 
-    $ python3 -m pip install mypy
+    > pip uninstall mypy -y
 
-Once mypy is installed, run it by using the ``mypy`` tool:
+Basedmypy requires Python 3.8 or later to run.  You can install basedmypy using pip:
+
+.. code-block:: shell
+
+    $ python3 -m pip install basedmypy
+
+Once basedmypy is installed, run it by using the ``mypy`` tool:
 
 .. code-block:: shell
 
@@ -49,6 +57,10 @@ to your code. See the section below for details.
 Dynamic vs static typing
 ************************
 
+Basedmypy has all strictness options enabled by default. This can often be a
+little overwhelming, and the baseline functionality can help alleviate this.
+For a good compromise of safety and ease of use, we can recommend enabling ``allow_any_expr``.
+
 A function without type annotations is considered to be *dynamically typed* by mypy:
 
 .. code-block:: python
@@ -56,8 +68,8 @@ A function without type annotations is considered to be *dynamically typed* by m
    def greeting(name):
        return 'Hello ' + name
 
-By default, mypy will **not** type check dynamically typed functions. This means
-that with a few exceptions, mypy will not report any errors with regular unannotated Python.
+By default, basedmypy will type check dynamically typed functions. This means
+that with a few exceptions, mypy will report all errors within regular unannotated Python.
 
 This is the case even if you misuse the function!
 
@@ -66,8 +78,8 @@ This is the case even if you misuse the function!
    def greeting(name):
        return 'Hello ' + name
 
-   # These calls will fail when the program run, but mypy does not report an error
-   # because "greeting" does not have type annotations.
+   # These calls will fail when the program run, and basedmypy does report an error
+   # even though "greeting" does not have type annotations.
    greeting(123)
    greeting(b"Alice")
 
