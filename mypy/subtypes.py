@@ -60,7 +60,6 @@ from mypy.types import (
     UnionType,
     UnpackType,
     UntypedType,
-    _flattened,
     get_proper_type,
     is_named_instance,
 )

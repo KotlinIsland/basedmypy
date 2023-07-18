@@ -6,6 +6,7 @@ import json
 import os
 import sys
 
+import mypy.options
 from mypy import build
 from mypy.modulefinder import BuildSource
 from mypy.options import Options
@@ -19,7 +20,10 @@ class RefInfoSuite(DataSuite):
     files = ["ref-info.test"]
 
     def run_case(self, testcase: DataDrivenTestCase) -> None:
+        mypy.options._based = False
         options = Options()
+        mypy.options._based = False
+        options.default_return = False
         options.use_builtins_fixtures = True
         options.show_traceback = True
         options.export_ref_info = True  # This is the flag we are testing

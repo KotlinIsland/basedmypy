@@ -2679,7 +2679,10 @@ def format_type_inner(
             )
             if not mypy.options._based:
                 return f"Callable[[{args}], {return_type}]"
-            args = TypeStrVisitor.render_callable_type_params(func, format) + f"({args})"
+            args = (
+                TypeStrVisitor(options=options).render_callable_type_params(func, format)
+                + f"({args})"
+            )
             return f"{args} -> {return_type}"
         else:
             # Use a simple representation for function types; proper

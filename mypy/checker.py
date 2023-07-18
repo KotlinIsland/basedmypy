@@ -218,11 +218,7 @@ from mypy.types import (
     get_proper_types,
     is_literal_type,
     is_named_instance,
-    is_optional,
     is_unannotated_any,
-    remove_optional,
-    store_argument_type,
-    strip_type,
 )
 from mypy.types_utils import is_optional, remove_optional, store_argument_type, strip_type
 from mypy.typetraverser import TypeTraverserVisitor

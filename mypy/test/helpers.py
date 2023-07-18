@@ -363,9 +363,11 @@ def parse_options(
         options.error_summary = False
         if based:
             options.show_column_numbers = False
-            options.default_return = True
             options.enabled_error_codes.update({errorcodes.NO_UNTYPED_USAGE})
         else:
+            options.default_return = False
+            options.bare_literals = False
+            options.infer_function_types = False
             options.hide_error_codes = True
             options.force_uppercase_builtins = True
         options.force_union_syntax = True

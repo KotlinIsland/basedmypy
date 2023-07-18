@@ -592,7 +592,7 @@ class FancyFormatter:
             ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x4
             STD_OUTPUT_HANDLE = -11
             kernel32.SetConsoleMode(
-                kernel32.GetStdHandle(STD_OUTPUT_HANDLE),  # type: ignore[no-any-expr, unused-ignore] # noqa: E501
+                kernel32.GetStdHandle(STD_OUTPUT_HANDLE),  # type: ignore[no-any-expr, unused-ignore]
                 ENABLE_PROCESSED_OUTPUT
                 | ENABLE_WRAP_AT_EOL_OUTPUT
                 | ENABLE_VIRTUAL_TERMINAL_PROCESSING,

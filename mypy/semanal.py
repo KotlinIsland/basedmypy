@@ -284,7 +284,6 @@ from mypy.types import (
     get_proper_types,
     is_named_instance,
     is_unannotated_any,
-    store_argument_type,
     remove_dups,
 )
 from mypy.types_utils import is_invalid_recursive_alias, store_argument_type
@@ -4256,7 +4255,9 @@ class SemanticAnalyzer(
                 if has_values:
                     self.fail("TypeVar cannot have both values and an upper bound", context)
                     return None
-                tv_arg = self.get_typevarlike_argument("TypeVar", param_name, param_value, context)
+                tv_arg = self.get_typevarlike_argument(
+                    "TypeVar", param_name, param_value, context, allow_unbound_tvars=True
+                )
                 if tv_arg is None:
                     return None
                 upper_bound = tv_arg
@@ -4328,9 +4329,7 @@ class SemanticAnalyzer(
                     param_value,
                 )
             elif isinstance(typ, LiteralType) and typ.bare_literal:
-                msg = message_registry.INVALID_BARE_LITERAL.format(
-                    typ.value_repr()
-                )
+                msg = message_registry.INVALID_BARE_LITERAL.format(typ.value_repr())
                 self.fail(msg.value, param_value, code=msg.code)
 
                 # Note: we do not return 'None' here -- we want to continue
@@ -5174,7 +5173,10 @@ class SemanticAnalyzer(
             expr.analyzed.accept(self)
         elif refers_to_fullname(expr.callee, "typing.TypeVar"):
             for a, a_name in zip(expr.args, expr.arg_names):
-                with self.allow_unbound_tvars_set() if a_name == "bound" else nullcontext():
+                with self.allow_unbound_tvars_set() if a_name in (
+                    "bound",
+                    "default",
+                ) else nullcontext():
                     a.accept(self)
         else:
             # Normal call expression.

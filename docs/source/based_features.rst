@@ -158,4 +158,3 @@ Basedmypy shows::
 
     Revealed type is "(T@f, str | 1 | 2)"
     Revealed type is "def [T: int] (a: T, b: str | 1 | 2) -> Never"
-

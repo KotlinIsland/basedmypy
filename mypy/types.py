@@ -8,17 +8,18 @@ from abc import abstractmethod
 from typing import (
     TYPE_CHECKING,
     Any,
+    Callable,
     ClassVar,
     Dict,
-    Generator,
     Final,
+    Generator,
     Iterable,
     NamedTuple,
     NewType,
     Sequence,
     TypeVar,
     Union,
-    cast, Callable,
+    cast,
 )
 from typing_extensions import Self, TypeAlias as _TypeAlias, TypeGuard, overload
 
@@ -618,7 +619,7 @@ class TypeVarType(TypeVarLikeType):
         id: Bogus[TypeVarId | int] = _dummy,
         line: int = _dummy_int,
         column: int = _dummy_int,
-        scopename: Bogus[str] = _dummy,
+        scopename: Bogus[str | None] = _dummy,
         **kwargs: Any,
     ) -> TypeVarType:
         return TypeVarType(
@@ -3405,7 +3406,7 @@ class TypeStrVisitor(SyntheticTypeVisitor[str]):
                         sep = " <:"
                     vs.append(
                         f"{name}{sep} {renderer(var.upper_bound)}{f' = {var.default.accept(self)}' if var.has_default() else ''}"
-                        )
+                    )
                 else:
                     vs.append(
                         f"{var.name}{f' = {var.default.accept(self)}' if var.has_default()  else ''}"

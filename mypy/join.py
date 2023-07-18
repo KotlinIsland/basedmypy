@@ -31,6 +31,7 @@ from mypy.types import (
     Parameters,
     ParamSpecType,
     PartialType,
+    PlaceholderType,
     ProperType,
     TupleType,
     Type,

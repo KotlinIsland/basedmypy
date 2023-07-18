@@ -2159,7 +2159,7 @@ class A(Generic[t]):
 [builtins fixtures/bool.pyi]
 [out]
 main:6: error: This usage of this contravariant type variable is unsafe as a return type.
-main:5: note: If you are using the value in a 'variance safe' way (not storing or retrieving values), this error could be ignored
+main:6: note: If you are using the value in a 'variance safe' way (not storing or retrieving values), this error could be ignored
 
 [case testAcceptCovariantReturnType]
 # flags: --no-strict-optional

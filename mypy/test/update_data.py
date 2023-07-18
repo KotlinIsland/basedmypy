@@ -5,6 +5,7 @@ from collections import defaultdict
 from typing import Iterator
 
 from mypy.test.data import DataDrivenTestCase, DataFileCollector, DataFileFix, parse_test_data
+from mypy.util import safe
 
 
 def update_testcase_output(
@@ -28,10 +29,10 @@ def _iter_fixes(
             error_line,
         )
         if comment_match:
-            filename = comment_match.group("filename")
-            lineno = int(comment_match.group("lineno"))
-            severity = comment_match.group("severity")
-            msg = comment_match.group("msg")
+            filename = safe(comment_match.group("filename"))
+            lineno = int(safe(comment_match.group("lineno")))
+            severity = safe(comment_match.group("severity"))
+            msg = safe(comment_match.group("msg"))
             reports_by_line[filename, lineno].append((severity, msg))
 
     test_items = parse_test_data(testcase.data, testcase.name)

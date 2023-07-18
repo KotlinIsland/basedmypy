@@ -2,13 +2,11 @@
 -- These are special because they run multiple shell commands.
 
 [case testDaemonBaseline]
-$ dmypy start
+$ dmypy start -- --no-error-summary
 Daemon started
 $ dmypy check test.py
-Success: no issues found in 47 source files
 $ {python} -c "print('\n')" >> test.py
 $ dmypy recheck
-Success: no issues found in 47 source files
 [file .mypy/baseline.json]
 {
     "files": {

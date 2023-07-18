@@ -232,7 +232,6 @@ UNUSED_AWAITABLE: Final = ErrorCode(
 UNSAFE_VARIANCE: Final[ErrorCode] = ErrorCode(
     "unsafe-variance", "Incorrect usages of variance", "General"
 )
-UNUSED_IGNORE: Final = ErrorCode("unused-ignore", "Ignore comment is unused", "General")
 REDUNDANT_SELF_TYPE = ErrorCode(
     "redundant-self",
     "Warn about redundant Self type annotations on method first argument",

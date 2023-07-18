@@ -665,7 +665,7 @@ def split_test_cases(
         m = _case_name_pattern.fullmatch(case_id)
         if not m:
             raise RuntimeError(f"Invalid testcase id {case_id!r}")
-        name = m.group("name")
+        name = safe(m.group("name"))
         if name in test_names:
             raise RuntimeError(
                 'Found a duplicate test name "{}" in {} on line {}'.format(
@@ -688,7 +688,7 @@ def split_test_cases(
         line_no += data.count("\n") + 1
 
         # Record existing tests to prevent duplicates:
-        test_names.update({name})  # type: ignore[no-untyped-call]
+        test_names.update({name})
 
 
 class DataSuiteCollector(pytest.Class):

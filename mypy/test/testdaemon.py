@@ -50,7 +50,8 @@ def test_daemon(testcase: DataDrivenTestCase) -> None:
         cmd = cmd.replace("{python}", sys.executable)
         if cmd.split()[1] in ("start", "restart", "run"):
             cmd = cmd.replace(
-                "-- ", "-- --no-strict --no-infer-function-types --no-default-return "
+                "-- ",
+                "-- --no-strict --no-infer-function-types --no-default-return --hide-column-numbers ",
             )
         sts, output = run_cmd(cmd)
         output_lines = output.splitlines()

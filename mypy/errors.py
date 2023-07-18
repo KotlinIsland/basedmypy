@@ -6,7 +6,19 @@ import sys
 import traceback
 from collections import defaultdict
 from copy import deepcopy
-from typing import Callable, Final, Dict, Iterable, List, NoReturn, Optional, TextIO, Tuple, TypeVar, cast
+from typing import (
+    Callable,
+    Dict,
+    Final,
+    Iterable,
+    List,
+    NoReturn,
+    Optional,
+    TextIO,
+    Tuple,
+    TypeVar,
+    cast,
+)
 from typing_extensions import Literal, TypeAlias as _TypeAlias, TypedDict
 
 from mypy import errorcodes as codes
@@ -514,17 +526,17 @@ class Errors:
         self.add_error_info(info)
         for msg in notes or ():
             note = ErrorInfo(
-                info.import_ctx,
-                info.file,
-                info.module,
-                info.type,
-                info.function_or_member,
-                info.line,
-                info.column,
-                info.end_line,
-                info.end_column,
-                "note",
-                msg,
+                import_ctx=info.import_ctx,
+                file=info.file,
+                module=info.module,
+                typ=info.type,
+                function_or_member=info.function_or_member,
+                line=info.line,
+                column=info.column,
+                end_line=info.end_line,
+                end_column=info.end_column,
+                severity="note",
+                message=msg,
                 code=info.code,
                 blocker=info.blocker,
                 only_once=info.only_once,
@@ -1320,8 +1332,8 @@ class Errors:
             for error in file:
                 try:
                     previous = error["line"] = error["offset"] + previous  # type: ignore[typeddict-unknown-key]
-                except KeyError:
-                    raise TypeError("baseline")
+                except KeyError as err:
+                    raise TypeError("baseline") from err
         baseline_errors = cast(Dict[str, List[BaselineError]], errors)
         self.baseline = baseline_errors
         self.baseline_targets = targets

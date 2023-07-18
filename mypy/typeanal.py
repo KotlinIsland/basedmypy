@@ -85,7 +85,6 @@ from mypy.types import (
     UnionType,
     UnpackType,
     UntypedType,
-    bad_type_type_item,
     callable_with_ellipsis,
     flatten_nested_unions,
     get_proper_type,
@@ -349,7 +348,9 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                         f'Type variable "{t.name}" used with arguments', t, code=codes.VALID_TYPE
                     )
                 # Change the line number
-                return tvar_def.copy_modified(line=t.line, column=t.column, scopename=tvar_def.scopename,)
+                return tvar_def.copy_modified(
+                    line=t.line, column=t.column, scopename=tvar_def.scopename
+                )
             if isinstance(sym.node, TypeVarTupleExpr) and (
                 tvar_def is not None
                 and self.defining_alias
@@ -900,7 +901,11 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
     def visit_type_list(self, t: TypeList) -> Type:
         # paramspec literal (Z[[int, str, Whatever]])
         if self.allow_param_spec_literals:
-            params = self.analyze_callable_args(t)
+            old_report_invalid_types = self.report_invalid_types
+            try:
+                params = self.analyze_callable_args(t)
+            finally:
+                self.report_invalid_types = old_report_invalid_types
             if params:
                 ts, kinds, names = params
                 # bind these types
@@ -1363,6 +1368,9 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 args.append(arg)
                 kinds.append(kind)
                 names.append(None)
+            # elif isinstance(arg, RawExpressionType):
+            #     self.fail(f'bruh', arg)
+            #     return None
             else:
                 args.append(arg)
                 kinds.append(ARG_POS)
@@ -1589,12 +1597,15 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             self.nesting_level += 1
         old_allow_required = self.allow_required
         self.allow_required = False
+        old_report_invalid_types = self.report_invalid_types
+        self.report_invalid_types = True
         try:
             analyzed = t.accept(self)
         finally:
             if nested:
                 self.nesting_level -= 1
             self.allow_required = old_allow_required
+            self.report_invalid_types = old_report_invalid_types
         if (
             not allow_param_spec
             and isinstance(analyzed, ParamSpecType)

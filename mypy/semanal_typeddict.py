@@ -47,7 +47,6 @@ from mypy.types import (
     TypeOfAny,
     TypeVarLikeType,
     UntypedType,
-    replace_alias_tvars,
 )
 
 TPDICT_CLASS_ERROR: Final = (

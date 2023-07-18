@@ -13,7 +13,7 @@
 - `default-return` is now enabled by default (#445)
 ### Enhancements
 - Removed `Any` from the typings for `re.Match` group functions. (#459)
-- Ignore `Any` from unused `__init__`.
+- Ignore `Any` from unused `__init__`. (#321)
 ### Fixes
 - Fix unsafe variance note (#452)
 - Fix crash with baseline filtering (#471)

@@ -631,65 +631,21 @@ def _remove_redundant_intersection_items(items: list[Type], keep_erased: bool) -
     from mypy.subtypes import is_proper_subtype
 
     removed: set[int] = set()
-    seen: set[tuple[str, ...]] = set()
 
-    # NB: having a separate fast path for Union of Literal and slow path for other things
-    # would arguably be cleaner, however it breaks down when simplifying the Union of two
-    # different enum types as try_expanding_sum_type_to_union works recursively and will
-    # trigger intermediate simplifications that would render the fast path useless
-    for i, item in enumerate(items):
-        proper_item = get_proper_type(item)
-        if i in removed:
-            continue
-        # Avoid slow nested for loop for Union of Literal of strings/enums (issue #9169)
-        k = simple_literal_value_key(proper_item)
-        if k is not None:
-            if k in seen:
-                removed.add(i)
+    for outer_i in range(len(items)):
+        proper_outer = get_proper_type(items[outer_i])
+        for inner_i in range(outer_i + 1, len(items)):
+            if inner_i in removed:
                 continue
-
-            # NB: one would naively expect that it would be safe to skip the slow path
-            # always for literals. One would be sorely mistaken. Indeed, some simplifications
-            # such as that of None/Optional when strict optional is false, do require that we
-            # proceed with the slow path. Thankfully, all literals will have the same subtype
-            # relationship to non-literal types, so we only need to do that walk for the first
-            # literal, which keeps the fast path fast even in the presence of a mixture of
-            # literals and other types.
-            safe_skip = len(seen) > 0
-            seen.add(k)
-            if safe_skip:
-                continue
-
-        # Keep track of the truthiness info for deleted subtypes which can be relevant
-        cbt = cbf = False
-        for j, tj in enumerate(items):
-            proper_tj = get_proper_type(tj)
-            if (
-                i == j
-                # avoid further checks if this item was already marked redundant.
-                or j in removed
-                # if the current item is a simple literal then this simplification loop can
-                # safely skip all other simple literals as two literals will only ever be
-                # subtypes of each other if they are equal, which is already handled above.
-                # However, if the current item is not a literal, it might plausibly be a
-                # supertype of other literals in the union, so we must check them again.
-                # This is an important optimization as is_proper_subtype is pretty expensive.
-                or (k is not None and is_simple_literal(proper_tj))
+            proper_inner = get_proper_type(items[inner_i])
+            if is_proper_subtype(
+                proper_outer, proper_inner, keep_erased_types=keep_erased, ignore_promotions=True
             ):
-                continue
-            # actual redundancy checks (XXX?)
-            if is_redundant_literal_instance(proper_item, proper_tj) and is_proper_subtype(
-                item, tj, keep_erased_types=keep_erased, ignore_promotions=True
+                removed.add(inner_i)
+            elif is_proper_subtype(
+                proper_inner, proper_outer, keep_erased_types=keep_erased, ignore_promotions=True
             ):
-                # We found a redundant item in the union.
-                removed.add(j)
-                cbt = cbt or tj.can_be_true
-                cbf = cbf or tj.can_be_false
-        # if deleted subtypes had more general truthiness, use that
-        if not item.can_be_true and cbt:
-            items[i] = true_or_false(item)
-        elif not item.can_be_false and cbf:
-            items[i] = true_or_false(item)
+                removed.add(outer_i)
 
     return [items[i] for i in range(len(items)) if i not in removed]
 
