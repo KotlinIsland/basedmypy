@@ -22,7 +22,7 @@ from typing import (
 from typing_extensions import Literal, TypeAlias as _TypeAlias, TypedDict
 
 from mypy import errorcodes as codes
-from mypy.errorcodes import IMPORT, ErrorCode
+from mypy.errorcodes import IMPORT, REVEAL, ErrorCode
 from mypy.message_registry import ErrorMessage
 from mypy.options import Options
 from mypy.scope import Scope
@@ -609,7 +609,7 @@ class Errors:
             self.report_hidden_errors(info)
         self._add_error_info(file, info)
         ignored_codes = self.ignored_lines.get(file, {}).get(info.line, [])
-        if ignored_codes and info.code:
+        if ignored_codes and info.code and info.code != REVEAL:
             # Something is ignored on the line, but not this error, so maybe the error
             # code is incorrect.
             msg = f'Error code "{info.code.code}" not covered by "type: ignore" comment'

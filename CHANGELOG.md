@@ -5,6 +5,7 @@
 ### Enhancements
 ### Fixes
 - Don't show "X defined here" when error context is hidden (#498)
+- Fix issue with reveal code in ignore message (#490)
 
 ## [2.1.0]
 

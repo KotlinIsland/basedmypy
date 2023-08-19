@@ -6,3 +6,10 @@ f(a=1)  # E: Unexpected keyword argument "a" for "f"  [call-arg]
 [file a.py]
 def f(): ...
 f(a=1)  # E: Unexpected keyword argument "a" for "f"  [call-arg]
+
+
+[case testIgnoreOnReveal]
+from typing import Any
+
+a: Any = 1  # E: Explicit "Any" is not allowed  [no-any-explicit]
+reveal_type(a)  # type: ignore[no-any-expr]  # N: Revealed type is "Any"
