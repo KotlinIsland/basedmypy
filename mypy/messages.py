@@ -1040,7 +1040,7 @@ class MessageBuilder:
             msg += f"; did you mean {pretty_seq(matches, 'or')}?"
         self.fail(msg, context, code=codes.CALL_ARG)
         module = find_defining_module(self.modules, callee)
-        if module:
+        if module and (not mypy.options._based or self.options.show_error_context):
             assert callee.definition is not None
             fname = callable_name(callee)
             if not fname:  # an alias to function with a different name

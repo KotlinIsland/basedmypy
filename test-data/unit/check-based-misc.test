@@ -1,0 +1,8 @@
+[case testXDefinedHere]
+# mypy: show-error-context
+import a
+def f(): ...  # N: "f" defined here
+f(a=1)  # E: Unexpected keyword argument "a" for "f"  [call-arg]
+[file a.py]
+def f(): ...
+f(a=1)  # E: Unexpected keyword argument "a" for "f"  [call-arg]

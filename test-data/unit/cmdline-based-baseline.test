@@ -528,7 +528,7 @@ foo()
 }
 
 [case testSrcOtherFile]
-# cmd: mypy --write-baseline a.py
+# cmd: mypy --write-baseline a.py --show-error-context
 [file a.py]
 from b import f
 f(a=1)
@@ -544,7 +544,7 @@ Baseline successfully written to .mypy/baseline.json
 == Return code: 0
 
 [case testSrcOtherFile2]
-# cmd: mypy a.py
+# cmd: mypy a.py --show-error-context
 [file a.py]
 from b import f
 f(a=1)

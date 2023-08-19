@@ -481,5 +481,6 @@ def f1():
 
 
 [case testNotesAppearForInferredFunction]
+# flags: --show-error-context
 def f(): ...  # N: "f" defined here
 f(x=1)  # E: Unexpected keyword argument "x" for "f"  [call-arg]
