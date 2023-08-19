@@ -6,6 +6,7 @@
 ### Fixes
 - Don't show "X defined here" when error context is hidden (#498)
 - Fix issue with reveal code in ignore message (#490)
+- Fixed union at join for same `type` literals. (#488)
 
 ## [2.1.0]
 

@@ -2348,7 +2348,7 @@
       {
         "code": "no-any-expr",
         "column": 4,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, (str | float) -> (int, int) | (Untyped) -> list[str] | (Untyped) -> str | (str | Sequence[str]) -> list[str]]\")",
+        "message": "Expression type contains \"Any\" (has type \"dict[str | str, (str | float) -> (int, int) | (Untyped) -> list[str] | (Untyped) -> str | (str | Sequence[str]) -> list[str]]\")",
         "offset": 8,
         "src": "{",
         "target": "mypy.config_parser"
@@ -12676,7 +12676,7 @@
       {
         "code": "no-any-expr",
         "column": 48,
-        "message": "Expression type contains \"Any\" (has type \"(Untyped) -> int\")",
+        "message": "Expression type contains \"Any\" (has type \"(Untyped) -> int | int\")",
         "offset": 189,
         "src": "return list(sorted(self.signatures, key=lambda x: 1 if args_kwargs(x) else 0))",
         "target": "mypy.stubdoc.DocStringParser.get_signatures"
@@ -15713,7 +15713,7 @@
         "code": "no-untyped-usage",
         "column": 8,
         "message": "Usage of untyped name \"suite\" in typed context",
-        "offset": 316,
+        "offset": 317,
         "src": "suite = parent.obj()",
         "target": "mypy.test.data.DataDrivenTestCase.runtest"
       },
