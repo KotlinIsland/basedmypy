@@ -237,7 +237,7 @@ def test_module(module_name: str) -> Iterator[Error]:
                 runtime_desc=(
                     "This is most likely the fault of something very dynamic in your library. "
                     "It's also possible this is a bug in stubtest.\nIf in doubt, please "
-                    "open an issue at https://github.com/python/mypy\n\n"
+                    "open an issue at https://github.com/KotlinIsland/basedmypy\n\n"
                     + traceback.format_exc().strip()
                 ),
             )

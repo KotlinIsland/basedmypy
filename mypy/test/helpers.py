@@ -336,8 +336,8 @@ def parse_options(
 
     if flags:
         flag_list: list[str] = safe(flags.group(1)).split()
+        flag_list = ["--no-pretty", "--hide-error-context", "--hide-error-code-links"] + flag_list
         if based:
-            flag_list.insert(0, "--default-return")
             flag_list.append("--hide-column-numbers")
             flag_list.extend(["--enable-error-code", "no-untyped-usage"])
         else:
@@ -357,6 +357,7 @@ def parse_options(
             raise RuntimeError("Specifying targets via the flags pragma is not supported.")
         if not based and "--show-error-codes" not in flag_list:
             options.hide_error_codes = True
+        print(options.pretty)
     else:
         flag_list = []
         options = Options()
@@ -371,6 +372,9 @@ def parse_options(
             options.hide_error_codes = True
             options.force_uppercase_builtins = True
         options.force_union_syntax = True
+        options.pretty = False
+        options.show_error_context = False
+        options.show_error_code_links = False
     # Allow custom python version to override testfile_pyversion.
     if all(flag.split("=")[0] not in ["--python-version", "-2", "--py2"] for flag in flag_list):
         options.python_version = testfile_pyversion(testcase.file)

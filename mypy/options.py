@@ -79,9 +79,20 @@ _based = True
 def flip_if_not_based(b: bool) -> bool:
     """Flips this bool if we are not based.
 
-    Used to run tests in old mode.
+    Used to run tests in non-strict and old mode.
     """
     return b if _based else not b
+
+
+_legacy = False
+
+
+def flip_if_legacy(b: bool) -> bool:
+    """Flips this bool if we are legacy.
+
+    Used to run tests in old mode.
+    """
+    return not b if _legacy else b
 
 
 # Features that are currently incomplete/experimental
@@ -156,6 +167,7 @@ class Options:
         self.incomplete_is_typed = flip_if_not_based(False)
         self.bare_literals = True
         self.ignore_missing_py_typed = False
+        self.ide = False
 
         # disallow_any options
         self.disallow_any_generics = flip_if_not_based(True)
@@ -208,7 +220,7 @@ class Options:
         self.strict_optional = True
 
         # Show "note: In function "foo":" messages.
-        self.show_error_context = False
+        self.show_error_context = flip_if_legacy(True)
 
         # Use nicer output (when possible).
         self.color_output = True
@@ -343,9 +355,9 @@ class Options:
         self.show_column_numbers: bool = flip_if_not_based(True)
         self.show_error_end: bool = False
         self.hide_error_codes = False
-        self.show_error_code_links = False
+        self.show_error_code_links = True
         # Use soft word wrap and show trimmed source snippets with error location markers.
-        self.pretty = False
+        self.pretty = True
         self.dump_graph = False
         self.dump_deps = False
         self.logical_deps = False

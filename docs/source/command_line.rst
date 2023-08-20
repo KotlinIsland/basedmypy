@@ -156,6 +156,10 @@ You can read more :ref:`here <baseline>`.
 Based features
 **************
 
+.. option:: --ide
+
+    Preset options for best compatibility with an integrated developer environment.
+
 .. option:: --default-return
 
     See :confval:`default_return`.

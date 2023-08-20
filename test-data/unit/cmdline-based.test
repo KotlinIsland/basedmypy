@@ -41,3 +41,15 @@ x = 0
 [out]
 main.py:2:13: note: Revealed type is "int"
 == Return code: 0
+
+
+[case testIdeCodes]
+# cmd: mypy --ide main.py
+[file main.py]
+1 + ""
+1 + ""
+[out]
+main.py:1:5:1:6: error: Unsupported operand types for + ("int" and "str")  [operator]
+main.py:1:5:1:6: note: See https://kotlinisland.github.io/basedmypy/_refs.html#code-operator for more info
+main.py:2:5:2:6: error: Unsupported operand types for + ("int" and "str")  [operator]
+main.py:2:5:2:6: note: See https://kotlinisland.github.io/basedmypy/_refs.html#code-operator for more info

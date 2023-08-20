@@ -328,6 +328,7 @@ def foo() -> None:
 [file .mypy/baseline.json]
 {"files": {"main.py": [{"offset": 1, "code": "misc", "message": "test", "src": ""}]}, "format": "1.7", "targets": ["file:pkg"]}
 [out]
+pkg/main.py: note: In function "foo":
 pkg/main.py:3:5: note: Revealed local types are:
 pkg/main.py:3:5: note:     a: int
 Success: no issues found in 1 source file
@@ -575,3 +576,29 @@ def f(): ...
 [out]
 a.py:2:1: error: Unexpected keyword argument "a" for "f"  [call-arg]
 b.py:4:1: note: "f" defined here
+
+
+[case testErrorLink]
+# cmd: mypy a.py --show-error-code-links
+# We are testing that error links don't show if the error is baselined
+[file a.py]
+a
+[file .mypy/baseline.json]
+{
+    "files": {
+        "a.py": [
+            {
+                "code": "name-defined",
+                "column": 0,
+                "message": "Name \"a\" is not defined",
+                "offset": 1,
+                "src": "a",
+                "target": "a"
+            }
+        ]
+    },
+    "format": "1.7",
+    "targets": [
+        "file:a.py"
+    ]
+}

@@ -49,11 +49,12 @@ HIDE_LINK_CODES: Final = {
     codes.NAME_DEFINED,
     # Overrides have a custom link to docs
     codes.OVERRIDE,
+    codes.REVEAL,
 }
 
 allowed_duplicates: Final = ["@overload", "Got:", "Expected:"]
 
-BASE_RTD_URL: Final = "https://mypy.rtfd.io/en/stable/_refs.html#code"
+BASE_RTD_URL: Final = "https://kotlinisland.github.io/basedmypy/_refs.html#code"
 
 # Keep track of the original error code when the error code of a message is changed.
 # This is used to give notes about out-of-date "type: ignore" comments.
@@ -648,8 +649,9 @@ class Errors:
             and info.code not in HIDE_LINK_CODES
         ):
             message = f"See {BASE_RTD_URL}-{info.code.code} for more info"
-            if message in self.only_once_messages:
+            if not self.options.ide and message in self.only_once_messages:
                 return
+            info_ = info
             self.only_once_messages.add(message)
             info = ErrorInfo(
                 import_ctx=info.import_ctx,
@@ -669,6 +671,7 @@ class Errors:
                 allow_dups=False,
                 priority=20,
             )
+            info_.notes.append(info)
             self._add_error_info(file, info)
 
     def has_many_errors(self) -> bool:
@@ -793,6 +796,7 @@ class Errors:
                 narrower = set(used_ignored_codes) & codes.sub_code_map[unused]
                 if narrower:
                     message += f", use narrower [{', '.join(narrower)}] instead of [{unused}] code"
+
             # Don't use report since add_error_info will ignore the error!
             info = ErrorInfo(
                 import_ctx=self.import_context(),
@@ -1185,11 +1189,16 @@ class Errors:
                         )
                     )
             src = (
-                file == current_file
-                and source_lines
-                and e.line > 0
-                and source_lines[e.line - 1].strip()
+                file == current_file and source_lines and e.line > 0 and source_lines[e.line - 1]
             ) or ""
+            # when there is no column, but we still want an ide to show an error
+            if e.column == -1 and self.options.show_error_end:
+                if src:
+                    e.column = src.find(src.strip())
+                    e.end_column = len(src)
+                else:
+                    e.column = 1
+            src = src.strip()
             if isinstance(e.message, ErrorMessage):
                 result.append(
                     (

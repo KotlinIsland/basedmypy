@@ -116,10 +116,12 @@ def run_stubtest(
             f.write(stub)
         with open(f"{TEST_MODULE_NAME}.py", "w") as f:
             f.write(runtime)
-        if config_file:
-            with open(f"{TEST_MODULE_NAME}_config.ini", "w") as f:
-                f.write(config_file)
-            options = options + ["--mypy-config-file", f"{TEST_MODULE_NAME}_config.ini"]
+        if not config_file:
+            config_file = "[mypy]"
+        config_file += "\nshow_error_code_links=false\npretty=false"
+        with open(f"{TEST_MODULE_NAME}_config.ini", "w") as f:
+            f.write(config_file)
+        options = options + ["--mypy-config-file", f"{TEST_MODULE_NAME}_config.ini"]
         output = io.StringIO()
         mypy.options._based = False
         with contextlib.redirect_stdout(output):

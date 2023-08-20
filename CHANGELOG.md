@@ -4,7 +4,10 @@
 ### Added
 - `TypeGuard` is retained in inferred types (#504)
 - Type narrowing is applied from lambda execution (#504)
+- `--ide` flag (#501)
 ### Enhancements
+- `show-error-context`/`pretty` are now on by default (#501)
+- Show fake column number when `--show-error-end` (#501)
 ### Fixes
 - Don't show "X defined here" when error context is hidden (#498)
 - Fix issue with reveal code in ignore message (#490)

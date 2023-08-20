@@ -611,6 +611,9 @@ def process_options(
         "You probably want to set this on a module override",
         group=based_group,
     )
+    add_invertible_flag(
+        "--ide", default=False, help="Best default for IDE integration.", group=based_group
+    )
 
     config_group = parser.add_argument_group(
         title="Config file",
@@ -940,8 +943,8 @@ def process_options(
         description="Adjust the amount of detail shown in error messages.",
     )
     add_invertible_flag(
-        "--show-error-context",
-        default=False,
+        "--hide-error-context",
+        default=True,
         dest="show_error_context",
         help='Precede errors with "note:" messages explaining context',
         group=error_group,
@@ -966,14 +969,16 @@ def process_options(
         group=error_group,
     )
     add_invertible_flag(
-        "--show-error-code-links",
-        default=False,
-        help="Show links to error code documentation",
+        "--hide-error-code-links",
+        dest="show_error_code_links",
+        default=True,
+        help="Hide links to error code documentation",
         group=error_group,
     )
     add_invertible_flag(
-        "--pretty",
-        default=False,
+        "--no-pretty",
+        default=True,
+        dest="pretty",
         help="Use visually nicer output in error messages:"
         " Use soft word wrap, show source code snippets,"
         " and show error location markers",
@@ -1309,6 +1314,8 @@ def process_options(
         parser.error(f"Cannot find config file '{config_file}'")
 
     mypy.options._based = dummy.__dict__["special-opts:strict"]
+    mypy.options._legacy = os.getenv("__MYPY_UNDER_TEST__") == "2"
+    # for '__MYPY_UNDER_TEST__', 1 means test mode, 2 means legacy test mode
 
     based_enabled_codes = (
         {
@@ -1335,8 +1342,22 @@ def process_options(
     def set_strict_flags() -> None:
         pass
 
+    def set_ide_flags() -> None:
+        for dest, value in {
+            "show_error_context": False,
+            "error_summary": False,
+            "pretty": False,
+            "show_error_end": True,
+        }.items():
+            setattr(options, dest, value)
+
     # Parse config file first, so command line can override.
     parse_config_file(options, set_strict_flags, config_file, stdout, stderr)
+
+    # Set IDE flags before parsing (if IDE mode enabled), so other command
+    # line options can override.
+    if dummy.ide:
+        set_ide_flags()
 
     # Override cache_dir if provided in the environment
     environ_cache_dir = os.getenv("MYPY_CACHE_DIR", "")

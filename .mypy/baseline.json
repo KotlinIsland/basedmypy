@@ -4771,7 +4771,7 @@
         "code": "truthy-bool",
         "column": 11,
         "message": "Member \"options\" has type \"Options\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 735,
+        "offset": 738,
         "src": "if self.options:",
         "target": "mypy.errors.Errors.is_error_code_enabled"
       },
@@ -4787,7 +4787,7 @@
         "code": "truthy-bool",
         "column": 69,
         "message": "Member \"options\" has type \"Options\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 52,
+        "offset": 53,
         "src": "is_typeshed_file(self.options.abs_custom_typeshed_dir if self.options else None, file)",
         "target": "mypy.errors.Errors.generate_ignore_without_code_errors"
       },
@@ -4795,7 +4795,7 @@
         "code": "unreachable",
         "column": 16,
         "message": "Statement is unreachable",
-        "offset": 374,
+        "offset": 379,
         "src": "result.append(",
         "target": "mypy.errors.Errors.render_messages"
       }
@@ -7305,7 +7305,7 @@
         "code": "no-any-expr",
         "column": 16,
         "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 254,
+        "offset": 257,
         "src": "default=[],",
         "target": "mypy.main.process_options"
       },
@@ -7337,7 +7337,7 @@
         "code": "no-any-expr",
         "column": 67,
         "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 283,
+        "offset": 285,
         "src": "\"--package-root\", metavar=\"ROOT\", action=\"append\", default=[], help=argparse.SUPPRESS",
         "target": "mypy.main.process_options"
       },
@@ -7417,7 +7417,7 @@
         "code": "no-any-expr",
         "column": 11,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 20,
+        "offset": 22,
         "src": "if not dummy.__dict__[\"special-opts:strict\"]:",
         "target": "mypy.main.process_options"
       },
@@ -7433,15 +7433,23 @@
         "code": "no-any-expr",
         "column": 49,
         "message": "Expression has type \"Any\"",
-        "offset": 8,
+        "offset": 17,
         "src": "parse_config_file(options, set_strict_flags, config_file, stdout, stderr)",
+        "target": "mypy.main.process_options"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 7,
+        "message": "Expression has type \"Any\"",
+        "offset": 4,
+        "src": "if dummy.ide:",
         "target": "mypy.main.process_options"
       },
       {
         "code": "no-any-expr",
         "column": 29,
         "message": "Expression has type \"Any\"",
-        "offset": 14,
+        "offset": 15,
         "src": "options.python_version = special_opts.python_version or options.python_version",
         "target": "mypy.main.process_options"
       },
@@ -8708,6 +8716,14 @@
         "target": "mypy.nodes.Node.__str__"
       },
       {
+        "code": "unreachable",
+        "column": 12,
+        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-unreachable for more info",
+        "offset": 0,
+        "src": "return repr(self)",
+        "target": null
+      },
+      {
         "code": "no-any-expr",
         "column": 15,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
@@ -9249,7 +9265,7 @@
         "code": "no-any-expr",
         "column": 18,
         "message": "Expression has type \"Any\"",
-        "offset": 111,
+        "offset": 122,
         "src": "MACHDEP = sysconfig.get_config_var(\"MACHDEP\")",
         "target": "mypy.options.Options.__init__"
       },
@@ -9273,7 +9289,7 @@
         "code": "no-any-explicit",
         "column": 8,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 257,
+        "offset": 258,
         "src": "self.transform_source: Callable[[Any], Any] | None = None",
         "target": "mypy.options.Options.__init__"
       },
@@ -9394,6 +9410,14 @@
         "offset": 0,
         "src": "def add_symbol_table_node(self, name: str, stnode: SymbolTableNode) -> Any:",
         "target": "mypy.plugin"
+      },
+      {
+        "code": "no-any-decorated",
+        "column": 4,
+        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-no-any-decorated for more info",
+        "offset": 0,
+        "src": "def add_symbol_table_node(self, name: str, stnode: SymbolTableNode) -> Any:",
+        "target": null
       },
       {
         "code": "no-any-explicit",
@@ -11038,6 +11062,14 @@
       {
         "code": "no-any-expr",
         "column": 8,
+        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-no-any-expr for more info",
+        "offset": 0,
+        "src": "self.__dict__[\"_standard_namespace\"] = standard_namespace",
+        "target": null
+      },
+      {
+        "code": "no-any-expr",
+        "column": 8,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
         "offset": 1,
         "src": "self.__dict__[\"_alt_namespace\"] = alt_namespace",
@@ -11058,6 +11090,14 @@
         "offset": 2,
         "src": "def _get(self) -> tuple[Any, Any]:",
         "target": "mypy.split_namespace.SplitNamespace._get"
+      },
+      {
+        "code": "no-any-explicit",
+        "column": 4,
+        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-no-any-explicit for more info",
+        "offset": 0,
+        "src": "def _get(self) -> tuple[Any, Any]:",
+        "target": null
       },
       {
         "code": "no-any-expr",
@@ -12606,6 +12646,14 @@
         "target": "mypy.stubgenc.strip_or_import"
       },
       {
+        "code": "truthy-bool",
+        "column": 7,
+        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-truthy-bool for more info",
+        "offset": 0,
+        "src": "if module:",
+        "target": null
+      },
+      {
         "code": "no-any-expr",
         "column": 8,
         "message": "Expression type contains \"Any\" (has type \"str | Any\")",
@@ -12660,6 +12708,14 @@
         "offset": 13,
         "src": "if arg_module not in local_modules:",
         "target": "mypy.stubgenc"
+      },
+      {
+        "code": "possibly-undefined",
+        "column": 11,
+        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-possibly-undefined for more info",
+        "offset": 0,
+        "src": "if arg_module not in local_modules:",
+        "target": null
       },
       {
         "code": "no-any-expr",
@@ -15134,6 +15190,14 @@
         "target": "mypy.test.data.DataDrivenTestCase.runtest"
       },
       {
+        "code": "no-untyped-usage",
+        "column": 8,
+        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-no-untyped-usage for more info",
+        "offset": 0,
+        "src": "suite = parent.obj()",
+        "target": null
+      },
+      {
         "code": "no-any-expr",
         "column": 16,
         "message": "Expression has type \"Untyped\"",
@@ -15587,7 +15651,7 @@
         "code": "no-any-expr",
         "column": 7,
         "message": "Expression has type \"Untyped\"",
-        "offset": 111,
+        "offset": 115,
         "src": "if testcase.config.getoption(\"--mypy-verbose\"):",
         "target": "mypy.test.helpers.parse_options"
       },
@@ -15729,7 +15793,7 @@
         "code": "no-any-expr",
         "column": 13,
         "message": "Expression type contains \"Any\" (has type \"int | Any\")",
-        "offset": 48,
+        "offset": 52,
         "src": "result = process.returncode",
         "target": "mypy.test.testcmdline.test_python_cmdline"
       },
@@ -16211,7 +16275,7 @@
         "code": "possibly-undefined",
         "column": 22,
         "message": "Name \"program\" may be undefined",
-        "offset": 162,
+        "offset": 170,
         "src": "os.remove(program)",
         "target": "mypy.test.testpep561"
       },
@@ -16385,7 +16449,7 @@
         "code": "no-any-explicit",
         "column": 0,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 142,
+        "offset": 144,
         "src": "def collect_cases(fn: Callable[..., Iterator[Case]]) -> Callable[..., None]:",
         "target": "mypy.test.teststubtest.collect_cases"
       },
@@ -18932,6 +18996,14 @@
         "offset": 364,
         "src": "def visit_mypy_file(self, o: mypy.nodes.MypyFile) -> T:",
         "target": "mypy.visitor.NodeVisitor.visit_mypy_file"
+      },
+      {
+        "code": "empty-body",
+        "column": 4,
+        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-empty-body for more info",
+        "offset": 0,
+        "src": "def visit_mypy_file(self, o: mypy.nodes.MypyFile) -> T:",
+        "target": null
       },
       {
         "code": "empty-body",
@@ -22129,7 +22201,7 @@
         "code": "no-any-expr",
         "column": 7,
         "message": "Expression type contains \"Any\" (has type \"False | Untyped\")",
-        "offset": 95,
+        "offset": 96,
         "src": "if expected_output != actual and testcase.config.getoption(\"--update-data\", False):",
         "target": "mypyc.test.testutil.assert_test_output"
       },
