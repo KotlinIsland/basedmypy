@@ -1437,7 +1437,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         )
         proper_callee = get_proper_type(callee_type)
         if (
-            isinstance(e.callee, RefExpr)
+            isinstance(e.callee, (RefExpr, CallExpr, LambdaExpr))
             and isinstance(proper_callee, CallableType)
             and proper_callee.type_guard is not None
         ):
@@ -4778,7 +4778,12 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             if not self.chk.has_type(e.expr()):
                 # TODO: return expression must be accepted before exiting function scope.
                 self.accept(e.expr(), allow_none_return=True)
-            ret_type = self.chk.lookup_type(e.expr())
+            expr = e.expr()
+            ret_type = self.chk.lookup_type(expr)
+            if isinstance(expr, CallExpr) and isinstance(
+                expr.callee, (RefExpr, CallExpr, LambdaExpr)
+            ):
+                inferred_type.type_guard = expr.callee.type_guard
             self.chk.return_types.pop()
             return replace_callable_return_type(inferred_type, ret_type)
 

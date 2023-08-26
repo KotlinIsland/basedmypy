@@ -1,0 +1,25 @@
+[case testRetainGenericTypeGuard]
+from typing_extensions import TypeGuard
+from helper import T
+def f(it: object) -> TypeGuard[int]: ...
+def r(t: T) -> T: ...
+
+a: object
+f2 = r(f)
+assert f2(a)
+reveal_type(a)  # N: Revealed type is "int"
+
+b: object
+assert (lambda x: (lambda y: r(f)(y))(x))(b)
+reveal_type(b)  # N: Revealed type is "int"
+[builtins fixtures/tuple.pyi]
+
+
+[case testIIFETypeGuard]
+from typing_extensions import TypeGuard
+def f(it: object) -> TypeGuard[int]: ...
+
+a: object
+assert (lambda: f(a))()
+reveal_type(a)  # N: Revealed type is "int"
+[builtins fixtures/tuple.pyi]

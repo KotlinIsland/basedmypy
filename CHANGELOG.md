@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 ### Added
+- `TypeGuard` is retained in inferred types (#504)
+- Type narrowing is applied from lambda execution (#504)
 ### Enhancements
 ### Fixes
 - Don't show "X defined here" when error context is hidden (#498)

@@ -1876,7 +1876,7 @@ class CallExpr(Expression):
     such as cast(...) and None  # type: ....
     """
 
-    __slots__ = ("callee", "args", "arg_kinds", "arg_names", "analyzed")
+    __slots__ = ("callee", "args", "arg_kinds", "arg_names", "analyzed", "type_guard")
 
     __match_args__ = ("callee", "args", "arg_kinds", "arg_names")
 
@@ -1887,6 +1887,7 @@ class CallExpr(Expression):
         arg_kinds: list[ArgKind],
         arg_names: list[str | None],
         analyzed: Expression | None = None,
+        type_guard: mypy.types.Type | None = None,
     ) -> None:
         super().__init__()
         if not arg_names:
@@ -1900,6 +1901,7 @@ class CallExpr(Expression):
         # If not None, the node that represents the meaning of the CallExpr. For
         # cast(...) this is a CastExpr.
         self.analyzed = analyzed
+        self.type_guard = type_guard
 
     def accept(self, visitor: ExpressionVisitor[T]) -> T:
         return visitor.visit_call_expr(self)
@@ -2191,7 +2193,17 @@ class SuperExpr(Expression):
 class LambdaExpr(FuncItem, Expression):
     """Lambda expression"""
 
-    __match_args__ = ("arguments", "arg_names", "arg_kinds", "body")
+    __match_args__ = ("arguments", "arg_names", "arg_kinds", "body", "type_guard")
+
+    def __init__(
+        self,
+        arguments: list[Argument] | None = None,
+        body: Block | None = None,
+        typ: mypy.types.FunctionLike | None = None,
+        type_guard: mypy.types.Type | None = None,
+    ) -> None:
+        super().__init__(arguments=arguments, body=body, typ=typ)
+        self.type_guard = type_guard
 
     @property
     def name(self) -> str:

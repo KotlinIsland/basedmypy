@@ -223,7 +223,7 @@ from mypy.types import (
 from mypy.types_utils import is_optional, remove_optional, store_argument_type, strip_type
 from mypy.typetraverser import TypeTraverserVisitor
 from mypy.typevars import fill_typevars, fill_typevars_with_any, has_no_typevars
-from mypy.util import is_dunder, is_sunder, is_typeshed_file
+from mypy.util import is_dunder, is_sunder, is_typeshed_file, safe
 from mypy.visitor import NodeVisitor
 
 T = TypeVar("T")
@@ -5704,7 +5704,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 attr = try_getting_str_literals(node.args[1], self.lookup_type(node.args[1]))
                 if literal(expr) == LITERAL_TYPE and attr and len(attr) == 1:
                     return self.hasattr_type_maps(expr, self.lookup_type(expr), attr[0])
-            elif isinstance(node.callee, RefExpr):
+            elif isinstance(node.callee, (RefExpr, CallExpr, LambdaExpr)):
                 if node.callee.type_guard is not None:
                     # TODO: Follow *args, **kwargs
                     if node.arg_kinds[0] != nodes.ARG_POS:
@@ -5733,6 +5733,10 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                         # Also note that a care must be taken to unwrap this back at read places
                         # where we use this to narrow down declared type.
                         return {expr: TypeGuardedType(node.callee.type_guard)}, {}
+        if isinstance(node, CallExpr) and isinstance(node.callee, LambdaExpr):
+            return self.find_isinstance_check_helper(
+                safe(cast(ReturnStmt, node.callee.body.body[0]).expr)
+            )
         elif isinstance(node, ComparisonExpr):
             # Step 1: Obtain the types of each operand and whether or not we can
             # narrow their types. (For example, we shouldn't try narrowing the
