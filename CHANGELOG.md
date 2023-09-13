@@ -9,6 +9,8 @@
 - Don't show "X defined here" when error context is hidden (#498)
 - Fix issue with reveal code in ignore message (#490)
 - Fixed union at join for same `type` literals. (#488)
+- Don't report false `Any` expressions when inferring lambda type (#515)
+- Correctly match overload when it contains an `Any` expression (#515)
 
 ## [2.1.0]
 

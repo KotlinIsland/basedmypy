@@ -11,7 +11,7 @@ from typing_extensions import TypeAlias as _TypeAlias, overload
 
 import mypy.checker
 import mypy.errorcodes as codes
-from mypy import applytype, erasetype, join, message_registry, nodes, operators, types
+from mypy import applytype, erasetype, errorcodes, join, message_registry, nodes, operators, types
 from mypy.argmap import ArgTypeExpander, map_actuals_to_formals, map_formals_to_actuals
 from mypy.checkmember import (
     MemberContext,
@@ -22,7 +22,7 @@ from mypy.checkmember import (
 )
 from mypy.checkstrformat import StringFormatterChecker
 from mypy.erasetype import erase_type, remove_instance_last_known_values, replace_meta_vars
-from mypy.errors import ErrorWatcher, report_internal_error
+from mypy.errors import ErrorInfo, ErrorWatcher, report_internal_error
 from mypy.expandtype import expand_type, expand_type_by_instance, freshen_function_type_vars
 from mypy.infer import ArgumentInferContext, infer_function_type_arguments, infer_type_arguments
 from mypy.literals import literal
@@ -2475,7 +2475,19 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         """Checks a call to an overloaded function."""
         # Normalize unpacked kwargs before checking the call.
         callee = callee.with_unpacked_kwargs()
-        arg_types = self.infer_arg_types_in_empty_context(args)
+        # We perform the infer step with Any's allowed
+        # We do not want `--disallow-any-expr` to affect the inferred types
+        # TODO: consider which other options should not affect the overload inference.
+        disallow_any_expr = self.chk.options.disallow_any_expr
+        self.chk.options.disallow_any_expr = False
+        try:
+            # We suppress notes here for the case of `reveal_type` within a lambda argument.
+            with self.msg.filter_errors(
+                filter_errors=lambda _, error_info: error_info.severity == "note"
+            ):
+                arg_types = self.infer_arg_types_in_empty_context(args)
+        finally:
+            self.chk.options.disallow_any_expr = disallow_any_expr
         # Step 1: Filter call targets to remove ones where the argument counts don't match
         plausible_targets = self.plausible_overload_call_targets(
             arg_types, arg_kinds, arg_names, callee
@@ -2664,29 +2676,37 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         matches: list[CallableType] = []
         return_types: list[Type] = []
         inferred_types: list[Type] = []
+        inferred_errors: list[list[ErrorInfo]] = []
         args_contain_any = any(map(has_any_type, arg_types))
         type_maps: list[dict[Expression, Type]] = []
 
         for typ in plausible_targets:
             assert self.msg is self.chk.msg
             with self.msg.filter_errors() as w:
-                with self.chk.local_type_map() as m:
-                    ret_type, infer_type = self.check_call(
-                        callee=typ,
-                        args=args,
-                        arg_kinds=arg_kinds,
-                        arg_names=arg_names,
-                        context=context,
-                        callable_name=callable_name,
-                        object_type=object_type,
-                    )
-            is_match = not w.has_new_errors()
+                with self.msg.filter_errors(
+                    filter_errors=lambda _, error_info: error_info.code
+                    in (errorcodes.NO_ANY_EXPR, errorcodes.REVEAL),
+                    save_filtered_errors=True,
+                ) as w2:
+                    with self.chk.local_type_map() as m:
+                        ret_type, infer_type = self.check_call(
+                            callee=typ,
+                            args=args,
+                            arg_kinds=arg_kinds,
+                            arg_names=arg_names,
+                            context=context,
+                            callable_name=callable_name,
+                            object_type=object_type,
+                        )
+            is_match = not w._has_new_errors
             if is_match:
                 # Return early if possible; otherwise record info so we can
                 # check for ambiguity due to 'Any' below.
                 if not args_contain_any:
+                    self.msg.add_errors(w2.filtered_errors())
                     return ret_type, infer_type
                 matches.append(typ)
+                inferred_errors.append(w2.filtered_errors())
                 return_types.append(ret_type)
                 inferred_types.append(infer_type)
                 type_maps.append(m)
@@ -2698,9 +2718,11 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             # We try returning a precise type if we can. If not, we give up and just return 'Any'.
             if all_same_types(return_types):
                 self.chk.store_types(type_maps[0])
+                self.msg.add_errors(inferred_errors[0])
                 return return_types[0], inferred_types[0]
             elif all_same_types([erase_type(typ) for typ in return_types]):
                 self.chk.store_types(type_maps[0])
+                self.msg.add_errors(inferred_errors[0])
                 return erase_type(return_types[0]), erase_type(inferred_types[0])
             else:
                 return self.check_call(
@@ -2715,6 +2737,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         else:
             # Success! No ambiguity; return the first match.
             self.chk.store_types(type_maps[0])
+            self.msg.add_errors(inferred_errors[0])
             return return_types[0], inferred_types[0]
 
     def overload_erased_call_targets(

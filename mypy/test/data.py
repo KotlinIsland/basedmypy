@@ -86,7 +86,7 @@ def parse_test_case(case: DataDrivenTestCase) -> None:
     # optionally followed by lines of text.
     item = first_item = test_items[0]
     test_modules.append("__main__")
-    ignore = "\n# mypy: allow-untyped-defs, allow-any-explicit\n"
+    ignore = "\n# mypy: allow-untyped-defs, allow-any-explicit, allow-incomplete-defs, allow_any_generics\n"
     for item in test_items[1:]:
 
         def _item_fail(msg: str) -> NoReturn:

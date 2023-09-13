@@ -1,0 +1,41 @@
+[case testAnyOverloadMatch]
+from typing import overload, Any, Callable
+
+@overload
+def f(fn: Callable[[], bool]) -> str: ...
+@overload
+def f(fn: Callable[[], None]) -> int: ...
+def f(fn: object = 1) -> object: ...
+
+def n(x: object) -> None: ...
+a: Any  # type: ignore[no-any-explicit]
+x = f(lambda:
+      n(a))  # E: Expression has type "Any"  [no-any-expr]
+reveal_type(x)  # N: Revealed type is "int"
+
+
+
+[case testAnyExprInHigherOrderOverload]
+from typing import Any, Callable, overload
+
+@overload
+def f(fn: Callable[[int], object]) -> None: ...
+@overload
+def f(fn: object=...) -> None: ...
+
+def f(fn: object=1) -> None: ...
+
+# don't reveal erroneous Any
+f(lambda x: reveal_type(x))  # N: Revealed type is "int"
+
+# do reveal real Any
+a: Any  # type: ignore[no-any-explicit]
+def noop(x: object) -> None: ...
+f(lambda x: noop(a))  # E: Expression has type "Any"  [no-any-expr]
+f(a)  # E: Expression has type "Any"  [no-any-expr]
+
+# don't reveal narrowed type
+o: object
+assert isinstance(o, str)
+f(lambda _: reveal_type(o))  # N: Revealed type is "object"
+[builtins fixtures/tuple.pyi]
