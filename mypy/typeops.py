@@ -1220,6 +1220,7 @@ def get_protocol_member(left: Instance, member: str, class_obj: bool) -> ProperT
 class _get_type_type_item_Exception(Exception):
     """Would prefer this to be defined within the function, but mypyc doesn't support that."""
 
+
 def get_type_type_item(t: ProperType) -> Type | None:
     def inner(t: Type) -> Type:
         proper_t = get_proper_type(t)
