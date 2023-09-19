@@ -60,7 +60,7 @@ from typing_extensions import TypeVarTuple, Unpack
 
 T1 = TypeVar("T1", default=2)  # E: "2" is a bare literal and cannot be used here, try Literal[2] instead?
 T2 = TypeVar("T2", default=[int, str])  # E: Bracketed expression "[...]" is not valid as a type \
-                                        # N: Did you mean "List[...]"? \
+                                        # N: Did you mean "list[...]"? \
                                         # E: TypeVar "default" must be a type
 
 P1 = ParamSpec("P1", default=int)  # E: The default argument to ParamSpec must be a list expression, ellipsis, or a ParamSpec

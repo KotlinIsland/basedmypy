@@ -112,6 +112,7 @@ from mypy.types import (
     RawExpressionType,
     TupleType,
     Type,
+    TypeGuardType,
     TypeList,
     TypeOfAny,
     UnboundType,
@@ -144,6 +145,7 @@ def ast3_parse(
 
 NamedExpr = ast3.NamedExpr
 Constant = ast3.Constant
+Compare = ast3.Compare
 
 if sys.version_info >= (3, 10):
     Match = ast3.Match
@@ -327,7 +329,7 @@ def parse_type_string(
             node.original_str_expr = expr_string
             node.original_str_fallback = expr_fallback_name
             return node
-        elif isinstance(node, (UnionType, IntersectionType)):
+        elif isinstance(node, (UnionType, IntersectionType, TypeGuardType)):
             return node
         else:
             return RawExpressionType(expr_string, expr_fallback_name, line, column)
@@ -1880,6 +1882,15 @@ class TypeConverter:
             is_evaluated=self.is_evaluated,
             uses_pep604_syntax=True,
         )
+
+    def visit_Compare(self, n: Compare) -> Type:
+        if len(n.ops) != 1 or not isinstance(n.ops[0], ast3.Is):
+            return self.invalid_type(n)
+        if isinstance(n.left, ast3.Name):
+            target = n.left.id
+        else:
+            return self.invalid_type(n)
+        return TypeGuardType(target, self.visit(n.comparators[0]), is_evaluated=self.is_evaluated)
 
     def visit_Constant(self, n: Constant) -> Type:
         val = n.value

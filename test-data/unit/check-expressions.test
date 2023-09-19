@@ -1273,7 +1273,7 @@ def f() -> None:
 from typing import List
 a: List[A]
 a = [x for x in a]
-b = [x for x in a] # type: List[B] # E: List comprehension has incompatible type List[A]; expected List[B]
+b = [x for x in a] # type: List[B] # E: list comprehension has incompatible type list[A]; expected list[B]
 class A: pass
 class B: pass
 [builtins fixtures/for.pyi]
@@ -1282,7 +1282,7 @@ class B: pass
 from typing import List, Tuple
 l: List[Tuple[A, Tuple[A, B]]]
 a = [a2 for a1, (a2, b1) in l] # type: List[A]
-b = [a2 for a1, (a2, b1) in l] # type: List[B] # E: List comprehension has incompatible type List[A]; expected List[B]
+b = [a2 for a1, (a2, b1) in l] # type: List[B] # E: list comprehension has incompatible type list[A]; expected list[B]
 class A: pass
 class B: pass
 [builtins fixtures/for.pyi]
@@ -1303,7 +1303,7 @@ b: List[B]
 if int():
     b = [f(x) for x in a]
 if int():
-    a = [f(x) for x in a] # E: List comprehension has incompatible type List[B]; expected List[A]
+    a = [f(x) for x in a] # E: list comprehension has incompatible type list[B]; expected list[A]
 ([f(x) for x in b])   # E: Argument 1 to "f" has incompatible type "B"; expected "A"
 class A: pass
 class B: pass
@@ -1329,7 +1329,7 @@ from typing import List
 class A:
     a: List[A]
     a = [x for x in a]
-    b = [x for x in a] # type: List[B] # E: List comprehension has incompatible type List[A]; expected List[B]
+    b = [x for x in a] # type: List[B] # E: list comprehension has incompatible type list[A]; expected list[B]
 class B: pass
 [builtins fixtures/for.pyi]
 [out]
@@ -1343,7 +1343,7 @@ class B: pass
 from typing import Set
 a: Set[A]
 a = {x for x in a}
-b = {x for x in a} # type: Set[B] # E: Set comprehension has incompatible type Set[A]; expected Set[B]
+b = {x for x in a} # type: Set[B] # E: set comprehension has incompatible type set[A]; expected set[B]
 class A: pass
 class B: pass
 [builtins fixtures/set.pyi]

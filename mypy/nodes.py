@@ -1651,7 +1651,7 @@ class StrExpr(Expression):
         return visitor.visit_str_expr(self)
 
 
-def is_StrExpr_list(seq: list[Expression]) -> TypeGuard[list[StrExpr]]:
+def is_StrExpr_list(seq: list[Expression]) -> TypeGuard[list[StrExpr]]:  # type: ignore[typeguard-subtype]
     return all(isinstance(item, StrExpr) for item in seq)
 
 
@@ -1776,7 +1776,7 @@ class RefExpr(Expression):
         # Is this expression appears as an rvalue of a valid type alias definition?
         self.is_alias_rvalue = False
         # Cache type guard from callable_type.type_guard
-        self.type_guard: mypy.types.Type | None = None
+        self.type_guard: mypy.types.TypeGuardType | None = None
 
     @property
     def fullname(self) -> str:
@@ -1887,7 +1887,7 @@ class CallExpr(Expression):
         arg_kinds: list[ArgKind],
         arg_names: list[str | None],
         analyzed: Expression | None = None,
-        type_guard: mypy.types.Type | None = None,
+        type_guard: mypy.types.TypeGuardType | None = None,
     ) -> None:
         super().__init__()
         if not arg_names:
@@ -2200,7 +2200,7 @@ class LambdaExpr(FuncItem, Expression):
         arguments: list[Argument] | None = None,
         body: Block | None = None,
         typ: mypy.types.FunctionLike | None = None,
-        type_guard: mypy.types.Type | None = None,
+        type_guard: mypy.types.TypeGuardType | None = None,
     ) -> None:
         super().__init__(arguments=arguments, body=body, typ=typ)
         self.type_guard = type_guard

@@ -1428,7 +1428,7 @@ P = ParamSpec("P")
 T = TypeVar("T")
 A = List[T]
 def f(x: A[[int, str]]) -> None: ...  # E: Bracketed expression "[...]" is not valid as a type \
-                                      # N: Did you mean "List[...]"?
+                                      # N: Did you mean "list[...]"?
 def g(x: A[P]) -> None: ...  # E: Invalid location for ParamSpec "P" \
                              # N: You can use ParamSpec as the first argument to Callable, e.g., 'Callable[P, int]'
 

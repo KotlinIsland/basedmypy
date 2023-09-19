@@ -162,6 +162,7 @@ from mypy.types import (
     Type,
     TypeAliasType,
     TypedDictType,
+    TypeGuardType,
     TypeOfAny,
     TypeType,
     TypeVarLikeType,
@@ -4803,10 +4804,53 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                 self.accept(e.expr(), allow_none_return=True)
             expr = e.expr()
             ret_type = self.chk.lookup_type(expr)
-            if isinstance(expr, CallExpr) and isinstance(
-                expr.callee, (RefExpr, CallExpr, LambdaExpr)
+            if (
+                isinstance(expr, CallExpr)
+                and isinstance(expr.callee, (RefExpr, CallExpr, LambdaExpr))
+                and expr.callee.type_guard
             ):
-                inferred_type.type_guard = expr.callee.type_guard
+                # map the target to the passed position
+                called_type = get_proper_type(self.chk.lookup_type(expr.callee))
+                if isinstance(called_type, Instance):
+                    called_type = get_proper_type(
+                        analyze_member_access(
+                            name="__call__",
+                            typ=called_type,
+                            context=expr,
+                            is_lvalue=False,
+                            is_super=False,
+                            is_operator=True,
+                            msg=self.msg,
+                            original_type=called_type,
+                            chk=self.chk,
+                        )
+                    )
+                assert isinstance(called_type, (CallableType, Overloaded))
+                target = expr.callee.type_guard.target_value
+                new_target = None
+                if target in expr.arg_names:
+                    new_target_arg = expr.args[expr.arg_names.index(target)]  # type: ignore[arg-type]
+                    if isinstance(new_target_arg, NameExpr):
+                        new_target = new_target_arg.name
+                else:
+                    if called_type.items[0].def_extras.get("first_arg") == target:
+                        if isinstance(expr.callee, MemberExpr):
+                            if isinstance(expr.callee.expr, NameExpr):
+                                # TODO: support case when it's not NameExpr
+                                new_target = expr.callee.expr.name
+                        elif isinstance(expr.callee, NameExpr):
+                            new_target = expr.callee.name
+                    elif isinstance(target, int):
+                        pass  # TODO: handle this
+                    else:
+                        idx = called_type.items[0].arg_names.index(target)
+                        it = expr.args[idx]
+                        if isinstance(it, NameExpr) and it.name in e.arg_names:
+                            new_target = it.name
+                if new_target:
+                    inferred_type.type_guard = TypeGuardType(
+                        new_target, expr.callee.type_guard.type_guard
+                    )
             self.chk.return_types.pop()
             return replace_callable_return_type(inferred_type, ret_type)
 

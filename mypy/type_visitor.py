@@ -39,6 +39,7 @@ from mypy.types import (
     Type,
     TypeAliasType,
     TypedDictType,
+    TypeGuardType,
     TypeList,
     TypeType,
     TypeVarLikeType,
@@ -149,6 +150,9 @@ class TypeVisitor(Generic[T]):
     @abstractmethod
     def visit_unpack_type(self, t: UnpackType) -> T:
         pass
+
+    def visit_typeguard_type(self, t: TypeGuardType) -> T:
+        raise NotImplementedError
 
 
 @trait

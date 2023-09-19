@@ -255,7 +255,7 @@ S = TypeVar('S')
 def k1(x: int, y: list[T]) -> list[T & int]: pass
 def k2(x: S, y: list[T]) -> list[T & int]: pass
 a = k2
-a = k1 # E: Incompatible types in assignment (expression has type "[T] (int, list[T]) -> list[T & int]", variable has type "[S, T] (S, list[T]) -> list[T & int]")  [assignment]
+a = k1 # E: Incompatible types in assignment (expression has type "[T] (x: int, y: list[T]) -> list[T & int]", variable has type "[S, T] (x: S, y: list[T]) -> list[T & int]")  [assignment]
 b = k1
 b = k2
 [builtins fixtures/list.pyi]

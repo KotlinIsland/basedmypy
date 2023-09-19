@@ -251,6 +251,15 @@ NO_SUBCLASS_ANY: Final = ErrorCode("no-subclass-any", "Usage of Any as a class b
 NO_ANY_DECORATED: Final = ErrorCode(
     "no-any-decorated", "Decorated function contains Any", "General"
 )
+TYPEGUARD_SUBTYPE: Final = ErrorCode(
+    "typeguard-subtype",
+    "A typeguard's type must be assignable to its parameter's type",
+    "General",
+    sub_code_of=ASSIGNMENT,
+)
+TYPEGUARD_LIMITATION: Final[ErrorCode] = ErrorCode(
+    "typeguard-limitation", "mypy limitation", "General"
+)
 
 REVEAL: Final = ErrorCode("reveal", "Reveal types at check time", "General")
 

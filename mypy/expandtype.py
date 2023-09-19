@@ -27,6 +27,7 @@ from mypy.types import (
     Type,
     TypeAliasType,
     TypedDictType,
+    TypeGuardType,
     TypeType,
     TypeVarId,
     TypeVarLikeType,
@@ -403,7 +404,7 @@ class ExpandTypeVisitor(TrivialSyntheticTypeTranslator):
                     arg_kinds=prefix.arg_kinds + t.arg_kinds,
                     arg_names=prefix.arg_names + t.arg_names,
                     ret_type=t.ret_type.accept(self),
-                    type_guard=(t.type_guard.accept(self) if t.type_guard is not None else None),
+                    type_guard=t.type_guard and cast(TypeGuardType, t.type_guard.accept(self)),
                 )
             # TODO: Conceptually, the "len(t.arg_types) == 2" should not be here. However, this
             #       errors without it. Either figure out how to eliminate this or place an
@@ -436,7 +437,7 @@ class ExpandTypeVisitor(TrivialSyntheticTypeTranslator):
             arg_names=arg_names,
             arg_kinds=arg_kinds,
             ret_type=t.ret_type.accept(self),
-            type_guard=(t.type_guard.accept(self) if t.type_guard is not None else None),
+            type_guard=t.type_guard and cast(TypeGuardType, t.type_guard.accept(self)),
         )
 
     def visit_overloaded(self, t: Overloaded) -> Type:
@@ -547,6 +548,9 @@ class ExpandTypeVisitor(TrivialSyntheticTypeTranslator):
             return t.copy_modified(args=args)
         else:
             return args
+
+    def visit_typeguard_type(self, t: TypeGuardType) -> Type:
+        return TypeGuardType(t.target, t.type_guard.accept(self))
 
     def expand_types(self, types: Iterable[Type]) -> list[Type]:
         a: list[Type] = []

@@ -54,4 +54,31 @@ Check that type variables are used in accordance with their variance [unsafe-var
         ) -> inT:  # This usage of this contravariant type variable is unsafe as a return type.  [unsafe-variance]
             pass
 
+.. _code-typeguard-limitation:
+
+Unsupported usages of typeguards [typeguard-limitation]
+-------------------------------------------------------
+
+Mypy does not yet support typeguarding a star argument:
+
+.. code-block:: python
+
+    def guard(x: object) -> x is int: ...
+
+    x: object
+    xs = x,
+    assert guard(*xs)  # Type guard on star argument is not yet supported  [typeguard-limitation]
+    reveal_type(x)  # object
+
+.. _code-typeguard-subtype:
+
+Check that typeguard definitions are valid [typeguard-subtype]
+--------------------------------------------------------------
+
+.. code-block:: python
+
+    def guard(x: str) -> x is int:  # A type-guard's type must be assignable to its parameter's type. (guard has type "int", parameter has type "str")  [typeguard-subtype]
+        ...
+
+
 .. _code-reveal:

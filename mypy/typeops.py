@@ -1215,3 +1215,23 @@ def get_protocol_member(left: Instance, member: str, class_obj: bool) -> ProperT
     from mypy.subtypes import find_member
 
     return get_proper_type(find_member(member, left, left, class_obj=class_obj))
+
+
+class _get_type_type_item_Exception(Exception):
+    """Would prefer this to be defined within the function, but mypyc doesn't support that."""
+
+def get_type_type_item(t: ProperType) -> Type | None:
+    def inner(t: Type) -> Type:
+        proper_t = get_proper_type(t)
+        if isinstance(proper_t, UnionType):
+            return UnionType([inner(it) for it in proper_t.items])
+        elif isinstance(proper_t, IntersectionType):
+            return IntersectionType([inner(it) for it in proper_t.items])
+        elif isinstance(proper_t, TypeType):
+            return proper_t.item
+        raise _get_type_type_item_Exception
+
+    try:
+        return inner(t)
+    except _get_type_type_item_Exception:
+        return None

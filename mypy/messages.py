@@ -768,7 +768,7 @@ class MessageBuilder:
                 strip_quotes,
                 format_type_distinctly(arg_type, callee.arg_types[0], options=self.options),
             )
-            msg = "List comprehension has incompatible type List[{}]; expected List[{}]".format(
+            msg = "list comprehension has incompatible type list[{}]; expected list[{}]".format(
                 actual_type_str, expected_type_str
             )
         elif callee_name == "<set-comprehension>":
@@ -776,7 +776,7 @@ class MessageBuilder:
                 strip_quotes,
                 format_type_distinctly(arg_type, callee.arg_types[0], options=self.options),
             )
-            msg = "Set comprehension has incompatible type Set[{}]; expected Set[{}]".format(
+            msg = "set comprehension has incompatible type set[{}]; expected set[{}]".format(
                 actual_type_str, expected_type_str
             )
         elif callee_name == "<dictionary-comprehension>":
@@ -1775,9 +1775,12 @@ class MessageBuilder:
                     recommended_type = f"Optional[{type_dec}]"
             elif node.type.type.fullname in reverse_builtin_aliases:
                 # partial types other than partial None
-                alias = reverse_builtin_aliases[node.type.type.fullname]
+                if mypy.options._based:
+                    alias = node.type.type.fullname
+                else:
+                    alias = reverse_builtin_aliases[node.type.type.fullname]
                 alias = alias.split(".")[-1]
-                if alias == "Dict":
+                if alias.lower() == "dict":
                     type_dec = f"{type_dec}, {type_dec}"
                 recommended_type = f"{alias}[{type_dec}]"
         if recommended_type is not None:
@@ -2446,7 +2449,43 @@ def format_callable_args(
 ) -> str:
     """Format a bunch of Callable arguments into a string"""
     arg_strings = []
+    star = False
+    slash = False
     for arg_name, arg_type, arg_kind in zip(arg_names, arg_types, arg_kinds):
+        if mypy.options._based:
+            if not arg_name:
+                slash = True
+            elif slash:
+                arg_strings.append("/")
+                slash = False
+            if arg_kind.is_named():
+                if not star:
+                    arg_strings.append("*")
+                    star = True
+            if arg_kind is ARG_POS and not arg_name:
+                arg_strings.append(format(arg_type))
+                continue
+            elif arg_kind is ARG_POS:
+                arg_strings.append(f"{arg_name}: {format(arg_type)}")
+                continue
+            elif arg_kind is ARG_NAMED:
+                arg_strings.append(f"{arg_name}: {format(arg_type)}")
+                continue
+            elif arg_kind is ARG_OPT and not arg_name:
+                arg_strings.append(f"{format(arg_type)}=...")
+                continue
+            elif arg_kind is ARG_OPT:
+                arg_strings.append(f"{arg_name}: {format(arg_type)}=...")
+                continue
+            elif arg_kind is ARG_NAMED_OPT:
+                arg_strings.append(f"{arg_name}: {format(arg_type)} = ...")
+                continue
+            elif arg_kind is ARG_STAR:
+                arg_strings.append(f"*{arg_name}: {format(arg_type)}")
+                continue
+            elif arg_kind is ARG_STAR2:
+                arg_strings.append(f"**{arg_name}: {format(arg_type)}")
+                continue
         if arg_kind == ARG_POS and arg_name is None or verbosity == 0 and arg_kind.is_positional():
             arg_strings.append(format(arg_type))
         else:
@@ -2455,7 +2494,6 @@ def format_callable_args(
                 arg_strings.append(f"{constructor}({format(arg_type)})")
             else:
                 arg_strings.append(f"{constructor}({format(arg_type)}, {repr(arg_name)})")
-
     return ", ".join(arg_strings)
 
 
@@ -2662,7 +2700,12 @@ def format_type_inner(
             if func.variables:
                 disable_own_scope = func.variables
             if func.type_guard is not None:
-                return_type = f"TypeGuard[{format(func.type_guard)}]"
+                if mypy.options._based:
+                    return_type = (
+                        f"{func.type_guard.target_desc} is {format(func.type_guard.type_guard)}"
+                    )
+                else:
+                    return_type = f"TypeGuard[{format(func.type_guard.type_guard)}]"
             else:
                 return_type = format(func.ret_type)
             if func.is_ellipsis_args:
@@ -2884,7 +2927,10 @@ def pretty_callable(tp: CallableType, options: Options, skip_self: bool = False)
 
     s += " -> "
     if tp.type_guard is not None:
-        s += f"TypeGuard[{format_type_bare(tp.type_guard, options)}]"
+        if mypy.options._based:
+            s += f"{tp.type_guard.target_desc} is {format_type_bare(tp.type_guard.type_guard, options)}"
+        else:
+            s += f"TypeGuard[{format_type_bare(tp.type_guard.type_guard, options)}]"
     else:
         s += format_type_bare(tp.ret_type, options)
 
@@ -3130,7 +3176,7 @@ def append_invariance_notes(
         and expected_type.type.fullname == "builtins.list"
         and is_subtype(arg_type.args[0], expected_type.args[0])
     ):
-        invariant_type = "List"
+        invariant_type = "list"
         covariant_suggestion = 'Consider using "Sequence" instead, which is covariant'
     elif (
         arg_type.type.fullname == "builtins.dict"
@@ -3138,7 +3184,7 @@ def append_invariance_notes(
         and is_same_type(arg_type.args[0], expected_type.args[0])
         and is_subtype(arg_type.args[1], expected_type.args[1])
     ):
-        invariant_type = "Dict"
+        invariant_type = "dict"
         covariant_suggestion = (
             'Consider using "Mapping" instead, ' "which is covariant in the value type"
         )

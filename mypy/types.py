@@ -21,7 +21,7 @@ from typing import (
     Union,
     cast,
 )
-from typing_extensions import Self, TypeAlias as _TypeAlias, TypeGuard, overload
+from typing_extensions import Self, TypeAlias as _TypeAlias, TypeGuard, overload, override
 
 import mypy.nodes
 import mypy.options
@@ -1360,6 +1360,85 @@ class DeletedType(ProperType):
         return DeletedType(data["source"])
 
 
+class TypeGuardType(ProperType):
+    """Based
+
+    If it does get too annoying to keep this up to date with upstream changes, we could change it to just being a
+    additional `type_guard_target` property on `CallableType`.
+    """
+
+    __slots__ = ("target", "type_guard", "is_evaluated")
+
+    def __init__(self, target: str | int, type_guard: Type, is_evaluated=True):
+        super().__init__(line=type_guard.line, column=type_guard.column)
+        self.target = target
+        self.type_guard = type_guard
+        self.is_evaluated = is_evaluated
+
+    def __repr__(self) -> str:
+        return f"{self.target_desc} is {self.type_guard}"
+
+    @property
+    def target_desc(self) -> str | int:
+        """User message representation of the target"""
+        if isinstance(self.target_value, int):
+            if self.target_is_self:
+                return "instance argument"
+            elif self.target_is_class:
+                return "class argument"
+            return f"argument {self.target_value + 1}"
+        return self.target_value
+
+    @property
+    def target_value(self) -> int | str:
+        """arg name representation of the target"""
+        if self.target_is_class:
+            assert isinstance(self.target, str)
+            result = self.target[len("class@") :]
+            if result.isnumeric():
+                return int(result)
+            return result
+        elif self.target_is_self:
+            assert isinstance(self.target, str)
+            result = self.target[len("self@") :]
+            if result.isnumeric():
+                return int(result)
+            return result
+        return self.target
+
+    @property
+    def target_is_class(self) -> bool:
+        return isinstance(self.target, str) and self.target.startswith("class@")
+
+    @property
+    def target_is_self(self) -> bool:
+        return isinstance(self.target, str) and self.target.startswith("self@")
+
+    @property
+    def target_is_positional(self) -> bool:
+        return isinstance(self.target_value, int) or self.target_value[0].isdigit()
+
+    def accept(self, visitor: TypeVisitor[T]) -> T:
+        try:
+            return visitor.visit_typeguard_type(self)
+        except NotImplementedError:
+            return self.type_guard.accept(visitor)
+
+    @override
+    def serialize(self) -> JsonDict | str:
+        return {
+            ".class": "TypeGuardType",
+            "target": self.target,
+            "type_guard": self.type_guard.serialize(),
+        }
+
+    @override
+    @classmethod
+    def deserialize(cls, data: JsonDict) -> TypeGuardType:
+        assert data[".class"] == "TypeGuardType"
+        return TypeGuardType(data["target"], deserialize_type(data["type_guard"]))
+
+
 # Fake TypeInfo to be used as a placeholder during Instance de-serialization.
 NOT_READY: Final = mypy.nodes.FakeInfo("De-serialization failure: TypeInfo not fixed")
 
@@ -1854,7 +1933,7 @@ class CallableType(FunctionLike):
         from_type_type: bool = False,
         bound_args: Sequence[Type | None] = (),
         def_extras: dict[str, Any] | None = None,
-        type_guard: Type | None = None,
+        type_guard: TypeGuardType | None = None,
         from_concatenate: bool = False,
         unpack_kwargs: bool = False,
     ) -> None:
@@ -1920,7 +1999,7 @@ class CallableType(FunctionLike):
         from_type_type: Bogus[bool] = _dummy,
         bound_args: Bogus[list[Type | None]] = _dummy,
         def_extras: Bogus[dict[str, Any]] = _dummy,
-        type_guard: Bogus[Type | None] = _dummy,
+        type_guard: Bogus[TypeGuardType | None] = _dummy,
         from_concatenate: Bogus[bool] = _dummy,
         unpack_kwargs: Bogus[bool] = _dummy,
     ) -> CT:
@@ -2233,7 +2312,9 @@ class CallableType(FunctionLike):
             bound_args=[(None if t is None else deserialize_type(t)) for t in data["bound_args"]],
             def_extras=data["def_extras"],
             type_guard=(
-                deserialize_type(data["type_guard"]) if data["type_guard"] is not None else None
+                cast(TypeGuardType, deserialize_type(data["type_guard"]))
+                if data["type_guard"] is not None
+                else None
             ),
             from_concatenate=data["from_concatenate"],
             unpack_kwargs=data["unpack_kwargs"],
@@ -3370,7 +3451,10 @@ class TypeStrVisitor(SyntheticTypeVisitor[str]):
 
             if not isinstance(get_proper_type(t.ret_type), NoneType):
                 if t.type_guard is not None:
-                    s += f" -> TypeGuard[{t.type_guard.accept(self)}]"
+                    if mypy.options._based:
+                        s += f" -> {t.type_guard.target_desc} is {t.type_guard.type_guard.accept(self)}"
+                    else:
+                        s += f" -> TypeGuard[{t.type_guard.type_guard.accept(self)}]"
                 else:
                     s += f" -> {t.ret_type.accept(self)}"
             elif mypy.options._based:

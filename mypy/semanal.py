@@ -907,16 +907,50 @@ class SemanticAnalyzer(
                     return
                 assert isinstance(result, ProperType)
                 if isinstance(result, CallableType):
-                    # type guards need to have a positional argument, to spec
-                    skip_self = self.is_class_scope() and not defn.is_static
-                    if result.type_guard and ARG_POS not in result.arg_kinds[skip_self:]:
-                        self.fail(
-                            "TypeGuard functions must have a positional argument",
-                            result,
-                            code=codes.VALID_TYPE,
-                        )
-                        # in this case, we just kind of just ... remove the type guard.
-                        result = result.copy_modified(type_guard=None)
+                    if result.type_guard:
+                        original_target = result.type_guard.target
+                        if (
+                            result.type_guard.target != "first argument"
+                            and result.type_guard.target not in result.arg_names
+                        ):
+                            args = [arg.variable.name for arg in defn.arguments]
+                            if result.type_guard.target in args:
+                                result.type_guard.target = args.index(result.type_guard.target)  # type: ignore[arg-type]
+                            else:
+                                self.fail(
+                                    f'Cannot find parameter "{result.type_guard.target}"',
+                                    result,
+                                    code=codes.NAME_DEFINED,
+                                )
+                                result = result.copy_modified(type_guard=None)
+
+                    if result.type_guard:
+                        skip_self = self.is_class_scope() and not defn.is_static
+                        if result.type_guard.target == "first argument":
+                            if (
+                                len(result.arg_names) > skip_self
+                                and result.arg_kinds[skip_self].is_positional()
+                            ):
+                                result.type_guard.target = result.arg_names[skip_self] or skip_self
+                            else:
+                                self.fail(
+                                    "TypeGuard functions must have a positional argument",
+                                    result,
+                                    code=codes.VALID_TYPE,
+                                )
+                                if skip_self:
+                                    self.note(
+                                        f'If you want to type-guard the implicit argument, use "-> {defn.arguments[0].variable.name} is {result.type_guard.type_guard}" instead.',
+                                        result,
+                                    )
+                                # in this case, we just kind of just ... remove the type guard.
+                                result = result.copy_modified(type_guard=None)
+                    if result.type_guard:
+                        if defn.info and original_target == defn.arguments[0].variable.name:
+                            if defn.is_class:
+                                result.type_guard.target = f"class@{result.type_guard.target}"
+                            elif self.is_class_scope():
+                                result.type_guard.target = f"self@{result.type_guard.target}"
 
                     result = self.remove_unpack_kwargs(defn, result)
                     if has_self_type and self.type is not None:

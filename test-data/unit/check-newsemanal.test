@@ -1585,7 +1585,7 @@ class A: pass
 class B: pass
 a: List[A]
 a = [x for x in a]
-b: List[B] = [x for x in a] # E: List comprehension has incompatible type List[A]; expected List[B]
+b: List[B] = [x for x in a] # E: list comprehension has incompatible type list[A]; expected list[B]
 [builtins fixtures/for.pyi]
 
 [case testNewAnalyzerDictionaryComprehension]

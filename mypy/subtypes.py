@@ -699,7 +699,20 @@ class SubtypeVisitor(TypeVisitor[bool]):
         right = self.right
         if isinstance(right, CallableType):
             if left.type_guard is not None and right.type_guard is not None:
-                if not self._is_subtype(left.type_guard, right.type_guard):
+                if left.type_guard.target != right.type_guard.target:
+                    if left.type_guard.target_is_self or left.type_guard.target_is_class:
+                        return False
+                    if (
+                        left.type_guard.target == "first argument"
+                        and right.arg_names.index(right.type_guard.target) != 0  # type: ignore[arg-type]
+                    ):
+                        return False
+                    elif (
+                        right.type_guard.target == "first argument"
+                        and left.arg_names.index(left.type_guard.target) != 0  # type: ignore[arg-type]
+                    ):
+                        return False
+                if not self._is_subtype(left.type_guard.type_guard, right.type_guard.type_guard):
                     return False
             elif right.type_guard is not None and left.type_guard is None:
                 # This means that one function has `TypeGuard` and other does not.

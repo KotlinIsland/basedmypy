@@ -168,6 +168,7 @@ from mypy.typeops import (
     false_only,
     fixup_partial_type,
     function_type,
+    get_type_type_item,
     get_type_vars,
     is_literal_type_like,
     is_singleton_type,
@@ -202,7 +203,6 @@ from mypy.types import (
     Type,
     TypeAliasType,
     TypedDictType,
-    TypeGuardedType,
     TypeOfAny,
     TypeTranslator,
     TypeType,
@@ -1396,6 +1396,31 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 # Type check initialization expressions.
                 body_is_trivial = is_trivial_body(defn.body)
                 self.check_default_args(item, body_is_trivial)
+
+                if mypy.options._based and typ.type_guard:
+                    if typ.type_guard.target_value in typ.arg_names:
+                        idx = typ.arg_names.index(typ.type_guard.target_value)  # type: ignore[arg-type]
+                    elif typ.type_guard.target_is_positional:
+                        idx = typ.type_guard.target_value  # type: ignore[assignment]
+                    else:
+                        assert isinstance(typ.definition, FuncDef)
+                        idx = [arg.variable.name for arg in typ.definition.arguments].index(
+                            typ.type_guard.target_value  # type: ignore[arg-type]
+                        )
+                    self.check_subtype(
+                        typ.type_guard.type_guard,
+                        typ.arg_types[idx],
+                        typ.type_guard.type_guard,
+                        ErrorMessage(
+                            "A type-guard's type must be assignable to its parameter's type.",
+                            code=codes.TYPEGUARD_SUBTYPE,
+                        ),
+                        "guard has type",
+                        "parameter has type",
+                        notes=[
+                            "If this is correct, try making it an intersection with the parameter type"
+                        ],
+                    )
 
             # Type check body in a new scope.
             with self.binder.top_frame_context():
@@ -5675,64 +5700,115 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         if is_false_literal(node):
             return None, {}
 
-        if isinstance(node, CallExpr) and len(node.args) != 0:
-            expr = collapse_walrus(node.args[0])
-            if refers_to_fullname(node.callee, "builtins.isinstance"):
-                if len(node.args) != 2:  # the error will be reported elsewhere
-                    return {}, {}
-                if literal(expr) == LITERAL_TYPE:
-                    return conditional_types_to_typemaps(
-                        expr,
-                        *self.conditional_types_with_intersection(
-                            self.lookup_type(expr), self.get_isinstance_type(node.args[1]), expr
-                        ),
-                    )
-            elif refers_to_fullname(node.callee, "builtins.issubclass"):
-                if len(node.args) != 2:  # the error will be reported elsewhere
-                    return {}, {}
-                if literal(expr) == LITERAL_TYPE:
-                    return self.infer_issubclass_maps(node, expr)
-            elif refers_to_fullname(node.callee, "builtins.callable"):
-                if len(node.args) != 1:  # the error will be reported elsewhere
-                    return {}, {}
-                if literal(expr) == LITERAL_TYPE:
-                    vartype = self.lookup_type(expr)
-                    return self.conditional_callable_type_map(expr, vartype)
-            elif refers_to_fullname(node.callee, "builtins.hasattr"):
-                if len(node.args) != 2:  # the error will be reported elsewhere
-                    return {}, {}
-                attr = try_getting_str_literals(node.args[1], self.lookup_type(node.args[1]))
-                if literal(expr) == LITERAL_TYPE and attr and len(attr) == 1:
-                    return self.hasattr_type_maps(expr, self.lookup_type(expr), attr[0])
-            elif isinstance(node.callee, (RefExpr, CallExpr, LambdaExpr)):
+        if isinstance(node, CallExpr):
+            if len(node.args) != 0:
+                expr = collapse_walrus(node.args[0])
+                if refers_to_fullname(node.callee, "builtins.isinstance"):
+                    if len(node.args) != 2:  # the error will be reported elsewhere
+                        return {}, {}
+                    if literal(expr) == LITERAL_TYPE:
+                        return conditional_types_to_typemaps(
+                            expr,
+                            *self.conditional_types_with_intersection(
+                                self.lookup_type(expr),
+                                self.get_isinstance_type(node.args[1]),
+                                expr,
+                            ),
+                        )
+                elif refers_to_fullname(node.callee, "builtins.issubclass"):
+                    if len(node.args) != 2:  # the error will be reported elsewhere
+                        return {}, {}
+                    if literal(expr) == LITERAL_TYPE:
+                        return self.infer_issubclass_maps(node, expr)
+                elif refers_to_fullname(node.callee, "builtins.callable"):
+                    if len(node.args) != 1:  # the error will be reported elsewhere
+                        return {}, {}
+                    if literal(expr) == LITERAL_TYPE:
+                        vartype = self.lookup_type(expr)
+                        return self.conditional_callable_type_map(expr, vartype)
+                elif refers_to_fullname(node.callee, "builtins.hasattr"):
+                    if len(node.args) != 2:  # the error will be reported elsewhere
+                        return {}, {}
+                    attr = try_getting_str_literals(node.args[1], self.lookup_type(node.args[1]))
+                    if literal(expr) == LITERAL_TYPE and attr and len(attr) == 1:
+                        return self.hasattr_type_maps(expr, self.lookup_type(expr), attr[0])
+            if isinstance(node.callee, (RefExpr, CallExpr, LambdaExpr)):
+                # TODO: AssignmentExpr `(a := A())()`
                 if node.callee.type_guard is not None:
                     # TODO: Follow *args, **kwargs
-                    if node.arg_kinds[0] != nodes.ARG_POS:
-                        # the first argument might be used as a kwarg
-                        called_type = get_proper_type(self.lookup_type(node.callee))
-                        assert isinstance(called_type, (CallableType, Overloaded))
-
-                        # *assuming* the overloaded function is correct, there's a couple cases:
-                        #  1) The first argument has different names, but is pos-only. We don't
-                        #     care about this case, the argument must be passed positionally.
-                        #  2) The first argument allows keyword reference, therefore must be the
-                        #     same between overloads.
-                        name = called_type.items[0].arg_names[0]
-
-                        if name in node.arg_names:
-                            idx = node.arg_names.index(name)
-                            # we want the idx-th variable to be narrowed
-                            expr = collapse_walrus(node.args[idx])
+                    called_type = get_proper_type(self.lookup_type(node.callee))
+                    if isinstance(called_type, Instance):
+                        called_type = get_proper_type(
+                            analyze_member_access(
+                                name="__call__",
+                                typ=called_type,
+                                context=node,
+                                is_lvalue=False,
+                                is_super=False,
+                                is_operator=True,
+                                msg=self.msg,
+                                original_type=called_type,
+                                chk=self,
+                            )
+                        )
+                    assert isinstance(called_type, (CallableType, Overloaded))
+                    guard = node.callee.type_guard
+                    target = guard.target_value
+                    if guard.target_is_class or guard.target_is_self:
+                        if isinstance(node.callee, (CallExpr, NameExpr)):
+                            expr = node.callee
+                        elif isinstance(node.callee, MemberExpr):
+                            expr = node.callee.expr
                         else:
-                            self.fail(message_registry.TYPE_GUARD_POS_ARG_REQUIRED, node)
+                            raise AssertionError("What is this?")
+                        if guard.target_is_class and isinstance(
+                            get_proper_type(self.lookup_type(expr)), Instance
+                        ):
+                            guarded = get_type_type_item(
+                                get_proper_type(node.callee.type_guard.type_guard)
+                            )
+                            if not guarded:
+                                return {}, {}
+                        else:
+                            guarded = node.callee.type_guard.type_guard
+                        return {collapse_walrus(expr): guarded}, {}
+                    if isinstance(target, int):
+                        idx = target
+                        if called_type.items[0].def_extras.get("first_arg"):
+                            self.fail(
+                                "type-guard on positional class function is unsupported",
+                                node,
+                                code=codes.TYPEGUARD_LIMITATION,
+                            )
                             return {}, {}
+                    elif target in called_type.items[0].arg_names:
+                        idx = called_type.items[0].arg_names.index(target)
+                    elif target == "first argument":
+                        idx = 0
+                        if not node.args:
+                            return {}, {}
+                    else:
+                        definition = called_type.items[0].definition
+                        assert isinstance(definition, FuncDef)
+                        idx = [arg.variable.name for arg in definition.arguments].index(target)
+                    if target in node.arg_names:
+                        idx = node.arg_names.index(target)  # type: ignore[arg-type]
+                    if len(node.arg_kinds) <= idx:
+                        return {}, {}
+                    if node.arg_kinds[idx].is_star():
+                        self.fail(message_registry.TYPE_GUARD_POS_LIMITATION, node)
+                        return {}, {}
+                    # we want the idx-th variable to be narrowed
+                    expr = collapse_walrus(node.args[idx])
                     if literal(expr) == LITERAL_TYPE:
                         # Note: we wrap the target type, so that we can special case later.
                         # Namely, for isinstance() we use a normal meet, while TypeGuard is
                         # considered "always right" (i.e. even if the types are not overlapping).
                         # Also note that a care must be taken to unwrap this back at read places
                         # where we use this to narrow down declared type.
-                        return {expr: TypeGuardedType(node.callee.type_guard)}, {}
+                        #
+                        # Based: We don't do any of that.
+                        return {expr: node.callee.type_guard.type_guard}, {}
         if isinstance(node, CallExpr) and isinstance(node.callee, LambdaExpr):
             return self.find_isinstance_check_helper(
                 safe(cast(ReturnStmt, node.callee.body.body[0]).expr)

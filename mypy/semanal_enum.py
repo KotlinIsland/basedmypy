@@ -5,7 +5,7 @@ This is conceptually part of mypy.semanal (semantic analyzer pass 2).
 
 from __future__ import annotations
 
-from typing import Final, cast
+from typing import Final, List, cast
 
 from mypy.nodes import (
     ARG_NAMED,
@@ -178,7 +178,8 @@ class EnumCallAnalyzer:
         elif isinstance(names, (TupleExpr, ListExpr)):
             seq_items = names.items
             if is_StrExpr_list(seq_items):
-                items = [seq_item.value for seq_item in seq_items]
+                it = cast(List[StrExpr], seq_items)
+                items = [seq_item.value for seq_item in it]
             elif all(
                 isinstance(seq_item, (TupleExpr, ListExpr))
                 and len(seq_item.items) == 2

@@ -22,6 +22,7 @@ from mypy.nodes import (
     ArgKind,
     Context,
     Decorator,
+    FuncDef,
     FuncItem,
     MypyFile,
     ParamSpecExpr,
@@ -73,6 +74,7 @@ from mypy.types import (
     Type,
     TypeAliasType,
     TypedDictType,
+    TypeGuardType,
     TypeList,
     TypeOfAny,
     TypeQuery,
@@ -916,7 +918,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             self.fail(
                 'Bracketed expression "[...]" is not valid as a type', t, code=codes.VALID_TYPE
             )
-            self.note('Did you mean "List[...]"?', t)
+            self.note('Did you mean "list[...]"?', t)
             return AnyType(TypeOfAny.from_error)
 
     def visit_callable_argument(self, t: CallableArgument) -> Type:
@@ -952,7 +954,11 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 variables = t.variables
             else:
                 variables, _ = self.bind_function_type_variables(t, t)
-            special = self.anal_type_guard(t.ret_type)
+            first_arg = t.arg_names[0] if t.arg_names and t.arg_kinds[0].is_positional() else None
+            if isinstance(t.definition, FuncDef) and t.definition.info:
+                # old typeguard on a class is checked later
+                first_arg = "first argument"
+            special = self.anal_type_guard(t.ret_type, first_arg=first_arg)
             arg_kinds = t.arg_kinds
             if len(arg_kinds) >= 2 and arg_kinds[-2] == ARG_STAR and arg_kinds[-1] == ARG_STAR2:
                 arg_types = self.anal_array(t.arg_types[:-2], nested=nested) + [
@@ -979,11 +985,22 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             )
         return ret
 
-    def anal_type_guard(self, t: Type) -> Type | None:
-        if isinstance(t, UnboundType):
+    def anal_type_guard(self, t: Type, first_arg: str | None = None) -> TypeGuardType | None:
+        proper = get_proper_type(t)
+        if isinstance(proper, TypeGuardType):
+            if proper.is_evaluated and not self.always_allow_new_syntax:
+                self.fail(
+                    "You need to put quotes around the entire type-guard, or enable `__future__.annotations`",
+                    t,
+                )
+            return TypeGuardType(proper.target, self.anal_type(proper.type_guard))
+        elif isinstance(t, UnboundType):
             sym = self.lookup_qualified(t.name, t)
             if sym is not None and sym.node is not None:
-                return self.anal_type_guard_arg(t, sym.node.fullname)
+                result = self.anal_type_guard_arg(t, sym.node.fullname)
+                if result is None or isinstance(get_proper_type(result), AnyType):
+                    return None
+                return TypeGuardType(first_arg or "first argument", result)
         # TODO: What if it's an Instance? Then use t.type.fullname?
         return None
 
@@ -1195,6 +1212,9 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             # TODO: Handle non-TypeInfo
             assert isinstance(n.node, TypeInfo)
             return self.analyze_type_with_type_info(n.node, t.args, t)
+
+    def visit_typeguard_type(self, t: TypeGuardType) -> Instance:
+        return self.named_type("builtins.bool")
 
     def analyze_callable_args_for_paramspec(
         self, callable_args: Type, ret_type: Type, fallback: Instance

@@ -396,7 +396,8 @@ class NamedTupleAnalyzer:
                 if not is_StrExpr_list(listexpr.items):
                     self.fail('String literal expected as "namedtuple()" item', call)
                     return None
-                items = [item.value for item in listexpr.items]
+                it = cast(List[StrExpr], listexpr.items)
+                items = [item.value for item in it]
             else:
                 type_exprs = [
                     t.items[1]

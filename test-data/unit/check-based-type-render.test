@@ -15,7 +15,7 @@ class A(Generic[T2]):
 reveal_type(A.f)  # N: Revealed type is "def [T2 (from A): int, T: str] (self: __main__.A[T2], t: T, t2: T2) -> T | T2"
 reveal_type(A[int]().f)  # N: Revealed type is "def [T: str] (t: T, t2: int) -> T | int"
 A.f = 1  # E: Cannot assign to a method  [method-assign] \
-         # E: Incompatible types in assignment (expression has type "int", variable has type "[T2 (from A): int, T: str] (A[T2], T, T2) -> T | T2")  [assignment]
+         # E: Incompatible types in assignment (expression has type "int", variable has type "[T2 (from A): int, T: str] (self: A[T2], t: T, t2: T2) -> T | T2")  [assignment]
 
 
 [case testGenericFunction]
@@ -24,7 +24,7 @@ T = TypeVar("T", bound=int)
 
 def foo(t: T) -> T: ...
 reveal_type(foo)  # N: Revealed type is "def [T: int] (t: T) -> T"
-foo = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "[T: int] (T) -> T")  [assignment]
+foo = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "[T: int] (t: T) -> T")  [assignment]
 
 
 [case testRenderAny]

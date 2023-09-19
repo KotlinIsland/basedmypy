@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Sequence
+from typing import Callable, Sequence, cast
 
 import mypy.subtypes
 from mypy.expandtype import expand_type, expand_unpack_with_variables
@@ -14,6 +14,7 @@ from mypy.types import (
     PartialType,
     TupleType,
     Type,
+    TypeGuardType,
     TypeVarId,
     TypeVarLikeType,
     TypeVarTupleType,
@@ -175,7 +176,7 @@ def apply_generic_arguments(
 
     # Apply arguments to TypeGuard if any.
     if callable.type_guard is not None:
-        type_guard = expand_type(callable.type_guard, id_to_type)
+        type_guard = cast(TypeGuardType, expand_type(callable.type_guard, id_to_type))
     else:
         type_guard = None
 

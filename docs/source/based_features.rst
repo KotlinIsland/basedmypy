@@ -92,6 +92,91 @@ So you are able to have functions with polymorphic generic parameters:
     reveal_type(foo(["based"], "mypy"))  # N: Revealed type is "list[str]"
     reveal_type(foo({1, 2}, 3))  # N: Revealed type is "set[int]"
 
+Reinvented type guards
+----------------------
+
+``TypeGuard`` acts similar to ``cast``, which is often sub-optimal and dangerous:
+
+.. code-block:: python
+
+    def is_str_list(val: list[object]) -> TypeGuard[list[str]]:
+        return all(isinstance(x, str) for x in val)
+
+    l1: list[object] = []
+    l2 = l1
+
+    if is_str_list(l1):
+        l2.append(100)
+        reveal_type(l1[0])  # Revealed type is "str", at runtime it is 100
+
+
+    class A: ...
+    class B(A): ...
+    def is_a(val: object) -> TypeGuard[A]: ...
+
+    b = B()
+    if is_a(b):
+        reveal_type(b)  # A, not B
+
+
+Basedmypy introduces a simpler and more powerful denotation for type-guards, and changes their behavior
+to be safer.
+
+.. code-block:: python
+
+    def is_int(value: object) -> value is int: ...
+
+Type-guards don't widen:
+
+.. code-block:: python
+
+    a: bool
+    if is_int(a):
+        reveal_type(a)  # Revealed type is "bool"
+
+Type-guards work on the implicit ``self`` and ``cls`` parameters:
+
+.. code-block:: python
+
+    class A:
+        def guard(self) -> self is B: ...
+    class B(A): ...
+
+    a = A()
+    if a.guard():
+        reveal_type(a)  # Revealed type is "B"
+
+Invalid type-guards show an error:
+
+.. code-block:: python
+
+    def guard(x: str) -> x is int: # error: A type-guard's type must be assignable to its parameter's type.
+
+If you want to achieve something similar to the old ``TypeGuard``:
+
+.. code-block:: python
+
+    def as_str_list(val: list[object]) -> list[str] | None:
+        return (
+            cast(list[str], val)
+            if all(isinstance(x, str) for x in val)
+            else None
+        )
+
+    a: list[object]
+    if (str_a := as_str_list(a)) is not None:
+        ...
+
+    # or
+
+    def is_str_list(val: list[object]) -> bool:
+        return all(isinstance(x, str) for x in val)
+
+    a: list[object]
+    if is_str_list(a):
+        str_a = cast(list[str], a)
+        ...
+
 Overload Implementation Inference
 ---------------------------------
 
