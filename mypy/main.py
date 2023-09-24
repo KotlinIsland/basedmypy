@@ -345,17 +345,17 @@ recursively traverse any provided folders to find .py files:
 
 For more information on getting started, see:
 
-- https://mypy.readthedocs.io/en/stable/getting_started.html
+- https://kotlinisland.github.io/basedmypy/getting_started.html
 
 For more details on both running mypy and using the flags below, see:
 
-- https://mypy.readthedocs.io/en/stable/running_mypy.html
-- https://mypy.readthedocs.io/en/stable/command_line.html
+- https://kotlinisland.github.io/basedmypy/running_mypy.html
+- https://kotlinisland.github.io/basedmypy/command_line.html
 
 You can also use a config file to configure mypy instead of using
 command line flags. For more details, see:
 
-- https://mypy.readthedocs.io/en/stable/config_file.html
+- https://kotlinisland.github.io/basedmypy/config_file.html
 """
 
 FOOTER: Final = """Environment variables:
@@ -809,7 +809,7 @@ def process_options(
         title="None and Optional handling",
         description="Adjust how values of type 'None' are handled. For more context on "
         "how mypy handles values of type 'None', see: "
-        "https://mypy.readthedocs.io/en/stable/kinds_of_types.html#no-strict-optional",
+        "https://kotlinisland.github.io/basedmypy/kinds_of_types.html#no-strict-optional",
     )
     add_invertible_flag(
         "--implicit-optional",
@@ -1018,7 +1018,7 @@ def process_options(
         "Mypy caches type information about modules into a cache to "
         "let you speed up future invocations of mypy. Also see "
         "mypy's daemon mode: "
-        "mypy.readthedocs.io/en/stable/mypy_daemon.html#mypy-daemon",
+        "kotlinisland.github.io/basedmypy/mypy_daemon.html#mypy-daemon",
     )
     incremental_group.add_argument(
         "-i", "--incremental", action="store_true", help=argparse.SUPPRESS
@@ -1248,7 +1248,7 @@ def process_options(
     code_group = parser.add_argument_group(
         title="Running code",
         description="Specify the code you want to type check. For more details, see "
-        "mypy.readthedocs.io/en/stable/running_mypy.html#running-mypy",
+        "kotlinisland.github.io/basedmypy/running_mypy.html#running-mypy",
     )
     add_invertible_flag(
         "--explicit-package-bases",

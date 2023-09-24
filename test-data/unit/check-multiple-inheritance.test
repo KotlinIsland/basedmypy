@@ -540,7 +540,7 @@ class IntFlag(int, Flag):
 [out]
 main:8: error: Argument 1 of "__or__" is incompatible with supertype "Flag"; supertype defines the argument type as "IntFlag"
 main:8: note: This violates the Liskov substitution principle
-main:8: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides
+main:8: note: See https://kotlinisland.github.io/basedmypy/common_issues.html#incompatible-overrides
 
 [case testMultipleInheritance_MethodDefinitionsCompatibleNoOverride]
 from typing import TypeVar, Union

@@ -55,10 +55,10 @@ class A(object):
 class B(A):
     def f(self, b: str, a: int) -> None: pass # E: Argument 1 of "f" is incompatible with supertype "A"; supertype defines the argument type as "int" \
                                               # N: This violates the Liskov substitution principle \
-                                              # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides \
+                                              # N: See https://kotlinisland.github.io/basedmypy/common_issues.html#incompatible-overrides \
                                               # E: Argument 2 of "f" is incompatible with supertype "A"; supertype defines the argument type as "str" \
                                               # N: This violates the Liskov substitution principle \
-                                              # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides
+                                              # N: See https://kotlinisland.github.io/basedmypy/common_issues.html#incompatible-overrides
 
 class C(A):
     def f(self, foo: int, bar: str) -> None: pass
@@ -2438,14 +2438,14 @@ from typing import Union, Dict, List
 def f() -> List[Union[str, int]]:
     x = ['a']
     return x # E: Incompatible return value type (got "List[str]", expected "List[Union[str, int]]") \
-      # N: "list" is invariant -- see https://mypy.readthedocs.io/en/stable/common_issues.html#variance \
+      # N: "list" is invariant -- see https://kotlinisland.github.io/basedmypy/common_issues.html#variance \
       # N: Consider using "Sequence" instead, which is covariant \
       # N: Perhaps you need a type annotation for "x"? Suggestion: "List[Union[str, int]]"
 
 def g() -> Dict[str, Union[str, int]]:
     x = {'a': 'a'}
     return x # E: Incompatible return value type (got "Dict[str, str]", expected "Dict[str, Union[str, int]]") \
-      # N: "dict" is invariant -- see https://mypy.readthedocs.io/en/stable/common_issues.html#variance \
+      # N: "dict" is invariant -- see https://kotlinisland.github.io/basedmypy/common_issues.html#variance \
       # N: Consider using "Mapping" instead, which is covariant in the value type \
       # N: Perhaps you need a type annotation for "x"? Suggestion: "Dict[str, Union[str, int]]"
 
@@ -2457,7 +2457,7 @@ def h() -> Dict[Union[str, int], str]:
 def i() -> List[Union[int, float]]:
     x: List[int] = [1]
     return x # E: Incompatible return value type (got "List[int]", expected "List[Union[int, float]]") \
-      # N: "list" is invariant -- see https://mypy.readthedocs.io/en/stable/common_issues.html#variance \
+      # N: "list" is invariant -- see https://kotlinisland.github.io/basedmypy/common_issues.html#variance \
       # N: Consider using "Sequence" instead, which is covariant
 
 [builtins fixtures/dict.pyi]
@@ -2759,7 +2759,7 @@ class C(A):
     @override
     def f(self, x: str) -> str: pass  # E: Argument 1 of "f" is incompatible with supertype "A"; supertype defines the argument type as "int" \
                                       # N: This violates the Liskov substitution principle \
-                                      # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides
+                                      # N: See https://kotlinisland.github.io/basedmypy/common_issues.html#incompatible-overrides
     def g(self, x: int) -> str: pass
 
 class D(A): pass
@@ -2799,7 +2799,7 @@ class D(A):
     @override
     def f(x: str) -> str: pass  # E: Argument 1 of "f" is incompatible with supertype "A"; supertype defines the argument type as "int" \
                                 # N: This violates the Liskov substitution principle \
-                                # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides
+                                # N: See https://kotlinisland.github.io/basedmypy/common_issues.html#incompatible-overrides
 [typing fixtures/typing-full.pyi]
 [builtins fixtures/callable.pyi]
 
@@ -2832,7 +2832,7 @@ class D(A):
     @override
     def f(cls, x: str) -> str: pass  # E: Argument 1 of "f" is incompatible with supertype "A"; supertype defines the argument type as "int" \
                                      # N: This violates the Liskov substitution principle \
-                                     # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides
+                                     # N: See https://kotlinisland.github.io/basedmypy/common_issues.html#incompatible-overrides
 [typing fixtures/typing-full.pyi]
 [builtins fixtures/callable.pyi]
 

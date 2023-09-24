@@ -186,7 +186,7 @@ from defusedxml import xyz  # type: ignore[import]
 [case testErrorCodeBadIgnore]
 import nostub # type: ignore xyz  # E: Invalid "type: ignore" comment  [syntax] \
                                   # E: Cannot find implementation or library stub for module named "nostub"  [import] \
-                                  # N: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+                                  # N: See https://kotlinisland.github.io/basedmypy/running_mypy.html#missing-imports
 import nostub # type: ignore[  # E: Invalid "type: ignore" comment  [syntax]
 import nostub # type: ignore[foo  # E: Invalid "type: ignore" comment  [syntax]
 import nostub # type: ignore[foo,  # E: Invalid "type: ignore" comment  [syntax]
@@ -214,7 +214,7 @@ def f(x,  # type: int  # type: ignore[
 [out]
 main:2: error: Invalid "type: ignore" comment  [syntax]
 main:2: error: Cannot find implementation or library stub for module named "nostub"  [import]
-main:2: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+main:2: note: See https://kotlinisland.github.io/basedmypy/running_mypy.html#missing-imports
 main:3: error: Invalid "type: ignore" comment  [syntax]
 main:4: error: Invalid "type: ignore" comment  [syntax]
 main:5: error: Invalid "type: ignore" comment  [syntax]
@@ -252,7 +252,7 @@ import sys
 y: sys  # E: Module "sys" is not valid as a type  [valid-type] \
         # N: Perhaps you meant to use a protocol matching the module structure?
 z: y  # E: Variable "__main__.y" is not valid as a type  [valid-type] \
-      # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+      # N: See https://kotlinisland.github.io/basedmypy/common_issues.html#variables-vs-type-aliases
 [builtins fixtures/tuple.pyi]
 
 [case testErrorCodeNeedTypeAnnotation]
@@ -286,7 +286,7 @@ class D:
 class E(D):
     def f(self, x: str) -> int:  # E: Argument 1 of "f" is incompatible with supertype "D"; supertype defines the argument type as "int"  [override] \
                                  # N: This violates the Liskov substitution principle \
-                                 # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides
+                                 # N: See https://kotlinisland.github.io/basedmypy/common_issues.html#incompatible-overrides
         return 0
 
 class O:
@@ -530,7 +530,7 @@ import nonexistent2  # E: Cannot find implementation or library stub for module 
 from nonexistent3 import *  # E: Cannot find implementation or library stub for module named "nonexistent3"  [import]
 from pkg import bad  # E: Module "pkg" has no attribute "bad"  [attr-defined]
 from pkg.bad2 import bad3  # E: Cannot find implementation or library stub for module named "pkg.bad2"  [import] \
-                           # N: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+                           # N: See https://kotlinisland.github.io/basedmypy/running_mypy.html#missing-imports
 [file pkg/__init__.py]
 
 [case testErrorCodeAlreadyDefined]

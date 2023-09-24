@@ -2804,7 +2804,7 @@ class SemanticAnalyzer(
                         code=codes.ATTR_DEFINED,
                     )
                     self.msg.note(
-                        "See https://mypy.readthedocs.io/en/stable/runtime_troubles.html#using-new-additions-to-the-typing-module",
+                        "See https://kotlinisland.github.io/basedmypy/runtime_troubles.html#using-new-additions-to-the-typing-module",
                         context,
                         code=codes.ATTR_DEFINED,
                     )

@@ -72,7 +72,7 @@ class ModuleNotFoundReason(Enum):
     APPROVED_STUBS_NOT_INSTALLED = 3
 
     def error_message_templates(self, daemon: bool) -> tuple[str, list[str]]:
-        doc_link = "See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports"
+        doc_link = "See https://kotlinisland.github.io/basedmypy/running_mypy.html#missing-imports"
         if self is ModuleNotFoundReason.NOT_FOUND:
             msg = 'Cannot find implementation or library stub for module named "{module}"'
             notes = [doc_link]
@@ -855,7 +855,7 @@ def compute_search_paths(
         ):
             print(f"{site} is in the MYPYPATH. Please remove it.", file=sys.stderr)
             print(
-                "See https://mypy.readthedocs.io/en/stable/running_mypy.html"
+                "See https://kotlinisland.github.io/basedmypy/running_mypy.html"
                 "#how-mypy-handles-imports for more info",
                 file=sys.stderr,
             )

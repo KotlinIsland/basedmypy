@@ -76,7 +76,7 @@ performance won't be as impressive after compilation.
 .. note::
 
    `Mypy documentation
-   <https://mypy.readthedocs.io/en/stable/index.html>`_ is a good
+   <https://kotlinisland.github.io/basedmypy/index.html>`_ is a good
    introduction if you are new to type annotations or mypy. Mypyc uses
    mypy to perform type checking and type inference, so some familiarity
    with mypy is very useful.
@@ -118,7 +118,7 @@ After compilation, the program is about 10x faster. Nice!
    ``__name__`` in ``fib.py`` would now be ``"fib"``, not ``"__main__"``.
 
 You can also pass most
-`mypy command line options <https://mypy.readthedocs.io/en/stable/command_line.html>`_
+`mypy command line options <https://kotlinisland.github.io/basedmypy/command_line.html>`_
 to ``mypyc``.
 
 Deleting compiled binary
@@ -166,7 +166,7 @@ to using ``mypyc`` to compile modules)::
     python3 setup.py build_ext --inplace
 
 You can include most `mypy command line options
-<https://mypy.readthedocs.io/en/stable/command_line.html>`_ in the
+<https://kotlinisland.github.io/basedmypy/command_line.html>`_ in the
 list of arguments passed to ``mypycify()``. For example, here we use
 the ``--disallow-untyped-defs`` flag to require that all functions
 have type annotations::
@@ -184,7 +184,7 @@ have type annotations::
 .. note:
 
    You may be tempted to use `--check-untyped-defs
-   <https://mypy.readthedocs.io/en/stable/command_line.html#cmdoption-mypy-check-untyped-defs>`_
+   <https://kotlinisland.github.io/basedmypy/command_line.html#cmdoption-mypy-check-untyped-defs>`_
    to type check functions without type annotations. Note that this
    may reduce performance, due to many transitions between type-checked and unchecked
    code.

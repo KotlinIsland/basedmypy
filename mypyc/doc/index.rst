@@ -8,7 +8,7 @@ Welcome to mypyc documentation!
 
 Mypyc compiles Python modules to C extensions. It uses standard Python
 `type hints
-<https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html>`_ to
+<https://kotlinisland.github.io/basedmypy/cheat_sheet_py3.html>`_ to
 generate fast code.
 
 .. toctree::

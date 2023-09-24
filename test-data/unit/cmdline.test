@@ -59,7 +59,7 @@ undef
 undef
 [out]
 dir/a.py: error: Duplicate module named "a" (also at "dir/subdir/a.py")
-dir/a.py: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#mapping-file-paths-to-modules for more info
+dir/a.py: note: See https://kotlinisland.github.io/basedmypy/running_mypy.html#mapping-file-paths-to-modules for more info
 dir/a.py: note: Common resolutions include: a) using `--exclude` to avoid checking one of them, b) adding `__init__.py` somewhere, c) using `--explicit-package-bases` or adjusting MYPYPATH
 == Return code: 2
 
@@ -126,7 +126,7 @@ mypy: can't decode file 'a.py': unknown encoding: uft-8
 # type: ignore
 [out]
 two/mod/__init__.py: error: Duplicate module named "mod" (also at "one/mod/__init__.py")
-two/mod/__init__.py: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#mapping-file-paths-to-modules for more info
+two/mod/__init__.py: note: See https://kotlinisland.github.io/basedmypy/running_mypy.html#mapping-file-paths-to-modules for more info
 two/mod/__init__.py: note: Common resolutions include: a) using `--exclude` to avoid checking one of them, b) adding `__init__.py` somewhere, c) using `--explicit-package-bases` or adjusting MYPYPATH
 == Return code: 2
 
@@ -323,7 +323,7 @@ baz(bar(foo(42)))
 baz(bar(foo('oof')))
 [out]
 file.py:1: error: Cannot find implementation or library stub for module named "no_stubs"
-file.py:1: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+file.py:1: note: See https://kotlinisland.github.io/basedmypy/running_mypy.html#missing-imports
 file.py:6: error: Argument 1 to "foo" has incompatible type "str"; expected "int"
 
 [case testIgnoreErrorsConfig]
@@ -505,7 +505,7 @@ reveal_type(missing.x)  # Expect Any
 ignore_missing_imports = False
 [out]
 main.py:1: error: Cannot find implementation or library stub for module named "missing"
-main.py:1: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+main.py:1: note: See https://kotlinisland.github.io/basedmypy/running_mypy.html#missing-imports
 main.py:2: note: Revealed type is "Any"
 
 [case testConfigSilentMissingImportsOn]
@@ -537,7 +537,7 @@ main.py:1: error: Cannot find implementation or library stub for module named "p
 main.py:1: note: You may be running mypy in a subpackage, mypy should be run on the package root
 main.py:2: error: Cannot find implementation or library stub for module named "grandparent"
 main.py:3: error: Cannot find implementation or library stub for module named "missing"
-main.py:3: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+main.py:3: note: See https://kotlinisland.github.io/basedmypy/running_mypy.html#missing-imports
 
 [case testImportInParentButNoInit]
 # cmd: mypy main.py
@@ -548,7 +548,7 @@ import needs_init
 [file main/__init__.py]
 [out]
 main.py:1: error: Cannot find implementation or library stub for module named "needs_init"
-main.py:1: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+main.py:1: note: See https://kotlinisland.github.io/basedmypy/running_mypy.html#missing-imports
 
 [case testConfigNoErrorForUnknownXFlagInSubsection]
 # cmd: mypy -c pass
@@ -583,7 +583,7 @@ import a.b
 whatever
 [out]
 main.py:1: error: Cannot find implementation or library stub for module named "a.b"
-main.py:1: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+main.py:1: note: See https://kotlinisland.github.io/basedmypy/running_mypy.html#missing-imports
 main.py:1: error: Cannot find implementation or library stub for module named "a"
 
 [case testPythonVersionWrongFormatPyProjectTOML]
@@ -1075,7 +1075,7 @@ y = []  # type: List[int]
 x = y
 [out]
 bad.py:4: error: Incompatible types in assignment (expression has type "List[int]", variable has type "List[float]")
-bad.py:4: note: "list" is invariant -- see https://mypy.readthedocs.io/en/stable/common_issues.html#variance
+bad.py:4: note: "list" is invariant -- see https://kotlinisland.github.io/basedmypy/common_issues.html#variance
 bad.py:4: note: Consider using "Sequence" instead, which is covariant
 Found 1 error in 1 file (checked 1 source file)
 
@@ -1181,7 +1181,7 @@ import foo.bar
 1+'x'
 [out]
 src/foo/bar.py: error: Source file found twice under different module names: "src.foo.bar" and "foo.bar"
-src/foo/bar.py: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#mapping-file-paths-to-modules for more info
+src/foo/bar.py: note: See https://kotlinisland.github.io/basedmypy/running_mypy.html#mapping-file-paths-to-modules for more info
 src/foo/bar.py: note: Common resolutions include: a) adding `__init__.py` somewhere, b) using `--explicit-package-bases` or adjusting MYPYPATH
 == Return code: 2
 

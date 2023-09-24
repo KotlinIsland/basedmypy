@@ -13,7 +13,7 @@ x = 0
 y = 0
 [out]
 main.py:2:1: error: Skipping analyzing "b": module is installed, but missing library stubs or py.typed marker. To work around this error, see the 'ignore_missing_py_typed' option  [import]
-main.py:2:1: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+main.py:2:1: note: See https://kotlinisland.github.io/basedmypy/running_mypy.html#missing-imports
 
 
 [case testIgnoreMissingPyTypedDontClobberStubs]

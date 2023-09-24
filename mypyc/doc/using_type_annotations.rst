@@ -125,7 +125,7 @@ Tuple types
 -----------
 
 Fixed-length
-`tuple types <https://mypy.readthedocs.io/en/stable/kinds_of_types.html#tuple-types>`_
+`tuple types <https://kotlinisland.github.io/basedmypy/kinds_of_types.html#tuple-types>`_
 such as ``Tuple[int, str]`` are represented
 as :ref:`value types <value-and-heap-types>` when stored in variables,
 passed as arguments, or returned from functions. Value types are
@@ -143,9 +143,9 @@ object.
 Union types
 -----------
 
-`Union types <https://mypy.readthedocs.io/en/stable/kinds_of_types.html#union-types>`_
+`Union types <https://kotlinisland.github.io/basedmypy/kinds_of_types.html#union-types>`_
 and
-`optional types <https://mypy.readthedocs.io/en/stable/kinds_of_types.html#optional-types-and-the-none-type>`_
+`optional types <https://kotlinisland.github.io/basedmypy/kinds_of_types.html#optional-types-and-the-none-type>`_
 that contain primitive types, native class types and
 trait types are also efficient. If a union type has
 :ref:`erased <erased-types>` items, accessing items with
@@ -226,11 +226,11 @@ types include these:
 * Non-mypyc extension types and primitive types (including built-in
   types that are not primitives)
 
-* `Callable types <https://mypy.readthedocs.io/en/stable/kinds_of_types.html#callable-types-and-lambdas>`_
+* `Callable types <https://kotlinisland.github.io/basedmypy/kinds_of_types.html#callable-types-and-lambdas>`_
 
-* `Type variable types <https://mypy.readthedocs.io/en/stable/generics.html>`_
+* `Type variable types <https://kotlinisland.github.io/basedmypy/generics.html>`_
 
-* Type `Any <https://mypy.readthedocs.io/en/stable/dynamic_typing.html>`_
+* Type `Any <https://kotlinisland.github.io/basedmypy/dynamic_typing.html>`_
 
 * Protocol types
 

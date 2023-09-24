@@ -108,9 +108,9 @@ A: Type[float] = int
 if int():
     A = float  # OK
 x: A  # E: Variable "__main__.A" is not valid as a type \
-      # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+      # N: See https://kotlinisland.github.io/basedmypy/common_issues.html#variables-vs-type-aliases
 def bad(tp: A) -> None:  # E: Variable "__main__.A" is not valid as a type \
-                         # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+                         # N: See https://kotlinisland.github.io/basedmypy/common_issues.html#variables-vs-type-aliases
     pass
 
 Alias = int
@@ -861,7 +861,7 @@ reveal_type(plausible_top_3)  # N: Revealed type is "def () -> Union[builtins.in
 reveal_type(plausible_top_4)  # N: Revealed type is "def () -> Union[builtins.int, builtins.str]"
 
 def plausible_parent_1() -> Parent.NormalImplicit: pass  # E: Variable "__main__.Parent.NormalImplicit" is not valid as a type \
-                                                         # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+                                                         # N: See https://kotlinisland.github.io/basedmypy/common_issues.html#variables-vs-type-aliases
 def plausible_parent_2() -> Parent.NormalExplicit: pass
 def plausible_parent_3() -> Parent.SpecialImplicit: pass
 def plausible_parent_4() -> Parent.SpecialExplicit: pass
@@ -871,7 +871,7 @@ reveal_type(plausible_parent_3)  # N: Revealed type is "def () -> Union[builtins
 reveal_type(plausible_parent_4)  # N: Revealed type is "def () -> Union[builtins.int, builtins.str]"
 
 def plausible_child_1() -> Child.NormalImplicit: pass  # E: Variable "__main__.Parent.NormalImplicit" is not valid as a type \
-                                                       # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+                                                       # N: See https://kotlinisland.github.io/basedmypy/common_issues.html#variables-vs-type-aliases
 def plausible_child_2() -> Child.NormalExplicit: pass
 def plausible_child_3() -> Child.SpecialImplicit: pass
 def plausible_child_4() -> Child.SpecialExplicit: pass

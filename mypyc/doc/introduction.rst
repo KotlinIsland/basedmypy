@@ -3,7 +3,7 @@ Introduction
 
 Mypyc compiles Python modules to C extensions. It uses standard Python
 `type hints
-<https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html>`_ to
+<https://kotlinisland.github.io/basedmypy/cheat_sheet_py3.html>`_ to
 generate fast code.
 
 The compiled language is a strict, *gradually typed* Python variant. It

@@ -1563,7 +1563,7 @@ def report_internal_error(
     print(
         f"{prefix}error: INTERNAL ERROR --",
         "Please try using mypy master on GitHub:\n"
-        "https://mypy.readthedocs.io/en/stable/common_issues.html"
+        "https://kotlinisland.github.io/basedmypy/common_issues.html"
         "#using-a-development-mypy-build",
         file=stderr,
     )

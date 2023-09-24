@@ -842,8 +842,8 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         notes: list[str] = []
         if isinstance(sym.node, Var):
             notes.append(
-                "See https://mypy.readthedocs.io/en/"
-                "stable/common_issues.html#variables-vs-type-aliases"
+                "See https://kotlinisland.github.io/basedmypy/"
+                "common_issues.html#variables-vs-type-aliases"
             )
             message = 'Variable "{}" is not valid as a type'
         elif isinstance(sym.node, (SYMBOL_FUNCBASE_TYPES, Decorator)):
@@ -1338,7 +1338,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                         code=codes.VALID_TYPE,
                     )
                     self.note(
-                        "See https://mypy.readthedocs.io/en/stable/kinds_of_types.html#callable-types-and-lambdas",
+                        "See https://kotlinisland.github.io/basedmypy/kinds_of_types.html#callable-types-and-lambdas",
                         t,
                     )
                     return AnyType(TypeOfAny.from_error)
@@ -1757,7 +1757,7 @@ def get_omitted_any(
                 # (string literal escaping) for classes not generic at runtime
                 note(
                     "Subscripting classes that are not generic at runtime may require "
-                    "escaping, see https://mypy.readthedocs.io/en/stable/runtime_troubles.html"
+                    "escaping, see https://kotlinisland.github.io/basedmypy/runtime_troubles.html"
                     "#not-generic-runtime",
                     typ,
                     code=codes.TYPE_ARG,

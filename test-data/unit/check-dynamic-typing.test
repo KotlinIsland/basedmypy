@@ -714,7 +714,7 @@ class B(C):
 class A(B):
     def f(self, a: 'D') -> None: # E: Argument 1 of "f" is incompatible with supertype "C"; supertype defines the argument type as "A" \
                                  # N: This violates the Liskov substitution principle \
-                                 # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides
+                                 # N: See https://kotlinisland.github.io/basedmypy/common_issues.html#incompatible-overrides
         pass
 class D: pass
 [out]

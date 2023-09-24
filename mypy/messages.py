@@ -1306,7 +1306,7 @@ class MessageBuilder:
                 secondary_context=secondary_context,
             )
             self.note(
-                "See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides",
+                "See https://kotlinisland.github.io/basedmypy/common_issues.html#incompatible-overrides",
                 context,
                 code=codes.OVERRIDE,
                 secondary_context=secondary_context,
@@ -3191,7 +3191,7 @@ def append_invariance_notes(
     if invariant_type and covariant_suggestion:
         notes.append(
             f'"{invariant_type}" is invariant -- see '
-            + "https://mypy.readthedocs.io/en/stable/common_issues.html#variance"
+            + "https://kotlinisland.github.io/basedmypy/common_issues.html#variance"
         )
         notes.append(covariant_suggestion)
     return notes
