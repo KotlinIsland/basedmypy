@@ -211,6 +211,16 @@ Infer the type of a function parameter from its default value:
     def f(a=1, b=True):
         reveal_type((a, b))  # (int, bool)
 
+Covariant Mapping key type
+--------------------------
+
+The key type of ``Mapping`` is fixed to be covariant:
+
+.. code-block:: python
+
+    a: Mapping[str, str]
+    b: Mapping[object, object] = a  # no error
+
 Tuple Literal Types
 -------------------
 
