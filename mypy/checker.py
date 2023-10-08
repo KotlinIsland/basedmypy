@@ -651,7 +651,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 else:
                     # Perform full check for real overloads to infer type of all decorated
                     # overload variants.
-                    self.visit_decorator_inner(fdef,allow_empty=True)
+                    self.visit_decorator_inner(fdef, allow_empty=True)
                 if fdef.func.abstract_status in (IS_ABSTRACT, IMPLICITLY_ABSTRACT):
                     num_abstract += 1
         if num_abstract not in (0, len(defn.items)):

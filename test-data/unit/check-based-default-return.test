@@ -156,7 +156,7 @@ reveal_type(f)  # N: Revealed type is "Overload(def () -> None, def (i: int) -> 
 
 
 [case testOverloadIncomplete]
-# flags: --allow-incomplete-defs --allow-untyped-defs --allow-any-expr
+# flags: --allow-incomplete-defs --allow-untyped-defs --allow-any-expr --allow-any-decorated
 from typing import overload
 
 class A:
@@ -182,7 +182,7 @@ reveal_type(f)  # N: Revealed type is "Overload(def () -> None, def (i: Untyped)
 
 
 [case testOverloadUntyped]
-# flags: --allow-untyped-defs --allow-any-expr
+# flags: --allow-untyped-defs --allow-any-expr --allow-any-decorated
 from typing import overload
 
 class A:
@@ -207,7 +207,7 @@ def f(i: int = 0, j: int = 0): ...
 reveal_type(f)  # N: Revealed type is "Overload(def () -> None, def (i: Untyped) -> None, def (*, j: int) -> None)"
 
 [case testOverloadOther]
-# flags: --allow-untyped-defs --allow-incomplete-defs --allow-any-expr
+# flags: --allow-untyped-defs --allow-incomplete-defs --allow-any-expr --allow-any-decorated
 from typing import overload
 
 class A:

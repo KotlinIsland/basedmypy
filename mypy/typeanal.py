@@ -689,7 +689,6 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             result = UnpackType(self.anal_type(t.args[0]), line=t.line, column=t.column)
             self.allow_type_var_tuple = False
             return result
-            return UnpackType(self.anal_type(t.args[0]), line=t.line, column=t.column)
         elif fullname == "basedtyping.Untyped":
             return UntypedType(TypeOfAny.explicit)
         elif fullname in SELF_TYPE_NAMES:

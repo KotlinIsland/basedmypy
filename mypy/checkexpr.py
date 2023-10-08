@@ -180,7 +180,6 @@ from mypy.types import (
     UnpackType,
     UntypedType,
     find_unpack_in_list,
-    flatten_nested_tuples,
     flatten_nested_unions,
     get_proper_type,
     get_proper_types,
@@ -579,7 +578,6 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             self.chk.options.disallow_untyped_calls
             and self.chk.in_checked_function()
             and isinstance(callee_type, CallableType)
-            and callee_type.implicit
         ):
             if fullname is None and member is not None:
                 assert object_type is not None
@@ -588,7 +586,84 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                 fullname == p or fullname.startswith(f"{p}.")
                 for p in self.chk.options.untyped_calls_exclude
             ):
-                self.msg.untyped_function_call(callee_type, e)
+                if callee_type.implicit:
+                    self.msg.untyped_function_call(callee_type, e)
+            if fullname is None and member is not None:
+                assert object_type is not None
+                fullname = self.method_fullname(object_type, member)
+            if not fullname or not any(
+                fullname == p or fullname.startswith(f"{p}.")
+                for p in self.chk.options.untyped_calls_exclude
+            ):
+                if callee_type.implicit:
+                    self.msg.untyped_function_call(callee_type, e)
+                elif has_untyped_type(callee_type):
+                    # Get module of the function, to get its settings
+                    #  This is fairly sus, and I'm sure there are cases where it gets
+                    #   the wrong module. We should instead set it in CallableType
+                    if isinstance(e.callee, MemberExpr):
+                        if e.callee.kind is None:
+                            # class, kinda hacky
+                            it = get_proper_type(self.chk._type_maps[0][e.callee.expr])
+                            if isinstance(it, CallableType):
+                                # callable class reference
+                                ret_type_ = get_proper_type(it.ret_type)
+                                if isinstance(ret_type_, TupleType):
+                                    callee_module = ret_type_.partial_fallback.type.module_name
+                                elif isinstance(ret_type_, Instance):
+                                    callee_module = ret_type_.type.module_name
+                                else:
+                                    callee_module = None
+                            elif isinstance(it, TypeType):
+                                # type reference
+                                if isinstance(it.item, TupleType):
+                                    callee_module = it.item.partial_fallback.type.module_name
+                                elif isinstance(it.item, Instance):
+                                    callee_module = it.item.type.module_name
+                                elif isinstance(it.item, UnionType):
+                                    # TODO: have to figure out which part of the union has the Untyped
+                                    callee_module = self.chk.tree.name
+                                else:
+                                    callee_module = None
+                            elif isinstance(it, Instance):
+                                # instance reference
+                                callee_module = it.type.module_name
+                            elif isinstance(it, UnionType):
+                                # TODO: have to figure out which part of the union has the Untyped
+                                callee_module = self.chk.tree.name
+                            else:
+                                callee_module = None
+                        else:
+                            # module
+                            assert isinstance(e.callee.expr, RefExpr)
+                            callee_module = e.callee.expr.fullname
+                    elif isinstance(e.callee, NameExpr):
+                        assert e.callee.fullname
+                        if "." not in e.callee.fullname:
+                            # local def
+                            callee_module = self.chk.tree.name
+                        else:
+                            callee_module = e.callee.fullname.rpartition(".")[0]
+                    elif isinstance(e.callee, MemberExpr) and isinstance(e.callee.expr, NameExpr):
+                        if e.callee.expr.fullname:
+                            callee_module = e.callee.expr.fullname.rpartition(".")[0]
+                        elif e.callee.name == "__init_subclass__":
+                            t = get_proper_type(callee_type.bound_args[0])
+                            assert isinstance(t, TypeType)
+                            assert isinstance(t.item, Instance)
+                            assert isinstance(t.item.type, TypeInfo)
+                            callee_module = t.item.type.module_name
+                        else:
+                            # TODO: test time error
+                            callee_module = None
+                    else:
+                        # If this branch gets hit then look for a new way to get the module name
+                        # TODO: test time error
+                        callee_module = None
+                    if callee_module:
+                        callee_options = self.chk.options.per_module(callee_module)
+                        if not callee_options.incomplete_is_typed:
+                            self.msg.partially_typed_function_call(callee_type, e)
 
         ret_type = self.check_call_expr_with_callee_type(
             callee_type, e, fullname, object_type, member

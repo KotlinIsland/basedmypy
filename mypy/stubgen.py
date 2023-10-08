@@ -814,7 +814,7 @@ class StubGenerator(mypy.traverser.TraverserVisitor):
         retfield = ""
         if not self.legacy:
             if retname is None:
-                retfield = f" -> {self.untyped}"
+                retfield = f" -> {self.add_typing_import('Incomplete')}"
             elif retname:
                 retfield = f" -> {retname}"
         elif retname is not None:
@@ -1393,16 +1393,7 @@ class StubGenerator(mypy.traverser.TraverserVisitor):
         The import will be internal to the stub.
         """
         if name == "Incomplete" and not self.legacy:
-            result = "Untyped"
-        name = self.typing_name(name)
-        self.import_tracker.require_name(name)
-        return name
-
-    def add_abc_import(self, name: str) -> None:
-        """Add a name to be imported from collections.abc, unless it's imported already.
-
-        The import will be internal to the stub.
-        """
+            name = "Untyped"
         name = self.typing_name(name)
         self.import_tracker.require_name(name)
         return name

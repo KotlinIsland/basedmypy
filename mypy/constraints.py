@@ -332,7 +332,7 @@ def _infer_constraints(
     #     T :> U2", but they are not equivalent to the constraint solver,
     #     which never introduces new Union types (it uses join() instead).
     if isinstance(template, TypeVarType):
-        return _infer_constraints(template.upper_bound, actual, direction) + [
+        return _infer_constraints(template.upper_bound, actual, direction, skip_neg_op) + [
             Constraint(template, direction, actual)
         ]
 
@@ -1040,9 +1040,9 @@ class ConstraintBuilderVisitor(TypeVisitor[List[Constraint]]):
 
             template_ret_type, cactual_ret_type = template.ret_type, cactual.ret_type
             if template.type_guard is not None:
-                template_ret_type = template.type_guard
+                template_ret_type = template.type_guard.type_guard
             if cactual.type_guard is not None:
-                cactual_ret_type = cactual.type_guard
+                cactual_ret_type = cactual.type_guard.type_guard
             res.extend(infer_constraints(template_ret_type, cactual_ret_type, self.direction))
 
             if param_spec is None:

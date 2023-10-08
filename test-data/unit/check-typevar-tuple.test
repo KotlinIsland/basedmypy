@@ -922,7 +922,8 @@ from typing_extensions import TypeVarTuple
 
 Ts = TypeVarTuple("Ts")
 
-def f(x: Ts) -> Ts:  # E: TypeVarTuple "Ts" is only valid with an unpack
+def f(x: Ts) -> Ts:  # E: TypeVarTuple "Ts" is only valid with an unpack \
+                     # E: TypeVarTuple "Ts" is only valid with an unpack
     return x
 
 v = f(1, 2, "A")  # E: Too many arguments for "f"

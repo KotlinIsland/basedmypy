@@ -3591,14 +3591,14 @@ class TypeStrVisitor(SyntheticTypeVisitor[str]):
         return f"Overload({', '.join(a)})"
 
     def visit_tuple_type(self, t: TupleType) -> str:
-        s = self.list_str(t.items) or "()"
+        s = self.list_str(t.items)
         tuple_name = "tuple" if self.options.use_lowercase_names() else "Tuple"
         if t.partial_fallback and t.partial_fallback.type:
             fallback_name = t.partial_fallback.type.fullname
             if fallback_name != "builtins.tuple":
-                return f"{tuple_name}[{s}, fallback={t.partial_fallback.accept(self)}]"
+                return f"{tuple_name}[{s or '()'}, fallback={t.partial_fallback.accept(self)}]"
         if not mypy.options._based:
-            return f"{tuple_name}[{s}]"
+            return f"{tuple_name}[{s or '()'}]"
         return f"({s})" if len(t.items) != 1 else f"({s},)"
 
     def visit_typeddict_type(self, t: TypedDictType) -> str:

@@ -281,6 +281,11 @@ class ExpandTypeVisitor(TrivialSyntheticTypeTranslator):
         repl = get_proper_type(self.variables.get(t.type.id, t.type))
         if isinstance(repl, TupleType):
             return repl.items
+        elif isinstance(repl, UnionType) and all(
+            isinstance(get_proper_type(item), TupleType) for item in repl.items
+        ):
+            # TODO: this is incomplete
+            return [UnpackType(typ=t.type.tuple_fallback)]
         elif (
             isinstance(repl, Instance)
             and repl.type.fullname == "builtins.tuple"
