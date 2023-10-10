@@ -13,8 +13,6 @@ from typing import Any, Callable, Iterable, Iterator, Pattern
 # TODO: avoid aliasing - import and subclass TestCase directly
 from unittest import TestCase
 
-from mypy.util import safe
-
 Suite = TestCase  # re-exporting
 
 import pytest
@@ -335,7 +333,7 @@ def parse_options(
             flags = flags2
 
     if flags:
-        flag_list: list[str] = safe(flags.group(1)).split()
+        flag_list: list[str] = flags.group(1).split()
         flag_list = ["--no-pretty", "--hide-error-context", "--hide-error-code-links"] + flag_list
         if based:
             flag_list.append("--hide-column-numbers")

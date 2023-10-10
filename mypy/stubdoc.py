@@ -13,8 +13,6 @@ import tokenize
 from typing import Any, Final, MutableMapping, MutableSequence, NamedTuple, Sequence, Tuple
 from typing_extensions import TypeAlias as _TypeAlias
 
-from mypy.util import safe
-
 # Type alias for signatures strings in format ('func_name', '(arg, opt_arg=False)').
 Sig: _TypeAlias = Tuple[str, str]
 
@@ -308,9 +306,9 @@ def parse_signature(sig: str) -> tuple[str, list[str], list[str]] | None:
     m = re.match(r"([.a-zA-Z0-9_]+)\(([^)]*)\)", sig)
     if not m:
         return None
-    name = safe(m.group(1))
+    name = m.group(1)
     name = name.split(".")[-1]
-    arg_string = safe(m.group(2))
+    arg_string = m.group(2)
     if not arg_string.strip():
         # Simple case -- no arguments.
         return name, [], []

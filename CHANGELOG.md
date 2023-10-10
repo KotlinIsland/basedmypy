@@ -10,6 +10,7 @@
 - Type-guards narrow in the negative (#553)
 - Conditional types for asymmetric type-guards (#553)
 - Static conditions report an error (#553)
+- Regex groups are special-cased (#531)
 ### Enhancements
 - Show 'narrowed from' in `reveal_type` (#550)
 - `--color-output` is enabled by default (#531)

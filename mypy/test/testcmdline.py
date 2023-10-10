@@ -18,7 +18,6 @@ from mypy.test.helpers import (
     check_test_output_files,
     normalize_error_messages,
 )
-from mypy.util import safe
 
 try:
     import lxml  # type: ignore[import]
@@ -35,6 +34,7 @@ cmdline_files = [
     "cmdline.test",
     "cmdline-based.test",
     "cmdline-based-baseline.test",
+    "cmdline-based-regex.test",
     "cmdline.pyproject.test",
     "reports.test",
     "envvars.test",
@@ -65,7 +65,7 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
     if "# dont-normalize-output:" in testcase.input:
         testcase.normalize_output = False
     args.append("--show-traceback")
-    based = "based" in testcase.file.rsplit(os.sep)[-1]
+    based = "based" in testcase.parent.name
     if not based:
         args.append("--no-strict")
         args.append("--no-default-return")
@@ -157,7 +157,7 @@ def parse_args(line: str) -> list[str]:
     m = re.match("# cmd: mypy (.*)$", line)
     if not m:
         return []  # No args; mypy will spit out an error.
-    return safe(m.group(1)).split()
+    return m.group(1).split()
 
 
 def parse_cwd(line: str) -> str | None:

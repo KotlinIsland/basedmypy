@@ -1,0 +1,262 @@
+-- These are cmdline tests because the implementation is very closely tied to the stubs
+
+[case testRegexReFunctions]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+import re
+
+s: str
+if m := re.match("()?()", s):
+    reveal_type(m[0])  # N: Revealed type is "str"
+    reveal_type(m[1])  # N: Revealed type is "str | None"
+    reveal_type(m[2])  # N: Revealed type is "str"
+    reveal_type(m.groups())  # N: Revealed type is "(str | None, str)"
+if m := re.search("()?()", s):
+    reveal_type(m[0])  # N: Revealed type is "str"
+    reveal_type(m[1])  # N: Revealed type is "str | None"
+    reveal_type(m[2])  # N: Revealed type is "str"
+    reveal_type(m.groups())  # N: Revealed type is "(str | None, str)"
+if m := re.fullmatch("()?()", s):
+    reveal_type(m[0])  # N: Revealed type is "str"
+    reveal_type(m[1])  # N: Revealed type is "str | None"
+    reveal_type(m[2])  # N: Revealed type is "str"
+    reveal_type(m.groups())  # N: Revealed type is "(str | None, str)"
+for m in re.finditer("()?()", s):
+    reveal_type(m[0])  # N: Revealed type is "str"
+    reveal_type(m[1])  # N: Revealed type is "str | None"
+    reveal_type(m[2])  # N: Revealed type is "str"
+    reveal_type(m.groups())  # N: Revealed type is "(str | None, str)"
+if m := re.search("", s):
+    reveal_type(m.groups())  # N: Revealed type is "()"
+[out]
+== Return code: 0
+
+
+[case testRegexLiteral]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+from typing_extensions import Literal
+import re
+
+s: str
+r: Literal["()?()"]
+if it := re.search(r, s):
+    reveal_type(it[0])  # N: Revealed type is "str"
+    reveal_type(it[1])  # N: Revealed type is "str | None"
+    reveal_type(it[2])  # N: Revealed type is "str"
+    reveal_type(it.groups())  # N: Revealed type is "(str | None, str)"
+[out]
+== Return code: 0
+
+
+[case testRegexPattern]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+import re
+s: str
+p = re.compile("()?()")
+if m := p.match(s):
+    reveal_type(m[0])  # N: Revealed type is "str"
+    reveal_type(m[1])  # N: Revealed type is "str | None"
+    reveal_type(m[2])  # N: Revealed type is "str"
+    reveal_type(m.groups())  # N: Revealed type is "(str | None, str)"
+if m := p.search(s):
+    reveal_type(m[0])  # N: Revealed type is "str"
+    reveal_type(m[1])  # N: Revealed type is "str | None"
+    reveal_type(m[2])  # N: Revealed type is "str"
+    reveal_type(m.groups())  # N: Revealed type is "(str | None, str)"
+if f := p.fullmatch(s):
+    reveal_type(f[0])  # N: Revealed type is "str"
+    reveal_type(f[1])  # N: Revealed type is "str | None"
+    reveal_type(f[2])  # N: Revealed type is "str"
+    reveal_type(f.groups())  # N: Revealed type is "(str | None, str)"
+for f in p.finditer(s):
+    reveal_type(f[0])  # N: Revealed type is "str"
+    reveal_type(f[1])  # N: Revealed type is "str | None"
+    reveal_type(f[2])  # N: Revealed type is "str"
+    reveal_type(f.groups())  # N: Revealed type is "(str | None, str)"
+[out]
+== Return code: 0
+
+
+[case testRegexInvalidPattern]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+import re
+re.compile("(")  # E: missing ), unterminated subpattern at position 0  [regex]
+re.search("(", "")  # E: missing ), unterminated subpattern at position 0  [regex]
+re.match("(", "")  # E: missing ), unterminated subpattern at position 0  [regex]
+re.fullmatch("(", "")  # E: missing ), unterminated subpattern at position 0  [regex]
+re.finditer("(", "")  # E: missing ), unterminated subpattern at position 0  [regex]
+re.split("(", "")  # E: missing ), unterminated subpattern at position 0  [regex]
+re.search("(", "")  # E: missing ), unterminated subpattern at position 0  [regex]
+re.findall("(", "")  # E: missing ), unterminated subpattern at position 0  [regex]
+
+
+[case testRegexBytes]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+import re
+if m := re.match(b"()?()", b""):
+    reveal_type(m[0])  # N: Revealed type is "bytes"
+    reveal_type(m[1])  # N: Revealed type is "bytes | None"
+    reveal_type(m[2])  # N: Revealed type is "bytes"
+    reveal_type(m.groups())  # N: Revealed type is "(bytes | None, bytes)"
+[out]
+== Return code: 0
+
+
+[case testRegexFindall]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+import re
+reveal_type(re.findall('abc', "abc"))  # N: Revealed type is "list[str]"
+reveal_type(re.findall('(a)bc', "abc"))  # N: Revealed type is "list[str]"
+reveal_type(re.findall('(a)(b)c', "abc"))  # N: Revealed type is "list[(str, str)]"
+reveal_type(re.findall('(a)(b)(c)', "abc"))  # N: Revealed type is "list[(str, str, str)]"
+reveal_type(re.findall('(a)(b)?(c)', "ac"))  # N: Revealed type is "list[(str, str, str)]"
+reveal_type(re.findall(b"", b""))  # N: Revealed type is "list[bytes]"
+[out]
+== Return code: 0
+
+
+
+[case testRegexSplit]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+import re
+reveal_type(re.split('abc', "abc"))  # N: Revealed type is "list[str]"
+reveal_type(re.split('(a)bc', "abc"))  # N: Revealed type is "list[str]"
+reveal_type(re.split('(a)(b)c', "abc"))  # N: Revealed type is "list[str]"
+reveal_type(re.split('(a)(b)(c)', "abc"))  # N: Revealed type is "list[str]"
+reveal_type(re.split('(a)(b)?(c)', "ac"))  # N: Revealed type is "list[str | None]"
+[out]
+== Return code: 0
+
+
+[case testRegexMatchGroup]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+import re
+
+if m := re.match("()?()", ""):
+    reveal_type(m.group(0))  # N: Revealed type is "str"
+    reveal_type(m.group(1))  # N: Revealed type is "str | None"
+    reveal_type(m.group(2))  # N: Revealed type is "str"
+    reveal_type(m.group(3))  # E: No such group: 3  [regex] \
+                             # N: Revealed type is "Any (from error)"
+
+
+[case testNamedGroup]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+import re
+
+if m := re.match("(?P<a>)", ""):
+    reveal_type(m.group("a"))  # N: Revealed type is "str"
+    reveal_type(m.group("b"))  # E: No such group: 'b'  [regex] \
+                               # N: Revealed type is "Any (from error)"
+
+
+[case testFinalAnnotated]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+from typing import Final
+import re
+
+p1: re.Pattern[str] = re.compile("()")
+if m := p1.match(""):
+    reveal_type(m[1])  # N: Revealed type is "str"
+
+p2: Final[re.Pattern[str]] = re.compile("()")
+if m := p2.match(""):
+    reveal_type(m[1])  # N: Revealed type is "str"
+[out]
+== Return code: 0
+
+
+[case testDontMutate]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+import re
+
+m = re.match(r"()?()", "")
+m = re.match(r"()", "")
+if m:
+    reveal_type(m.groups())  # N: Revealed type is "(str,)"
+[out]
+== Return code: 0
+
+
+[case testDontMutatePattern]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+import re
+p1 = re.compile("()?()")
+s: str
+p2 = re.compile(s)
+if m := p2.match(""):
+    reveal_type(m.groups())  # N: Revealed type is "tuple[str | None, ...]"
+if m := p1.match(""):
+    reveal_type(m.groups())  # N: Revealed type is "(str | None, str)"
+[out]
+== Return code: 0
+
+
+[case testRegexUnknown]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+import re
+m: re.Match[str]
+reveal_type(m.groups())  # N: Revealed type is "tuple[str | None, ...]"
+reveal_type(m.group(0))  # N: Revealed type is "str"
+reveal_type(m.group(1))  # N: Revealed type is "str | None"
+[out]
+== Return code: 0
+
+[case testRegexSub]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+import re
+
+r = re.sub(
+    "()?()",
+    lambda m: str(reveal_type(m.groups())),  # N: Revealed type is "(str | None, str)"
+    "",
+)
+reveal_type(r)   # N: Revealed type is "str"
+r = re.sub(
+    b"()?()",
+    lambda m: bytes(reveal_type(m.groups())[1]),  # N: Revealed type is "(bytes | None, bytes)"
+    b"",
+)
+reveal_type(r)   # N: Revealed type is "bytes"
+r = re.subn(
+    "()?()",
+    lambda m: str(reveal_type(m.groups())),  # N: Revealed type is "(str | None, str)"
+    "",
+)
+reveal_type(r)   # N: Revealed type is "(str, int)"
+
+r = re.compile("()?()").sub(
+    lambda m: str(reveal_type(m.groups())),  # N: Revealed type is "(str | None, str)"
+    "",
+)
+reveal_type(r)   # N: Revealed type is "str"
+r = re.compile("()?()").subn(
+    lambda m: str(reveal_type(m.groups())),  # N: Revealed type is "(str | None, str)"
+    "",
+)
+reveal_type(r)   # N: Revealed type is "(str, int)"
+[out]
+== Return code: 0
+
+
+[case testRegexGroupDict]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+import re
+if m := re.match("(?P<a>)", ""):
+    reveal_type(m.groupdict())  # N: Revealed type is "TypedDict('builtins.dict', {'a': str})"
+[out]
+== Return code: 0

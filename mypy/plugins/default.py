@@ -41,19 +41,31 @@ class DefaultPlugin(Plugin):
     """Type checker plugin that is enabled by default."""
 
     def get_function_hook(self, fullname: str) -> Callable[[FunctionContext], Type] | None:
-        from mypy.plugins import ctypes, singledispatch
+        from mypy.plugins import ctypes, re, singledispatch
 
         if fullname == "_ctypes.Array":
             return ctypes.array_constructor_callback
         elif fullname == "functools.singledispatch":
             return singledispatch.create_singledispatch_function_callback
-
+        elif (
+            fullname == "re.match"
+            or fullname == "re.fullmatch"
+            or fullname == "re.search"
+            or fullname == "re.finditer"
+        ):
+            return re.match
+        elif fullname == "re.compile" or fullname == "re.template":
+            return re.compile
+        elif fullname == "re.split":
+            return re.split
+        elif fullname == "re.findall":
+            return re.findall
         return None
 
     def get_function_signature_hook(
         self, fullname: str
     ) -> Callable[[FunctionSigContext], FunctionLike] | None:
-        from mypy.plugins import attrs, dataclasses
+        from mypy.plugins import attrs, dataclasses, re
 
         if fullname in ("attr.evolve", "attrs.evolve", "attr.assoc", "attrs.assoc"):
             return attrs.evolve_function_sig_callback
@@ -61,12 +73,14 @@ class DefaultPlugin(Plugin):
             return attrs.fields_function_sig_callback
         elif fullname == "dataclasses.replace":
             return dataclasses.replace_function_sig_callback
+        elif fullname in {"re.sub", "re.subn"}:
+            return re.sub
         return None
 
     def get_method_signature_hook(
         self, fullname: str
     ) -> Callable[[MethodSigContext], FunctionLike] | None:
-        from mypy.plugins import ctypes, singledispatch
+        from mypy.plugins import ctypes, re, singledispatch
 
         if fullname == "typing.Mapping.get":
             return typed_dict_get_signature_callback
@@ -80,10 +94,12 @@ class DefaultPlugin(Plugin):
             return ctypes.array_setitem_callback
         elif fullname == singledispatch.SINGLEDISPATCH_CALLABLE_CALL_METHOD:
             return singledispatch.call_singledispatch_function_callback
+        elif fullname in {"re.Pattern.sub", "re.Pattern.subn"}:
+            return re.sub
         return None
 
     def get_method_hook(self, fullname: str) -> Callable[[MethodContext], Type] | None:
-        from mypy.plugins import ctypes, singledispatch
+        from mypy.plugins import ctypes, re, singledispatch
 
         if fullname == "typing.Mapping.get":
             return typed_dict_get_callback
@@ -107,6 +123,23 @@ class DefaultPlugin(Plugin):
             return singledispatch.singledispatch_register_callback
         elif fullname == singledispatch.REGISTER_CALLABLE_CALL_METHOD:
             return singledispatch.call_singledispatch_function_after_register_argument
+        elif fullname == "re.Match.groups":
+            return re.match_groups
+        elif fullname == "re.Match.group" or fullname == "re.Match.__getitem__":
+            return re.match_group
+        elif fullname == "re.Match.groupdict":
+            return re.match_groupdict
+        elif (
+            fullname == "re.Pattern.match"
+            or fullname == "re.Pattern.fullmatch"
+            or fullname == "re.Pattern.search"
+            or fullname == "re.Pattern.finditer"
+        ):
+            return re.match
+        elif fullname == "re.Pattern.split":
+            return re.split
+        elif fullname == "re.Pattern.findall":
+            return re.findall
         return None
 
     def get_attribute_hook(self, fullname: str) -> Callable[[AttributeContext], Type] | None:

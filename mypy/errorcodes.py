@@ -277,6 +277,8 @@ TYPEGUARD_LIMITATION: Final[ErrorCode] = ErrorCode(
 BAD_CAST: Final[ErrorCode] = ErrorCode(
     "bad-cast", "cast of non-overlapping types", "General", default_enabled=False
 )
+
+REGEX: Final = ErrorCode("regex", "Regex related errors", "General")
 REVEAL: Final = ErrorCode("reveal", "Reveal types at check time", "General")
 
 # Syntax errors are often blocking.

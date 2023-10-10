@@ -426,13 +426,11 @@ def fix_native_line_number(message: str, fnam: str, delta: int) -> str:
     """
     fnam = os.path.basename(fnam)
     message = re.sub(
-        r"native\.py:([0-9]+):",
-        lambda m: "%s:%d:" % (fnam, int(safe(m.group(1))) + delta),
-        message,
+        r"native\.py:([0-9]+):", lambda m: "%s:%d:" % (fnam, int(m.group(1)) + delta), message
     )
     message = re.sub(
         r'"native.py", line ([0-9]+),',
-        lambda m: '"%s", line %d,' % (fnam, int(safe(m.group(1))) + delta),
+        lambda m: '"%s", line %d,' % (fnam, int(m.group(1)) + delta),
         message,
     )
     return message

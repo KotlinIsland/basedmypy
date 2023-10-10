@@ -24,7 +24,6 @@ from mypy.test.helpers import (
     perform_file_operations,
 )
 from mypy.test.update_data import update_testcase_output
-from mypy.util import safe
 
 try:
     import lxml  # type: ignore[import]
@@ -56,7 +55,7 @@ class TypeCheckSuite(DataSuite):
     files = typecheck_files + based_files
 
     def based(self, testcase: DataDrivenTestCase) -> bool:
-        return "based" in testcase.file.rsplit(os.sep)[-1]
+        return "based" in testcase.parent.name
 
     def run_case(self, testcase: DataDrivenTestCase) -> None:
         if lxml is None and os.path.basename(testcase.file) == "check-reports.test":
@@ -74,7 +73,7 @@ class TypeCheckSuite(DataSuite):
             for dn, dirs, files in os.walk(os.curdir):
                 for file in files:
                     m = re.search(r"\.([2-9])$", file)
-                    if m and int(safe(m.group(1))) > num_steps:
+                    if m and int(m.group(1)) > num_steps:
                         raise ValueError(
                             "Output file {} exists though test case only has {} runs".format(
                                 file, num_steps
@@ -270,7 +269,7 @@ class TypeCheckSuite(DataSuite):
         for line in a:
             m = re.match(r"([^\s:]+):(\d+:)?(\d+:)? (error|warning|note):", line)
             if m:
-                p = safe(m.group(1))
+                p = m.group(1)
                 hits.add(p)
         return hits
 
@@ -319,7 +318,7 @@ class TypeCheckSuite(DataSuite):
             # The test case wants to use a non-default main
             # module. Look up the module and give it as the thing to
             # analyze.
-            module_names = safe(m.group(1))
+            module_names = m.group(1)
             out = []
             search_paths = SearchPaths((test_temp_dir,), (), (), ())
             cache = FindModuleCache(search_paths, fscache=None, options=None)
