@@ -131,6 +131,9 @@ def narrow_declared_type(declared: Type, narrowed: Type) -> Type:
     narrowed = get_proper_type(narrowed)
 
     if declared == narrowed:
+        items = get_proper_types(narrowed.items if isinstance(narrowed, UnionType) else [narrowed])
+        if any(isinstance(item, Instance) and item.metadata for item in items):
+            return original_narrowed
         return original_declared
     if isinstance(declared, UnionType):
         return make_simplified_union(

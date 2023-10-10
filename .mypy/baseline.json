@@ -8,30 +8,6 @@
         "offset": 56,
         "src": "def __repr__(self) -> str:",
         "target": "mypy.binder.Frame.__repr__"
-      },
-      {
-        "code": "assignment",
-        "column": 38,
-        "message": "Incompatible types in assignment (expression has type \"int\", variable has type \"0 | 1 | 2\")",
-        "offset": 107,
-        "src": "self.frames[-1].unreachable = 1 + artificial",
-        "target": "mypy.binder.ConditionalTypeBinder.unreachable"
-      },
-      {
-        "code": "assignment",
-        "column": 38,
-        "message": "Incompatible types in assignment (expression has type \"bool\", variable has type \"0 | 1 | 2\")",
-        "offset": 66,
-        "src": "self.frames[-1].unreachable = not frames",
-        "target": "mypy.binder.ConditionalTypeBinder.update_from_options"
-      },
-      {
-        "code": "assignment",
-        "column": 36,
-        "message": "Incompatible types in assignment (expression has type \"True\", variable has type \"0 | 1 | 2\")",
-        "offset": 147,
-        "src": "frame.unreachable = True",
-        "target": "mypy.binder.ConditionalTypeBinder.allow_jump"
       }
     ],
     "mypy/build.py": [
@@ -3449,57 +3425,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 15,
-        "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 30,
-        "src": "return [p.strip() for p in re.split(split_regex, v)]",
-        "target": "mypy.config_parser.try_split"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 16,
-        "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 0,
-        "src": "return [p.strip() for p in re.split(split_regex, v)]",
-        "target": "mypy.config_parser.try_split"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 35,
-        "message": "Expression type contains \"Any\" (has type \"list[str | Any]\")",
-        "offset": 0,
-        "src": "return [p.strip() for p in re.split(split_regex, v)]",
-        "target": "mypy.config_parser.try_split"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 27,
-        "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 102,
-        "src": "\"mypy_path\": lambda s: [expand_path(p.strip()) for p in re.split(\"[,:]\", s)],",
-        "target": "mypy.config_parser"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 40,
-        "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 0,
-        "src": "\"mypy_path\": lambda s: [expand_path(p.strip()) for p in re.split(\"[,:]\", s)],",
-        "target": "mypy.config_parser"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 60,
-        "message": "Expression type contains \"Any\" (has type \"list[str | Any]\")",
-        "offset": 0,
-        "src": "\"mypy_path\": lambda s: [expand_path(p.strip()) for p in re.split(\"[,:]\", s)],",
-        "target": "mypy.config_parser"
-      },
-      {
-        "code": "no-any-expr",
         "column": 26,
         "message": "Expression has type \"Any\"",
-        "offset": 19,
+        "offset": 151,
         "src": "\"exclude\": lambda s: [s.strip()],",
         "target": "mypy.config_parser"
       },
@@ -4601,7 +4529,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_type_var\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 5,
+        "offset": 6,
         "src": "def visit_type_var(self, t: TypeVarType) -> ProperType:",
         "target": "mypy.copytype.TypeShallowCopier.visit_type_var"
       },
@@ -11761,7 +11689,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_unbound_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 658,
+        "offset": 661,
         "src": "def visit_unbound_type(self, t: UnboundType) -> ProperType:",
         "target": "mypy.meet.TypeMeetVisitor.visit_unbound_type"
       },
@@ -15425,7 +15353,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"get_function_signature_hook\" is not using @override but is overriding a method in class \"mypy.plugin.Plugin\"",
-        "offset": 10,
+        "offset": 22,
         "src": "def get_function_signature_hook(",
         "target": "mypy.plugins.default.DefaultPlugin.get_function_signature_hook"
       },
@@ -15433,7 +15361,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"get_method_signature_hook\" is not using @override but is overriding a method in class \"mypy.plugin.Plugin\"",
-        "offset": 13,
+        "offset": 15,
         "src": "def get_method_signature_hook(",
         "target": "mypy.plugins.default.DefaultPlugin.get_method_signature_hook"
       },
@@ -15441,7 +15369,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"get_method_hook\" is not using @override but is overriding a method in class \"mypy.plugin.Plugin\"",
-        "offset": 19,
+        "offset": 21,
         "src": "def get_method_hook(self, fullname: str) -> Callable[[MethodContext], Type] | None:",
         "target": "mypy.plugins.default.DefaultPlugin.get_method_hook"
       },
@@ -15449,7 +15377,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"get_attribute_hook\" is not using @override but is overriding a method in class \"mypy.plugin.Plugin\"",
-        "offset": 27,
+        "offset": 44,
         "src": "def get_attribute_hook(self, fullname: str) -> Callable[[AttributeContext], Type] | None:",
         "target": "mypy.plugins.default.DefaultPlugin.get_attribute_hook"
       },
@@ -15528,6 +15456,16 @@
         "offset": 1,
         "src": "comparison_methods[name] = _MethodInfo(node.is_static, node.type)",
         "target": "mypy.plugins.functools._analyze_class"
+      }
+    ],
+    "mypy/plugins/re.py": [
+      {
+        "code": "no-any-expr",
+        "column": 1,
+        "message": "Expression type contains \"Any\" (has type \"[_T] ((...) -> _T) -> _lru_cache_wrapper[_T]\")",
+        "offset": 262,
+        "src": "@lru_cache(None)",
+        "target": "mypy.plugins.re"
       }
     ],
     "mypy/pyinfo.py": [
@@ -21881,7 +21819,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"__repr__\" is not using @override but is overriding a method in class \"builtins.object\"",
-        "offset": 46,
+        "offset": 44,
         "src": "def __repr__(self) -> str:",
         "target": "mypy.stubdoc.ArgSig.__repr__"
       },
@@ -22754,58 +22692,10 @@
         "target": null
       },
       {
-        "code": "no-any-expr",
-        "column": 8,
-        "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 5,
-        "src": "for subtyp in re.split(r\"[\\[,\\]]\", typ):",
-        "target": "mypy.stubgenc.strip_or_import"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 22,
-        "message": "Expression type contains \"Any\" (has type \"list[str | Any]\")",
-        "offset": 0,
-        "src": "for subtyp in re.split(r\"[\\[,\\]]\", typ):",
-        "target": "mypy.stubgenc.strip_or_import"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 46,
-        "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 1,
-        "src": "stripped_subtyp = strip_or_import(subtyp.strip(), module, known_modules, imports)",
-        "target": "mypy.stubgenc.strip_or_import"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 15,
-        "message": "Expression type contains \"Any\" (has type \"bool | Any\")",
-        "offset": 1,
-        "src": "if stripped_subtyp != subtyp:",
-        "target": "mypy.stubgenc.strip_or_import"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 34,
-        "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 0,
-        "src": "if stripped_subtyp != subtyp:",
-        "target": "mypy.stubgenc.strip_or_import"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 47,
-        "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 2,
-        "src": "r\"(^|[\\[, ]+)\" + re.escape(subtyp) + r\"($|[\\], ]+)\",",
-        "target": "mypy.stubgenc.strip_or_import"
-      },
-      {
         "code": "possibly-undefined",
         "column": 11,
         "message": "Name \"arg_module\" may be undefined",
-        "offset": 13,
+        "offset": 22,
         "src": "if arg_module not in local_modules:",
         "target": "mypy.stubgenc"
       },
@@ -25621,7 +25511,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"runtest\" is not using @override but is overriding a method in class \"_pytest.nodes.Item\"",
-        "offset": 312,
+        "offset": 314,
         "src": "def runtest(self) -> None:",
         "target": "mypy.test.data.DataDrivenTestCase.runtest"
       },
@@ -25706,34 +25596,10 @@
         "target": "mypy.test.data.DataDrivenTestCase.repr_failure"
       },
       {
-        "code": "no-any-expr",
-        "column": 12,
-        "message": "Expression type contains \"Any\" (has type \"list[str | Any]\")",
-        "offset": 33,
-        "src": "parts = re.split(r\"[/\\\\]\", path)",
-        "target": "mypy.test.data.module_from_path"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 8,
-        "message": "Expression type contains \"Any\" (has type \"list[str | Any]\")",
-        "offset": 1,
-        "src": "del parts[0]",
-        "target": "mypy.test.data.module_from_path"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 22,
-        "message": "Expression type contains \"Any\" (has type \"list[str | Any]\")",
-        "offset": 1,
-        "src": "module = \".\".join(parts)",
-        "target": "mypy.test.data.module_from_path"
-      },
-      {
         "code": "redundant-expr",
         "column": 15,
         "message": "Condition is always false",
-        "offset": 44,
+        "offset": 79,
         "src": "if id:",
         "target": "mypy.test.data.parse_test_data"
       },
@@ -25883,105 +25749,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 12,
-        "message": "Expression type contains \"Any\" (has type \"list[str | Any]\")",
-        "offset": 26,
-        "src": "cases = re.split(r\"^\\[case ([^]+)]+)\\][ \\t]*$\\n\", data, flags=re.DOTALL | re.MULTILINE)",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 17,
-        "message": "Expression type contains \"Any\" (has type \"Iterator[str | Any]\")",
-        "offset": 1,
-        "src": "cases_iter = iter(cases)",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 22,
-        "message": "Expression type contains \"Any\" (has type \"list[str | Any]\")",
-        "offset": 0,
-        "src": "cases_iter = iter(cases)",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 14,
-        "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 1,
-        "src": "line_no = next(cases_iter).count(\"\\n\") + 1",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 14,
-        "message": "Expression type contains \"Any\" (has type \"int | Any\")",
-        "offset": 0,
-        "src": "line_no = next(cases_iter).count(\"\\n\") + 1",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 19,
-        "message": "Expression type contains \"Any\" (has type \"Iterator[str | Any]\")",
-        "offset": 0,
-        "src": "line_no = next(cases_iter).count(\"\\n\") + 1",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 4,
-        "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 2,
-        "src": "for case_id in cases_iter:",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 19,
-        "message": "Expression type contains \"Any\" (has type \"Iterator[str | Any]\")",
-        "offset": 0,
-        "src": "for case_id in cases_iter:",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 20,
-        "message": "Expression type contains \"Any\" (has type \"Iterator[str | Any]\")",
-        "offset": 1,
-        "src": "data = next(cases_iter)",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 41,
-        "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 2,
-        "src": "m = _case_name_pattern.fullmatch(case_id)",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 31,
-        "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 2,
-        "src": "raise RuntimeError(f\"Invalid testcase id {case_id!r}\")",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 39,
-        "message": "Expression type contains \"Any\" (has type \"int | Any\")",
-        "offset": 5,
-        "src": "name, parent.name, line_no",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
         "column": 14,
         "message": "Expression has type \"Untyped\"",
-        "offset": 3,
+        "offset": 43,
         "src": "yield DataDrivenTestCase.from_parent(  # type: ignore[unused-ignore, no-untyped-call]",
         "target": "mypy.test.data.split_test_cases"
       },
@@ -25994,50 +25764,10 @@
         "target": null
       },
       {
-        "code": "no-any-expr",
-        "column": 17,
-        "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 11,
-        "src": "data=data,",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 17,
-        "message": "Expression type contains \"Any\" (has type \"int | Any\")",
-        "offset": 1,
-        "src": "line=line_no,",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 8,
-        "message": "Expression type contains \"Any\" (has type \"int | Any\")",
-        "offset": 2,
-        "src": "line_no += data.count(\"\\n\") + 1",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 19,
-        "message": "Expression type contains \"Any\" (has type \"str | Any\")",
-        "offset": 0,
-        "src": "line_no += data.count(\"\\n\") + 1",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 19,
-        "message": "Expression type contains \"Any\" (has type \"int | Any\")",
-        "offset": 0,
-        "src": "line_no += data.count(\"\\n\") + 1",
-        "target": "mypy.test.data.split_test_cases"
-      },
-      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"collect\" is not using @override but is overriding a method in class \"_pytest.python.Class\"",
-        "offset": 7,
+        "offset": 21,
         "src": "def collect(self) -> Iterator[DataFileCollector]:",
         "target": "mypy.test.data.DataSuiteCollector.collect"
       },
@@ -26135,7 +25865,7 @@
         "code": "no-any-expr",
         "column": 54,
         "message": "Expression type contains \"Any\" (has type \"set[Any]\")",
-        "offset": 119,
+        "offset": 117,
         "src": "actual_normalized = sorted(set(actual).difference({\"__main__\"}))",
         "target": "mypy.test.helpers.assert_module_equivalence"
       },
@@ -26311,7 +26041,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"run_case\" is not using @override but is overriding a method in class \"mypy.test.data.DataSuite\"",
-        "offset": 61,
+        "offset": 60,
         "src": "def run_case(self, testcase: DataDrivenTestCase) -> None:",
         "target": "mypy.test.testcheck.TypeCheckSuite.run_case"
       },
@@ -26525,7 +26255,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"run_case\" is not using @override but is overriding a method in class \"mypy.test.data.DataSuite\"",
-        "offset": 75,
+        "offset": 74,
         "src": "def run_case(self, testcase: DataDrivenTestCase) -> None:",
         "target": "mypy.test.testfinegrained.FineGrainedSuite.run_case"
       },
@@ -26589,7 +26319,7 @@
         "code": "no-any-explicit",
         "column": 18,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 138,
+        "offset": 136,
         "src": "res = cast(",
         "target": "mypy.test.testfinegrained.FineGrainedSuite.maybe_suggest"
       },
@@ -26776,38 +26506,6 @@
         "offset": 1,
         "src": "output.extend(val.strip().split(\"\\n\"))",
         "target": "mypy.test.testfinegrained.FineGrainedSuite.maybe_inspect"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 12,
-        "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 6,
-        "src": "m = re.findall(regex, program_text, flags=re.MULTILINE)",
-        "target": "mypy.test.testfinegrained.FineGrainedSuite.get_suggest"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 15,
-        "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 1,
-        "src": "return m",
-        "target": "mypy.test.testfinegrained.FineGrainedSuite.get_suggest"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 12,
-        "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 5,
-        "src": "m = re.findall(regex, program_text, flags=re.MULTILINE)",
-        "target": "mypy.test.testfinegrained.FineGrainedSuite.get_inspect"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 15,
-        "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 1,
-        "src": "return m",
-        "target": "mypy.test.testfinegrained.FineGrainedSuite.get_inspect"
       }
     ],
     "mypy/test/testfscache.py": [
@@ -27025,7 +26723,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"run_case\" is not using @override but is overriding a method in class \"mypy.test.data.DataSuite\"",
-        "offset": 27,
+        "offset": 26,
         "src": "def run_case(self, test_case: DataDrivenTestCase) -> None:",
         "target": "mypy.test.testpep561.PEP561Suite.run_case"
       },
@@ -27051,7 +26749,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"run_case\" is not using @override but is overriding a method in class \"mypy.test.data.DataSuite\"",
-        "offset": 38,
+        "offset": 37,
         "src": "def run_case(self, testcase: DataDrivenTestCase) -> None:",
         "target": "mypy.test.testpythoneval.PythonEvaluationSuite.run_case"
       }
@@ -27163,7 +26861,7 @@
         "code": "no-any-expr",
         "column": 5,
         "message": "Expression type contains \"Any\" (has type \"[_FT: (...) -> Any] (_FT) -> _FT\")",
-        "offset": 54,
+        "offset": 53,
         "src": "@unittest.skipIf(sys.platform == \"win32\", \"clean up fails on Windows\")",
         "target": "mypy.test.teststubgen"
       },
@@ -28064,14 +27762,6 @@
         "offset": 136,
         "src": "@skipUnless(mypy.expandtype.__file__.endswith(\".py\"), \"Skip for compiled mypy\")",
         "target": "mypy.test.testtypes"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 36,
-        "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 4,
-        "src": "get_proper_type_count = len(re.findall(\"get_proper_type\", code))",
-        "target": "mypy.test.testtypes.TestExpandTypeLimitGetProperType.test_count_get_proper_type"
       }
     ],
     "mypy/test/update_data.py": [
@@ -30017,7 +29707,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_type_var\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 14,
+        "offset": 16,
         "src": "def visit_type_var(self, t: TypeVarType) -> Type:",
         "target": "mypy.type_visitor.TypeTranslator.visit_type_var"
       },
@@ -32303,7 +31993,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"accept\" is not using @override but is overriding a method in class \"mypy.types.Type\"",
-        "offset": 87,
+        "offset": 97,
         "src": "def accept(self, visitor: TypeVisitor[T]) -> T:",
         "target": "mypy.types.Instance.accept"
       },
@@ -32391,7 +32081,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"is_singleton_type\" is not using @override but is overriding a method in class \"mypy.types.Type\"",
-        "offset": 18,
+        "offset": 19,
         "src": "def is_singleton_type(self) -> bool:",
         "target": "mypy.types.Instance.is_singleton_type"
       },
@@ -34758,14 +34448,6 @@
         "offset": 9,
         "src": "setattr(new, attr, getattr(old, attr))",
         "target": "mypy.util.replace_object_state"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 28,
-        "message": "Expression type contains \"Any\" (has type \"list[str | Any]\")",
-        "offset": 482,
-        "src": "docstr_repr = \"\\n\".join(re.split(r\"(?<=[^\\\\])\\\\n\", repr(docstr)))",
-        "target": "mypy.util.quote_docstring"
       }
     ],
     "mypy/visitor.py": [
@@ -37300,18 +36982,10 @@
         "target": "mypyc.build.emit_messages"
       },
       {
-        "code": "no-any-expr",
-        "column": 23,
-        "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 286,
-        "src": "headers.update(re.findall(r'#include \"(.*)\"', contents))",
-        "target": "mypyc.build.get_header_deps"
-      },
-      {
         "code": "no-any-explicit",
         "column": 0,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 5,
+        "offset": 291,
         "src": "def mypyc_build(",
         "target": "mypyc.build.mypyc_build"
       },
@@ -42234,30 +41908,6 @@
         "offset": 1,
         "src": "ops = [ops]",
         "target": "mypyc.test.test_cheader.TestHeaderInclusion.test_primitives_included_in_header"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 12,
-        "message": "Expression has type \"Any\"",
-        "offset": 8,
-        "src": "for name in re.findall(r'c_function_name=[\"\\'](CPy[A-Z_a-z0-9]+)', content):",
-        "target": "mypyc.test.test_cheader.TestHeaderInclusion.test_primitives_included_in_header"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 24,
-        "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 0,
-        "src": "for name in re.findall(r'c_function_name=[\"\\'](CPy[A-Z_a-z0-9]+)', content):",
-        "target": "mypyc.test.test_cheader.TestHeaderInclusion.test_primitives_included_in_header"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 27,
-        "message": "Expression has type \"Any\"",
-        "offset": 1,
-        "src": "check_name(name)",
-        "target": "mypyc.test.test_cheader.TestHeaderInclusion.test_primitives_included_in_header"
       }
     ],
     "mypyc/test/test_commandline.py": [
@@ -42265,7 +41915,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"run_case\" is not using @override but is overriding a method in class \"mypy.test.data.DataSuite\"",
-        "offset": 34,
+        "offset": 33,
         "src": "def run_case(self, testcase: DataDrivenTestCase) -> None:",
         "target": "mypyc.test.test_commandline.TestCommandLine.run_case"
       }
@@ -43193,7 +42843,7 @@
         "code": "possibly-undefined",
         "column": 11,
         "message": "Name \"default_builtins\" may be undefined",
-        "offset": 67,
+        "offset": 66,
         "src": "if default_builtins:",
         "target": "mypyc.test.testutil"
       },

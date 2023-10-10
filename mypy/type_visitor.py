@@ -216,13 +216,15 @@ class TypeTranslator(TypeVisitor[Type]):
             raw_last_known_value = t.last_known_value.accept(self)
             assert isinstance(raw_last_known_value, LiteralType)  # type: ignore[misc]
             last_known_value = raw_last_known_value
-        return Instance(
+        result = Instance(
             typ=t.type,
             args=self.translate_types(t.args),
             line=t.line,
             column=t.column,
             last_known_value=last_known_value,
         )
+        result.metadata = t.metadata
+        return result
 
     def visit_type_var(self, t: TypeVarType) -> Type:
         return t

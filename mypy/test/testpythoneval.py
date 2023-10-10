@@ -24,7 +24,6 @@ from mypy.defaults import PYTHON3_VERSION
 from mypy.test.config import test_temp_dir
 from mypy.test.data import DataDrivenTestCase, DataSuite
 from mypy.test.helpers import assert_string_arrays_equal, split_lines
-from mypy.util import safe
 
 # Path to Python 3 interpreter
 python3_path = sys.executable
@@ -59,13 +58,14 @@ def test_python_evaluation(testcase: DataDrivenTestCase, cache_dir: str) -> None
         "--no-strict",
         "--no-pretty",
         "--hide-error-context",
+        "--no-color-output",
     ]
     interpreter = python3_path
     mypy_cmdline.append(f"--python-version={'.'.join(map(str, PYTHON3_VERSION))}")
 
     m = re.search("# flags: (.*)$", "\n".join(testcase.input), re.MULTILINE)
     if m:
-        additional_flags = safe(m.group(1)).split()
+        additional_flags = m.group(1).split()
         for flag in additional_flags:
             if flag.startswith("--python-version="):
                 targetted_python_version = flag.split("=")[1]
@@ -85,7 +85,6 @@ def test_python_evaluation(testcase: DataDrivenTestCase, cache_dir: str) -> None
         for s in testcase.input:
             file.write(f"{s}\n")
     mypy_cmdline.append(f"--cache-dir={cache_dir}")
-    mypy_cmdline.append("--no-color-output")
     output = []
     # Type check the program.
     out, err, returncode = api.run(mypy_cmdline)

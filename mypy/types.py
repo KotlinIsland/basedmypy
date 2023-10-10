@@ -1502,7 +1502,16 @@ class Instance(ProperType):
     fallbacks for all "non-special" (like UninhabitedType, ErasedType etc) types.
     """
 
-    __slots__ = ("type", "args", "invalid", "type_ref", "last_known_value", "_hash", "extra_attrs")
+    __slots__ = (
+        "type",
+        "args",
+        "invalid",
+        "type_ref",
+        "last_known_value",
+        "_hash",
+        "extra_attrs",
+        "metadata",
+    )
 
     def __init__(
         self,
@@ -1574,6 +1583,7 @@ class Instance(ProperType):
         # have different attributes per instance of types.ModuleType. This is intended
         # to be "short-lived", we don't serialize it, and even don't store as variable type.
         self.extra_attrs = extra_attrs
+        self.metadata: dict[str, object] = {}
 
     def accept(self, visitor: TypeVisitor[T]) -> T:
         return visitor.visit_instance(self)
@@ -1641,6 +1651,7 @@ class Instance(ProperType):
         # We intentionally don't copy the extra_attrs here, so they will be erased.
         new.can_be_true = self.can_be_true
         new.can_be_false = self.can_be_false
+        new.metadata = self.metadata.copy()
         return new
 
     def copy_with_extra_attr(self, name: str, typ: Type) -> Instance:

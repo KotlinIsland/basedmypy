@@ -15,7 +15,6 @@ from mypy.options import Options
 from mypy.test.config import test_temp_dir
 from mypy.test.data import DataDrivenTestCase, DataSuite
 from mypy.test.helpers import assert_string_arrays_equal
-from mypy.util import safe
 from mypyc.analysis.ircheck import assert_func_ir_valid
 from mypyc.common import IS_32_BIT_PLATFORM, PLATFORM_SIZE
 from mypyc.errors import Errors
@@ -196,7 +195,7 @@ def get_func_names(expected: list[str]) -> list[str]:
     for s in expected:
         m = re.match(r"def ([_a-zA-Z0-9.*$]+)\(", s)
         if m:
-            res.append(safe(m.group(1)))
+            res.append(m.group(1))
     return res
 
 
@@ -282,7 +281,7 @@ def infer_ir_build_options_from_test_name(name: str) -> CompilerOptions | None:
     # A suffix like _python3.8 is used to set the target C API version.
     m = re.search(r"_python([3-9]+)_([0-9]+)(_|\b)", name)
     if m:
-        options.capi_version = (int(safe(m.group(1))), int(safe(m.group(2))))
+        options.capi_version = (int(m.group(1)), int(m.group(2)))
         options.python_version = options.capi_version
     elif "_py" in name or "_Python" in name:
         assert False, f"Invalid _py* suffix (should be _pythonX_Y): {name}"

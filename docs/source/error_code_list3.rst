@@ -80,6 +80,17 @@ Check that typeguard definitions are valid [typeguard-subtype]
     def guard(x: str) -> x is int:  # A type-guard's type must be assignable to its parameter's type. (guard has type "int", parameter has type "str")  [typeguard-subtype]
         ...
 
+.. _code-regex:
+
+Check for regex issues [regex]
+------------------------------
+
+.. code-block:: python
+
+    re.compile("(foo).*)")  # error: unbalanced parenthesis at position 7  [regex]
+    m = re.match("(?P<name>\w+)", s)
+    assert m
+    m.group("nane")  # error: no such group: 'nane'  [regex]
 
 .. _code-bad-cast:
 

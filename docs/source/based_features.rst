@@ -331,3 +331,18 @@ Checked Argument Names
     class B(A):
         @override
         def f(self, b: int): ...  # error: Signature of "f" incompatible with supertype "A"
+
+
+Regex Checks
+------------
+
+.. code-block:: python
+
+    re.compile("as(df")  #  error: missing ), unterminated subpattern at position 0  [regex]
+
+    if m := re.search("(a)?(b)", s):
+        reveal_type(m.groups())  # Revealed type is "(str | None, str)"
+
+    if m := re.search("(?P<foo>a)", s):
+        reveal_type(m.group("foo")
+        reveal_type(m.group("bar")  # error: no such group: 'bar'  [regex]

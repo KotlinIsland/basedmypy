@@ -9,7 +9,6 @@ import sys
 from io import StringIO
 
 from mypy.errorcodes import error_codes
-from mypy.util import safe
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -29,6 +28,7 @@ from typing import (
     TextIO,
     Tuple,
     Union,
+    cast,
 )
 from typing_extensions import TypeAlias as _TypeAlias
 
@@ -45,7 +45,7 @@ def parse_version(v: str | float) -> tuple[int, int]:
     m = re.match(r"\A(\d)\.(\d+)\Z", str(v))
     if not m:
         raise argparse.ArgumentTypeError(f"Invalid python version '{v}' (expected format: 'x.y')")
-    major, minor = int(safe(m.group(1))), int(safe(m.group(2)))
+    major, minor = int(m.group(1)), int(m.group(2))
     if major == 2 and minor == 7:
         pass  # Error raised elsewhere
     elif major == 3:
@@ -68,7 +68,7 @@ def parse_version(v: str | float) -> tuple[int, int]:
 def try_split(v: str | Sequence[str], split_regex: str = "[,]") -> list[str]:
     """Split and trim a str or list of str into a list of str"""
     if isinstance(v, str):
-        return [p.strip() for p in re.split(split_regex, v)]
+        return [p.strip() for p in cast(List[str], re.split(split_regex, v))]
 
     return [p.strip() for p in v]
 

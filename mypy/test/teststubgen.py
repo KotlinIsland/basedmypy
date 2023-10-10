@@ -45,7 +45,6 @@ from mypy.stubgenc import (
 from mypy.stubutil import common_dir_prefix, remove_misplaced_type_comments, walk_packages
 from mypy.test.data import DataDrivenTestCase, DataSuite
 from mypy.test.helpers import assert_equal, assert_string_arrays_equal, local_sys_path_set
-from mypy.util import safe
 
 
 class StubgenCmdLineSuite(unittest.TestCase):
@@ -699,7 +698,7 @@ class StubgenPythonSuite(DataSuite):
                 f.write(content)
 
         options = self.parse_flags(source, extra)
-        if "based" not in testcase.file.split(os.sep)[-1]:
+        if "based" not in testcase.parent.name:
             options.legacy = True
         modules = self.parse_modules(source)
         out_dir = "out"
@@ -728,7 +727,7 @@ class StubgenPythonSuite(DataSuite):
     def parse_flags(self, program_text: str, extra: list[str]) -> Options:
         flags = re.search("# flags: (.*)$", program_text, flags=re.MULTILINE)
         if flags:
-            flag_list = safe(flags.group(1)).split()
+            flag_list = flags.group(1).split()
         else:
             flag_list = []
         options = parse_options(flag_list + extra)
@@ -741,7 +740,7 @@ class StubgenPythonSuite(DataSuite):
     def parse_modules(self, program_text: str) -> list[str]:
         modules = re.search("# modules: (.*)$", program_text, flags=re.MULTILINE)
         if modules:
-            return safe(modules.group(1)).split()
+            return modules.group(1).split()
         else:
             return ["main"]
 

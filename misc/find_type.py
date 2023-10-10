@@ -31,8 +31,6 @@ import subprocess
 import sys
 import tempfile
 
-from mypy.util import safe
-
 REVEAL_TYPE_START = "reveal_type("
 REVEAL_TYPE_END = ")"
 
@@ -53,11 +51,7 @@ def run_mypy(mypy_and_args: list[str], filename: str, tmp_name: str) -> str:
 
 def get_revealed_type(line: str, relevant_file: str, relevant_line: int) -> str | None:
     m = re.match(r'(.+?):(\d+): note: Revealed type is "(.*)"$', line)
-    if (
-        m
-        and int(safe(m.group(2))) == relevant_line
-        and os.path.samefile(relevant_file, safe(m.group(1)))
-    ):
+    if m and int(m.group(2)) == relevant_line and os.path.samefile(relevant_file, m.group(1)):
         return m.group(3)
     else:
         return None

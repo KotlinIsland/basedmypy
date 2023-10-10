@@ -144,10 +144,10 @@ def parse_test_case(case: DataDrivenTestCase) -> None:
             m = re.match(r"(.*)\.([0-9]+)$", item.arg)
             if m is None:
                 _item_fail(f"Invalid delete section {item.arg!r}")
-            num = int(safe(m.group(2)))
+            num = int(m.group(2))
             if num < 2:
                 _item_fail(f"Can't delete during step {num}")
-            full = join(base_path, safe(m.group(1)))
+            full = join(base_path, m.group(1))
             deleted_paths.setdefault(num, set()).add(full)
         elif re.match(r"out[0-9]*$", item.id):
             if item.arg is None:
@@ -217,8 +217,10 @@ def parse_test_case(case: DataDrivenTestCase) -> None:
     output_inline_start = len(output)
     input = first_item.data
     expand_errors(input, output, "main")
+    tmp_output = []
     for file_path, contents in files:
-        expand_errors(contents.split("\n"), output, file_path)
+        expand_errors(contents.split("\n"), tmp_output, file_path)
+    output = tmp_output + output
 
     seen_files = set()
     for file, _ in files:
@@ -349,7 +351,7 @@ class DataDrivenTestCase(pytest.Item):
             if m:
                 # Skip writing subsequent incremental steps - rather
                 # store them as operations.
-                num = int(safe(m.group(1)))
+                num = int(m.group(1))
                 assert num >= 2
                 target_path = re.sub(r"\.[0-9]+$", "", path)
                 module = module_from_path(target_path)
@@ -567,7 +569,7 @@ def fix_win_path(line: str) -> str:
         return line
     else:
         filename, lineno, message = m.groups()
-        return "{}:{}{}".format(safe(filename).replace("\\", "/"), lineno or "", message)
+        return "{}:{}{}".format(filename.replace("\\", "/"), lineno or "", message)
 
 
 def fix_cobertura_filename(line: str) -> str:

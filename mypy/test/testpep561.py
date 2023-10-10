@@ -14,7 +14,6 @@ import mypy.api
 from mypy.test.config import package_path, pip_lock, pip_timeout, test_temp_dir
 from mypy.test.data import DataDrivenTestCase, DataSuite
 from mypy.test.helpers import assert_string_arrays_equal, perform_file_operations
-from mypy.util import safe
 
 # NOTE: options.use_builtins_fixtures should not be set in these
 # tests, otherwise mypy will ignore installed third-party packages.
@@ -183,7 +182,7 @@ def parse_mypy_args(line: str) -> list[str]:
     m = re.match("# flags: (.*)$", line)
     if not m:
         return []  # No args; mypy will spit out an error.
-    return safe(m.group(1)).split()
+    return m.group(1).split()
 
 
 def test_mypy_path_is_respected() -> None:
