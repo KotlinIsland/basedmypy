@@ -17,6 +17,7 @@
 - Fixed union at join for same `type` literals. (#488)
 - Don't report false `Any` expressions when inferring lambda type (#515)
 - Correctly match overload when it contains an `Any` expression (#515)
+- Fixed the variance of `Mapping`s key type (#527)
 
 ## [2.1.0]
 
