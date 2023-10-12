@@ -21,7 +21,7 @@ from typing import (
     Union,
     cast,
 )
-from typing_extensions import Self, TypeAlias as _TypeAlias, TypeGuard, overload, override
+from typing_extensions import Self, TypeAlias as _TypeAlias, TypeGuard, overload
 
 import mypy.nodes
 import mypy.options
@@ -1429,7 +1429,6 @@ class TypeGuardType(ProperType):
         except NotImplementedError:
             return self.type_guard.accept(visitor)
 
-    @override
     def serialize(self) -> JsonDict | str:
         return {
             ".class": "TypeGuardType",
@@ -1437,7 +1436,6 @@ class TypeGuardType(ProperType):
             "type_guard": self.type_guard.serialize(),
         }
 
-    @override
     @classmethod
     def deserialize(cls, data: JsonDict) -> TypeGuardType:
         assert data[".class"] == "TypeGuardType"

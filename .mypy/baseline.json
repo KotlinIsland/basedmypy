@@ -17278,16 +17278,6 @@
         "target": "mypy.type_visitor.TypeTranslator.visit_typeddict_type"
       }
     ],
-    "mypy/typeanal.py": [
-      {
-        "code": "unreachable",
-        "column": 12,
-        "message": "Statement is unreachable",
-        "offset": 692,
-        "src": "return UnpackType(self.anal_type(t.args[0]), line=t.line, column=t.column)",
-        "target": "mypy.typeanal.TypeAnalyser.try_analyze_special_unbound_type"
-      }
-    ],
     "mypy/typeops.py": [
       {
         "code": "no-any-explicit",
@@ -17887,7 +17877,7 @@
         "code": "no-any-expr",
         "column": 15,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 70,
+        "offset": 69,
         "src": "return {",
         "target": "mypy.types.TypeGuardType.serialize"
       },
@@ -17895,7 +17885,7 @@
         "code": "no-any-expr",
         "column": 15,
         "message": "Expression has type \"Any\"",
-        "offset": 9,
+        "offset": 8,
         "src": "assert data[\".class\"] == \"TypeGuardType\"",
         "target": "mypy.types.TypeGuardType.deserialize"
       },
