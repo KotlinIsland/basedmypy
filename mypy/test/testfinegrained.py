@@ -96,7 +96,10 @@ class FineGrainedSuite(DataSuite):
 
         a = []
         if messages:
-            a.extend(normalize_messages(messages))
+            messages = normalize_messages(messages)
+            # HACK: for some reason the macs use this privatetmp folder
+            messages = [message.replace("/privatetmp/", "tmp/") for message in messages]
+            a.extend(messages)
 
         assert testcase.tmpdir
         a.extend(self.maybe_suggest(step, server, main_src, testcase.tmpdir.name))
