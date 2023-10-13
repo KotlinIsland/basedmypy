@@ -1340,6 +1340,7 @@ def process_options(
             "ignore-without-code",
             "unused-awaitable",
             "redundant-self",
+            "explicit-override",
         }
         if mypy.options._based
         else set()
