@@ -265,3 +265,12 @@ The defined type of a variable will be shown in the message for `reveal_type`:
     a: object
     a = 1
     reveal_type(a)  # Revealed type is "int" (narrowed from "object")
+
+Checked f-strings
+-----------------
+
+.. code-block:: python
+
+    f"{None:0>2}"  # error: The type "None" doesn't support format-specifiers
+    f"{date(1,1,1):%}"  # error: Invalid trailing '%', escape with '%%'
+    f"{'s':.2f}"  # error: Incompatible types in string interpolation (expression has type "str", placeholder has type "int | float | complex")

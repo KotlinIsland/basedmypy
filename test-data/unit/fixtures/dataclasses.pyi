@@ -20,6 +20,7 @@ class ellipsis: pass
 class tuple(Generic[_T]): pass
 class int: pass
 class float: pass
+class complex: pass
 class bytes: pass
 class str: pass
 class bool(int): pass

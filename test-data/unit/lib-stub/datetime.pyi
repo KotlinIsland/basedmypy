@@ -1,6 +1,16 @@
 # Very simplified datetime stubs for use in tests
 
-class datetime:
+class date:
+    def __new__(
+        cls,
+        year: int,
+        month: int,
+        day: int,
+    ) -> date: ...
+    def __format__(self, __fmt: str) -> str: ...
+
+
+class datetime(date):
     def __new__(
         cls,
         year: int,
@@ -13,4 +23,3 @@ class datetime:
         *,
         fold: int = ...,
     ) -> datetime: ...
-    def __format__(self, __fmt: str) -> str: ...

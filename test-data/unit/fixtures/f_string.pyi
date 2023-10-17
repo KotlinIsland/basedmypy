@@ -31,8 +31,11 @@ class bool(int): pass
 
 class str:
     def __add__(self, s: str) -> str: pass
-    def format(self, *args) -> str: pass
+    def format(self, *args: object) -> str: pass
     def join(self, l: List[str]) -> str: pass
 
+class bytes: pass
+
+class complex: pass
 
 class dict: pass

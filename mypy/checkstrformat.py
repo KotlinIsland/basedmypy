@@ -47,6 +47,7 @@ from mypy.types import (
     TupleType,
     Type,
     TypeOfAny,
+    TypeStrVisitor,
     TypeVarType,
     UnionType,
     get_proper_type,
@@ -333,25 +334,40 @@ class StringFormatterChecker:
             - 's' must not accept bytes
             - non-empty flags are only allowed for numeric types
         """
-        conv_specs = parse_format_value(format_value, call, self.msg)
+        if (
+            format_value == "{:{}}"
+            and len(call.args) == 2
+            and isinstance(arg := call.args[1], StrExpr)
+        ):
+            f_string = True
+            conv_specs = parse_format_value(f"{{:{arg.value}}}", call, self.msg)
+        else:
+            f_string = False
+            conv_specs = parse_format_value(format_value, call, self.msg)
         if conv_specs is None:
             return
         if not self.auto_generate_keys(conv_specs, call):
             return
-        self.check_specs_in_format_call(call, conv_specs, format_value)
+        self.check_specs_in_format_call(call, conv_specs, format_value, f_string=f_string)
 
     def check_specs_in_format_call(
-        self, call: CallExpr, specs: list[ConversionSpecifier], format_value: str
+        self, call: CallExpr, specs: list[ConversionSpecifier], format_value: str, f_string=False
     ) -> None:
         """Perform pairwise checks for conversion specifiers vs their replacements.
 
         The core logic for format checking is implemented in this method.
         """
-        assert all(s.key for s in specs), "Keys must be auto-generated first!"
-        replacements = self.find_replacements_in_call(call, [cast(str, s.key) for s in specs])
-        assert len(replacements) == len(specs)
+        if f_string:
+            replacements = [call.args[0]]
+        else:
+            assert all(s.key for s in specs), "Keys must be auto-generated first!"
+            replacements = self.find_replacements_in_call(call, [cast(str, s.key) for s in specs])
+            assert len(replacements) == len(specs)
         for spec, repl in zip(specs, replacements):
-            repl = self.apply_field_accessors(spec, repl, ctx=call)
+            if f_string:
+                repl = call.args[0]
+            else:
+                repl = self.apply_field_accessors(spec, repl, ctx=call)
             actual_type = repl.type if isinstance(repl, TempNode) else self.chk.lookup_type(repl)
             assert actual_type is not None
 
@@ -407,7 +423,12 @@ class StringFormatterChecker:
             )
             for a_type in actual_items:
                 if custom_special_method(a_type, "__format__"):
+                    if spec.format_spec:
+                        self.check_datetime(a_type, spec.format_spec, call)
                     continue
+                if spec.format_spec not in {None, ":"}:
+                    if not self.check_builtins_type(a_type, call):
+                        continue
                 self.check_placeholder_type(a_type, expected_type, call)
                 self.perform_special_format_checks(spec, call, repl, a_type, expected_type)
 
@@ -418,8 +439,9 @@ class StringFormatterChecker:
         repl: Expression,
         actual_type: Type,
         expected_type: Type,
-    ) -> None:
+    ) -> bool:
         # TODO: try refactoring to combine this logic with % formatting.
+        failed = False
         if spec.conv_type == "c":
             if isinstance(repl, (StrExpr, BytesExpr)) and len(repl.value) != 1:
                 self.msg.requires_int_or_char(call, format_call=True)
@@ -429,6 +451,7 @@ class StringFormatterChecker:
             if isinstance(c_typ, LiteralType) and isinstance(c_typ.value, str):
                 if len(c_typ.value) != 1:
                     self.msg.requires_int_or_char(call, format_call=True)
+                    failed = True
         if (not spec.conv_type or spec.conv_type == "s") and not spec.conversion:
             if has_type_component(actual_type, "builtins.bytes") and not custom_special_method(
                 actual_type, "__str__"
@@ -440,9 +463,14 @@ class StringFormatterChecker:
                     call,
                     code=codes.STR_BYTES_PY3,
                 )
+                failed = True
         if spec.flags:
             numeric_types = UnionType(
-                [self.named_type("builtins.int"), self.named_type("builtins.float")]
+                [
+                    self.named_type("builtins.int"),
+                    self.named_type("builtins.float"),
+                    self.named_type("builtins.complex"),
+                ]
             )
             if (
                 spec.conv_type
@@ -456,6 +484,8 @@ class StringFormatterChecker:
                     call,
                     code=codes.STRING_FORMATTING,
                 )
+                failed = True
+        return failed
 
     def find_replacements_in_call(self, call: CallExpr, keys: list[str]) -> list[Expression]:
         """Find replacement expression for every specifier in str.format() call.
@@ -912,6 +942,75 @@ class StringFormatterChecker:
             code=codes.STRING_FORMATTING,
         )
 
+    def check_builtins_type(self, typ: Type, context: Context) -> bool:
+        valid = UnionType(
+            [
+                self.named_type("builtins.bytes"),
+                self.named_type("builtins.str"),
+                self.named_type("builtins.int"),
+                self.named_type("builtins.float"),
+                self.named_type("builtins.complex"),
+            ]
+        )
+        if not is_subtype(typ, valid):
+            self.msg.fail(
+                f'The type "{typ.accept(TypeStrVisitor(options=self.chk.options))}" doesn\'t support format-specifiers',
+                context,
+                code=codes.STRING_FORMATTING,
+                notes=["Maybe you want to add '!s' to the conversion"],
+            )
+            return False
+        return True
+
+    def check_datetime(self, typ: Type, spec: str, ctx: Context):
+        proper = get_proper_type(typ)
+        if not (isinstance(proper, Instance) and proper.type.has_base("datetime.date")):
+            return
+        if proper.type.fullname not in {
+            "datetime.date",
+            "datetime.datetime",
+        } and custom_special_method(proper, "__format__", check_all=True):
+            return
+        p = False
+        colon = False
+        for char in spec:
+            if colon:
+                if char != "z":
+                    self.msg.fail(
+                        f"Invalid format sequence '%:{char}', escape with '%%'",
+                        ctx,
+                        code=codes.STRING_FORMATTING,
+                    )
+                elif self.chk.options.python_version < (3, 12):
+                    self.msg.fail(
+                        "Format sequence '%:z' is new in version 3.12",
+                        ctx,
+                        code=codes.STRING_FORMATTING,
+                    )
+                colon = False
+                continue
+            if char == "%" and not p:
+                p = True
+                continue
+            if p:
+                if char == ":":
+                    colon = True
+                elif char not in "aAwdbBmyYHIpMSfzZjUWcxX%GuV":
+                    self.msg.fail(
+                        f"Invalid format sequence '%{char}', escape with '%%'",
+                        ctx,
+                        code=codes.STRING_FORMATTING,
+                    )
+            p = False
+        if p:
+            self.msg.fail(
+                "Invalid trailing '%', escape with '%%'", ctx, code=codes.STRING_FORMATTING
+            )
+        if colon:
+            self.msg.fail(
+                "Invalid trailing '%:', escape with '%%'", ctx, code=codes.STRING_FORMATTING
+            )
+
     def checkers_for_regular_type(
         self, conv_type: str, context: Context, expr: FormatStringExpr
     ) -> Checkers | None:
@@ -1035,6 +1134,7 @@ class StringFormatterChecker:
                 numeric_types = [
                     self.named_type("builtins.int"),
                     self.named_type("builtins.float"),
+                    self.named_type("builtins.complex"),
                 ]
                 if not format_call:
                     if p in FLOAT_TYPES:
