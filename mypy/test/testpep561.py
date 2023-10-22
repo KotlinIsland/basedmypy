@@ -133,6 +133,7 @@ def test_pep561(testcase: DataDrivenTestCase) -> None:
                 "--no-strict",
                 "--no-pretty",
                 "--hide-error-context",
+                "--no-color-output",
             ]
         )
         if python_executable != sys.executable:

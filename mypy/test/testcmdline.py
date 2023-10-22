@@ -71,6 +71,7 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
         args.append("--no-default-return")
     if "--pretty" not in args:
         args.append("--no-pretty")
+    args.append("--no-color-output")
     if "--show-error-code-links" not in args and "--ide" not in args:
         args.append("--hide-error-code-links")
     if "--error-summary" not in args:
@@ -90,6 +91,8 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
     extra_path = os.path.join(os.path.abspath(test_temp_dir), "pypath")
     env["PYTHONPATH"] = PREFIX
     env["__MYPY_UNDER_TEST__"] = "1" if based else "2"
+    if "--pretty" in args:
+        env["COLUMNS"] = "80"
     if os.path.isdir(extra_path):
         env["PYTHONPATH"] += os.pathsep + extra_path
     cwd = os.path.join(test_temp_dir, custom_cwd or "")

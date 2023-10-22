@@ -1103,7 +1103,9 @@ def load_baseline(options: Options, errors: Errors, stdout: TextIO) -> None:
 
     from mypy import main
 
-    formatter = util.FancyFormatter(stdout, stderr, options.hide_error_codes)
+    formatter = util.FancyFormatter(
+        stdout, stderr, options.hide_error_codes, color=options.color_output
+    )
     file = Path(options.baseline_file)
 
     if not file.exists():

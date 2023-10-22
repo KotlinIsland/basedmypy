@@ -522,13 +522,14 @@ class FancyFormatter:
     This currently only works on Linux and Mac.
     """
 
-    def __init__(self, f_out: IO[str], f_err: IO[str], hide_error_codes: bool) -> None:
+    def __init__(self, f_out: IO[str], f_err: IO[str], hide_error_codes: bool, color=True) -> None:
         self.hide_error_codes = hide_error_codes
         # Check if we are in a human-facing terminal on a supported platform.
         if sys.platform not in ("linux", "darwin", "win32", "emscripten"):
             self.dummy_term = True
             return
-        if not should_force_color() and (not f_out.isatty() or not f_err.isatty()):
+        # TODO: handle NO_COLOR and FORCE_COLOR
+        if not color:
             self.dummy_term = True
             return
         if sys.platform == "win32":
@@ -652,6 +653,12 @@ class FancyFormatter:
         self, messages: list[str], fixed_terminal_width: int | None = None
     ) -> list[str]:
         """Improve readability by wrapping error messages and trimming source code."""
+        if not os.environ.get("COLUMNS"):
+            # Only wrap if there is actually a terminal
+            try:
+                os.get_terminal_size(sys.__stdout__.fileno())
+            except (AttributeError, ValueError, OSError):
+                return messages
         width = fixed_terminal_width or get_terminal_width()
         new_messages = messages.copy()
         for i, error in enumerate(messages):
