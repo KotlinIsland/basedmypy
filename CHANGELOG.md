@@ -1,6 +1,10 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Enhancements
+- `--color-output` is enabled by default (#531)
+- `--ide` will disable color-output (#531)
+- Output lines won't wrap if not connected to a terminal (#531)
 ### Fixes
 - Render star args in error messages properly (#551)
 

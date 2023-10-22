@@ -85,6 +85,7 @@ def test_python_evaluation(testcase: DataDrivenTestCase, cache_dir: str) -> None
         for s in testcase.input:
             file.write(f"{s}\n")
     mypy_cmdline.append(f"--cache-dir={cache_dir}")
+    mypy_cmdline.append("--no-color-output")
     output = []
     # Type check the program.
     out, err, returncode = api.run(mypy_cmdline)

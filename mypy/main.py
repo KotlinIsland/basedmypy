@@ -72,7 +72,9 @@ def main(
     if clean_exit:
         options.fast_exit = False
 
-    formatter = util.FancyFormatter(stdout, stderr, options.hide_error_codes)
+    formatter = util.FancyFormatter(
+        stdout, stderr, options.hide_error_codes, color=options.color_output
+    )
 
     if options.install_types and (stdout is not sys.stdout or stderr is not sys.stderr):
         # Since --install-types performs user input, we want regular stdout and stderr.
@@ -1362,6 +1364,7 @@ def process_options(
             "error_summary": False,
             "pretty": False,
             "show_error_end": True,
+            "color_output": False,
         }.items():
             setattr(options, dest, value)
 
