@@ -50,10 +50,10 @@ z = G(B())
 from typing import TypeVar, Generic
 T = TypeVar('T', bound=int)
 class C(Generic[T]):
-    t = None # type: T
+    t: T
     def get(self) -> T:
         return self.t
-c1 = None # type: C[None]
+c1: C[None]
 c1.get()
 d = c1.get()
 reveal_type(d)  # N: Revealed type is "None"

@@ -1557,7 +1557,7 @@ f(1, '2')
 f(1, (2, 3)) # E: Argument 2 to "f" has incompatible type "Tuple[int, int]"; expected "Tuple[str, ...]"
 x = ('2', '3')  # type: Tuple[str, ...]
 f(1, x)
-y = (2, 3)  # type: Tuple[int, ...]
+y: Tuple[int, ...]
 f(1, y) # E: Argument 2 to "f" has incompatible type "Tuple[int, ...]"; expected "Tuple[str, ...]"
 [builtins fixtures/tuple.pyi]
 
@@ -4765,7 +4765,7 @@ class Other:
         else:
             return NotImplemented
 
-actually_b: A = B()
+actually_b: A  # = B()
 reveal_type(actually_b + Other())               # Note
 # Runtime type is B, this is why we report the error on overriding.
 [builtins fixtures/isinstance.pyi]
@@ -6494,13 +6494,17 @@ reveal_type(func(foo))  # N: Revealed type is "def (arg2: builtins.int) -> built
 def bar() -> int: ...
 reveal_type(func(bar))  # N: Revealed type is "def (builtins.str) -> builtins.int"
 
-baz: Callable[[str, str], str] = lambda x, y: 'baz'
+baz: Callable[[str, str], str]
+if bool():
+    baz = lambda x, y: 'baz'
 reveal_type(func(baz))  # N: Revealed type is "def (builtins.str) -> builtins.str"
 
 eggs = lambda: 'eggs'
 reveal_type(func(eggs))  # N: Revealed type is "def (builtins.str) -> builtins.str"
 
-spam: Callable[..., str] = lambda x, y: 'baz'
+spam: Callable[..., str]
+if bool():
+    spam = lambda x, y: 'baz'
 reveal_type(func(spam))  # N: Revealed type is "def (*Any, **Any) -> Any"
 
 [builtins fixtures/paramspec.pyi]

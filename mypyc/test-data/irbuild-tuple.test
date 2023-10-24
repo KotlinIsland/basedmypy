@@ -73,24 +73,18 @@ L0:
     return r2
 
 [case testSequenceTupleForced]
-from typing import Tuple
-def f() -> int:
-    t = (1, 2) # type: Tuple[int, ...]
+from typing import Tuple, cast
+def f(t: Tuple[int, ...]) -> int:
     return t[1]
 [out]
-def f():
-    r0 :: tuple[int, int]
-    r1 :: object
+def f(t):
     t :: tuple
-    r2 :: object
-    r3 :: int
+    r0 :: object
+    r1 :: int
 L0:
-    r0 = (2, 4)
-    r1 = box(tuple[int, int], r0)
-    t = r1
-    r2 = CPySequenceTuple_GetItem(t, 2)
-    r3 = unbox(int, r2)
-    return r3
+    r0 = CPySequenceTuple_GetItem(t, 2)
+    r1 = unbox(int, r0)
+    return r1
 
 [case testTupleDisplay]
 from typing import Sequence, Tuple

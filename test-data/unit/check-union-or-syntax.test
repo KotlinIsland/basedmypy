@@ -5,7 +5,7 @@
 from __future__ import annotations
 def f(x: int | str) -> int | str:
     reveal_type(x)  # N: Revealed type is "Union[builtins.int, builtins.str]"
-    z: int | str = 0
+    z: int | str
     reveal_type(z)  # N: Revealed type is "Union[builtins.int, builtins.str]"
     return x
 reveal_type(f)  # N: Revealed type is "def (x: Union[builtins.int, builtins.str]) -> Union[builtins.int, builtins.str]"
@@ -15,7 +15,7 @@ reveal_type(f)  # N: Revealed type is "def (x: Union[builtins.int, builtins.str]
 # flags: --python-version 3.10
 def f(x: int | str | float) -> int | str | float:
     reveal_type(x)  # N: Revealed type is "Union[builtins.int, builtins.str, builtins.float]"
-    z: int | str | float = 0
+    z: int | str | float
     reveal_type(z)  # N: Revealed type is "Union[builtins.int, builtins.str, builtins.float]"
     return x
 reveal_type(f)  # N: Revealed type is "def (x: Union[builtins.int, builtins.str, builtins.float]) -> Union[builtins.int, builtins.str, builtins.float]"
@@ -26,7 +26,7 @@ class A: pass
 class B: pass
 def f(x: A | B) -> A | B:
     reveal_type(x)  # N: Revealed type is "Union[__main__.A, __main__.B]"
-    z: A | B = A()
+    z: A | B
     reveal_type(z)  # N: Revealed type is "Union[__main__.A, __main__.B]"
     return x
 reveal_type(f)  # N: Revealed type is "def (x: Union[__main__.A, __main__.B]) -> Union[__main__.A, __main__.B]"
@@ -38,7 +38,7 @@ class B: pass
 class C: pass
 def f(x: A | B | C) -> A | B | C:
     reveal_type(x)  # N: Revealed type is "Union[__main__.A, __main__.B, __main__.C]"
-    z: A | B | C = A()
+    z: A | B | C
     reveal_type(z)  # N: Revealed type is "Union[__main__.A, __main__.B, __main__.C]"
     return x
 reveal_type(f)  # N: Revealed type is "def (x: Union[__main__.A, __main__.B, __main__.C]) -> Union[__main__.A, __main__.B, __main__.C]"
@@ -81,7 +81,7 @@ reveal_type(g)  # N: Revealed type is "def (x: Union[builtins.int, builtins.str,
 
 [case testUnionOrSyntaxWithQuotedVariableTypesPre310]
 # flags: --python-version 3.9
-y: "int | str" = 42
+y: "int | str"
 reveal_type(y)  # N: Revealed type is "Union[builtins.int, builtins.str]"
 
 [case testUnionOrSyntaxWithTypeAliasWorking]

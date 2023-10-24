@@ -4909,7 +4909,7 @@ reveal_type(ta.g2)  # N: Revealed type is "def () -> __main__.A"
 reveal_type(ta.g3)  # N: Revealed type is "def () -> Type[__main__.A]"
 reveal_type(ta.g4)  # N: Revealed type is "def () -> Type[__main__.A]"
 
-x: M = ta
+x: M
 x.g1  # E: Invalid self argument "M" to attribute function "g1" with type "Callable[[Type[A]], A]"
 x.g2  # E: Invalid self argument "M" to attribute function "g2" with type "Callable[[Type[TA]], TA]"
 x.g3  # E: Invalid self argument "M" to attribute function "g3" with type "Callable[[TTA], TTA]"

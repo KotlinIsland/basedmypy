@@ -43,7 +43,7 @@ else:
 [case testUnionMultipleReturnTypes]
 from typing import Callable, Union
 
-x = 5  # type: Union[int, Callable[[], str], Callable[[], int]]
+x: Union[int, Callable[[], str], Callable[[], int]]
 
 if callable(x):
     y = x() + 2 # E: Unsupported operand types for + ("str" and "int") \
@@ -56,7 +56,7 @@ else:
 [case testUnionMultipleNonCallableTypes]
 from typing import Callable, Union
 
-x = 5  # type: Union[int, str, Callable[[], str]]
+x: Union[int, str, Callable[[], str]]
 
 if callable(x):
     y = x() + 'test'
@@ -107,7 +107,7 @@ else:
 [case testCallableWithDifferentArgTypes]
 from typing import Callable, Union
 
-x = 5  # type: Union[int, Callable[[], None], Callable[[int], None]]
+x: Union[int, Callable[[], None], Callable[[int], None]]
 
 if callable(x):
     x()  # E: Too few arguments
@@ -150,7 +150,7 @@ else:
 [case testCallableAnd]
 from typing import Union, Callable
 
-x = 5  # type: Union[int, Callable[[], str]]
+x: Union[int, Callable[[], str]]
 
 if callable(x) and x() == 'test':
     x()
@@ -208,7 +208,7 @@ class B:
 
 a = A()  # type: A
 b = B()  # type: B
-c = A()  # type: Union[A, B]
+c: Union[A, B]
 
 if callable(a):
     5 + 'test'  # E: Unsupported operand types for + ("int" and "str")
@@ -515,7 +515,9 @@ from typing import Union, Callable
 def f() -> int:
     return 42
 
-fn = f  # type: Union[None, Callable[[], int]]
+fn: Union[None, Callable[[], int]]
+if bool():
+    fn = f
 
 if callable(fn):
     reveal_type(fn) # N: Revealed type is "def () -> builtins.int"

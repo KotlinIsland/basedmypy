@@ -243,8 +243,9 @@ if int():
 [case testFunctionTypeCompatibilityWithOtherTypes]
 # flags: --no-strict-optional
 from typing import Callable
-f = None # type: Callable[[], None]
-a, o = None, None # type: (A, object)
+f: Callable[[], None]
+a: A
+o: object
 if int():
     a = f   # E: Incompatible types in assignment (expression has type "Callable[[], None]", variable has type "A")
 if int():
@@ -478,7 +479,7 @@ class B: pass
 
 def f(x: 'A'  =  None) -> 'B': pass
 
-a, b = None, None # type: (A, B)
+a, b = A(), B() # type: (A, B)
 if int():
     a = f()     # E: Incompatible types in assignment (expression has type "B", variable has type "A")
 if int():

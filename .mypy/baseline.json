@@ -2033,23 +2033,23 @@
         "code": "truthy-bool",
         "column": 23,
         "message": "\"signature\" has type \"Type\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 86,
+        "offset": 93,
         "src": "if signature:",
         "target": "mypy.checker.TypeChecker.check_assignment"
       },
       {
         "code": "truthy-bool",
-        "column": 19,
+        "column": 24,
         "message": "\"rvalue_type\" has type \"Type\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 126,
-        "src": "if rvalue_type and infer_lvalue_type and not isinstance(lvalue_type, PartialType):",
+        "offset": 160,
+        "src": "and rvalue_type",
         "target": "mypy.checker.TypeChecker.check_assignment"
       },
       {
         "code": "truthy-bool",
         "column": 11,
         "message": "\"compare_type\" has type \"ProperType\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 174,
+        "offset": 175,
         "src": "if compare_type:",
         "target": "mypy.checker.TypeChecker.check_compatibility_super"
       },
@@ -2062,10 +2062,42 @@
         "target": "mypy.checker.TypeChecker.is_assignable_slot"
       },
       {
+        "code": "unreachable",
+        "column": 57,
+        "message": "Right operand of \"and\" is never evaluated",
+        "offset": 40,
+        "src": "if iterable_type is not None and iterable_type != self.iterable_item_type(",
+        "target": "mypy.checker.TypeChecker.check_assignment_to_multiple_lvalues"
+      },
+      {
+        "code": "unreachable",
+        "column": 28,
+        "message": "Statement is unreachable",
+        "offset": 3,
+        "src": "self.fail(message_registry.CONTIGUOUS_ITERABLE_EXPECTED, context)",
+        "target": "mypy.checker.TypeChecker.check_assignment_to_multiple_lvalues"
+      },
+      {
+        "code": "unreachable",
+        "column": 51,
+        "message": "Right operand of \"or\" is never evaluated",
+        "offset": 2,
+        "src": "if last_idx is None or last_idx + 1 == idx_rval:",
+        "target": "mypy.checker.TypeChecker.check_assignment_to_multiple_lvalues"
+      },
+      {
+        "code": "unreachable",
+        "column": 32,
+        "message": "Statement is unreachable",
+        "offset": 5,
+        "src": "self.fail(message_registry.CONTIGUOUS_ITERABLE_EXPECTED, context)",
+        "target": "mypy.checker.TypeChecker.check_assignment_to_multiple_lvalues"
+      },
+      {
         "code": "no-any-expr",
         "column": 36,
         "message": "Expression type contains \"Any\" (has type \"zip[tuple[Any, ...]]\")",
-        "offset": 215,
+        "offset": 166,
         "src": "types, declared_types = zip(*clean_items)",
         "target": "mypy.checker.TypeChecker.check_multi_assignment_from_union"
       },
@@ -2182,10 +2214,18 @@
         "target": "mypy.checker.TypeChecker.visit_for_stmt"
       },
       {
+        "code": "unreachable",
+        "column": 20,
+        "message": "Statement is unreachable",
+        "offset": 82,
+        "src": "elif argt != native_int:",
+        "target": "mypy.checker.TypeChecker.analyze_range_native_int_type"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_del_stmt\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 116,
+        "offset": 34,
         "src": "def visit_del_stmt(self, s: DelStmt) -> None:",
         "target": "mypy.checker.TypeChecker.visit_del_stmt"
       },
@@ -2230,10 +2270,18 @@
         "target": "mypy.checker.TypeChecker.visit_match_stmt"
       },
       {
+        "code": "unreachable",
+        "column": 20,
+        "message": "Statement is unreachable",
+        "offset": 527,
+        "src": "return {}, {}",
+        "target": "mypy.checker.TypeChecker.find_type_equals_check"
+      },
+      {
         "code": "no-any-expr",
         "column": 27,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 666,
+        "offset": 139,
         "src": "if called_type.items[0].def_extras.get(\"first_arg\"):",
         "target": "mypy.checker.TypeChecker.find_isinstance_check_helper"
       },
@@ -2246,10 +2294,26 @@
         "target": "mypy.checker.TypeChecker.find_isinstance_check_helper"
       },
       {
+        "code": "unreachable",
+        "column": 26,
+        "message": "Right operand of \"and\" is never evaluated",
+        "offset": 477,
+        "src": "if target and not is_same_type(target, expr_type):",
+        "target": "mypy.checker.TypeChecker.refine_identity_comparison_expression"
+      },
+      {
+        "code": "unreachable",
+        "column": 16,
+        "message": "Statement is unreachable",
+        "offset": 3,
+        "src": "return None, {}",
+        "target": "mypy.checker.TypeChecker.refine_identity_comparison_expression"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"named_generic_type\" is not using @override but is overriding a method in class \"mypy.plugin.CheckerPluginInterface\"",
-        "offset": 778,
+        "offset": 298,
         "src": "def named_generic_type(self, name: str, args: list[Type]) -> Instance:",
         "target": "mypy.checker.TypeChecker.named_generic_type"
       },
@@ -2568,10 +2632,18 @@
         "target": "mypy.checkexpr.ExpressionChecker.visit_comparison_expr"
       },
       {
+        "code": "unreachable",
+        "column": 16,
+        "message": "Statement is unreachable",
+        "offset": 144,
+        "src": "result = join.join_types(result, sub_result)",
+        "target": "mypy.checkexpr.ExpressionChecker.visit_comparison_expr"
+      },
+      {
         "code": "possibly-undefined",
         "column": 16,
         "message": "Name \"left_map\" may be undefined",
-        "offset": 677,
+        "offset": 533,
         "src": "and left_map is None",
         "target": "mypy.checkexpr"
       },
@@ -3296,7 +3368,7 @@
       {
         "code": "no-any-expr",
         "column": 77,
-        "message": "Expression type contains \"Any\" (has type \"MutableMapping[str, Any]\")",
+        "message": "Expression type contains \"Any\" (has type \"dict[str, Any] | RawConfigParser\")",
         "offset": 9,
         "src": "if config_file in defaults.SHARED_CONFIG_FILES and \"mypy\" not in parser:",
         "target": "mypy.config_parser.parse_config_file"
@@ -3304,7 +3376,7 @@
       {
         "code": "no-any-expr",
         "column": 21,
-        "message": "Expression type contains \"Any\" (has type \"MutableMapping[str, Any]\")",
+        "message": "Expression type contains \"Any\" (has type \"dict[str, Any] | RawConfigParser\")",
         "offset": 10,
         "src": "if \"mypy\" not in parser:",
         "target": "mypy.config_parser.parse_config_file"
@@ -3328,7 +3400,7 @@
       {
         "code": "no-any-expr",
         "column": 18,
-        "message": "Expression type contains \"Any\" (has type \"MutableMapping[str, Any]\")",
+        "message": "Expression type contains \"Any\" (has type \"dict[str, Any] | RawConfigParser\")",
         "offset": 3,
         "src": "section = parser[\"mypy\"]",
         "target": "mypy.config_parser.parse_config_file"
@@ -3336,7 +3408,7 @@
       {
         "code": "no-any-expr",
         "column": 18,
-        "message": "Expression has type \"Any\"",
+        "message": "Expression type contains \"Any\" (has type \"Any | SectionProxy\")",
         "offset": 0,
         "src": "section = parser[\"mypy\"]",
         "target": "mypy.config_parser.parse_config_file"
@@ -3352,7 +3424,7 @@
       {
         "code": "no-any-expr",
         "column": 47,
-        "message": "Expression has type \"Any\"",
+        "message": "Expression type contains \"Any\" (has type \"Any | SectionProxy\")",
         "offset": 2,
         "src": "prefix, options, set_strict_flags, section, config_types, stderr",
         "target": "mypy.config_parser.parse_config_file"
@@ -3368,15 +3440,15 @@
       {
         "code": "no-any-expr",
         "column": 4,
-        "message": "Expression type contains \"Any\" (has type \"(str, Any)\")",
+        "message": "Expression type contains \"Any\" (has type \"(str, Any) | (str, SectionProxy)\")",
         "offset": 6,
         "src": "for name, section in parser.items():",
         "target": "mypy.config_parser.parse_config_file"
       },
       {
         "code": "no-any-expr",
-        "column": 4,
-        "message": "Expression has type \"Any\"",
+        "column": 25,
+        "message": "Expression type contains \"Any\" (has type \"dict[str, Any] | RawConfigParser\")",
         "offset": 0,
         "src": "for name, section in parser.items():",
         "target": "mypy.config_parser.parse_config_file"
@@ -3384,15 +3456,7 @@
       {
         "code": "no-any-expr",
         "column": 25,
-        "message": "Expression type contains \"Any\" (has type \"MutableMapping[str, Any]\")",
-        "offset": 0,
-        "src": "for name, section in parser.items():",
-        "target": "mypy.config_parser.parse_config_file"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 25,
-        "message": "Expression type contains \"Any\" (has type \"ItemsView[str, Any]\")",
+        "message": "Expression type contains \"Any\" (has type \"dict_items[str, Any] | ItemsView[str, SectionProxy]\")",
         "offset": 0,
         "src": "for name, section in parser.items():",
         "target": "mypy.config_parser.parse_config_file"
@@ -3400,7 +3464,7 @@
       {
         "code": "no-any-expr",
         "column": 51,
-        "message": "Expression has type \"Any\"",
+        "message": "Expression type contains \"Any\" (has type \"Any | SectionProxy\")",
         "offset": 4,
         "src": "prefix, options, set_strict_flags, section, config_types, stderr",
         "target": "mypy.config_parser.parse_config_file"
@@ -7230,10 +7294,50 @@
         "target": "mypy.fastparse.ASTConverter.translate_stmt_list"
       },
       {
+        "code": "unreachable",
+        "column": 16,
+        "message": "Right operand of \"and\" is never evaluated",
+        "offset": 144,
+        "src": "current_overload_name is not None",
+        "target": "mypy.fastparse.ASTConverter.fix_function_overloads"
+      },
+      {
+        "code": "unreachable",
+        "column": 16,
+        "message": "Statement is unreachable",
+        "offset": 4,
+        "src": "if last_if_stmt is not None:",
+        "target": "mypy.fastparse.ASTConverter.fix_function_overloads"
+      },
+      {
+        "code": "unreachable",
+        "column": 16,
+        "message": "Right operand of \"and\" is never evaluated",
+        "offset": 17,
+        "src": "current_overload_name is not None",
+        "target": "mypy.fastparse.ASTConverter.fix_function_overloads"
+      },
+      {
+        "code": "unreachable",
+        "column": 16,
+        "message": "Statement is unreachable",
+        "offset": 8,
+        "src": "skipped_if_stmts.append(stmt)",
+        "target": "mypy.fastparse.ASTConverter.fix_function_overloads"
+      },
+      {
+        "code": "unreachable",
+        "column": 20,
+        "message": "Statement is unreachable",
+        "offset": 22,
+        "src": "ret.append(last_if_stmt)",
+        "target": "mypy.fastparse.ASTConverter.fix_function_overloads"
+      },
+      {
         "code": "no-any-expr",
         "column": 24,
         "message": "Expression has type \"Any\"",
-        "offset": 430,
+        "offset": 235,
         "src": "and func_type_ast.argtypes[0].value is Ellipsis",
         "target": "mypy.fastparse.ASTConverter.do_func_def"
       },
@@ -9820,10 +9924,18 @@
     ],
     "mypy/join.py": [
       {
+        "code": "unreachable",
+        "column": 31,
+        "message": "Right operand of \"or\" is never evaluated",
+        "offset": 137,
+        "src": "if best is None or is_better(res, best):",
+        "target": "mypy.join.InstanceJoiner.join_instances_via_supertype"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_unbound_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 294,
+        "offset": 157,
         "src": "def visit_unbound_type(self, t: UnboundType) -> ProperType:",
         "target": "mypy.join.TypeJoinVisitor.visit_unbound_type"
       },
@@ -12391,9 +12503,17 @@
       },
       {
         "code": "no-any-expr",
+        "column": 22,
+        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
+        "offset": 2,
+        "src": "if not isinstance(path, list):",
+        "target": "mypy.moduleinspect.get_package_properties"
+      },
+      {
+        "code": "no-any-expr",
         "column": 14,
         "message": "Expression type contains \"Any\" (has type \"Any | None\")",
-        "offset": 4,
+        "offset": 2,
         "src": "pkg_all = getattr(package, \"__all__\", None)",
         "target": "mypy.moduleinspect.get_package_properties"
       },
@@ -12472,14 +12592,6 @@
         "offset": 3,
         "src": "return repr(self)",
         "target": "mypy.nodes.Node.__str__"
-      },
-      {
-        "code": "unreachable",
-        "column": 12,
-        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-unreachable for more info",
-        "offset": 0,
-        "src": "return repr(self)",
-        "target": null
       },
       {
         "code": "explicit-override",
@@ -16955,10 +17067,18 @@
       },
       {
         "code": "no-any-explicit",
-        "column": 8,
+        "column": 12,
         "message": "Explicit \"Any\" is not allowed",
         "offset": 106,
-        "src": "f: Callable[[object], Any] = lambda x: x",
+        "src": "f = cast(Callable[[object], Any], lambda x: x)",
+        "target": "mypy.semanal.SemanticAnalyzer._get_node_for_class_scoped_import"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 12,
+        "message": "Expression type contains \"Any\" (has type \"(object) -> Any\")",
+        "offset": 0,
+        "src": "f = cast(Callable[[object], Any], lambda x: x)",
         "target": "mypy.semanal.SemanticAnalyzer._get_node_for_class_scoped_import"
       },
       {
@@ -19092,6 +19212,22 @@
         "offset": 200,
         "src": "s_batch.remove(solvable_tv)",
         "target": "mypy.solve"
+      },
+      {
+        "code": "unreachable",
+        "column": 12,
+        "message": "Statement is unreachable",
+        "offset": 47,
+        "src": "if type_state.infer_unions:",
+        "target": "mypy.solve.solve_one"
+      },
+      {
+        "code": "unreachable",
+        "column": 12,
+        "message": "Statement is unreachable",
+        "offset": 11,
+        "src": "top = meet_types(top, target, intersect=True)",
+        "target": "mypy.solve.solve_one"
       }
     ],
     "mypy/split_namespace.py": [
@@ -21930,10 +22066,26 @@
         "target": "mypy.stubgenc.is_c_property_readonly"
       },
       {
+        "code": "unreachable",
+        "column": 16,
+        "message": "Statement is unreachable",
+        "offset": 91,
+        "src": "docstr_quoted = mypy.util.quote_docstring(docstr.strip())",
+        "target": "mypy.stubgenc.generate_c_function_stub"
+      },
+      {
+        "code": "unreachable",
+        "column": 16,
+        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-unreachable for more info",
+        "offset": 0,
+        "src": "docstr_quoted = mypy.util.quote_docstring(docstr.strip())",
+        "target": null
+      },
+      {
         "code": "truthy-bool",
         "column": 7,
         "message": "\"module\" has type Module which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 115,
+        "offset": 24,
         "src": "if module:",
         "target": "mypy.stubgenc.strip_or_import"
       },
@@ -24688,10 +24840,18 @@
         "target": "mypy.suggestions"
       },
       {
+        "code": "unreachable",
+        "column": 61,
+        "message": "Right operand of \"or\" is never evaluated",
+        "offset": 105,
+        "src": "if sym_line <= line and (closest_line is None or sym_line > closest_line):",
+        "target": "mypy.suggestions.SuggestionEngine.find_node_by_file_and_line"
+      },
+      {
         "code": "no-any-expr",
         "column": 26,
         "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 193,
+        "offset": 88,
         "src": "return json.dumps([obj], sort_keys=True)",
         "target": "mypy.suggestions.SuggestionEngine.json_suggestion"
       },
@@ -24890,10 +25050,18 @@
         "target": "mypy.test.data.module_from_path"
       },
       {
+        "code": "unreachable",
+        "column": 16,
+        "message": "Statement is unreachable",
+        "offset": 45,
+        "src": "data = collapse_line_continuation(data)",
+        "target": "mypy.test.data.parse_test_data"
+      },
+      {
         "code": "possibly-undefined",
         "column": 34,
         "message": "Name \"severity\" may be undefined",
-        "offset": 132,
+        "offset": 87,
         "src": "output.append(f\"{fnam}:{i + 1}: {severity}: {message}\")",
         "target": "mypy.test.data"
       },
@@ -25731,17 +25899,25 @@
       },
       {
         "code": "no-any-explicit",
-        "column": 12,
+        "column": 18,
         "message": "Explicit \"Any\" is not allowed",
         "offset": 138,
-        "src": "res: dict[str, Any] = server.cmd_suggest(",
+        "src": "res = cast(",
         "target": "mypy.test.testfinegrained.FineGrainedSuite.maybe_suggest"
       },
       {
         "code": "no-any-expr",
         "column": 18,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 10,
+        "offset": 0,
+        "src": "res = cast(",
+        "target": "mypy.test.testfinegrained.FineGrainedSuite.maybe_suggest"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 18,
+        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
+        "offset": 13,
         "src": "val = res[\"error\"] if \"error\" in res else res[\"out\"] + res[\"err\"]",
         "target": "mypy.test.testfinegrained.FineGrainedSuite.maybe_suggest"
       },
@@ -25835,17 +26011,25 @@
       },
       {
         "code": "no-any-explicit",
-        "column": 12,
+        "column": 18,
         "message": "Explicit \"Any\" is not allowed",
         "offset": 21,
-        "src": "res: dict[str, Any] = server.cmd_inspect(",
+        "src": "res = cast(",
         "target": "mypy.test.testfinegrained.FineGrainedSuite.maybe_inspect"
       },
       {
         "code": "no-any-expr",
         "column": 18,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 11,
+        "offset": 0,
+        "src": "res = cast(",
+        "target": "mypy.test.testfinegrained.FineGrainedSuite.maybe_inspect"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 18,
+        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
+        "offset": 14,
         "src": "val = res[\"error\"] if \"error\" in res else res[\"out\"] + res[\"err\"]",
         "target": "mypy.test.testfinegrained.FineGrainedSuite.maybe_inspect"
       },
@@ -29047,7 +29231,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"__str__\" is not using @override but is overriding a method in class \"builtins.object\"",
-        "offset": 146,
+        "offset": 148,
         "src": "def __str__(self) -> str:",
         "target": "mypy.tvar_scope.TypeVarLikeScope.__str__"
       }
@@ -30034,10 +30218,34 @@
     ],
     "mypy/typeops.py": [
       {
+        "code": "unreachable",
+        "column": 20,
+        "message": "Statement is unreachable",
+        "offset": 481,
+        "src": "extra_attrs_set.add(instance.extra_attrs)",
+        "target": "mypy.typeops.make_simplified_union"
+      },
+      {
+        "code": "unreachable",
+        "column": 20,
+        "message": "Right operand of \"and\" is never evaluated",
+        "offset": 35,
+        "src": "and proper_ti.fallback in unduplicated_literal_fallbacks",
+        "target": "mypy.typeops._remove_redundant_union_items"
+      },
+      {
+        "code": "unreachable",
+        "column": 16,
+        "message": "Statement is unreachable",
+        "offset": 99,
+        "src": "extra_attrs_set.add(instance.extra_attrs)",
+        "target": "mypy.typeops.make_simplified_intersection"
+      },
+      {
         "code": "no-any-explicit",
         "column": 4,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 980,
+        "offset": 365,
         "src": "sum_types: dict[str, tuple[set[Any], list[int]]] = {}",
         "target": "mypy.typeops.try_contracting_literals_in_union"
       },
@@ -30159,7 +30367,7 @@
         "code": "no-any-explicit",
         "column": 0,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 45,
+        "offset": 46,
         "src": "JsonDict: _TypeAlias = Dict[str, Any]",
         "target": "mypy.types"
       },
@@ -33763,7 +33971,7 @@
         "code": "no-any-expr",
         "column": 28,
         "message": "Expression type contains \"Any\" (has type \"list[str | Any]\")",
-        "offset": 470,
+        "offset": 482,
         "src": "docstr_repr = \"\\n\".join(re.split(r\"(?<=[^\\\\])\\\\n\", repr(docstr)))",
         "target": "mypy.util.quote_docstring"
       }
@@ -35684,6 +35892,14 @@
         "offset": 3,
         "src": "def visit_set_mem(self, op: SetMem) -> GenAndKill[Value]:",
         "target": "mypyc.analysis.dataflow.LivenessVisitor.visit_set_mem"
+      },
+      {
+        "code": "unreachable",
+        "column": 16,
+        "message": "Statement is unreachable",
+        "offset": 100,
+        "src": "elif kind == MAYBE_ANALYSIS:",
+        "target": "mypyc.analysis.dataflow.run_analysis"
       }
     ],
     "mypyc/analysis/ircheck.py": [
@@ -39316,10 +39532,18 @@
         "target": "mypyc.irbuild.builder.IRBuilder.accept"
       },
       {
+        "code": "unreachable",
+        "column": 24,
+        "message": "Statement is unreachable",
+        "offset": 378,
+        "src": "self.error(\"Two starred expressions in assignment\", line)",
+        "target": "mypyc.irbuild.builder.IRBuilder.get_assignment_target"
+      },
+      {
         "code": "possibly-undefined",
         "column": 19,
         "message": "Name \"fullname\" may be undefined",
-        "offset": 756,
+        "offset": 378,
         "src": "return fullname, final_var, native",
         "target": "mypyc.irbuild.builder"
       },
@@ -39758,10 +39982,18 @@
         "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder.coerce_fixed_width_to_int"
       },
       {
+        "code": "unreachable",
+        "column": 20,
+        "message": "Statement is unreachable",
+        "offset": 284,
+        "src": "pos_block, named_block = BasicBlock(), BasicBlock()",
+        "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder._construct_varargs"
+      },
+      {
         "code": "possibly-undefined",
         "column": 27,
         "message": "Name \"skip\" may be undefined",
-        "offset": 309,
+        "offset": 25,
         "src": "assert skip is not out",
         "target": "mypyc.irbuild.ll_builder"
       },
@@ -39806,10 +40038,26 @@
         "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder.load_int"
       },
       {
+        "code": "unreachable",
+        "column": 16,
+        "message": "Statement is unreachable",
+        "offset": 462,
+        "src": "self.translate_special_method_call(",
+        "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder.make_dict"
+      },
+      {
+        "code": "unreachable",
+        "column": 20,
+        "message": "Statement is unreachable",
+        "offset": 286,
+        "src": "assert matching.priority != desc.priority, \"Ambiguous:\\n1) {}\\n2) {}\".format(",
+        "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder.matching_call_c"
+      },
+      {
         "code": "possibly-undefined",
         "column": 36,
         "message": "Name \"false_block\" may be undefined",
-        "offset": 1070,
+        "offset": 322,
         "src": "self.activate_block(false_block)",
         "target": "mypyc.irbuild.ll_builder"
       }
@@ -40157,6 +40405,14 @@
         "message": "Method \"visit_decorator\" is not using @override but is overriding a method in class \"mypy.traverser.TraverserVisitor\"",
         "offset": 269,
         "src": "def visit_decorator(self, dec: Decorator) -> None:",
+        "target": "mypyc.irbuild.prepare.SingledispatchVisitor.visit_decorator"
+      },
+      {
+        "code": "unreachable",
+        "column": 24,
+        "message": "Statement is unreachable",
+        "offset": 19,
+        "src": "self.errors.error(",
         "target": "mypyc.irbuild.prepare.SingledispatchVisitor.visit_decorator"
       }
     ],

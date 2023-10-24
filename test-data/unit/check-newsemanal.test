@@ -1273,7 +1273,7 @@ y: Final[C] = D()
 bad: Final[D] = C()  # E: Incompatible types in assignment (expression has type "C", variable has type "D")
 
 reveal_type(x)  # N: Revealed type is "__main__.C"
-reveal_type(y)  # N: Revealed type is "__main__.C"
+reveal_type(y)  # N: Revealed type is "__main__.D"
 [case testNewAnalyzerFinalDefiningInstanceVar]
 from typing import Final
 
@@ -1285,7 +1285,7 @@ class C:
         self.x: Final = x
         self.y: Final[C] = E(D())
 reveal_type(C(D()).x)  # N: Revealed type is "__main__.D"
-reveal_type(C(D()).y)  # N: Revealed type is "__main__.C"
+reveal_type(C(D()).y)  # N: Revealed type is "__main__.E"
 [case testNewAnalyzerFinalReassignModuleVar]
 from typing import Final
 
@@ -1825,7 +1825,7 @@ reveal_type(func(x))  # N: Revealed type is "Any"
 
 [case testNewAnalyzerBuiltinAliasesFixed]
 from typing import List, Optional
-x: Optional[List] = None
+x: Optional[List]
 y: List[str]
 
 reveal_type(x)  # N: Revealed type is "Union[builtins.list[Any], None]"
@@ -2999,7 +2999,7 @@ from typing import Callable, TypeVar
 FooT = TypeVar('FooT', bound='Foo')
 class Foo: ...
 
-f = lambda x: True  # type: Callable[[FooT], bool]
+f: Callable[[FooT], bool]
 reveal_type(f)  # N: Revealed type is "def [FooT <: __main__.Foo] (FooT`-1) -> builtins.bool"
 [builtins fixtures/bool.pyi]
 
@@ -3017,7 +3017,7 @@ class Foo: ...
 from a import FooT
 from typing import Callable
 
-f = lambda x: True  # type: Callable[[FooT], bool]
+f: Callable[[FooT], bool]
 reveal_type(f)  # N: Revealed type is "def [FooT <: a.Foo] (FooT`-1) -> builtins.bool"
 
 class B: ...

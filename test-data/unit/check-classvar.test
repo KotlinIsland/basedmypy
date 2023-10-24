@@ -114,10 +114,10 @@ main:5: note: Revealed type is "builtins.int"
 [case testAssignmentOnUnion]
 from typing import ClassVar, Union
 class A:
-    x = None  # type: int
+    x: int
 class B:
-    x = None  # type: ClassVar[int]
-c = A()  # type: Union[A, B]
+    x: ClassVar[int]
+c: Union[A, B]
 c.x = 1
 [out]
 main:7: error: Cannot assign to class variable "x" via instance

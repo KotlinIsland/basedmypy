@@ -11,7 +11,7 @@ any: Any
 args: Tuple[int, str] = (1, 'x')
 args2: Tuple[bool, str] = (False, 'y')
 args3: Tuple[int, str, bool] = (2, 'z', True)
-varargs: Tuple[int, ...] = (1, 2, 3)
+varargs: Tuple[int, ...]
 
 reveal_type(f(args))  # N: Revealed type is "Tuple[builtins.int, builtins.str]"
 

@@ -1398,7 +1398,9 @@ class E(Enum):
     C = 3
 
 e: E
-a: Literal[E.A, E.B, E.C] = e
+a: Literal[E.A, E.B, E.C]
+if bool():
+    a = e
 b: Literal[E.A, E.B] = e  # E: Incompatible types in assignment (expression has type "E", variable has type "Literal[E.A, E.B]")
 c: Literal[E.A, E.C] = e  # E: Incompatible types in assignment (expression has type "E", variable has type "Literal[E.A, E.C]")
 b = a  # E: Incompatible types in assignment (expression has type "Literal[E.A, E.B, E.C]", variable has type "Literal[E.A, E.B]")

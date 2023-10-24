@@ -91,7 +91,7 @@ def test_concat() -> None:
     assert type(brr3) == bytearray
     brr3 = brr3 + bytearray([10])
     assert brr3 == bytearray(b'\x00\x00\x00\x00\x01\x02\x03\x04\n')
-    b5 = brr2 + b2
+    b5: bytes = brr2 + b2
     assert b5 == bytearray(b'\x00\x01\x02\x03\x04456')
     assert type(b5) == bytearray
     b5 = b2 + brr2

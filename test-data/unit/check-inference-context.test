@@ -437,11 +437,11 @@ class B: pass
 [case testNestedListExpressions]
 # flags: --no-strict-optional
 from typing import List
-aao = None # type: List[List[object]]
-aab = None # type: List[List[B]]
-ab = None # type: List[B]
-b = None # type: B
-o = None # type: object
+aao: List[List[object]]
+aab: List[List[B]]
+ab: List[B]
+b: B
+o: object
 def f(): aao, aab # Prevent redefinition
 
 aao = [[o], ab] # E: List item 1 has incompatible type "List[B]"; expected "List[object]"

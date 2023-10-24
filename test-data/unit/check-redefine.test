@@ -295,12 +295,12 @@ def f() -> None:
 def f() -> None:
     x = 1
     reveal_type(x) # N: Revealed type is "builtins.int"
-    x = ''  # type: object
+    x: object
     reveal_type(x) # N: Revealed type is "builtins.object"
 def g() -> None:
     x = 1
     reveal_type(x) # N: Revealed type is "builtins.int"
-    x: object = ''
+    x: object
     reveal_type(x) # N: Revealed type is "builtins.object"
 def h() -> None:
     x: int

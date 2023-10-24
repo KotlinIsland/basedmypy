@@ -261,7 +261,7 @@ if int():
 if int():
     var = C # OK
 
-var_old = None # type: Type[A] # Old syntax for variable annotations
+var_old = C # type: Type[A] # Old syntax for variable annotations
 var_old()
 if int():
     var_old = A # E: Can only assign concrete classes to a variable of type "Type[A]"
@@ -587,7 +587,7 @@ class B(A):
 A() # E: Cannot instantiate abstract class "A" with abstract attribute "f"
 B()
 B().f(1)
-a = B() # type: A
+a: A
 a.f(1)
 a.f('')
 a.f(B()) # E: No overload variant of "f" of "A" matches argument type "B" \
@@ -617,7 +617,7 @@ class B(A):
 A() # E: Cannot instantiate abstract class "A" with abstract attribute "f"
 B()
 B().f(1)
-a = B() # type: A
+a: A
 a.f(1)
 a.f('')
 a.f(B()) # E: No overload variant of "f" of "A" matches argument type "B" \

@@ -35,12 +35,12 @@ main:1: error: Incompatible types in assignment (expression has type "int", vari
 [case testOptionalNotMemberOfType]
 from typing import Optional
 def f(a: int) -> None: pass
-x = None  # type:  Optional[int]
+x:  Optional[int]
 f(x)  # E: Argument 1 to "f" has incompatible type "Optional[int]"; expected "int"
 
 [case testIsinstanceCases]
 from typing import Optional
-x = None  # type:  Optional[int]
+x:  Optional[int]
 if isinstance(x, int):
   reveal_type(x)  # N: Revealed type is "builtins.int"
 else:
@@ -49,7 +49,7 @@ else:
 
 [case testIfCases]
 from typing import Optional
-x = None  # type:  Optional[int]
+x: Optional[int]
 if x:
   reveal_type(x)  # N: Revealed type is "builtins.int"
 else:
@@ -58,7 +58,7 @@ else:
 
 [case testIfNotCases]
 from typing import Optional
-x = None  # type:  Optional[int]
+x:  Optional[int]
 if not x:
   reveal_type(x)  # N: Revealed type is "Union[builtins.int, None]"
 else:
@@ -67,7 +67,7 @@ else:
 
 [case testIsNotNoneCases]
 from typing import Optional
-x = None  # type:  Optional[int]
+x:  Optional[int]
 if x is not None:
   reveal_type(x)  # N: Revealed type is "builtins.int"
 else:
@@ -76,7 +76,7 @@ else:
 
 [case testIsNoneCases]
 from typing import Optional
-x = None  # type:  Optional[int]
+x:  Optional[int]
 if x is None:
   reveal_type(x)  # N: Revealed type is "None"
 else:
@@ -95,7 +95,7 @@ else:
 
 [case testOrCases]
 from typing import Optional
-x = None  # type: Optional[str]
+x: Optional[str]
 y1 = x or 'a'
 reveal_type(y1)  # N: Revealed type is "builtins.str"
 y2 = x or 1
@@ -107,7 +107,7 @@ reveal_type(z2)  # N: Revealed type is "Union[builtins.int, builtins.str, None]"
 
 [case testAndCases]
 from typing import Optional
-x = None  # type: Optional[str]
+x: Optional[str]
 y1 = x and 'b'
 reveal_type(y1)  # N: Revealed type is "Union[builtins.str, None]"
 y2 = x and 1  # x could be '', so...
@@ -188,7 +188,7 @@ reveal_type(x)  # N: Revealed type is "Union[Any, None]"
 
 [case testInferOptionalTypeFromOptional]
 from typing import Optional
-y = None  # type: Optional[int]
+y: Optional[int]
 x = None
 x = y
 reveal_type(x)  # N: Revealed type is "Union[builtins.int, None]"
@@ -236,7 +236,7 @@ class C:
 [case testMultipleAssignmentNoneClassVariableInInit]
 from typing import Optional
 class C:
-    x, y = None, None  # type: int, str
+    x, y = 1, ""  # type: int, str
     def __init__(self) -> None:
         self.x = None  # E: Incompatible types in assignment (expression has type "None", variable has type "int")
         self.y = None  # E: Incompatible types in assignment (expression has type "None", variable has type "str")
@@ -439,7 +439,7 @@ foo([f])  # E: List item 0 has incompatible type "Callable[[], int]"; expected "
 
 [case testInferEqualsNotOptional]
 from typing import Optional
-x = ''  # type: Optional[str]
+x: Optional[str]
 if x == '<string>':
     reveal_type(x)  # N: Revealed type is "builtins.str"
 else:
@@ -452,7 +452,7 @@ else:
 
 [case testInferEqualsNotOptionalWithUnion]
 from typing import Union
-x = ''  # type: Union[str, int, None]
+x: Union[str, int, None]
 if x == '<string>':
     reveal_type(x)  # N: Revealed type is "Union[builtins.str, builtins.int]"
 else:
@@ -465,7 +465,7 @@ else:
 
 [case testInferEqualsNotOptionalWithOverlap]
 from typing import Union
-x = ''  # type: Union[str, int, None]
+x: Union[str, int, None]
 if x == object():
     reveal_type(x)  # N: Revealed type is "Union[builtins.str, builtins.int]"
 else:
@@ -478,7 +478,7 @@ else:
 
 [case testInferEqualsStillOptionalWithNoOverlap]
 from typing import Optional
-x = ''  # type: Optional[str]
+x: Optional[str]
 if x == 0:
     reveal_type(x)  # N: Revealed type is "Union[builtins.str, None]"
 else:
@@ -491,8 +491,8 @@ else:
 
 [case testInferEqualsStillOptionalWithBothOptional]
 from typing import Union
-x = ''  # type: Union[str, int, None]
-y = ''  # type: Union[str, None]
+x: Union[str, int, None]
+y: Union[str, None]
 if x == y:
     reveal_type(x)  # N: Revealed type is "Union[builtins.str, builtins.int, None]"
 else:
@@ -573,7 +573,7 @@ if x is not None:
 [case testOptionalTypeNarrowedInBooleanStatement]
 from typing import Optional
 
-x: Optional[int] = None
+x: Optional[int]
 x is not None and x + 42
 x is not None and x + '42'  # E: Unsupported operand types for + ("int" and "str")
 [builtins fixtures/isinstance.pyi]
@@ -613,10 +613,10 @@ reveal_type(u(None, 1))  # N: Revealed type is "Union[builtins.int, None]"
 
 [case testOptionalAndAnyBaseClass]
 from typing import Any, Optional
-A = None  # type: Any
+A: Any
 class C(A):
     pass
-x = None  # type: Optional[C]
+x: Optional[C]
 x.foo()  # E: Item "None" of "Optional[C]" has no attribute "foo"
 
 [case testIsinstanceAndOptionalAndAnyBase]

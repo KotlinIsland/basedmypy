@@ -191,8 +191,8 @@ if int():
 # flags: --no-strict-optional
 from typing import TypeVar
 T = TypeVar('T')
-a = None # type: A
-o = None # type: object
+a: A
+o: object
 
 def f(a: T, b: T = None, *c: T) -> T:
     pass
@@ -274,7 +274,7 @@ def f(a: 'A') -> None:
 
 class A: pass
 
-a = None # type: A
+a: A
 
 f(*None)
 f(*a)    # E: List or tuple expected as variadic arguments
@@ -389,7 +389,7 @@ def f(a: 'A', b: 'B' = None, *c: 'B') -> None:
 class A: pass
 class B: pass
 
-a, b = None, None # type: (A, B)
+a, b = A(), B() # type: (A, B)
 f(*())        # E: Too few arguments for "f"
 f(a, *[a])    # E: Argument 2 to "f" has incompatible type "*List[A]"; expected "Optional[B]" \
               # E: Argument 2 to "f" has incompatible type "*List[A]"; expected "B"
@@ -462,7 +462,7 @@ foo(*())
 from foo import *
 [file foo.pyi]
 from typing import overload
-a, b = None, None # type: (A, B)
+a, b = A(), B() # type: (A, B)
 
 if int():
     b = f()        # E: Incompatible types in assignment (expression has type "A", variable has type "B")

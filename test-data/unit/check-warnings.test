@@ -15,7 +15,7 @@ main:5: error: Redundant cast to "int"
 [case testRedundantCastWithIsinstance]
 # flags: --warn-redundant-casts
 from typing import cast, Union
-x = 1  # type: Union[int, str]
+x: Union[int, str]
 if isinstance(x, str):
     cast(str, x)
 [builtins fixtures/isinstance.pyi]

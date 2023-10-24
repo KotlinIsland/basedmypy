@@ -74,3 +74,15 @@ class D(date):
     def __format__(self, s: str) -> str: ...
 f"{D(1,1,1):% %:z}"
 [builtins fixtures/f_string.pyi]
+
+
+[case testHelpfulExplicitStr]
+def s(o: object) -> str: ...
+n: None
+f"{s(n)}"
+o: object
+f"{s(o)}"
+class A: ...
+a: A
+f"{s(a)}"
+[builtins fixtures/f_string.pyi]

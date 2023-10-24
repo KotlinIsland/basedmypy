@@ -1,5 +1,5 @@
 [case testForcedAssignment]
-x = 1 # type: object
+x: object
 y = 1
 def f(): x, y  # Prevent independent redefinition
 y = x # E: Incompatible types in assignment (expression has type "object", variable has type "int")
@@ -574,7 +574,7 @@ class C:
     def method3(self, arg: str):
         return 'abc'
 
-v = A() # type: Union[A, B, C]
+v: Union[A, B, C]
 
 if isinstance(v, (B, C)):
     v.method2(123)
@@ -588,11 +588,11 @@ class A: pass
 class B: pass
 class C: pass
 
-a = A()  # type: A
+a: A
 assert isinstance(a, (A, B))
 reveal_type(a)  # N: Revealed type is "__main__.A"
 
-b = A()  # type: Union[A, B]
+b: Union[A, B]
 assert isinstance(b, (A, B, C))
 reveal_type(b)  # N: Revealed type is "Union[__main__.A, __main__.B]"
 [builtins fixtures/isinstance.pyi]
@@ -1187,7 +1187,7 @@ class A:
 class B(A):
     flag = 1
 
-x = B() # type: A
+x: A
 
 if isinstance(x, B) and x.flag:
     pass
@@ -1206,7 +1206,7 @@ class A:
 class B(A):
     flag = 1
 
-x = B() # type: A
+x: A
 
 x.flag if isinstance(x, B) else 0
 0 if not isinstance(x, B) else x.flag
@@ -1222,8 +1222,8 @@ class B(A):
 class C(A):
     glaf = 1
 
-x = B() # type: A
-y = C() # type: A
+x: A
+y: A
 
 if isinstance(x, B) and isinstance(y, C):
     x.flag += 1
@@ -1846,7 +1846,7 @@ def f(x: Type[int]) -> None:
 [case testIsinstanceVariableSubstitution]
 T = (int, str)
 U = (list, T)
-x: object = None
+x: object
 
 if isinstance(x, T):
     reveal_type(x)  # N: Revealed type is "Union[builtins.int, builtins.str]"

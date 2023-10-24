@@ -5,7 +5,10 @@ from typing import Dict, List, Union, TypeVar, Sequence
 
 JSON = Union[str, List[JSON], Dict[str, JSON]]
 
-x: JSON = ["foo", {"bar": "baz"}]
+y: JSON = ["foo", {"bar": "baz"}]
+reveal_type(y)  # N: Revealed type is "builtins.list[Union[builtins.str, builtins.list[...], builtins.dict[builtins.str, ...]]]"
+
+x: JSON
 
 reveal_type(x)  # N: Revealed type is "Union[builtins.str, builtins.list[...], builtins.dict[builtins.str, ...]]"
 if isinstance(x, list):

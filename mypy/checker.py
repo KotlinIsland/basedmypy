@@ -45,7 +45,7 @@ from mypy.expandtype import expand_self_type, expand_type, expand_type_by_instan
 from mypy.join import join_types
 from mypy.literals import Key, extract_var_from_literal_hash, literal, literal_hash
 from mypy.maptype import map_instance_to_supertype
-from mypy.meet import is_overlapping_erased_types, is_overlapping_types
+from mypy.meet import is_overlapping_erased_types, is_overlapping_types, narrow_declared_type
 from mypy.message_registry import ErrorMessage
 from mypy.messages import (
     SUGGESTED_TEST_FIXTURES,
@@ -3023,7 +3023,13 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         # as X | Y.
         if not (s.is_alias_def and self.is_stub):
             with self.enter_final_context(s.is_final_def):
-                self.check_assignment(s.lvalues[-1], s.rvalue, s.type is None, s.new_syntax)
+                self.check_assignment(
+                    s.lvalues[-1],
+                    s.rvalue,
+                    s.type is None,
+                    s.new_syntax,
+                    override_infer=s.unanalyzed_type is not None,
+                )
         if s.is_alias_def:
             self.check_type_alias_rvalue(s)
 
@@ -3080,11 +3086,12 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         rvalue: Expression,
         infer_lvalue_type: bool = True,
         new_syntax: bool = False,
+        override_infer=False,
     ) -> None:
         """Type check a single assignment: lvalue = rvalue."""
         if isinstance(lvalue, (TupleExpr, ListExpr)):
             self.check_assignment_to_multiple_lvalues(
-                lvalue.items, rvalue, rvalue, infer_lvalue_type
+                lvalue.items, rvalue, rvalue, infer_lvalue_type, override_infer
             )
         else:
             self.try_infer_partial_generic_type_from_assignment(lvalue, rvalue, "=")
@@ -3225,7 +3232,42 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 ):
                     self.msg.concrete_only_assign(p_lvalue_type, rvalue)
                     return
-                if rvalue_type and infer_lvalue_type and not isinstance(lvalue_type, PartialType):
+                proper_right = get_proper_type(rvalue_type)
+                if (
+                    isinstance(lvalue, RefExpr)
+                    and isinstance(lvalue.node, Var)
+                    and lvalue.node.is_final
+                    and (
+                        (
+                            # assign_type will use a non-unique key for a final literal
+                            isinstance(proper_right, LiteralType)
+                            or isinstance(proper_right, Instance)
+                            and proper_right.last_known_value is not None
+                        )
+                        # assign_type wouldn't be in the right frame
+                        or (isinstance(lvalue, MemberExpr) or self.scope.active_class())
+                    )
+                ):
+                    # HACK: working around some functionality of assign_type
+                    assert lvalue.node.type
+                    if (
+                        not isinstance(rvalue, TempNode)
+                        and not isinstance(get_proper_type(lvalue_type), AnyType)
+                        and is_subtype(rvalue_type, lvalue.node.type)
+                    ):
+                        if isinstance(lvalue, MemberExpr) or self.scope.active_class():
+                            t = narrow_declared_type(rvalue_type, lvalue.node.type)
+                            self.store_type(lvalue, t)
+                            lvalue.node.type = t
+                        else:
+                            self.store_type(lvalue, rvalue_type)
+                            lvalue.node.type = rvalue_type
+
+                elif (
+                    ((override_infer and not isinstance(rvalue, TempNode)) or infer_lvalue_type)
+                    and not isinstance(lvalue_type, PartialType)
+                    and rvalue_type
+                ):
                     # Don't use type binder for definitions of special forms, like named tuples.
                     if not (isinstance(lvalue, NameExpr) and lvalue.is_special_form):
                         self.binder.assign_type(lvalue, rvalue_type, lvalue_type, False)
@@ -3661,6 +3703,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         rvalue: Expression,
         context: Context,
         infer_lvalue_type: bool = True,
+        override_infer=False,
     ) -> None:
         if isinstance(rvalue, (TupleExpr, ListExpr)):
             # Recursively go into Tuple or List expression rhs instead of
@@ -3737,7 +3780,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 lr_pairs.extend(zip(right_lvs, right_rvs))
 
                 for lv, rv in lr_pairs:
-                    self.check_assignment(lv, rv, infer_lvalue_type)
+                    self.check_assignment(lv, rv, infer_lvalue_type, override_infer)
         else:
             self.check_multi_assignment(lvalues, rvalue, context, infer_lvalue_type)
 

@@ -59,8 +59,9 @@ class B(A): pass
 [case testTupleCompatibilityWithOtherTypes]
 # flags: --no-strict-optional
 from typing import Tuple
-a, o = None, None # type: (A, object)
-t = None # type: Tuple[A, A]
+class A: pass
+a, o = A(), object() # type: (A, object)
+t: Tuple[A, A]
 
 if int():
     a = t # E: Incompatible types in assignment (expression has type "Tuple[A, A]", variable has type "A")
@@ -76,7 +77,6 @@ if int():
 if int():
     t = None
 
-class A: pass
 [builtins fixtures/tuple.pyi]
 
 [case testNestedTupleTypes]
@@ -136,11 +136,16 @@ class A: pass
 [case testTupleExpressions]
 # flags: --no-strict-optional
 from typing import Tuple
-t1 = None # type: tuple
-t2 = None # type: Tuple[A]
-t3 = None # type: Tuple[A, B]
 
-a, b, c = None, None, None # type: (A, B, C)
+class A: pass
+class B: pass
+class C(B): pass
+
+t1: tuple
+t2: Tuple[A]
+t3: Tuple[A, B]
+
+a, b, c = A(), B(), C() # type: (A, B, C)
 
 if int():
     t2 = ()        # E: Incompatible types in assignment (expression has type "Tuple[()]", variable has type "Tuple[A]")
@@ -160,9 +165,6 @@ t3 = (a, b)
 t3 = (a, c)
 t3 = (None, None)
 
-class A: pass
-class B: pass
-class C(B): pass
 [builtins fixtures/tuple.pyi]
 
 [case testVoidValueInTuple]
@@ -272,10 +274,13 @@ t[n] = A() # E: Unsupported target for indexed assignment ("Tuple[A, B]")
 [case testMultipleAssignmentWithTuples]
 # flags: --no-strict-optional
 from typing import Tuple
-t1 = None # type: Tuple[A, B]
-t2 = None # type: Tuple[A, B, A]
-a, b = None, None # type: (A, B)
-(a1, b1) = None, None # type: Tuple[A, B]
+
+class A: pass
+class B: pass
+t1: Tuple[A, B]
+t2: Tuple[A, B, A]
+a, b = A(), B() # type: (A, B)
+(a1, b1) = A(), B() # type: Tuple[A, B]
 
 reveal_type(a1)  # N: Revealed type is "__main__.A"
 reveal_type(b1)  # N: Revealed type is "__main__.B"
@@ -292,8 +297,6 @@ if int():
 if int():
     a, b, a1 = t2
 
-class A: pass
-class B: pass
 [builtins fixtures/tuple.pyi]
 
 [case testMultipleAssignmentWithSquareBracketTuples]
@@ -301,10 +304,10 @@ class B: pass
 from typing import Tuple
 
 def avoid_confusing_test_parser() -> None:
-    t1 = None # type: Tuple[A, B]
-    t2 = None # type: Tuple[A, B, A]
-    [a, b] = None, None # type: (A, B)
-    [a1, b1] = None, None # type: Tuple[A, B]
+    t1: Tuple[A, B]
+    t2: Tuple[A, B, A]
+    [a, b] = A(), B() # type: (A, B)
+    [a1, b1] = A(), B() # type: Tuple[A, B]
 
     reveal_type(a)  # N: Revealed type is "__main__.A"
     reveal_type(b)  # N: Revealed type is "__main__.B"
@@ -380,7 +383,8 @@ class B(A): pass
 
 [case testInitializationWithMultipleValues]
 # flags: --no-strict-optional
-a, b = None, None # type: (A, B)
+a: A
+b: B
 
 a1, b1 = a, a # type: (A, B)  # E: Incompatible types in assignment (expression has type "A", variable has type "B")
 a2, b2 = b, b # type: (A, B)  # E: Incompatible types in assignment (expression has type "B", variable has type "A")
@@ -503,7 +507,7 @@ aa, bb, *cc = t  # E: Need type annotation for "cc" (hint: "cc: List[<type>] = .
 [case testAssignmentToStarAnnotation]
 # flags: --no-strict-optional
 from typing import List
-li, lo = None, None # type: List[int], List[object]
+li, lo = [], [] # type: List[int], List[object]
 a, b, *c = 1, 2  # type: int, int, List[int]
 if int():
     c = lo  # E: Incompatible types in assignment (expression has type "List[object]", variable has type "List[int]")
@@ -911,7 +915,7 @@ reveal_type(x)  # N: Revealed type is "Tuple[builtins.int, fallback=__main__.Tes
 
 [case testIndexingVariableLengthTuple]
 from typing import Tuple
-x = () # type: Tuple[str, ...]
+x: Tuple[str, ...]
 n = 5
 x[n]() # E: "str" not callable
 x[3]() # E: "str" not callable
@@ -923,8 +927,8 @@ class A: pass
 class B(A): pass
 def fa(t: Tuple[A, ...]) -> None: pass
 def fb(t: Tuple[B, ...]) -> None: pass
-ta = () # type: Tuple[A, ...]
-tb = () # type: Tuple[B, ...]
+ta: Tuple[A, ...]
+tb: Tuple[B, ...]
 fa(ta)
 fa(tb)
 fb(tb)
@@ -1320,7 +1324,7 @@ reveal_type(s) # N: Revealed type is "builtins.tuple[builtins.str, ...]"
 [case testTupleInstanceCompatibleWithIterable]
 from typing import Iterable, Tuple
 x: Iterable[int] = ()
-y: Tuple[int, ...] = (1, 2, 3)
+y: Tuple[int, ...]
 x = y
 reveal_type(x) # N: Revealed type is "builtins.tuple[builtins.int, ...]"
 

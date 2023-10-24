@@ -864,20 +864,20 @@ s = ''
 if s:
     pass
 
-good_union: Union[str, int] = 5
+good_union: Union[str, int]
 if good_union:
     pass
 if not good_union:
     pass
 
-bad_union: Union[Foo, Bar] = Foo()
+bad_union: Union[Foo, Bar]
 if bad_union:  # E: "__main__.bad_union" has type "Union[Foo, Bar]" of which no members implement __bool__ or __len__ so it could always be true in boolean context  [truthy-bool]
     pass
 if not bad_union:  # E: "__main__.bad_union" has type "Union[Foo, Bar]" of which no members implement __bool__ or __len__ so it could always be true in boolean context  [truthy-bool]
     pass
 
 # 'object' is special and is treated as potentially falsy
-obj: object = Foo()
+obj: object
 if obj:
     pass
 if not obj:

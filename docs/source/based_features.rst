@@ -274,3 +274,13 @@ Checked f-strings
     f"{None:0>2}"  # error: The type "None" doesn't support format-specifiers
     f"{date(1,1,1):%}"  # error: Invalid trailing '%', escape with '%%'
     f"{'s':.2f}"  # error: Incompatible types in string interpolation (expression has type "str", placeholder has type "int | float | complex")
+
+Narrow On Initial Assignment
+----------------------------
+
+When a variable definition has an explicit annotation, the initialization value will be used to narrow it's type:
+
+.. code-block:: python
+
+    a: object = 1
+    reveal_type(a)  # Revealed type is "int"

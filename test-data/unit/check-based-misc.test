@@ -21,3 +21,82 @@ if True:
     1  # type: ignore[operator]
 [out]
 main:3:5:3:31: error: Unused "type: ignore" comment  [unused-ignore]
+
+
+[case testNarrowOnInitialAssignment]
+a: object = 1
+reveal_type(a)  # N: Revealed type is "int" (narrowed from "object")
+
+
+[case testNarrowWithAny]
+# mypy: allow-any-explicit, allow-any-expr
+from typing import Any, Union
+
+a: Union[int, Any]
+if bool():
+    a = 1
+    reveal_type(a)  # N: Revealed type is "int" (narrowed from "int | Any")
+b: Any = 1
+reveal_type(b)  # N: Revealed type is "Any"
+c: Any
+c = 1
+reveal_type(c)  # N: Revealed type is "Any"
+
+
+[case testNarrowWithTuple]
+# mypy: disallow-redefinition
+from typing import Tuple, TypeVar
+T = TypeVar('T')
+
+def f(x: T) -> Tuple[T, T]: ...
+x = None
+reveal_type(x) # N: Revealed type is "None" (narrowed from "partially defined: ? | None")
+x, *_ = f('')
+reveal_type(x) # N: Revealed type is "str" (narrowed from "str | None")
+[builtins fixtures/tuple.pyi]
+
+
+[case testNarrowWithFinal]
+# mypy: allow-any-expr, allow-any-explicit
+from __future__ import annotations
+from typing import Final, Any
+
+one: 1
+a1: Final[object] = 1
+reveal_type(a1)  # N: Revealed type is "1"
+b1: Final[object] = True
+reveal_type(a1)  # N: Revealed type is "1"
+reveal_type(b1)  # N: Revealed type is "True"
+b2: Final[object] = one
+reveal_type(b2)  # N: Revealed type is "1"
+
+any: Any
+list_any: list[Any]
+
+c: list[int] = list_any
+d: Final[list[object]] = list_any
+e: Final[list[int]] = list_any
+
+# make sure they don't become Any
+reveal_type(c)  # N: Revealed type is "list[int]"
+reveal_type(d)  # N: Revealed type is "list[object]"
+reveal_type(e)  # N: Revealed type is "list[int]"
+
+class C: ...
+class A:
+    a1: Final[object] = C()
+    b1: Final[int] = 1
+    c1: Final[list[object]] = list_any
+    def __init__(self):
+        self.a2: Final[object] = C()
+        self.b2: Final[int] = 1
+        self.c2: Final[list[object]] = list_any
+a: Final[object] = A()
+reveal_type(a)  # N: Revealed type is "__main__.A" (narrowed from "object")
+reveal_type(a.a1)  # N: Revealed type is "__main__.C"
+reveal_type(a.a2)  # N: Revealed type is "__main__.C"
+reveal_type(a.b1)  # N: Revealed type is "1"
+reveal_type(a.b2)  # N: Revealed type is "1"
+reveal_type(a.c1)  # N: Revealed type is "list[object]"
+reveal_type(a.c2)  # N: Revealed type is "list[object]"
+[builtins fixtures/tuple.pyi]

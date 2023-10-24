@@ -198,7 +198,7 @@ def f(t: Tuple[int, ...]) -> None:
 
 [case testStringInterpolationUnionType]
 from typing import Tuple, Union
-a: Union[Tuple[int, str], Tuple[str, int]] = ('A', 1)
+a: Union[Tuple[int, str], Tuple[str, int]]
 '%s %s' % a
 '%s' % a  # E: Not all arguments converted during string formatting
 
@@ -206,18 +206,20 @@ b: Union[Tuple[int, str], Tuple[int, int], Tuple[str, int]] = ('A', 1)
 '%s %s' % b
 '%s %s %s' % b  # E: Not enough arguments for format string
 
-c: Union[Tuple[str, int], Tuple[str, int, str]] = ('A', 1)
+c: Union[Tuple[str, int], Tuple[str, int, str]]
+if bool():
+    c = ('A', 1)
 '%s %s' % c  # E: Not all arguments converted during string formatting
 [builtins fixtures/tuple.pyi]
 
 [case testStringInterpolationIterableType]
 from typing import Sequence, List, Tuple, Iterable
 
-t1: Sequence[str] = ('A', 'B')
-t2: List[str] = ['A', 'B']
-t3: Tuple[str, ...] = ('A', 'B')
-t4: Tuple[str, str] = ('A', 'B')
-t5: Iterable[str] = ('A', 'B')
+t1: Sequence[str]
+t2: List[str]
+t3: Tuple[str, ...]
+t4: Tuple[str, str]
+t5: Iterable[str]
 '%s %s' % t1
 '%s %s' % t2
 '%s %s' % t3
@@ -516,10 +518,11 @@ FMT.format(1, 2, 'no')  # E: "int" has no attribute "x" \
 
 [case testFormatCallFinalChar]
 from typing_extensions import Final
+from typing import cast
 
 GOOD: Final = 'c'
 BAD: Final = 'no'
-OK: Final[str] = '...'
+OK: Final[str] = cast(str, '...')
 
 '{:c}'.format(GOOD)
 '{:c}'.format(BAD)  # E: ":c" requires int or char

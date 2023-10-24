@@ -1220,7 +1220,9 @@ def test2() -> None:
     reveal_type(a)
     reveal_type(b)
 
-x: Union[Dict[int, int], Dict[str, str]] = dict(a='b')
+x: Union[Dict[int, int], Dict[str, str]]
+if bool():
+    x = dict(a='b')
 for a, b in x.items():
     reveal_type(a)
     reveal_type(b)
@@ -1229,8 +1231,8 @@ _testNoCrashOnGenericUnionUnpacking.py:6: note: Revealed type is "builtins.str"
 _testNoCrashOnGenericUnionUnpacking.py:7: note: Revealed type is "builtins.str"
 _testNoCrashOnGenericUnionUnpacking.py:10: note: Revealed type is "Union[builtins.str, builtins.int]"
 _testNoCrashOnGenericUnionUnpacking.py:11: note: Revealed type is "Union[builtins.str, builtins.int]"
-_testNoCrashOnGenericUnionUnpacking.py:15: note: Revealed type is "Union[builtins.int, builtins.str]"
-_testNoCrashOnGenericUnionUnpacking.py:16: note: Revealed type is "Union[builtins.int, builtins.str]"
+_testNoCrashOnGenericUnionUnpacking.py:17: note: Revealed type is "Union[builtins.int, builtins.str]"
+_testNoCrashOnGenericUnionUnpacking.py:18: note: Revealed type is "Union[builtins.int, builtins.str]"
 
 [case testMetaclassOpAccess]
 from typing import Type

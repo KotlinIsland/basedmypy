@@ -318,13 +318,13 @@ class Eggs(metaclass=Meta):
     def __init__(self, x: int, y: int, z: int) -> None: ...
     def __init__(self, x: int, y: int = ..., z: int = ...) -> None: ...
 
-A: Type[Foo] = Foo
-B: Type[Union[Foo, Bar]] = Foo
-C: Union[Type[Foo], Type[Bar]] = Foo
-D: Type[Union[Foo, Baz]] = Foo
-E: Type[Union[Foo, Spam]] = Foo
-F: Type[Eggs] = Eggs
-G: Type[Union[Foo, Eggs]] = Foo
+A: Type[Foo]
+B: Type[Union[Foo, Bar]]
+C: Union[Type[Foo], Type[Bar]]
+D: Type[Union[Foo, Baz]]
+E: Type[Union[Foo, Spam]]
+F: Type[Eggs]
+G: Type[Union[Foo, Eggs]]
 
 a, b, c = Foo
 d, e, f = A
@@ -702,8 +702,8 @@ f(ab, ab)
 # flags: --no-strict-optional
 from typing import TypeVar
 T = TypeVar('T')
-a = None # type: A
-o = None # type: object
+a: A
+o: object
 
 def f(a: T = None) -> T: pass
 def g(a: T, b: T = None) -> T: pass

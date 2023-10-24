@@ -68,12 +68,12 @@ reveal_type(bar)                    # N: Revealed type is "def (x: Tuple[Literal
 from typing import Tuple, Optional
 from typing_extensions import Literal
 
-x = None  # type: Optional[Tuple[1]]  # E: Invalid type: try using Literal[1] instead?
+x: Optional[Tuple[1]]  # E: Invalid type: try using Literal[1] instead?
 def foo(x):                           # E: Invalid type: try using Literal[1] instead?
     # type: (Tuple[1]) -> None
     pass
 
-y = None  # type: Optional[Tuple[Literal[2]]]
+y: Optional[Tuple[Literal[2]]]
 def bar(x):
     # type: (Tuple[Literal[2]]) -> None
     pass
@@ -2155,32 +2155,32 @@ def force2(x: Literal["foo"]) -> None: pass
 def force3(x: Literal[True]) -> None: pass
 def force4(x: Literal[None]) -> None: pass
 
-reveal_type(var1)            # N: Revealed type is "builtins.int"
-reveal_type(var2)            # N: Revealed type is "builtins.str"
-reveal_type(var3)            # N: Revealed type is "builtins.bool"
+reveal_type(var1)            # N: Revealed type is "Literal[1]?"
+reveal_type(var2)            # N: Revealed type is "Literal['foo']?"
+reveal_type(var3)            # N: Revealed type is "Literal[True]?"
 reveal_type(var4)            # N: Revealed type is "None"
-force1(var1)                 # E: Argument 1 to "force1" has incompatible type "int"; expected "Literal[1]"
-force2(var2)                 # E: Argument 1 to "force2" has incompatible type "str"; expected "Literal['foo']"
-force3(var3)                 # E: Argument 1 to "force3" has incompatible type "bool"; expected "Literal[True]"
+force1(var1)
+force2(var2)
+force3(var3)
 force4(var4)
 
-reveal_type(Foo.classvar1)   # N: Revealed type is "builtins.int"
-reveal_type(Foo.classvar2)   # N: Revealed type is "builtins.str"
-reveal_type(Foo.classvar3)   # N: Revealed type is "builtins.bool"
+reveal_type(Foo.classvar1)   # N: Revealed type is "Literal[1]?"
+reveal_type(Foo.classvar2)   # N: Revealed type is "Literal['foo']?"
+reveal_type(Foo.classvar3)   # N: Revealed type is "Literal[True]?"
 reveal_type(Foo.classvar4)   # N: Revealed type is "None"
-force1(Foo.classvar1)        # E: Argument 1 to "force1" has incompatible type "int"; expected "Literal[1]"
-force2(Foo.classvar2)        # E: Argument 1 to "force2" has incompatible type "str"; expected "Literal['foo']"
-force3(Foo.classvar3)        # E: Argument 1 to "force3" has incompatible type "bool"; expected "Literal[True]"
+force1(Foo.classvar1)
+force2(Foo.classvar2)
+force3(Foo.classvar3)
 force4(Foo.classvar4)
 
 f = Foo()
-reveal_type(f.instancevar1)  # N: Revealed type is "builtins.int"
-reveal_type(f.instancevar2)  # N: Revealed type is "builtins.str"
-reveal_type(f.instancevar3)  # N: Revealed type is "builtins.bool"
+reveal_type(f.instancevar1)  # N: Revealed type is "Literal[1]?"
+reveal_type(f.instancevar2)  # N: Revealed type is "Literal['foo']?"
+reveal_type(f.instancevar3)  # N: Revealed type is "Literal[True]?"
 reveal_type(f.instancevar4)  # N: Revealed type is "None"
-force1(f.instancevar1)       # E: Argument 1 to "force1" has incompatible type "int"; expected "Literal[1]"
-force2(f.instancevar2)       # E: Argument 1 to "force2" has incompatible type "str"; expected "Literal['foo']"
-force3(f.instancevar3)       # E: Argument 1 to "force3" has incompatible type "bool"; expected "Literal[True]"
+force1(f.instancevar1)
+force2(f.instancevar2)
+force3(f.instancevar3)
 force4(f.instancevar4)
 [builtins fixtures/primitives.pyi]
 [out]

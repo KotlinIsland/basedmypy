@@ -12,7 +12,7 @@ z: Final[int] = int()
 bad: Final[str] = int()  # E: Incompatible types in assignment (expression has type "int", variable has type "str")
 
 reveal_type(x)  # N: Revealed type is "builtins.int"
-reveal_type(y)  # N: Revealed type is "builtins.float"
+reveal_type(y)  # N: Revealed type is "builtins.int"
 reveal_type(z)  # N: Revealed type is "builtins.int"
 [out]
 
@@ -27,10 +27,10 @@ class C:
 class D(C): pass
 
 reveal_type(D.x)  # N: Revealed type is "builtins.int"
-reveal_type(D.y)  # N: Revealed type is "builtins.float"
+reveal_type(D.y)  # N: Revealed type is "builtins.int"
 reveal_type(D.z)  # N: Revealed type is "builtins.int"
 reveal_type(D().x)  # N: Revealed type is "builtins.int"
-reveal_type(D().y)  # N: Revealed type is "builtins.float"
+reveal_type(D().y)  # N: Revealed type is "builtins.int"
 reveal_type(D().z)  # N: Revealed type is "builtins.int"
 [out]
 
@@ -42,7 +42,7 @@ class C:
         self.x: Final = x
         self.y: Final[float] = 1
 reveal_type(C((1, 2)).x)  # N: Revealed type is "Tuple[builtins.int, Any]"
-reveal_type(C((1, 2)).y)  # N: Revealed type is "builtins.float"
+reveal_type(C((1, 2)).y)  # N: Revealed type is "Literal[1]?"
 [builtins fixtures/tuple.pyi]
 [out]
 
@@ -56,7 +56,7 @@ reveal_type(x)  # N: Revealed type is "builtins.int"
 class C:
     def __init__(self) -> None:
         self.x: Final[float, float] = 1  # E: Final[...] takes at most one type argument
-reveal_type(C().x)  # N: Revealed type is "builtins.float"
+reveal_type(C().x)  # N: Revealed type is "Literal[1]?"
 [out]
 
 [case testFinalInvalidDefinitions]

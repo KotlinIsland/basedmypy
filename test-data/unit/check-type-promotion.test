@@ -59,7 +59,7 @@ f(0)  # should not crash
 # flags: --warn-unreachable
 from typing import Union
 
-x: complex = 1
+x: complex
 reveal_type(x)  # N: Revealed type is "builtins.complex"
 if isinstance(x, int):
     reveal_type(x)  # N: Revealed type is "builtins.int"
@@ -83,7 +83,7 @@ else:
 
 [case testIntersectionUsingPromotion2]
 # flags: --warn-unreachable
-x: complex = 1
+x: complex
 reveal_type(x)  # N: Revealed type is "builtins.complex"
 if isinstance(x, (int, float)):
     reveal_type(x)  # N: Revealed type is "Union[builtins.int, builtins.float]"

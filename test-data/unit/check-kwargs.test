@@ -486,11 +486,11 @@ def f(*vargs: int, **kwargs: object) -> None:
 def g(arg: int = 0, **kwargs: object) -> None:
 	pass
 
-d = {} # type: Dict[str, object]
+d: Dict[str, object]
 f(**d)
 g(**d)  # E: Argument 1 to "g" has incompatible type "**Dict[str, object]"; expected "int"
 
-m = {} # type: Mapping[str, object]
+m: Mapping[str, object]
 f(**m)
 g(**m)  # E: Argument 1 to "g" has incompatible type "**Mapping[str, object]"; expected "int"
 [builtins fixtures/dict.pyi]

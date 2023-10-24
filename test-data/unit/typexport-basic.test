@@ -44,10 +44,10 @@ StrExpr(4) : Literal['foo']?
 
 [case testNameExpression]
 
-a = None # type: A
+a: A
 a # node
 def f(aa: 'A') -> None:
-  b = None # type: B
+  b: B
   aa # node
   b  # node
 class A:
@@ -69,12 +69,12 @@ EllipsisExpr(2) : builtins.ellipsis
 [case testMemberAccess]
 ## MemberExpr|CallExpr
 
-a = None # type: A
+a: A
 a.m
 a.f
 a.f()
 class A:
-  m = None # type: A
+  m: A
   def f(self) -> 'B': pass
 class B: pass
 [out]
@@ -86,8 +86,8 @@ MemberExpr(6) : def () -> B
 [case testCastExpression]
 ## CastExpr|[a-z]
 from typing import Any, cast
-d = None # type: Any
-b = None # type: B
+d: Any
+b: B
 class A: pass
 class B(A): pass
 cast(A, d)
@@ -104,9 +104,9 @@ NameExpr(9) : B
 [case testAssertTypeExpr]
 ## AssertTypeExpr|[a-z]
 from typing import Any, assert_type
-d = None # type: Any
-a = None # type: A
-b = None # type: B
+d: Any
+a: A
+b: B
 class A: pass
 class B(A): pass
 assert_type(d, Any)
@@ -225,7 +225,7 @@ CallExpr(8) : B
 
 [case testSimpleAssignment]
 from typing import Any
-a = None # type: A
+a: A
 b = a # type: Any
 if b:
     b = a
@@ -261,7 +261,7 @@ NameExpr(7) : A
 
 [case testIf]
 
-a = None # type: bool
+a: bool
 if a:
   1
 elif not a:
@@ -276,7 +276,7 @@ IntExpr(6) : Literal[1]?
 
 [case testWhile]
 
-a = None # type: bool
+a: bool
 while a:
   a
 [builtins fixtures/bool.pyi]
@@ -329,7 +329,7 @@ class A(Generic[T]):
   def f(self) -> T: pass
 class B: pass
 def g() -> None:
-  a = None # type: A[B]
+  a: A[B]
   f = a.f
 [out]
 MemberExpr(9) : def () -> B
@@ -467,8 +467,8 @@ class C: pass
 class A(Generic[T]):
   def f(self, a: T) -> None: pass
 class B(A[C]): pass
-b = None # type: B
-c = None # type: C
+b: B
+c: C
 b.f(c)
 [out]
 CallExpr(9) : None
@@ -767,7 +767,7 @@ def map(f: Callable[[t], s], a: List[t]) -> List[s]: pass
 class A: pass
 class B: pass
 def f(a: A) -> B: pass
-l = None # type: List[A]
+l: List[A]
 map(
   lambda x: f(x), l)
 [builtins fixtures/list.pyi]
@@ -789,7 +789,7 @@ def map(f: Callable[[t], List[s]], a: List[t]) -> List[s]: pass
 class A: pass
 class B: pass
 def f(a: A) -> B: pass
-l = None # type: List[A]
+l: List[A]
 map(
   lambda x: [f(x)], l)
 [builtins fixtures/list.pyi]
@@ -807,7 +807,7 @@ t = TypeVar('t')
 s = TypeVar('s')
 def map(f: List[Callable[[t], s]], a: List[t]) -> List[s]: pass
 class A: pass
-l = None # type: List[A]
+l: List[A]
 map(
   [lambda x: x],
   l)
@@ -828,9 +828,9 @@ t = TypeVar('t')
 s = TypeVar('s')
 def map(f: Callable[[t], s], a: List[t]) -> List[s]: pass
 class A:
-  b = None # type: B
+  b: B
 class B: pass
-l = None # type: List[A]
+l: List[A]
 map(
   lambda x: x.b,
   l)
@@ -849,9 +849,9 @@ t = TypeVar('t')
 s = TypeVar('s')
 def map(f: Callable[[t], s], a: List[t]) -> List[s]: pass
 class A:
-    b = None # type: B
+    b: B
 class B: pass
-l = None # type: List[A]
+l: List[A]
 map(
   a=l,
   f=lambda x: x.b)
@@ -871,7 +871,7 @@ NameExpr(11) : A
 
 [case testBooleanOr]
 from typing import List
-a = None # type: List[A]
+a: List[A]
 a or []
 a = a or []
 if int():
@@ -1020,8 +1020,8 @@ s = TypeVar('s')
 class B: pass
 class A(Generic[t]):
     def f(self, y: s) -> None: pass
-ab = None # type: A[B]
-o = None # type: object
+ab: A[B]
+o: object
 A.f(ab, o)
 [out]
 MemberExpr(10) : def (self: A[B], y: builtins.object)
@@ -1048,7 +1048,7 @@ from typing import TypeVar
 T = TypeVar('T', int, str)
 def f(x: T) -> T: pass
 class S(str): pass
-s = None # type: S
+s: S
 f(s)
 [out]
 CallExpr(7) : builtins.str
@@ -1128,8 +1128,8 @@ def f(x: A) -> A: pass
 
 def f(x) -> Any: pass
 
-a = None # type: A
-b = None # type: B
+a: A
+b: B
 f(a)
 f(b)
 [out]

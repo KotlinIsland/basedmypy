@@ -1297,7 +1297,9 @@ class Base: ...
 class Impl1(Base): ...
 class Impl2(Base): ...
 
-impls: Tuple[Type[Base], ...] = (Impl1, Impl2)
+impls: Tuple[Type[Base], ...]
+if bool():
+    impls = (Impl1, Impl2)
 some: object
 
 if isinstance(some, impls):
@@ -1322,7 +1324,9 @@ class Impl2(Base): ...
 
 some: int | Base
 
-impls: tuple[type[Base], ...] = (Impl1, Impl2)
+impls: tuple[type[Base], ...]
+if bool():
+    impls = (Impl1, Impl2)
 if isinstance(some, impls):
     reveal_type(some)  # N: Revealed type is "__main__.Base"
 else:
