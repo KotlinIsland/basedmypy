@@ -253,3 +253,15 @@ Basedmypy shows::
 
     Revealed type is "(T@f, str | 1 | 2)"
     Revealed type is "def [T: int] (a: T, b: str | 1 | 2) -> Never"
+
+
+Reveal Type Narrowed
+--------------------
+
+The defined type of a variable will be shown in the message for `reveal_type`:
+
+.. code-block:: python
+
+    a: object
+    a = 1
+    reveal_type(a)  # Revealed type is "int" (narrowed from "object")

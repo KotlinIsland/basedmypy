@@ -3,6 +3,8 @@
 ## [Unreleased]
 ### Fixes
 - Render star args in error messages properly (#551)
+### Enhancements
+- Show 'narrowed from' in `reveal_type` (#550)
 
 ## [2.2.1]
 ### Fixes

@@ -7,11 +7,11 @@ def r(t: T) -> T: ...
 a: object
 f2 = r(f)
 assert f2(a)
-reveal_type(a)  # N: Revealed type is "int"
+reveal_type(a)  # N: Revealed type is "int" (narrowed from "object")
 
 b: object
 assert (lambda x: (lambda y: r(f)(y))(x))(b)
-reveal_type(b)  # N: Revealed type is "int"
+reveal_type(b)  # N: Revealed type is "int" (narrowed from "object")
 [builtins fixtures/tuple.pyi]
 
 
@@ -21,7 +21,7 @@ def f(it: object) -> TypeGuard[int]: ...
 
 a: object
 assert (lambda: f(a))()
-reveal_type(a)  # N: Revealed type is "int"
+reveal_type(a)  # N: Revealed type is "int" (narrowed from "object")
 [builtins fixtures/tuple.pyi]
 
 
@@ -42,13 +42,13 @@ def guard(x: object) -> "x is int": ...
 
 o: object
 if (lambda y: guard(y))(o):
-    reveal_type(o)  # N: Revealed type is "int"
+    reveal_type(o)  # N: Revealed type is "int" (narrowed from "object")
 
 if (lambda _, y: guard(y))(1, o):
-    reveal_type(o)  # N: Revealed type is "int"
+    reveal_type(o)  # N: Revealed type is "int" (narrowed from "object")
 
 if (lambda _, y: guard(x=y))(1, o):
-    reveal_type(o)  # N: Revealed type is "int"
+    reveal_type(o)  # N: Revealed type is "int" (narrowed from "object")
 
 if (lambda _, y: guard(y))(o, 1):
     reveal_type(o)  # N: Revealed type is "object"
@@ -58,7 +58,7 @@ class A:
 class B(A): ...
 a: A
 assert (lambda x: x.guard())(a)
-reveal_type(a)  # N: Revealed type is "__main__.B"
+reveal_type(a)  # N: Revealed type is "__main__.B" (narrowed from "__main__.A")
 [builtins fixtures/tuple.pyi]
 
 
@@ -117,7 +117,7 @@ class A:
 
 a: object
 assert A.guard(A(), a)
-reveal_type(a)  # N: Revealed type is "int"
+reveal_type(a)  # N: Revealed type is "int" (narrowed from "object")
 [builtins fixtures/tuple.pyi]
 
 
@@ -129,7 +129,7 @@ class B(A): ...
 
 a: A
 assert a.guard()
-reveal_type(a)  # N: Revealed type is "__main__.B"
+reveal_type(a)  # N: Revealed type is "__main__.B" (narrowed from "__main__.A")
 
 
 [case testGuardCls]
@@ -142,7 +142,7 @@ class B(A): ...
 
 a: Type[A]
 assert a.guard()
-reveal_type(a)  # N: Revealed type is "type[__main__.B]"
+reveal_type(a)  # N: Revealed type is "type[__main__.B]" (narrowed from "type[__main__.A]")
 [builtins fixtures/classmethod.pyi]
 
 
@@ -151,7 +151,7 @@ def guard(x: object, /) -> "x is int": ...
 
 a: object
 assert guard(a)
-reveal_type(a)  # N: Revealed type is "int"
+reveal_type(a)  # N: Revealed type is "int" (narrowed from "object")
 reveal_type(guard)  # N: Revealed type is "def (object) -> argument 1 is int"
 [builtins fixtures/tuple.pyi]
 
@@ -161,7 +161,7 @@ from __future__ import annotations
 def guard(x: object) -> x is int: ...
 a: object
 assert guard(a)
-reveal_type(a)  # N: Revealed type is "int"
+reveal_type(a)  # N: Revealed type is "int" (narrowed from "object")
 [builtins fixtures/tuple.pyi]
 
 
@@ -180,7 +180,7 @@ def make_guard() -> Callable[[object], TypeGuard[int]]: ...
 a: object
 assert make_guard()()  # E: Too few arguments  [call-arg]
 assert make_guard()(a)
-reveal_type(a)  # N: Revealed type is "int"
+reveal_type(a)  # N: Revealed type is "int" (narrowed from "object")
 [builtins fixtures/tuple.pyi]
 
 
@@ -190,7 +190,7 @@ class A:
 class B(A): ...
 
 assert (a := A()).g()
-reveal_type(a)  # N: Revealed type is "__main__.B"
+reveal_type(a)  # N: Revealed type is "__main__.B" (narrowed from "__main__.A")
 [builtins fixtures/tuple.pyi]
 
 
@@ -225,7 +225,7 @@ class B(A): ...
 
 a: A
 assert a()
-reveal_type(a)  # N: Revealed type is "__main__.B"
+reveal_type(a)  # N: Revealed type is "__main__.B" (narrowed from "__main__.A")
 [builtins fixtures/tuple.pyi]
 
 
@@ -238,9 +238,9 @@ class B(A): ...
 
 a: A
 if (lambda x: x.guard())(a):
-    reveal_type(a)  # N: Revealed type is "__main__.B"
+    reveal_type(a)  # N: Revealed type is "__main__.B" (narrowed from "__main__.A")
 if (lambda x: x())(a):
-    reveal_type(a)  # N: Revealed type is "__main__.B"
+    reveal_type(a)  # N: Revealed type is "__main__.B" (narrowed from "__main__.A")
 [builtins fixtures/tuple.pyi]
 
 
@@ -263,7 +263,7 @@ class B(A): ...
 a: A
 o: object
 assert a.guard(o)
-reveal_type(a)  # N: Revealed type is "__main__.B"
+reveal_type(a)  # N: Revealed type is "__main__.B" (narrowed from "__main__.A")
 reveal_type(o)  # N: Revealed type is "object"
 [builtins fixtures/tuple.pyi]
 
@@ -307,7 +307,7 @@ class A:
 class B(A): ...
 a: A
 assert a.guard()
-reveal_type(a)  # N: Revealed type is "__main__.B"
+reveal_type(a)  # N: Revealed type is "__main__.B" (narrowed from "__main__.A")
 [builtins fixtures/tuple.pyi]
 
 
@@ -319,7 +319,7 @@ class A:
 class B(A): ...
 a: A
 assert a.guard()
-reveal_type(a)  # N: Revealed type is "__main__.B"
+reveal_type(a)  # N: Revealed type is "__main__.B" (narrowed from "__main__.A")
 [builtins fixtures/tuple.pyi]
 
 
@@ -328,7 +328,7 @@ def guard(a: object) -> 'a is int': ...
 
 a: object
 assert guard(a)
-reveal_type(a)  # N: Revealed type is "int"
+reveal_type(a)  # N: Revealed type is "int" (narrowed from "object")
 [builtins fixtures/tuple.pyi]
 
 

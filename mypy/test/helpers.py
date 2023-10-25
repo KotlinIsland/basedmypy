@@ -357,7 +357,6 @@ def parse_options(
             raise RuntimeError("Specifying targets via the flags pragma is not supported.")
         if not based and "--show-error-codes" not in flag_list:
             options.hide_error_codes = True
-        print(options.pretty)
     else:
         flag_list = []
         options = Options()

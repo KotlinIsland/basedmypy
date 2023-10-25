@@ -3636,9 +3636,11 @@ class TypeStrVisitor(SyntheticTypeVisitor[str]):
 
     def visit_partial_type(self, t: PartialType) -> str:
         if t.type is None:
-            return "<partial None>"
+            return "partially defined: ? | None"
         else:
-            return "<partial {}[{}]>".format(t.type.name, ", ".join(["?"] * len(t.type.type_vars)))
+            return "partially defined: {}[{}]".format(
+                t.type.name, ", ".join(["?"] * len(t.type.type_vars))
+            )
 
     def visit_ellipsis_type(self, t: EllipsisType) -> str:
         return "..."
