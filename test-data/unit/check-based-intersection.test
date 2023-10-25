@@ -60,7 +60,7 @@ class B: pass
 
 i: A
 assert isinstance(i, B)
-reveal_type(i)  # N: Revealed type is "__main__.A & __main__.B"
+reveal_type(i)  # N: Revealed type is "__main__.A & __main__.B" (narrowed from "__main__.A")
 [builtins fixtures/tuple.pyi]
 
 
@@ -146,7 +146,7 @@ a = ""
 
 b: Any
 assert isinstance(b, str)
-reveal_type(b)  # N: Revealed type is "str"
+reveal_type(b)  # N: Revealed type is "str" (narrowed from "Any")
 [builtins fixtures/tuple.pyi]
 
 

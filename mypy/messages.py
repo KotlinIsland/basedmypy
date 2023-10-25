@@ -1727,9 +1727,21 @@ class MessageBuilder:
             context,
         )
 
-    def reveal_type(self, typ: Type, context: Context) -> None:
+    def reveal_type(self, typ: Type, context: Context, defined: Type | None = None) -> None:
         visitor = TypeStrVisitor(options=self.options)
-        self.note(f'Revealed type is "{typ.accept(visitor)}"', context, code=codes.REVEAL)
+        type_string = typ.accept(visitor)
+        defined_string = ""
+        if defined:
+            defined_string = defined.accept(visitor)
+            if defined_string.replace("partially defined: ", "") == type_string.replace(
+                "Any (unannotated)", "?"
+            ):
+                type_string = defined_string
+                defined_string = ""
+        message = f'Revealed type is "{type_string}"'
+        if defined_string:
+            message += f' (narrowed from "{defined_string}")'
+        self.note(message, context, code=codes.REVEAL)
 
     def reveal_locals(self, type_map: dict[str, Type | None], context: Context) -> None:
         # To ensure that the output is predictable on Python < 3.6,

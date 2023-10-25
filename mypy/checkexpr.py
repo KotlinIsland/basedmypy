@@ -4491,8 +4491,26 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             revealed_type = self.accept(
                 expr.expr, type_context=self.type_context[-1], allow_none_return=True
             )
+
+            defined = None
+            if isinstance(expr.expr, NameExpr):
+                if isinstance(expr.expr.node, Var):
+                    defined = expr.expr.node.type
+            # TODO: attributes, methods, properties
+            # elif isinstance(expr.expr, MemberExpr):
+            #     if isinstance(expr.expr.expr, NameExpr):
+            #         if isinstance(expr.expr.expr.node, Var):
+            #             ert = expr.expr.expr.node.type
+            #             if isinstance(ert, Instance):
+            #                 a = ert.type.names.get(expr.expr.name)
+            #                 if a:
+            #                     defined = a.type
+
+            if not mypy.options._based:
+                defined = None
+
             if not self.chk.current_node_deferred:
-                self.msg.reveal_type(revealed_type, expr.expr)
+                self.msg.reveal_type(revealed_type, expr.expr, defined=defined)
                 if not self.chk.in_checked_function():
                     self.msg.note(
                         "'reveal_type' always outputs 'Any' in unchecked functions", expr.expr

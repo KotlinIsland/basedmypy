@@ -1,6 +1,8 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Enhancements
+- Show 'narrowed from' in `reveal_type` (#550)
 ### Fixes
 - Render star args in error messages properly (#551)
 

@@ -92,3 +92,30 @@ def f2(*args: int, **kwargs: str): ...
 a = f2
 a = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "(*args: int, **kwargs: str) -> None")  [assignment]
 [builtins fixtures/tuple.pyi]
+
+
+[case testNarrowedFrom]
+a: object
+a = 1
+reveal_type(a)  # N: Revealed type is "int" (narrowed from "object")
+
+
+[case testNarrowedFromClass]
+# XFAIL
+class A:
+    a: object
+class B(A):
+    a: int
+a: A
+a = B()
+reveal_type(a.a)  # N: Revealed type is "int"
+# Actually expected N: Revealed type is "int" (narrowed from "object")
+
+
+[case testNarrowedFromPartial]
+a = []  # E: Need type annotation for "a" (hint: "a: list[<type>] = ...")  [var-annotated]
+reveal_type(a)  # E: Expression type contains "Any" (has type "list[Any (unannotated)]")  [no-any-expr] \
+                # E: Expression type contains "Any" (has type "list[Any (unannotated)]")  [no-any-expr] \
+                # N: Revealed type is "partially defined: list[?]"
+b = None  # E: Need type annotation for "b" (hint: "b: Optional[<type>] = ...")  [var-annotated]
+reveal_type(b)  # N: Revealed type is "None" (narrowed from "partially defined: ? | None")
