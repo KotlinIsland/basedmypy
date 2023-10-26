@@ -79,3 +79,16 @@ b = 1  # E: Incompatible types in assignment (expression has type "int", variabl
 def foo(): ...
 reveal_type(foo)  # N: Revealed type is "def () -> None"
 foo = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "() -> None")  [assignment]
+
+
+[case testRenderErrorStar]
+from typing import Callable, ParamSpec
+
+P = ParamSpec("P")
+
+def f(fn: Callable[P, None]): ...
+f(1)  # E: Argument 1 to "f" has incompatible type "int"; expected "(*Never, **Never) -> None"  [arg-type]
+def f2(*args: int, **kwargs: str): ...
+a = f2
+a = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "(*args: int, **kwargs: str) -> None")  [assignment]
+[builtins fixtures/tuple.pyi]
