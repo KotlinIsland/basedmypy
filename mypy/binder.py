@@ -40,7 +40,16 @@ class Frame:
     def __init__(self, id: int, conditional_frame: bool = False) -> None:
         self.id = id
         self.types: dict[Key, Type] = {}
-        self.unreachable = False
+        self.unreachable: bool | 2 = False
+        """
+        We need to know if the reachability is based on an "always-true" scenario
+        as the implementation of this feature doesn't actually change the type of the variable.
+        (it's set in semanal)
+
+        False = reachable
+        True = unreachable
+        2 = unreachable due to artificial always-true scenarios
+        """
         self.conditional_frame = conditional_frame
         self.suppress_unreachable_warnings = False
 
@@ -150,8 +159,8 @@ class ConditionalTypeBinder:
             self._add_dependencies(key)
         self._put(key, typ)
 
-    def unreachable(self) -> None:
-        self.frames[-1].unreachable = True
+    def unreachable(self, artificial=False) -> None:
+        self.frames[-1].unreachable = 2 if artificial else True
 
     def suppress_unreachable_warnings(self) -> None:
         self.frames[-1].suppress_unreachable_warnings = True
@@ -189,7 +198,7 @@ class ConditionalTypeBinder:
         options are the same.
         """
 
-        frames = [f for f in frames if not f.unreachable]
+        frames = [f for f in frames if f.unreachable == 0]
         changed = False
         keys = {key for f in frames for key in f.types}
 

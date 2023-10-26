@@ -41,6 +41,7 @@ takes_typeguard(typeguard2)  # E: Argument 1 to "takes_typeguard" has incompatib
 def guard(x: object) -> "x is int": ...
 
 o: object
+o2: object
 if (lambda y: guard(y))(o):
     reveal_type(o)  # N: Revealed type is "int" (narrowed from "object")
 
@@ -50,7 +51,7 @@ if (lambda _, y: guard(y))(1, o):
 if (lambda _, y: guard(x=y))(1, o):
     reveal_type(o)  # N: Revealed type is "int" (narrowed from "object")
 
-if (lambda _, y: guard(y))(o, 1):
+if (lambda _, y: guard(y))(o, o2):
     reveal_type(o)  # N: Revealed type is "object"
 
 class A:
@@ -384,4 +385,94 @@ class A:
 
 # Actually expect "def (object) -> argument 1 is int"
 reveal_type(A().guard)  # N: Revealed type is "def (object) -> argument 2 is int"
+[builtins fixtures/tuple.pyi]
+
+
+[case testNegativeGuard]
+from __future__ import annotations
+
+def guard(x: object) -> x is int: ...
+a: int | str
+if guard(a):
+    reveal_type(a)  # N: Revealed type is "int" (narrowed from "int | str")
+else:
+    reveal_type(a)  # N: Revealed type is "str" (narrowed from "int | str")
+[builtins fixtures/tuple.pyi]
+
+
+[case testNegativeGuardGeneric]
+from __future__ import annotations
+
+def guard(x: object) -> x is list[int]: ...
+a: list[int] | list[str]
+if guard(a):
+    reveal_type(a)  # N: Revealed type is "list[int]" (narrowed from "list[int] | list[str]")
+else:
+    reveal_type(a)  # N: Revealed type is "list[str]" (narrowed from "list[int] | list[str]")
+[builtins fixtures/tuple.pyi]
+
+
+[case testTypeGuardOnlyTrue]
+from __future__ import annotations
+
+def guard(x: object) -> x is int:
+    return isinstance(x, int)
+
+def guard_true(x: object) -> x is int if True else False:
+    return isinstance(x, int) and bool()
+
+x: int | str
+if guard(x):
+    reveal_type(x)  # N: Revealed type is "int" (narrowed from "int | str")
+else:
+    reveal_type(x)  # N: Revealed type is "str" (narrowed from "int | str")
+
+if guard_true(x):
+    reveal_type(x)  # N: Revealed type is "int" (narrowed from "int | str")
+else:
+    reveal_type(x)  # N: Revealed type is "int | str"
+
+y: int
+if guard(y):  # E: Condition is always true  [redundant-expr]
+    reveal_type(y)  # N: Revealed type is "int"
+else:
+    reveal_type(y)  # E: Statement is unreachable  [unreachable]
+
+if guard_true(x):
+    reveal_type(y)  # N: Revealed type is "int"
+else:
+    reveal_type(y)  # N: Revealed type is "int"
+[builtins fixtures/tuple.pyi]
+
+
+[case testAsymetricTypeGuardSubtype]
+# flags: --disallow-redefinition
+from __future__ import annotations
+def f1(x: object) -> x is int: ...
+def f2(x: object) -> x is int if True else False: ...
+
+x = f2
+x = f1
+
+y = f1
+y = f2  # E: Incompatible types in assignment (expression has type "(x: object) -> x is int if True else False", variable has type "(x: object) -> x is int")  [assignment]
+[builtins fixtures/tuple.pyi]
+
+
+[case testTypeGuardUnreachable]
+from __future__ import annotations
+
+def guard(x: object) -> x is list[int]: ...
+
+a: list[object]
+if guard(a):  # E: Condition is always false  [redundant-expr] \
+              # E: Intersection of "list[object] & list[int]" cannot exist: would have inconsistent method resolution order  [unreachable]
+    ...
+[builtins fixtures/tuple.pyi]
+
+
+[case testTypeGuardUnsupported]
+from __future__ import annotations
+def guard1(a: object, b: object) -> a is int | b is int: ...  # E: Invalid type comment or annotation  [valid-type]
+def guard2(a: object, b: object) -> a is int & b is int: ...  # E: Invalid type comment or annotation  [valid-type]
 [builtins fixtures/tuple.pyi]

@@ -81,7 +81,7 @@ from typing_extensions import TypeGuard
 def is_str_list(a: List[object]) -> TypeGuard[List[str]]: pass
 def main(a: List[object]):
     if is_str_list(a):
-        reveal_type(a)  # N: Revealed type is "<nothing>"
+        reveal_type(a)
     reveal_type(a)  # N: Revealed type is "builtins.list[builtins.object]"
 [builtins fixtures/tuple.pyi]
 
@@ -200,14 +200,14 @@ def is_int(a: object) -> TypeGuard[int]: pass
 def is_str(a: object) -> TypeGuard[str]: pass
 def intmain(a: Union[int, str]) -> None:
     if not is_int(a):
-        reveal_type(a)  # N: Revealed type is "Union[builtins.int, builtins.str]"
+        reveal_type(a)  # N: Revealed type is "builtins.str"
     else:
         reveal_type(a)  # N: Revealed type is "builtins.int"
 def strmain(a: Union[int, str]) -> None:
     if is_str(a):
         reveal_type(a)  # N: Revealed type is "builtins.str"
     else:
-        reveal_type(a)  # N: Revealed type is "Union[builtins.int, builtins.str]"
+        reveal_type(a)  # N: Revealed type is "builtins.int"
 [builtins fixtures/tuple.pyi]
 
 [case testTypeGuardClassMethod]
@@ -435,7 +435,7 @@ def test(x: List[object]) -> None:
     g(reveal_type(x))  # N: Revealed type is "builtins.list[builtins.object] & __main__.A"
 [builtins fixtures/tuple.pyi]
 
-[case testTypeGuardMultipleCondition-xfail]
+[case testTypeGuardMultipleCondition]
 from typing_extensions import TypeGuard
 from typing import Any, List
 

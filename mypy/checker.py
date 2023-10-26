@@ -431,6 +431,9 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         )
         self.pattern_checker = PatternChecker(self, self.msg, self.plugin, options)
 
+        # always the next if statement to have a redundant expression
+        self.allow_redundant_expr = False
+
     @property
     def type_context(self) -> list[Type | None]:
         return self.expr_checker.type_context
@@ -2953,7 +2956,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             # This block was marked as being unreachable during semantic analysis.
             # It turns out any blocks marked in this way are *intentionally* marked
             # as unreachable -- so we don't display an error.
-            self.binder.unreachable()
+            self.binder.unreachable(artificial=True)
             return
         for s in b.body:
             if self.binder.is_unreachable():
@@ -4687,18 +4690,29 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         with self.binder.frame_context(can_skip=False, conditional_frame=True, fall_through=0):
             for e, b in zip(s.expr, s.body):
                 t = get_proper_type(self.expr_checker.accept(e))
+                allow_redundant_expr = self.allow_redundant_expr
+                self.allow_redundant_expr = False
 
                 if isinstance(t, DeletedType):
                     self.msg.deleted_as_rvalue(t, s)
 
                 if_map, else_map = self.find_isinstance_check(e)
 
-                # XXX Issue a warning if condition is always False?
+                # If if_map is None then we know mypy considers the expression
+                # to be redundant.
+                if codes.REDUNDANT_EXPR in self.options.enabled_error_codes and if_map is None:
+                    self.msg.fail("Condition is always false", e, code=codes.REDUNDANT_EXPR)
+
                 with self.binder.frame_context(can_skip=True, fall_through=2):
                     self.push_type_map(if_map)
                     self.accept(b)
 
-                # XXX Issue a warning if condition is always True?
+                if (
+                    codes.REDUNDANT_EXPR in self.options.enabled_error_codes
+                    and else_map is None
+                    and not allow_redundant_expr
+                ):
+                    self.msg.fail("Condition is always true", e, code=codes.REDUNDANT_EXPR)
                 self.push_type_map(else_map)
 
             with self.binder.frame_context(can_skip=False, fall_through=2):
@@ -4709,7 +4723,12 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         """Type check a while statement."""
         if_stmt = IfStmt([s.expr], [s.body], None)
         if_stmt.set_line(s)
-        self.accept_loop(if_stmt, s.else_body, exit_condition=s.expr)
+        allow_redundant_expr = self.allow_redundant_expr
+        self.allow_redundant_expr = True
+        try:
+            self.accept_loop(if_stmt, s.else_body, exit_condition=s.expr)
+        finally:
+            self.allow_redundant_expr = allow_redundant_expr
 
     def visit_operator_assignment_stmt(self, s: OperatorAssignmentStmt) -> None:
         """Type check an operator assignment statement, e.g. x += 1."""
@@ -5949,7 +5968,17 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                         # where we use this to narrow down declared type.
                         #
                         # Based: We don't do any of that.
-                        return {expr: node.callee.type_guard.type_guard}, {}
+                        if guard.only_true:
+                            return {expr: guard.type_guard}, {}
+                        return conditional_types_to_typemaps(
+                            expr,
+                            *self.conditional_types_with_intersection(
+                                self.lookup_type(expr),
+                                [TypeRange(guard.type_guard, False)],
+                                expr,
+                                erase=False,
+                            ),
+                        )
         if isinstance(node, CallExpr) and isinstance(node.callee, LambdaExpr):
             return self.find_isinstance_check_helper(
                 safe(cast(ReturnStmt, node.callee.body.body[0]).expr)
@@ -7048,12 +7077,20 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         type_ranges: list[TypeRange] | None,
         ctx: Context,
         default: None = None,
+        *,
+        erase=True,
     ) -> tuple[Type | None, Type | None]:
         ...
 
     @overload
     def conditional_types_with_intersection(
-        self, expr_type: Type, type_ranges: list[TypeRange] | None, ctx: Context, default: Type
+        self,
+        expr_type: Type,
+        type_ranges: list[TypeRange] | None,
+        ctx: Context,
+        default: Type,
+        *,
+        erase=True,
     ) -> tuple[Type, Type]:
         ...
 
@@ -7063,8 +7100,10 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         type_ranges: list[TypeRange] | None,
         ctx: Context,
         default: Type | None = None,
+        *,
+        erase=True,
     ) -> tuple[Type | None, Type | None]:
-        initial_types = conditional_types(expr_type, type_ranges, default)
+        initial_types = conditional_types(expr_type, type_ranges, default, erase=erase)
         # For some reason, doing "yes_map, no_map = conditional_types_to_typemaps(...)"
         # doesn't work: mypyc will decide that 'yes_map' is of type None if we try.
         yes_type: Type | None = initial_types[0]
@@ -7318,20 +7357,28 @@ class CollectArgTypeVarTypes(TypeTraverserVisitor):
 
 @overload
 def conditional_types(
-    current_type: Type, proposed_type_ranges: list[TypeRange] | None, default: None = None
+    current_type: Type,
+    proposed_type_ranges: list[TypeRange] | None,
+    default: None = None,
+    *,
+    erase=False,
 ) -> tuple[Type | None, Type | None]:
     ...
 
 
 @overload
 def conditional_types(
-    current_type: Type, proposed_type_ranges: list[TypeRange] | None, default: Type
+    current_type: Type, proposed_type_ranges: list[TypeRange] | None, default: Type, *, erase=False
 ) -> tuple[Type, Type]:
     ...
 
 
 def conditional_types(
-    current_type: Type, proposed_type_ranges: list[TypeRange] | None, default: Type | None = None
+    current_type: Type,
+    proposed_type_ranges: list[TypeRange] | None,
+    default: Type | None = None,
+    *,
+    erase=True,
 ) -> tuple[Type | None, Type | None]:
     """Takes in the current type and a proposed type of an expression.
 
@@ -7362,7 +7409,11 @@ def conditional_types(
             # Expression is always of one of the types in proposed_type_ranges
             return default, UninhabitedType()
         elif not is_overlapping_types(
-            current_type, proposed_type, prohibit_none_typevar_overlap=True, ignore_promotions=True
+            current_type,
+            proposed_type,
+            prohibit_none_typevar_overlap=True,
+            ignore_promotions=True,
+            check_variance=True,
         ):
             # Expression is never of any type in proposed_type_ranges
             return UninhabitedType(), default
@@ -7375,7 +7426,9 @@ def conditional_types(
                     if not type_range.is_upper_bound
                 ]
             )
-            remaining_type = restrict_subtype_away(current_type, proposed_precise_type)
+            remaining_type = restrict_subtype_away(
+                current_type, proposed_precise_type, erase=erase
+            )
             return proposed_type, remaining_type
     else:
         # An isinstance check, but we don't understand the type

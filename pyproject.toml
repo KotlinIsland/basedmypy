@@ -50,6 +50,7 @@ ignore = [
   "E501",  # conflicts with black
   "E731",  # Do not assign a `lambda` expression, use a `def`
   "E741",  # Ambiguous variable name
+  "F821",  # Clashes with based type-guard
 ]
 
 unfixable = [

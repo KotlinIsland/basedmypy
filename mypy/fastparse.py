@@ -1906,6 +1906,24 @@ class TypeConverter:
             return self.invalid_type(n)
         return TypeGuardType(target, self.visit(n.comparators[0]), is_evaluated=self.is_evaluated)
 
+    def visit_IfExp(self, n: ast3.IfExp) -> Type:
+        condition = self.visit(n.test)
+        true = self.visit(n.body)
+        false = self.visit(n.orelse)
+        result = None
+        if not (isinstance(condition, RawExpressionType) and condition.literal_value is True):
+            result = self.invalid_type(n.test, note='The condition can only be "True"')
+        if not isinstance(true, TypeGuardType):
+            result = self.invalid_type(n.body, note="The true branch can only be a type-guard")
+        if not (isinstance(false, RawExpressionType) and false.literal_value is False):
+            result = self.invalid_type(n.orelse, note='The false branch can only be "False"')
+        if result:
+            return result
+        assert isinstance(true, TypeGuardType)
+        true.only_true = True
+        true.is_evaluated = self.is_evaluated
+        return true
+
     def visit_Constant(self, n: Constant) -> Type:
         val = n.value
         if val is None:

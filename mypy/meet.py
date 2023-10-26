@@ -6,6 +6,7 @@ import mypy.options
 from mypy import join
 from mypy.erasetype import erase_type
 from mypy.maptype import map_instance_to_supertype
+from mypy.nodes import CONTRAVARIANT, COVARIANT, INVARIANT
 from mypy.state import state
 from mypy.subtypes import (
     is_callable_compatible,
@@ -269,6 +270,8 @@ def is_overlapping_types(
     ignore_promotions: bool = False,
     prohibit_none_typevar_overlap: bool = False,
     ignore_uninhabited: bool = False,
+    *,
+    check_variance=False,
 ) -> bool:
     """Can a value of type 'left' also be of type 'right' or vice-versa?
 
@@ -276,11 +279,11 @@ def is_overlapping_types(
     If 'prohibit_none_typevar_overlap' is True, we disallow None from overlapping with
     TypeVars (in both strict-optional and non-strict-optional mode).
     """
-    if isinstance(left, TypeGuardedType) or isinstance(  # type: ignore[misc]
-        right, TypeGuardedType
-    ):
-        # A type guard forces the new type even if it doesn't overlap the old.
-        return True
+    # if isinstance(left, TypeGuardedType) or isinstance(  # type: ignore[misc]
+    #     right, TypeGuardedType
+    # ):
+    #     # A type guard forces the new type even if it doesn't overlap the old.
+    #     return True
 
     left, right = get_proper_types((left, right))
 
@@ -525,12 +528,29 @@ def is_overlapping_types(
             # Or, to use a more concrete example, List[Union[A, B]] and List[Union[B, C]]
             # would be considered partially overlapping since it's possible for both lists
             # to contain only instances of B at runtime.
-            if all(
-                _is_overlapping_types(left_arg, right_arg)
-                for left_arg, right_arg in zip(left.args, right.args)
-            ):
+            if not check_variance:
+                if all(
+                    _is_overlapping_types(left_arg, right_arg)
+                    for left_arg, right_arg in zip(left.args, right.args)
+                ):
+                    return True
+            else:
+                for l_var, l_var_def, r_var, r_var_def in zip(
+                    left.args, left.type.defn.type_vars, right.args, right.type.defn.type_vars
+                ):
+                    if not isinstance(l_var_def, TypeVarType):
+                        # TODO: what about other kinds of TypeVarLikeTypes?
+                        return False
+                    if l_var_def.variance is INVARIANT:
+                        if not is_same_type(l_var, r_var):
+                            return False
+                    elif l_var_def.variance is COVARIANT:
+                        if not is_subtype(l_var, r_var):
+                            return False
+                    elif l_var_def.variance is CONTRAVARIANT:
+                        if not is_subtype(r_var, l_var):
+                            return False
                 return True
-
         return False
 
     # We ought to have handled every case by now: we conclude the

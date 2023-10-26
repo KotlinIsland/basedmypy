@@ -17,7 +17,7 @@ reveal_type(a)  # type: ignore[no-any-expr]  # N: Revealed type is "Any"
 
 [case testFakeColumn]
 # flags: --show-error-end
-if True:
+if bool():  # type: ignore[truthy-bool]
     1  # type: ignore[operator]
 [out]
 main:3:5:3:31: error: Unused "type: ignore" comment  [unused-ignore]
@@ -177,3 +177,22 @@ def becomes_object(f: object) -> Callable[[], object]: ...
 def f3(): ...
 
 a = f3()
+
+
+[case testDoubleTYPE_CHECKING]
+# testing that it doesn't become "True" after a condition
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    a = 1
+if TYPE_CHECKING:
+    a = 1
+
+
+[case testRedundantExprOnWhileTrue]
+for _ in [1]:
+    if True:  # E: Condition is always true  [redundant-expr]
+        reveal_type(1)  # N: Revealed type is "1"
+while True:
+    if True:  # E: Condition is always true  [redundant-expr]
+        reveal_type(1)  # N: Revealed type is "1"
