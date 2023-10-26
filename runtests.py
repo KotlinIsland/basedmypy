@@ -48,6 +48,8 @@ MYPYC_OPT_IN = [MYPYC_RUN, MYPYC_RUN_MULTI]
 # time to run.
 cmds = {
     # Self type check
+    # We do a no-strict compatible check, this is needed because generating a baseline from the head of upstream
+    #  sound very laborious, strict check is in tox.ini
     "self": [
         executable,
         "-m",

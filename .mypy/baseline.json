@@ -655,7 +655,7 @@
         "code": "no-any-expr",
         "column": 15,
         "message": "Expression has type \"Any\"",
-        "offset": 135,
+        "offset": 137,
         "src": "data = json.load(file.open())",
         "target": "mypy.build.load_baseline"
       },
@@ -2651,7 +2651,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_type_application\" is not using @override but is overriding a method in class \"mypy.visitor.ExpressionVisitor\"",
-        "offset": 29,
+        "offset": 47,
         "src": "def visit_type_application(self, tapp: TypeApplication) -> Type:",
         "target": "mypy.checkexpr.ExpressionChecker.visit_type_application"
       },
@@ -10403,7 +10403,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"_fill_text\" is not using @override but is overriding a method in class \"argparse.HelpFormatter\"",
-        "offset": 249,
+        "offset": 251,
         "src": "def _fill_text(self, text: str, width: int, indent: str) -> str:",
         "target": "mypy.main.AugmentedHelpFormatter._fill_text"
       },
@@ -10755,7 +10755,7 @@
         "code": "no-any-expr",
         "column": 49,
         "message": "Expression has type \"Any\"",
-        "offset": 17,
+        "offset": 18,
         "src": "parse_config_file(options, set_strict_flags, config_file, stdout, stderr)",
         "target": "mypy.main.process_options"
       },
@@ -11841,7 +11841,7 @@
         "code": "unreachable",
         "column": 16,
         "message": "Statement is unreachable",
-        "offset": 1103,
+        "offset": 1115,
         "src": "return",
         "target": "mypy.messages.MessageBuilder.report_protocol_problems"
       },
@@ -25537,7 +25537,7 @@
         "code": "no-any-expr",
         "column": 13,
         "message": "Expression type contains \"Any\" (has type \"int | Any\")",
-        "offset": 52,
+        "offset": 55,
         "src": "result = process.returncode",
         "target": "mypy.test.testcmdline.test_python_cmdline"
       },
@@ -26153,7 +26153,7 @@
         "code": "possibly-undefined",
         "column": 22,
         "message": "Name \"program\" may be undefined",
-        "offset": 143,
+        "offset": 144,
         "src": "os.remove(program)",
         "target": "mypy.test.testpep561"
       },
@@ -33335,7 +33335,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_ellipsis_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.SyntheticTypeVisitor\"",
-        "offset": 6,
+        "offset": 8,
         "src": "def visit_ellipsis_type(self, t: EllipsisType) -> str:",
         "target": "mypy.types.TypeStrVisitor.visit_ellipsis_type"
       },
@@ -33763,7 +33763,7 @@
         "code": "no-any-expr",
         "column": 28,
         "message": "Expression type contains \"Any\" (has type \"list[str | Any]\")",
-        "offset": 464,
+        "offset": 470,
         "src": "docstr_repr = \"\\n\".join(re.split(r\"(?<=[^\\\\])\\\\n\", repr(docstr)))",
         "target": "mypy.util.quote_docstring"
       }
