@@ -1343,6 +1343,7 @@ def process_options(
             "unused-awaitable",
             "redundant-self",
             "explicit-override",
+            "bad-cast",
         }
         if mypy.options._based
         else set()

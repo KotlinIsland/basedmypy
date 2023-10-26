@@ -1,0 +1,9 @@
+[case testNonOverlappingCast]
+from typing import cast, List
+
+a: int
+cast(str, a)  # E: Conversion of type "int" to type "str" may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to "object" first.  [bad-cast]
+cast(str, cast(object, a))
+b: List[int]
+cast(List[str], b)  # E: Conversion of type "list[int]" to type "list[str]" may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to "object" first.  [bad-cast]
+cast(List[object], b)

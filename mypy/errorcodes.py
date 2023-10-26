@@ -274,7 +274,9 @@ TYPEGUARD_SUBTYPE: Final = ErrorCode(
 TYPEGUARD_LIMITATION: Final[ErrorCode] = ErrorCode(
     "typeguard-limitation", "mypy limitation", "General"
 )
-
+BAD_CAST: Final[ErrorCode] = ErrorCode(
+    "bad-cast", "cast of non-overlapping types", "General", default_enabled=False
+)
 REVEAL: Final = ErrorCode("reveal", "Reveal types at check time", "General")
 
 # Syntax errors are often blocking.

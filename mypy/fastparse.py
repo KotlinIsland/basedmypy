@@ -1436,12 +1436,12 @@ class ASTConverter:
 
     # ListComp(expr elt, comprehension* generators)
     def visit_ListComp(self, n: ast3.ListComp) -> ListComprehension:
-        e = ListComprehension(self.visit_GeneratorExp(cast(ast3.GeneratorExp, n)))
+        e = ListComprehension(self.visit_GeneratorExp(cast(ast3.GeneratorExp, n)))  # type: ignore[bad-cast]
         return self.set_line(e, n)
 
     # SetComp(expr elt, comprehension* generators)
     def visit_SetComp(self, n: ast3.SetComp) -> SetComprehension:
-        e = SetComprehension(self.visit_GeneratorExp(cast(ast3.GeneratorExp, n)))
+        e = SetComprehension(self.visit_GeneratorExp(cast(ast3.GeneratorExp, n)))  # type: ignore[bad-cast]
         return self.set_line(e, n)
 
     # DictComp(expr key, expr value, comprehension* generators)

@@ -81,4 +81,16 @@ Check that typeguard definitions are valid [typeguard-subtype]
         ...
 
 
+.. _code-bad-cast:
+
+Check that casts are valid [bad-cast]
+-------------------------------------
+
+Casting between two non-overlapping types is often a mistake:
+
+.. code-block:: python
+
+    a: int
+    cast(str, a)  # Conversion of type "int" to type "str" may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to "object" first.  [bad-cast]
+
 .. _code-reveal:

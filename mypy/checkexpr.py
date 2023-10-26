@@ -4444,6 +4444,12 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             always_allow_any=True,
         )
         target_type = expr.type
+        if not is_overlapping_types(source_type, target_type):
+            self.msg.fail(
+                f'Conversion of type "{source_type}" to type "{target_type}" may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to "object" first.',
+                expr,
+                code=errorcodes.BAD_CAST,
+            )
         options = self.chk.options
         if (
             options.warn_redundant_casts

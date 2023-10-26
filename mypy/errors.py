@@ -1347,7 +1347,7 @@ class Errors:
                     previous = error["line"] = error["offset"] + previous  # type: ignore[typeddict-unknown-key]
                 except KeyError as err:
                     raise TypeError("baseline") from err
-        baseline_errors = cast(Dict[str, List[BaselineError]], errors)
+        baseline_errors = cast(Dict[str, List[BaselineError]], errors)  # type: ignore[bad-cast]
         self.baseline = baseline_errors
         self.baseline_targets = targets
 

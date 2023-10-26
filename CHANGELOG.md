@@ -5,6 +5,7 @@
 - f-string format specs are checked (#543)
 - Narrow type on initial assignment (#547)
 - Annotations in function bodies are not analyzed as evaluated (#564)
+- Invalid `cast`s show an error (#573)
 ### Enhancements
 - Show 'narrowed from' in `reveal_type` (#550)
 - `--color-output` is enabled by default (#531)

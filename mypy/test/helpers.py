@@ -363,7 +363,7 @@ def parse_options(
         options.error_summary = False
         if based:
             options.show_column_numbers = False
-            options.enabled_error_codes.update({errorcodes.NO_UNTYPED_USAGE})
+            options.enabled_error_codes.update({errorcodes.NO_UNTYPED_USAGE, errorcodes.BAD_CAST})
         else:
             options.default_return = False
             options.bare_literals = False

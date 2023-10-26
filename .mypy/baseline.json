@@ -2707,7 +2707,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_assert_type_expr\" is not using @override but is overriding a method in class \"mypy.visitor.ExpressionVisitor\"",
-        "offset": 23,
+        "offset": 25,
         "src": "def visit_assert_type_expr(self, expr: AssertTypeExpr) -> Type:",
         "target": "mypy.checkexpr.ExpressionChecker.visit_assert_type_expr"
       },
@@ -10851,7 +10851,7 @@
         "code": "no-any-expr",
         "column": 11,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 23,
+        "offset": 24,
         "src": "if not dummy.__dict__[\"special-opts:strict\"]:",
         "target": "mypy.main.process_options"
       },
