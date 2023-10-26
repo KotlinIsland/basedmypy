@@ -1,6 +1,8 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Fixes
+- Render star args in error messages properly (#551)
 
 ## [2.2.1]
 ### Fixes

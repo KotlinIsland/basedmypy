@@ -2484,10 +2484,14 @@ def format_callable_args(
                 arg_strings.append(f"{arg_name}: {format(arg_type)} = ...")
                 continue
             elif arg_kind is ARG_STAR:
-                arg_strings.append(f"*{arg_name}: {format(arg_type)}")
+                arg_strings.append(
+                    f"*{arg_name}: {format(arg_type)}" if arg_name else f"*{format(arg_type)}"
+                )
                 continue
             elif arg_kind is ARG_STAR2:
-                arg_strings.append(f"**{arg_name}: {format(arg_type)}")
+                arg_strings.append(
+                    f"**{arg_name}: {format(arg_type)}" if arg_name else f"**{format(arg_type)}"
+                )
                 continue
         if arg_kind == ARG_POS and arg_name is None or verbosity == 0 and arg_kind.is_positional():
             arg_strings.append(format(arg_type))
