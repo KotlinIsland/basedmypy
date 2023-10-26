@@ -714,6 +714,9 @@ class SubtypeVisitor(TypeVisitor[bool]):
                         and left.arg_names.index(left.type_guard.target) != 0  # type: ignore[arg-type]
                     ):
                         return False
+                if not right.type_guard.only_true and left.type_guard.only_true:
+                    # only_true is a supertype
+                    return False
                 if not self._is_subtype(left.type_guard.type_guard, right.type_guard.type_guard):
                     return False
             elif right.type_guard is not None and left.type_guard is None:
@@ -1804,7 +1807,7 @@ def try_restrict_literal_union(t: UnionType, s: Type) -> list[Type] | None:
     return new_items
 
 
-def restrict_subtype_away(t: Type, s: Type) -> Type:
+def restrict_subtype_away(t: Type, s: Type, *, erase=True) -> Type:
     """Return t minus s for runtime type assertions.
 
     If we can't determine a precise result, return a supertype of the
@@ -1818,27 +1821,33 @@ def restrict_subtype_away(t: Type, s: Type) -> Type:
         new_items = try_restrict_literal_union(p_t, s)
         if new_items is None:
             new_items = [
-                restrict_subtype_away(item, s)
+                restrict_subtype_away(item, s, erase=erase)
                 for item in p_t.relevant_items()
-                if (isinstance(get_proper_type(item), AnyType) or not covers_at_runtime(item, s))
+                if (
+                    isinstance(get_proper_type(item), AnyType)
+                    or not covers_at_runtime(item, s, erase=erase)
+                )
             ]
         return UnionType.make_union(new_items)
-    elif covers_at_runtime(t, s):
+    elif covers_at_runtime(t, s, erase=erase):
         return UninhabitedType()
     else:
         return t
 
 
-def covers_at_runtime(item: Type, supertype: Type) -> bool:
+def covers_at_runtime(item: Type, supertype: Type, *, erase=True) -> bool:
     """Will isinstance(item, supertype) always return True at runtime?"""
     item = get_proper_type(item)
     supertype = get_proper_type(supertype)
 
     # Since runtime type checks will ignore type arguments, erase the types.
-    supertype = erase_type(supertype)
-    if is_proper_subtype(
-        erase_type(item), supertype, ignore_promotions=True, erase_instances=True
-    ):
+    if erase:
+        supertype = erase_type(supertype)
+        if is_proper_subtype(
+            erase_type(item), supertype, ignore_promotions=True, erase_instances=True
+        ):
+            return True
+    elif is_proper_subtype(item, supertype, ignore_promotions=True):
         return True
     if isinstance(supertype, Instance):
         if supertype.type.is_protocol:

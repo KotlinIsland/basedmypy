@@ -1066,7 +1066,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                     "You need to put quotes around the entire type-guard, or enable `__future__.annotations`",
                     t,
                 )
-            return TypeGuardType(proper.target, self.anal_type(proper.type_guard))
+            return proper.copy_modified(type_guard=self.anal_type(proper.type_guard))
         elif isinstance(t, UnboundType):
             sym = self.lookup_qualified(t.name, t)
             if sym is not None and sym.node is not None:

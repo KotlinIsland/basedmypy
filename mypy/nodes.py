@@ -4091,7 +4091,9 @@ def is_class_var(expr: NameExpr) -> bool:
     return False
 
 
-def is_final_node(node: SymbolNode | None) -> bool:
+def is_final_node(
+    node: SymbolNode | None,
+) -> node is Var | FuncDef | OverloadedFuncDef | Decorator if True else False:
     """Check whether `node` corresponds to a final attribute."""
     return isinstance(node, (Var, FuncDef, OverloadedFuncDef, Decorator)) and node.is_final
 

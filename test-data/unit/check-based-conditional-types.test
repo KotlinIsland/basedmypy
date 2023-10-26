@@ -1,0 +1,25 @@
+
+[case testConditionalType]
+from __future__ import annotations
+
+def f(x: object) -> x is int if True else False: ...
+
+reveal_type(f)  # N: Revealed type is "def (x: object) -> x is int if True else False"
+[builtins fixtures/tuple.pyi]
+
+
+[case testConditionalTypePast]
+def f1(x: object) -> "x is int" if True else False: ...  # E: You need to put quotes around the entire type-guard, or enable `__future__.annotations`  [misc]
+def f2(x: object) -> "x is int if True else False": ...
+
+
+[case testConditionalTypeUnsupported]
+from __future__ import annotations
+
+def f1(x: object) -> x is int if int else False: ...  # E: Invalid type comment or annotation  [valid-type] \
+                                                      # N: The condition can only be "True"
+def f2(x: object) -> int if True else False: ...  # E: Invalid type comment or annotation  [valid-type] \
+                                                  # N: The true branch can only be a type-guard
+def f3(x: object) -> x is int if True else x is str: ...  # E: Invalid type comment or annotation  [valid-type] \
+                                                          # N: The false branch can only be "False"
+[builtins fixtures/tuple.pyi]

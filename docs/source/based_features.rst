@@ -134,6 +134,16 @@ Type-guards don't widen:
     if is_int(a):
         reveal_type(a)  # Revealed type is "bool"
 
+Type-guards narrow in the negative case:
+
+.. code-block:: python
+
+    a: int | str
+    if is_int(a):
+        reveal_type(a)  # Revealed type is "int"
+    else:
+        reveal_type(a)  # Revealed type is "str"
+
 Type-guards work on the implicit ``self`` and ``cls`` parameters:
 
 .. code-block:: python
@@ -151,6 +161,19 @@ Invalid type-guards show an error:
 .. code-block:: python
 
     def guard(x: str) -> x is int: # error: A type-guard's type must be assignable to its parameter's type.
+
+Type-guards that only narrow when returning true are denoted as:
+
+.. code-block:: python
+
+    def is_positive_int(x: object) -> x is int if True else False:
+        return isinstance(x, int) and x > 0
+
+    i: int | None
+    if is_positive_int(i):
+        reveal_type(i)  # Revealed type is "int"
+    else:
+        reveal_type(i)  # Revealed type is "int | None"
 
 If you want to achieve something similar to the old ``TypeGuard``:
 

@@ -2724,6 +2724,8 @@ def format_type_inner(
                     return_type = (
                         f"{func.type_guard.target_desc} is {format(func.type_guard.type_guard)}"
                     )
+                    if func.type_guard.only_true:
+                        return_type += " if True else False"
                 else:
                     return_type = f"TypeGuard[{format(func.type_guard.type_guard)}]"
             else:

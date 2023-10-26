@@ -469,11 +469,11 @@ def is_short_int_rprimitive(rtype: RType) -> bool:
     return rtype is short_int_rprimitive
 
 
-def is_int16_rprimitive(rtype: RType) -> TypeGuard[RPrimitive]:
+def is_int16_rprimitive(rtype: RType) -> rtype is RPrimitive if True else False:
     return rtype is int16_rprimitive
 
 
-def is_int32_rprimitive(rtype: RType) -> TypeGuard[RPrimitive]:
+def is_int32_rprimitive(rtype: RType) -> rtype is RPrimitive if True else False:
     return rtype is int32_rprimitive or (
         rtype is c_pyssize_t_rprimitive and rtype._ctype == "int32_t"
     )

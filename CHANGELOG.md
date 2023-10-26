@@ -7,6 +7,9 @@
 - Annotations in function bodies are not analyzed as evaluated (#564)
 - Invalid `cast`s show an error (#573)
 - Argument names are validated for subtypes (#562)
+- Type-guards narrow in the negative (#553)
+- Conditional types for asymmetric type-guards (#553)
+- Static conditions report an error (#553)
 ### Enhancements
 - Show 'narrowed from' in `reveal_type` (#550)
 - `--color-output` is enabled by default (#531)
@@ -16,6 +19,7 @@
 - Render star args in error messages properly (#551)
 - The first argument to `cast` is analyzed as evaluated (#564)
 - Decorated functions that return `None` correctly warn when used (#572)
+- Some impossible type-guards were not reporting an error (#553)
 
 ## [2.2.1]
 ### Fixes

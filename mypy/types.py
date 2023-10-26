@@ -22,7 +22,7 @@ from typing import (
     Union,
     cast,
 )
-from typing_extensions import Self, TypeAlias as _TypeAlias, TypeGuard, overload
+from typing_extensions import Self, TypeAlias as _TypeAlias, overload
 
 import mypy.nodes
 import mypy.options
@@ -1367,22 +1367,30 @@ class DeletedType(ProperType):
 
 
 class TypeGuardType(ProperType):
-    """Based
+    """Based"""
 
-    If it does get too annoying to keep this up to date with upstream changes, we could change it to just being a
-    additional `type_guard_target` property on `CallableType`.
-    """
+    __slots__ = ("target", "type_guard", "is_evaluated", "only_true")
 
-    __slots__ = ("target", "type_guard", "is_evaluated")
-
-    def __init__(self, target: str | int, type_guard: Type, is_evaluated=True):
+    def __init__(self, target: str | int, type_guard: Type, is_evaluated=True, only_true=False):
         super().__init__(line=type_guard.line, column=type_guard.column)
         self.target = target
         self.type_guard = type_guard
         self.is_evaluated = is_evaluated
+        self.only_true = only_true
 
     def __repr__(self) -> str:
-        return f"{self.target_desc} is {self.type_guard}"
+        result = f"{self.target_desc} is {self.type_guard}"
+        if self.only_true:
+            result += " if True else False"
+        return result
+
+    def copy_modified(self, type_guard: Bogus[Type] = _dummy) -> TypeGuardType:
+        return TypeGuardType(
+            self.target,
+            type_guard if type_guard is not _dummy else self.type_guard,
+            self.is_evaluated,
+            self.only_true,
+        )
 
     @property
     def target_desc(self) -> str | int:
@@ -1435,12 +1443,15 @@ class TypeGuardType(ProperType):
             ".class": "TypeGuardType",
             "target": self.target,
             "type_guard": self.type_guard.serialize(),
+            "only_true": self.only_true,
         }
 
     @classmethod
     def deserialize(cls, data: JsonDict) -> TypeGuardType:
         assert data[".class"] == "TypeGuardType"
-        return TypeGuardType(data["target"], deserialize_type(data["type_guard"]))
+        return TypeGuardType(
+            data["target"], deserialize_type(data["type_guard"]), only_true=data["only_true"]
+        )
 
 
 # Fake TypeInfo to be used as a placeholder during Instance de-serialization.
@@ -3534,6 +3545,8 @@ class TypeStrVisitor(SyntheticTypeVisitor[str]):
                 if t.type_guard is not None:
                     if mypy.options._based:
                         s += f" -> {t.type_guard.target_desc} is {t.type_guard.type_guard.accept(self)}"
+                        if t.type_guard.only_true:
+                            s += " if True else False"
                     else:
                         s += f" -> TypeGuard[{t.type_guard.type_guard.accept(self)}]"
                 else:
@@ -3726,7 +3739,9 @@ class UnrollAliasVisitor(TrivialSyntheticTypeTranslator):
         return result
 
 
-def is_named_instance(t: Type, fullnames: str | tuple[str, ...]) -> TypeGuard[Instance]:
+def is_named_instance(
+    t: Type, fullnames: str | tuple[str, ...]
+) -> t is Instance if True else False:
     if not isinstance(fullnames, tuple):
         fullnames = (fullnames,)
 
@@ -3921,7 +3936,7 @@ def callable_with_ellipsis(any_type: AnyType, ret_type: Type, fallback: Instance
     )
 
 
-def is_unannotated_any(t: Type) -> bool:
+def is_unannotated_any(t: Type) -> t is AnyType if True else False:
     if not isinstance(t, ProperType):
         return False
     return isinstance(t, AnyType) and t.type_of_any == TypeOfAny.unannotated

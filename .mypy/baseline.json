@@ -5,9 +5,33 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"__repr__\" is not using @override but is overriding a method in class \"builtins.object\"",
-        "offset": 47,
+        "offset": 56,
         "src": "def __repr__(self) -> str:",
         "target": "mypy.binder.Frame.__repr__"
+      },
+      {
+        "code": "assignment",
+        "column": 38,
+        "message": "Incompatible types in assignment (expression has type \"int\", variable has type \"0 | 1 | 2\")",
+        "offset": 107,
+        "src": "self.frames[-1].unreachable = 1 + artificial",
+        "target": "mypy.binder.ConditionalTypeBinder.unreachable"
+      },
+      {
+        "code": "assignment",
+        "column": 38,
+        "message": "Incompatible types in assignment (expression has type \"bool\", variable has type \"0 | 1 | 2\")",
+        "offset": 66,
+        "src": "self.frames[-1].unreachable = not frames",
+        "target": "mypy.binder.ConditionalTypeBinder.update_from_options"
+      },
+      {
+        "code": "assignment",
+        "column": 36,
+        "message": "Incompatible types in assignment (expression has type \"True\", variable has type \"0 | 1 | 2\")",
+        "offset": 147,
+        "src": "frame.unreachable = True",
+        "target": "mypy.binder.ConditionalTypeBinder.allow_jump"
       }
     ],
     "mypy/build.py": [
@@ -780,10 +804,18 @@
         "target": "mypy.build.read_plugins_snapshot"
       },
       {
+        "code": "redundant-expr",
+        "column": 7,
+        "message": "Condition is always false",
+        "offset": 2,
+        "src": "if not isinstance(snapshot, dict):",
+        "target": "mypy.build.read_plugins_snapshot"
+      },
+      {
         "code": "no-any-expr",
         "column": 22,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 2,
+        "offset": 0,
         "src": "if not isinstance(snapshot, dict):",
         "target": "mypy.build.read_plugins_snapshot"
       },
@@ -1068,10 +1100,18 @@
         "target": "mypy.build.find_cache_meta"
       },
       {
+        "code": "redundant-expr",
+        "column": 7,
+        "message": "Condition is always false",
+        "offset": 2,
+        "src": "if not isinstance(meta, dict):",
+        "target": "mypy.build.find_cache_meta"
+      },
+      {
         "code": "no-any-expr",
         "column": 22,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 2,
+        "offset": 0,
         "src": "if not isinstance(meta, dict):",
         "target": "mypy.build.find_cache_meta"
       },
@@ -1095,7 +1135,7 @@
         "code": "no-any-expr",
         "column": 8,
         "message": "Expression type contains \"Any\" (has type \"CacheMeta\")",
-        "offset": 12,
+        "offset": 8,
         "src": "m.id != id",
         "target": "mypy.build.find_cache_meta"
       },
@@ -1104,48 +1144,48 @@
         "column": 11,
         "message": "Expression type contains \"Any\" (has type \"CacheMeta\")",
         "offset": 1,
-        "src": "or m.mtime is None  # type: ignore[redundant-expr]",
+        "src": "or m.mtime is None",
         "target": "mypy.build.find_cache_meta"
       },
       {
-        "code": null,
+        "code": "redundant-expr",
         "column": 11,
-        "message": "Error code \"no-any-expr\" not covered by \"type: ignore\" comment",
+        "message": "Left operand of \"or\" is always false",
         "offset": 0,
-        "src": "or m.mtime is None  # type: ignore[redundant-expr]",
-        "target": null
+        "src": "or m.mtime is None",
+        "target": "mypy.build.find_cache_meta"
       },
       {
         "code": "no-any-expr",
         "column": 11,
         "message": "Expression type contains \"Any\" (has type \"CacheMeta\")",
         "offset": 1,
-        "src": "or m.size is None  # type: ignore[redundant-expr]",
+        "src": "or m.size is None",
         "target": "mypy.build.find_cache_meta"
       },
       {
-        "code": null,
+        "code": "redundant-expr",
         "column": 11,
-        "message": "Error code \"no-any-expr\" not covered by \"type: ignore\" comment",
+        "message": "Left operand of \"or\" is always false",
         "offset": 0,
-        "src": "or m.size is None  # type: ignore[redundant-expr]",
-        "target": null
+        "src": "or m.size is None",
+        "target": "mypy.build.find_cache_meta"
       },
       {
         "code": "no-any-expr",
         "column": 11,
         "message": "Expression type contains \"Any\" (has type \"CacheMeta\")",
         "offset": 1,
-        "src": "or m.dependencies is None  # type: ignore[redundant-expr]",
+        "src": "or m.dependencies is None",
         "target": "mypy.build.find_cache_meta"
       },
       {
-        "code": null,
+        "code": "redundant-expr",
         "column": 11,
-        "message": "Error code \"no-any-expr\" not covered by \"type: ignore\" comment",
+        "message": "Left operand of \"or\" is always false",
         "offset": 0,
-        "src": "or m.dependencies is None  # type: ignore[redundant-expr]",
-        "target": null
+        "src": "or m.dependencies is None",
+        "target": "mypy.build.find_cache_meta"
       },
       {
         "code": "no-any-expr",
@@ -1929,7 +1969,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"type_context\" is not using @override but is overriding a method in class \"mypy.plugin.CheckerPluginInterface\"",
-        "offset": 435,
+        "offset": 438,
         "src": "def type_context(self) -> list[Type | None]:",
         "target": "mypy.checker"
       },
@@ -1942,18 +1982,34 @@
         "target": "mypy.checker.TypeChecker.visit_overloaded_func_def"
       },
       {
+        "code": "redundant-expr",
+        "column": 17,
+        "message": "Condition is always true",
+        "offset": 101,
+        "src": "elif isinstance(defn.impl, Decorator):",
+        "target": "mypy.checker.TypeChecker.check_overlapping_overloads"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_func_def\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 373,
+        "offset": 272,
         "src": "def visit_func_def(self, defn: FuncDef) -> None:",
         "target": "mypy.checker.TypeChecker.visit_func_def"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 31,
+        "message": "Condition is always true",
+        "offset": 477,
+        "src": "if new_frame is None:",
+        "target": "mypy.checker.TypeChecker.check_func_def"
       },
       {
         "code": "no-any-expr",
         "column": 12,
         "message": "Expression type contains \"Any\" (has type \"tuple[Any, ...]\")",
-        "offset": 1063,
+        "offset": 586,
         "src": "for substitutions in itertools.product(*subst):",
         "target": "mypy.checker.TypeChecker.expand_typevars"
       },
@@ -1974,18 +2030,34 @@
         "target": "mypy.checker.TypeChecker.expand_typevars"
       },
       {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 307,
+        "src": "if isinstance(override, FunctionLike):",
+        "target": "mypy.checker.TypeChecker.check_override"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_class_def\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 435,
+        "offset": 128,
         "src": "def visit_class_def(self, defn: ClassDef) -> None:",
         "target": "mypy.checker.TypeChecker.visit_class_def"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always false",
+        "offset": 287,
+        "src": "if isinstance(sym.node, FuncBase):",
+        "target": "mypy.checker.TypeChecker.determine_type_of_member"
       },
       {
         "code": "unreachable",
         "column": 12,
         "message": "Statement is unreachable",
-        "offset": 288,
+        "offset": 1,
         "src": "return self.function_type(sym.node)",
         "target": "mypy.checker.TypeChecker.determine_type_of_member"
       },
@@ -2041,7 +2113,7 @@
         "code": "truthy-bool",
         "column": 24,
         "message": "\"rvalue_type\" has type \"Type\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 140,
+        "offset": 160,
         "src": "and rvalue_type",
         "target": "mypy.checker.TypeChecker.check_assignment"
       },
@@ -2062,10 +2134,18 @@
         "target": "mypy.checker.TypeChecker.is_assignable_slot"
       },
       {
+        "code": "redundant-expr",
+        "column": 27,
+        "message": "Condition is always false",
+        "offset": 40,
+        "src": "if iterable_type is not None and iterable_type != self.iterable_item_type(",
+        "target": "mypy.checker.TypeChecker.check_assignment_to_multiple_lvalues"
+      },
+      {
         "code": "unreachable",
         "column": 57,
         "message": "Right operand of \"and\" is never evaluated",
-        "offset": 40,
+        "offset": 0,
         "src": "if iterable_type is not None and iterable_type != self.iterable_item_type(",
         "target": "mypy.checker.TypeChecker.check_assignment_to_multiple_lvalues"
       },
@@ -2078,10 +2158,18 @@
         "target": "mypy.checker.TypeChecker.check_assignment_to_multiple_lvalues"
       },
       {
+        "code": "redundant-expr",
+        "column": 31,
+        "message": "Condition is always true",
+        "offset": 2,
+        "src": "if last_idx is None or last_idx + 1 == idx_rval:",
+        "target": "mypy.checker.TypeChecker.check_assignment_to_multiple_lvalues"
+      },
+      {
         "code": "unreachable",
         "column": 51,
         "message": "Right operand of \"or\" is never evaluated",
-        "offset": 2,
+        "offset": 0,
         "src": "if last_idx is None or last_idx + 1 == idx_rval:",
         "target": "mypy.checker.TypeChecker.check_assignment_to_multiple_lvalues"
       },
@@ -2094,10 +2182,18 @@
         "target": "mypy.checker.TypeChecker.check_assignment_to_multiple_lvalues"
       },
       {
+        "code": "redundant-expr",
+        "column": 27,
+        "message": "Condition is always true",
+        "offset": 11,
+        "src": "if iterable_start is None:",
+        "target": "mypy.checker.TypeChecker.check_assignment_to_multiple_lvalues"
+      },
+      {
         "code": "no-any-expr",
         "column": 36,
         "message": "Expression type contains \"Any\" (has type \"zip[tuple[Any, ...]]\")",
-        "offset": 166,
+        "offset": 155,
         "src": "types, declared_types = zip(*clean_items)",
         "target": "mypy.checker.TypeChecker.check_multi_assignment_from_union"
       },
@@ -2134,10 +2230,18 @@
         "target": "mypy.checker.TypeChecker.set_inferred_type"
       },
       {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always false",
+        "offset": 41,
+        "src": "if isinstance(rvalue.callee, RefExpr) and isinstance(rvalue.callee.node, FuncBase):",
+        "target": "mypy.checker.TypeChecker.simple_rvalue"
+      },
+      {
         "code": "unreachable",
         "column": 16,
         "message": "Statement is unreachable",
-        "offset": 42,
+        "offset": 1,
         "src": "typ = rvalue.callee.node.type",
         "target": "mypy.checker.TypeChecker.simple_rvalue"
       },
@@ -2169,7 +2273,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_while_stmt\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 25,
+        "offset": 36,
         "src": "def visit_while_stmt(self, s: WhileStmt) -> None:",
         "target": "mypy.checker.TypeChecker.visit_while_stmt"
       },
@@ -2177,7 +2281,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_operator_assignment_stmt\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 6,
+        "offset": 11,
         "src": "def visit_operator_assignment_stmt(self, s: OperatorAssignmentStmt) -> None:",
         "target": "mypy.checker.TypeChecker.visit_operator_assignment_stmt"
       },
@@ -2214,10 +2318,18 @@
         "target": "mypy.checker.TypeChecker.visit_for_stmt"
       },
       {
+        "code": "redundant-expr",
+        "column": 23,
+        "message": "Condition is always true",
+        "offset": 80,
+        "src": "if native_int is None:",
+        "target": "mypy.checker.TypeChecker.analyze_range_native_int_type"
+      },
+      {
         "code": "unreachable",
         "column": 20,
         "message": "Statement is unreachable",
-        "offset": 82,
+        "offset": 2,
         "src": "elif argt != native_int:",
         "target": "mypy.checker.TypeChecker.analyze_range_native_int_type"
       },
@@ -2270,10 +2382,18 @@
         "target": "mypy.checker.TypeChecker.visit_match_stmt"
       },
       {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always false",
+        "offset": 520,
+        "src": "if type_being_compared is not None:",
+        "target": "mypy.checker.TypeChecker.find_type_equals_check"
+      },
+      {
         "code": "unreachable",
         "column": 20,
         "message": "Statement is unreachable",
-        "offset": 527,
+        "offset": 7,
         "src": "return {}, {}",
         "target": "mypy.checker.TypeChecker.find_type_equals_check"
       },
@@ -2294,10 +2414,18 @@
         "target": "mypy.checker.TypeChecker.find_isinstance_check_helper"
       },
       {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always false",
+        "offset": 487,
+        "src": "if target and not is_same_type(target, expr_type):",
+        "target": "mypy.checker.TypeChecker.refine_identity_comparison_expression"
+      },
+      {
         "code": "unreachable",
         "column": 26,
         "message": "Right operand of \"and\" is never evaluated",
-        "offset": 477,
+        "offset": 0,
         "src": "if target and not is_same_type(target, expr_type):",
         "target": "mypy.checker.TypeChecker.refine_identity_comparison_expression"
       },
@@ -2329,7 +2457,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"get_expression_type\" is not using @override but is overriding a method in class \"mypy.plugin.CheckerPluginInterface\"",
-        "offset": 357,
+        "offset": 367,
         "src": "def get_expression_type(self, node: Expression, type_context: Type | None = None) -> Type:",
         "target": "mypy.checker.TypeChecker.get_expression_type"
       },
@@ -2345,15 +2473,31 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"type\" is not using @override but is overriding a method in class \"mypy.treetransform.TransformVisitor\"",
-        "offset": 309,
+        "offset": 323,
         "src": "def type(self, type: Type) -> Type:",
         "target": "mypy.checker.TypeTransformVisitor.type"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 9,
+        "message": "Condition is always true",
+        "offset": 126,
+        "src": "elif isinstance(t, FunctionLike):",
+        "target": "mypy.checker.is_more_general_arg_prefix"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 1,
+        "src": "if isinstance(s, FunctionLike):",
+        "target": "mypy.checker.is_more_general_arg_prefix"
       },
       {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_uninhabited_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.BoolTypeQuery\"",
-        "offset": 192,
+        "offset": 65,
         "src": "def visit_uninhabited_type(self, t: UninhabitedType) -> bool:",
         "target": "mypy.checker.InvalidInferredTypes.visit_uninhabited_type"
       },
@@ -2390,10 +2534,26 @@
         "target": "mypy.checker.SetNothingToAny.visit_type_alias_type"
       },
       {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 233,
+        "src": "if last_operator is None:",
+        "target": "mypy.checker.group_comparison_operands"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 9,
+        "message": "Condition is always true",
+        "offset": 83,
+        "src": "elif isinstance(func, FuncBase):",
+        "target": "mypy.checker.is_static"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_assignment_stmt\" is not using @override but is overriding a method in class \"mypy.traverser.TraverserVisitor\"",
-        "offset": 404,
+        "offset": 88,
         "src": "def visit_assignment_stmt(self, s: AssignmentStmt) -> None:",
         "target": "mypy.checker.VarAssignVisitor.visit_assignment_stmt"
       },
@@ -2483,7 +2643,7 @@
         "code": "truthy-bool",
         "column": 34,
         "message": "\"item_name_expr\" has type \"Expression\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 407,
+        "offset": 409,
         "src": "key_context = item_name_expr or item_arg",
         "target": "mypy.checkexpr.ExpressionChecker.validate_typeddict_kwargs"
       },
@@ -2520,10 +2680,18 @@
         "target": "mypy.checkexpr"
       },
       {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always false",
+        "offset": 4,
+        "src": "if actual_type is None:",
+        "target": "mypy.checkexpr.ExpressionChecker.check_argument_types"
+      },
+      {
         "code": "unreachable",
         "column": 20,
         "message": "Statement is unreachable",
-        "offset": 5,
+        "offset": 1,
         "src": "continue  # Some kind of error was already reported.",
         "target": "mypy.checkexpr.ExpressionChecker.check_argument_types"
       },
@@ -2632,10 +2800,18 @@
         "target": "mypy.checkexpr.ExpressionChecker.visit_comparison_expr"
       },
       {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always true",
+        "offset": 141,
+        "src": "if result is None:",
+        "target": "mypy.checkexpr.ExpressionChecker.visit_comparison_expr"
+      },
+      {
         "code": "unreachable",
         "column": 16,
         "message": "Statement is unreachable",
-        "offset": 144,
+        "offset": 3,
         "src": "result = join.join_types(result, sub_result)",
         "target": "mypy.checkexpr.ExpressionChecker.visit_comparison_expr"
       },
@@ -2707,7 +2883,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_assert_type_expr\" is not using @override but is overriding a method in class \"mypy.visitor.ExpressionVisitor\"",
-        "offset": 25,
+        "offset": 29,
         "src": "def visit_assert_type_expr(self, expr: AssertTypeExpr) -> Type:",
         "target": "mypy.checkexpr.ExpressionChecker.visit_assert_type_expr"
       },
@@ -3154,10 +3330,18 @@
         "target": "mypy.checkmember.analyze_class_attribute_access"
       },
       {
+        "code": "redundant-expr",
+        "column": 7,
+        "message": "Condition is always false",
+        "offset": 234,
+        "src": "if isinstance(n, FuncBase):",
+        "target": "mypy.checkmember.is_valid_constructor"
+      },
+      {
         "code": "unreachable",
         "column": 8,
         "message": "Statement is unreachable",
-        "offset": 235,
+        "offset": 1,
         "src": "return True",
         "target": "mypy.checkmember.is_valid_constructor"
       }
@@ -3196,10 +3380,18 @@
         "target": "mypy.checkpattern.PatternChecker.visit_singleton_pattern"
       },
       {
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "Condition is always true",
+        "offset": 5,
+        "src": "elif value is None:",
+        "target": "mypy.checkpattern.PatternChecker.visit_singleton_pattern"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_sequence_pattern\" is not using @override but is overriding a method in class \"mypy.visitor.PatternVisitor\"",
-        "offset": 15,
+        "offset": 10,
         "src": "def visit_sequence_pattern(self, o: SequencePattern) -> PatternType:",
         "target": "mypy.checkpattern.PatternChecker.visit_sequence_pattern"
       },
@@ -3226,6 +3418,24 @@
         "offset": 67,
         "src": "def visit_class_pattern(self, o: ClassPattern) -> PatternType:",
         "target": "mypy.checkpattern.PatternChecker.visit_class_pattern"
+      }
+    ],
+    "mypy/checkstrformat.py": [
+      {
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "Condition is always true",
+        "offset": 724,
+        "src": "elif isinstance(expr, StrExpr):",
+        "target": "mypy.checkstrformat.StringFormatterChecker.check_str_interpolation"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "Condition is always true",
+        "offset": 147,
+        "src": "elif isinstance(expr, StrExpr):",
+        "target": "mypy.checkstrformat.StringFormatterChecker.build_dict_type"
       }
     ],
     "mypy/config_parser.py": [
@@ -4106,10 +4316,18 @@
         "target": "mypy.constraints.Constraint.__eq__"
       },
       {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always false",
+        "offset": 29,
+        "src": "if actual is None and callee.arg_kinds[i] in (ARG_STAR, ARG_STAR2):",
+        "target": "mypy.constraints.infer_constraints_for_callable"
+      },
+      {
         "code": "unreachable",
         "column": 34,
         "message": "Right operand of \"and\" is never evaluated",
-        "offset": 29,
+        "offset": 0,
         "src": "if actual is None and callee.arg_kinds[i] in (ARG_STAR, ARG_STAR2):",
         "target": "mypy.constraints.infer_constraints_for_callable"
       },
@@ -4122,10 +4340,18 @@
         "target": "mypy.constraints.infer_constraints_for_callable"
       },
       {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always true",
+        "offset": 384,
+        "src": "if option is not None:",
+        "target": "mypy.constraints.any_constraints"
+      },
+      {
         "code": "unreachable",
         "column": 20,
         "message": "Statement is unreachable",
-        "offset": 387,
+        "offset": 3,
         "src": "merged_option = None",
         "target": "mypy.constraints.any_constraints"
       },
@@ -6472,10 +6698,18 @@
     ],
     "mypy/errors.py": [
       {
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "Condition is always true",
+        "offset": 225,
+        "src": "elif callable(self._filter):",
+        "target": "mypy.errors.ErrorWatcher.on_error"
+      },
+      {
         "code": "truthy-bool",
         "column": 11,
         "message": "Member \"options\" has type \"Options\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 742,
+        "offset": 517,
         "src": "if self.options:",
         "target": "mypy.errors.Errors.is_error_code_enabled"
       },
@@ -6496,10 +6730,18 @@
         "target": "mypy.errors.Errors.generate_ignore_without_code_errors"
       },
       {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always false",
+        "offset": 378,
+        "src": "if isinstance(e.message, ErrorMessage):",
+        "target": "mypy.errors.Errors.render_messages"
+      },
+      {
         "code": "unreachable",
         "column": 16,
         "message": "Statement is unreachable",
-        "offset": 379,
+        "offset": 1,
         "src": "result.append(",
         "target": "mypy.errors.Errors.render_messages"
       }
@@ -7084,6 +7326,16 @@
         "target": "mypy.expandtype.ExpandTypeVisitor.visit_typeguard_type"
       }
     ],
+    "mypy/exprtotype.py": [
+      {
+        "code": "redundant-expr",
+        "column": 23,
+        "message": "Condition is always false",
+        "offset": 158,
+        "src": "if name is not None:",
+        "target": "mypy.exprtotype.expr_to_unanalyzed_type"
+      }
+    ],
     "mypy/fastparse.py": [
       {
         "code": "no-any-explicit",
@@ -7302,6 +7554,14 @@
         "target": "mypy.fastparse.ASTConverter.fix_function_overloads"
       },
       {
+        "code": "redundant-expr",
+        "column": 16,
+        "message": "Condition is always false",
+        "offset": 0,
+        "src": "current_overload_name is not None",
+        "target": "mypy.fastparse.ASTConverter.fix_function_overloads"
+      },
+      {
         "code": "unreachable",
         "column": 16,
         "message": "Statement is unreachable",
@@ -7318,6 +7578,14 @@
         "target": "mypy.fastparse.ASTConverter.fix_function_overloads"
       },
       {
+        "code": "redundant-expr",
+        "column": 16,
+        "message": "Condition is always false",
+        "offset": 0,
+        "src": "current_overload_name is not None",
+        "target": "mypy.fastparse.ASTConverter.fix_function_overloads"
+      },
+      {
         "code": "unreachable",
         "column": 16,
         "message": "Statement is unreachable",
@@ -7326,10 +7594,18 @@
         "target": "mypy.fastparse.ASTConverter.fix_function_overloads"
       },
       {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always false",
+        "offset": 21,
+        "src": "if last_if_stmt is not None:",
+        "target": "mypy.fastparse.ASTConverter.fix_function_overloads"
+      },
+      {
         "code": "unreachable",
         "column": 20,
         "message": "Statement is unreachable",
-        "offset": 22,
+        "offset": 1,
         "src": "ret.append(last_if_stmt)",
         "target": "mypy.fastparse.ASTConverter.fix_function_overloads"
       },
@@ -8014,10 +8290,18 @@
         "target": "mypy.fastparse.ASTConverter.visit_NamedExpr"
       },
       {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always false",
+        "offset": 29,
+        "src": "if op is None:",
+        "target": "mypy.fastparse.ASTConverter.visit_BinOp"
+      },
+      {
         "code": "no-any-expr",
         "column": 23,
         "message": "Expression has type \"Any\"",
-        "offset": 32,
+        "offset": 3,
         "src": "e = OpExpr(op, self.visit(n.left), self.visit(n.right))",
         "target": "mypy.fastparse.ASTConverter.visit_BinOp"
       },
@@ -9097,7 +9381,7 @@
         "code": "no-any-expr",
         "column": 14,
         "message": "Expression has type \"Any\"",
-        "offset": 44,
+        "offset": 62,
         "src": "val = n.value",
         "target": "mypy.fastparse.TypeConverter.visit_Constant"
       },
@@ -9474,10 +9758,26 @@
         "target": "mypy.fixup.TypeFixer.visit_callable_type"
       },
       {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always true",
+        "offset": 4,
+        "src": "if argt is not None:",
+        "target": "mypy.fixup.TypeFixer.visit_callable_type"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 2,
+        "src": "if ct.ret_type is not None:",
+        "target": "mypy.fixup.TypeFixer.visit_callable_type"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_overloaded\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 16,
+        "offset": 10,
         "src": "def visit_overloaded(self, t: Overloaded) -> None:",
         "target": "mypy.fixup.TypeFixer.visit_overloaded"
       },
@@ -9586,18 +9886,34 @@
         "target": "mypy.fixup.TypeFixer.visit_tuple_type"
       },
       {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 4,
+        "src": "if tt.partial_fallback is not None:",
+        "target": "mypy.fixup.TypeFixer.visit_tuple_type"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_typeddict_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 7,
+        "offset": 3,
         "src": "def visit_typeddict_type(self, tdt: TypedDictType) -> None:",
+        "target": "mypy.fixup.TypeFixer.visit_typeddict_type"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 4,
+        "src": "if tdt.fallback is not None:",
         "target": "mypy.fixup.TypeFixer.visit_typeddict_type"
       },
       {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_literal_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 19,
+        "offset": 15,
         "src": "def visit_literal_type(self, lt: LiteralType) -> None:",
         "target": "mypy.fixup.TypeFixer.visit_literal_type"
       },
@@ -9642,10 +9958,18 @@
         "target": "mypy.fixup.TypeFixer.visit_parameters"
       },
       {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always true",
+        "offset": 2,
+        "src": "if argt is not None:",
+        "target": "mypy.fixup.TypeFixer.visit_parameters"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_unbound_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 7,
+        "offset": 5,
         "src": "def visit_unbound_type(self, o: UnboundType) -> None:",
         "target": "mypy.fixup.TypeFixer.visit_unbound_type"
       },
@@ -9924,10 +10248,18 @@
     ],
     "mypy/join.py": [
       {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always true",
+        "offset": 137,
+        "src": "if best is None or is_better(res, best):",
+        "target": "mypy.join.InstanceJoiner.join_instances_via_supertype"
+      },
+      {
         "code": "unreachable",
         "column": 31,
         "message": "Right operand of \"or\" is never evaluated",
-        "offset": 137,
+        "offset": 0,
         "src": "if best is None or is_better(res, best):",
         "target": "mypy.join.InstanceJoiner.join_instances_via_supertype"
       },
@@ -11429,7 +11761,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_unbound_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 638,
+        "offset": 658,
         "src": "def visit_unbound_type(self, t: UnboundType) -> ProperType:",
         "target": "mypy.meet.TypeMeetVisitor.visit_unbound_type"
       },
@@ -11950,18 +12282,42 @@
         "target": "mypy.messages.MessageBuilder.maybe_note_about_special_args"
       },
       {
-        "code": "unreachable",
-        "column": 16,
-        "message": "Statement is unreachable",
-        "offset": 1115,
-        "src": "return",
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "Condition is always true",
+        "offset": 253,
+        "src": "elif isinstance(tp, Overloaded):",
+        "target": "mypy.messages.MessageBuilder.pretty_callable_or_overload"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always false",
+        "offset": 861,
+        "src": "if not isinstance(subtype.partial_fallback, Instance):",
         "target": "mypy.messages.MessageBuilder.report_protocol_problems"
       },
       {
         "code": "unreachable",
         "column": 16,
         "message": "Statement is unreachable",
-        "offset": 4,
+        "offset": 1,
+        "src": "return",
+        "target": "mypy.messages.MessageBuilder.report_protocol_problems"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always false",
+        "offset": 3,
+        "src": "if not isinstance(subtype.fallback, Instance):",
+        "target": "mypy.messages.MessageBuilder.report_protocol_problems"
+      },
+      {
+        "code": "unreachable",
+        "column": 16,
+        "message": "Statement is unreachable",
+        "offset": 1,
         "src": "return",
         "target": "mypy.messages.MessageBuilder.report_protocol_problems"
       },
@@ -11990,10 +12346,26 @@
         "target": "mypy.messages.MessageBuilder.print_more"
       },
       {
+        "code": "redundant-expr",
+        "column": 17,
+        "message": "Condition is always true",
+        "offset": 175,
+        "src": "elif arg_kind is ARG_STAR2:",
+        "target": "mypy.messages.format_callable_args"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 9,
+        "message": "Condition is always false",
+        "offset": 259,
+        "src": "elif typ is None:",
+        "target": "mypy.messages.format_type_inner"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_instance\" is not using @override but is overriding a method in class \"mypy.typetraverser.TypeTraverserVisitor\"",
-        "offset": 454,
+        "offset": 22,
         "src": "def visit_instance(self, t: Instance) -> None:",
         "target": "mypy.messages.CollectAllInstancesQuery.visit_instance"
       },
@@ -12372,10 +12744,18 @@
     ],
     "mypy/modulefinder.py": [
       {
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "Condition is always true",
+        "offset": 91,
+        "src": "elif self is ModuleNotFoundReason.APPROVED_STUBS_NOT_INSTALLED:",
+        "target": "mypy.modulefinder.ModuleNotFoundReason.error_message_templates"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"__repr__\" is not using @override but is overriding a method in class \"builtins.object\"",
-        "offset": 126,
+        "offset": 35,
         "src": "def __repr__(self) -> str:",
         "target": "mypy.modulefinder.BuildSource.__repr__"
       },
@@ -12570,10 +12950,18 @@
     ],
     "mypy/nodes.py": [
       {
+        "code": "redundant-expr",
+        "column": 3,
+        "message": "Condition is always true",
+        "offset": 77,
+        "src": "if TYPE_CHECKING:",
+        "target": "mypy.nodes"
+      },
+      {
         "code": "no-any-explicit",
         "column": 0,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 84,
+        "offset": 7,
         "src": "JsonDict: _TypeAlias = Dict[str, Any]",
         "target": "mypy.nodes"
       },
@@ -12586,10 +12974,18 @@
         "target": "mypy.nodes.Node.__str__"
       },
       {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always false",
+        "offset": 2,
+        "src": "if ans is None:",
+        "target": "mypy.nodes.Node.__str__"
+      },
+      {
         "code": "unreachable",
         "column": 12,
         "message": "Statement is unreachable",
-        "offset": 3,
+        "offset": 1,
         "src": "return repr(self)",
         "target": "mypy.nodes.Node.__str__"
       },
@@ -13730,10 +14126,18 @@
         "target": "mypy.nodes.TypeInfo.__repr__"
       },
       {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always false",
+        "offset": 16,
+        "src": "if isinstance(node, FuncBase):",
+        "target": "mypy.nodes.TypeInfo.get_method"
+      },
+      {
         "code": "unreachable",
         "column": 20,
         "message": "Statement is unreachable",
-        "offset": 17,
+        "offset": 1,
         "src": "return node",
         "target": "mypy.nodes.TypeInfo.get_method"
       },
@@ -13978,10 +14382,18 @@
         "target": "mypy.nodes.SymbolTableNode.__str__"
       },
       {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always true",
+        "offset": 29,
+        "src": "if prefix is not None:",
+        "target": "mypy.nodes.SymbolTableNode.serialize"
+      },
+      {
         "code": "no-any-expr",
         "column": 15,
         "message": "Expression has type \"Any\"",
-        "offset": 46,
+        "offset": 17,
         "src": "assert data[\".class\"] == \"SymbolTableNode\"",
         "target": "mypy.nodes.SymbolTableNode.deserialize"
       },
@@ -13994,10 +14406,18 @@
         "target": "mypy.nodes.SymbolTable.__str__"
       },
       {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always true",
+        "offset": 4,
+        "src": "if isinstance(value, SymbolTableNode):",
+        "target": "mypy.nodes.SymbolTable.__str__"
+      },
+      {
         "code": "unreachable",
         "column": 16,
         "message": "Statement is unreachable",
-        "offset": 11,
+        "offset": 7,
         "src": "a.append(\"  <invalid item>\")",
         "target": "mypy.nodes.SymbolTable.__str__"
       },
@@ -14112,6 +14532,14 @@
         "offset": 1,
         "src": "and isinstance(obj, type)",
         "target": "mypy.nodes"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "Condition is always true",
+        "offset": 36,
+        "src": "elif kind == ARG_STAR2:",
+        "target": "mypy.nodes.check_arg_kinds"
       }
     ],
     "mypy/options.py": [
@@ -14904,10 +15332,18 @@
     ],
     "mypy/plugins/dataclasses.py": [
       {
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "Condition is always true",
+        "offset": 134,
+        "src": "elif of == \"__post_init__\":",
+        "target": "mypy.plugins.dataclasses.DataclassAttribute.to_argument"
+      },
+      {
         "code": "possibly-undefined",
         "column": 17,
         "message": "Name \"arg_kind\" may be undefined",
-        "offset": 152,
+        "offset": 18,
         "src": "kind=arg_kind,",
         "target": "mypy.plugins.dataclasses"
       },
@@ -15034,10 +15470,18 @@
         "target": "mypy.plugins.default.DefaultPlugin.get_class_decorator_hook_2"
       },
       {
+        "code": "redundant-expr",
+        "column": 9,
+        "message": "Condition is always false",
+        "offset": 355,
+        "src": "elif isinstance(ctx.type, LiteralType):",
+        "target": "mypy.plugins.default.tuple_mul_callback"
+      },
+      {
         "code": "unreachable",
         "column": 20,
         "message": "Intersection of \"TupleType & LiteralType\" cannot exist: would have incompatible method signatures",
-        "offset": 355,
+        "offset": 0,
         "src": "elif isinstance(ctx.type, LiteralType):",
         "target": "mypy.plugins.default.tuple_mul_callback"
       },
@@ -15050,12 +15494,30 @@
         "target": "mypy.plugins.default.tuple_mul_callback"
       }
     ],
+    "mypy/plugins/enums.py": [
+      {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always true",
+        "offset": 187,
+        "src": "if underlying_type is not None:",
+        "target": "mypy.plugins.enums.enum_value_callback"
+      }
+    ],
     "mypy/plugins/functools.py": [
+      {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always false",
+        "offset": 91,
+        "src": "if isinstance(node, FuncItem) and isinstance(node.type, CallableType):",
+        "target": "mypy.plugins.functools._analyze_class"
+      },
       {
         "code": "unreachable",
         "column": 50,
         "message": "Right operand of \"and\" is never evaluated",
-        "offset": 91,
+        "offset": 0,
         "src": "if isinstance(node, FuncItem) and isinstance(node.type, CallableType):",
         "target": "mypy.plugins.functools._analyze_class"
       },
@@ -16322,26 +16784,66 @@
         "target": "mypy.semanal.SemanticAnalyzer.visit_func_def"
       },
       {
+        "code": "redundant-expr",
+        "column": 21,
+        "message": "Condition is always true",
+        "offset": 66,
+        "src": "elif self.options.infer_function_types:",
+        "target": "mypy.semanal.SemanticAnalyzer.analyze_func_def"
+      },
+      {
         "code": "possibly-undefined",
         "column": 41,
         "message": "Name \"original_target\" may be undefined",
-        "offset": 134,
+        "offset": 68,
         "src": "if defn.info and original_target == defn.arguments[0].variable.name:",
         "target": "mypy.semanal"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always true",
+        "offset": 15,
+        "src": "if isinstance(defn, FuncDef):",
+        "target": "mypy.semanal.SemanticAnalyzer.analyze_func_def"
       },
       {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_overloaded_func_def\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 226,
+        "offset": 211,
         "src": "def visit_overloaded_func_def(self, defn: OverloadedFuncDef) -> None:",
         "target": "mypy.semanal.SemanticAnalyzer.visit_overloaded_func_def"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 17,
+        "message": "Condition is always true",
+        "offset": 137,
+        "src": "elif isinstance(item, FuncDef):",
+        "target": "mypy.semanal.SemanticAnalyzer.analyze_overload_sigs_and_impl"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 17,
+        "message": "Condition is always true",
+        "offset": 88,
+        "src": "elif isinstance(item, FuncDef):",
+        "target": "mypy.semanal.SemanticAnalyzer.process_static_or_class_method_in_overload"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 17,
+        "message": "Condition is always true",
+        "offset": 10,
+        "src": "elif isinstance(defn.impl, FuncDef):",
+        "target": "mypy.semanal.SemanticAnalyzer.process_static_or_class_method_in_overload"
       },
       {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_decorator\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 452,
+        "offset": 217,
         "src": "def visit_decorator(self, dec: Decorator) -> None:",
         "target": "mypy.semanal.SemanticAnalyzer.visit_decorator"
       },
@@ -16402,10 +16904,18 @@
         "target": "mypy.semanal.SemanticAnalyzer.visit_import_all"
       },
       {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always false",
+        "offset": 11,
+        "src": "if node is None:",
+        "target": "mypy.semanal.SemanticAnalyzer.visit_import_all"
+      },
+      {
         "code": "unreachable",
         "column": 20,
         "message": "Statement is unreachable",
-        "offset": 12,
+        "offset": 1,
         "src": "continue",
         "target": "mypy.semanal.SemanticAnalyzer.visit_import_all"
       },
@@ -16442,10 +16952,18 @@
         "target": "mypy.semanal.SemanticAnalyzer.analyze_simple_literal_type"
       },
       {
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "Condition is always true",
+        "offset": 24,
+        "src": "elif isinstance(value, float):",
+        "target": "mypy.semanal.SemanticAnalyzer.analyze_simple_literal_type"
+      },
+      {
         "code": "possibly-undefined",
         "column": 38,
         "message": "Name \"type_name\" may be undefined",
-        "offset": 27,
+        "offset": 3,
         "src": "typ = self.named_type_or_none(type_name)",
         "target": "mypy.semanal"
       },
@@ -16754,10 +17272,18 @@
         "target": "mypy.semanal.SemanticAnalyzer.visit_call_expr"
       },
       {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always true",
+        "offset": 10,
+        "src": "if self.locals is not None:",
+        "target": "mypy.semanal.SemanticAnalyzer.visit_call_expr"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_member_expr\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 114,
+        "offset": 104,
         "src": "def visit_member_expr(self, expr: MemberExpr) -> None:",
         "target": "mypy.semanal.SemanticAnalyzer.visit_member_expr"
       },
@@ -17330,6 +17856,32 @@
         "target": "mypy.semanal.MakeAnyNonExplicit.visit_type_alias_type"
       }
     ],
+    "mypy/semanal_enum.py": [
+      {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always false",
+        "offset": 180,
+        "src": "if is_StrExpr_list(seq_items):",
+        "target": "mypy.semanal_enum.EnumCallAnalyzer.parse_enum_call_args"
+      },
+      {
+        "code": "unreachable",
+        "column": 31,
+        "message": "Intersection of \"list[Expression] & list[StrExpr]\" cannot exist: would have inconsistent method resolution order",
+        "offset": 0,
+        "src": "if is_StrExpr_list(seq_items):",
+        "target": "mypy.semanal_enum.EnumCallAnalyzer.parse_enum_call_args"
+      },
+      {
+        "code": "unreachable",
+        "column": 16,
+        "message": "Statement is unreachable",
+        "offset": 1,
+        "src": "it = cast(List[StrExpr], seq_items)",
+        "target": "mypy.semanal_enum.EnumCallAnalyzer.parse_enum_call_args"
+      }
+    ],
     "mypy/semanal_main.py": [
       {
         "code": "possibly-undefined",
@@ -17342,10 +17894,34 @@
     ],
     "mypy/semanal_namedtuple.py": [
       {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always true",
+        "offset": 393,
+        "src": "if not is_StrExpr_list(listexpr.items):",
+        "target": "mypy.semanal_namedtuple.NamedTupleAnalyzer.parse_namedtuple_args"
+      },
+      {
+        "code": "unreachable",
+        "column": 39,
+        "message": "Intersection of \"list[Expression] & list[StrExpr]\" cannot exist: would have inconsistent method resolution order",
+        "offset": 0,
+        "src": "if not is_StrExpr_list(listexpr.items):",
+        "target": "mypy.semanal_namedtuple.NamedTupleAnalyzer.parse_namedtuple_args"
+      },
+      {
+        "code": "unreachable",
+        "column": 16,
+        "message": "Statement is unreachable",
+        "offset": 3,
+        "src": "it = cast(List[StrExpr], listexpr.items)",
+        "target": "mypy.semanal_namedtuple.NamedTupleAnalyzer.parse_namedtuple_args"
+      },
+      {
         "code": "no-any-expr",
         "column": 38,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 505,
+        "offset": 109,
         "src": "info.metadata[\"namedtuple\"] = {\"fields\": items.copy()}",
         "target": "mypy.semanal_namedtuple.NamedTupleAnalyzer.build_namedtuple_typeinfo"
       }
@@ -17542,10 +18118,18 @@
     ],
     "mypy/server/astdiff.py": [
       {
+        "code": "redundant-expr",
+        "column": 7,
+        "message": "Condition is always false",
+        "offset": 234,
+        "src": "if isinstance(node, FuncBase):",
+        "target": "mypy.server.astdiff.snapshot_definition"
+      },
+      {
         "code": "unreachable",
         "column": 8,
         "message": "Statement is unreachable",
-        "offset": 236,
+        "offset": 2,
         "src": "if node.type:",
         "target": "mypy.server.astdiff.snapshot_definition"
       },
@@ -17832,10 +18416,18 @@
         "target": "mypy.server.astmerge.NodeReplaceVisitor.visit_call_expr"
       },
       {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always false",
+        "offset": 2,
+        "src": "if isinstance(node.analyzed, SymbolNode):",
+        "target": "mypy.server.astmerge.NodeReplaceVisitor.visit_call_expr"
+      },
+      {
         "code": "unreachable",
         "column": 12,
         "message": "Statement is unreachable",
-        "offset": 3,
+        "offset": 1,
         "src": "node.analyzed = self.fixup(node.analyzed)",
         "target": "mypy.server.astmerge.NodeReplaceVisitor.visit_call_expr"
       },
@@ -17928,18 +18520,34 @@
         "target": "mypy.server.astmerge.TypeReplaceVisitor.visit_callable_type"
       },
       {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 8,
+        "src": "if typ.fallback is not None:",
+        "target": "mypy.server.astmerge.TypeReplaceVisitor.visit_callable_type"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_overloaded\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 16,
+        "offset": 8,
         "src": "def visit_overloaded(self, t: Overloaded) -> None:",
+        "target": "mypy.server.astmerge.TypeReplaceVisitor.visit_overloaded"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 4,
+        "src": "if t.fallback is not None:",
         "target": "mypy.server.astmerge.TypeReplaceVisitor.visit_overloaded"
       },
       {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_erased_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 7,
+        "offset": 3,
         "src": "def visit_erased_type(self, t: ErasedType) -> None:",
         "target": "mypy.server.astmerge.TypeReplaceVisitor.visit_erased_type"
       },
@@ -17968,10 +18576,18 @@
         "target": "mypy.server.astmerge.TypeReplaceVisitor.visit_tuple_type"
       },
       {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 4,
+        "src": "if typ.partial_fallback is not None:",
+        "target": "mypy.server.astmerge.TypeReplaceVisitor.visit_tuple_type"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_type_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 7,
+        "offset": 3,
         "src": "def visit_type_type(self, typ: TypeType) -> None:",
         "target": "mypy.server.astmerge.TypeReplaceVisitor.visit_type_type"
       },
@@ -18308,10 +18924,18 @@
         "target": "mypy.server.deps.DependencyVisitor.visit_assignment_stmt"
       },
       {
+        "code": "redundant-expr",
+        "column": 23,
+        "message": "Condition is always false",
+        "offset": 74,
+        "src": "if init and isinstance(init.node, FuncBase):",
+        "target": "mypy.server.deps.DependencyVisitor.visit_assignment_stmt"
+      },
+      {
         "code": "unreachable",
         "column": 24,
         "message": "Statement is unreachable",
-        "offset": 75,
+        "offset": 1,
         "src": "fname = init.node.fullname",
         "target": "mypy.server.deps.DependencyVisitor.visit_assignment_stmt"
       },
@@ -18702,10 +19326,18 @@
     ],
     "mypy/server/mergecheck.py": [
       {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always false",
+        "offset": 31,
+        "src": "if fn is None:",
+        "target": "mypy.server.mergecheck.check_consistency"
+      },
+      {
         "code": "unreachable",
         "column": 12,
         "message": "Statement is unreachable",
-        "offset": 32,
+        "offset": 1,
         "src": "continue",
         "target": "mypy.server.mergecheck.check_consistency"
       }
@@ -19214,18 +19846,34 @@
         "target": "mypy.solve"
       },
       {
-        "code": "unreachable",
-        "column": 12,
-        "message": "Statement is unreachable",
-        "offset": 47,
-        "src": "if type_state.infer_unions:",
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 44,
+        "src": "if bottom is None:",
         "target": "mypy.solve.solve_one"
       },
       {
         "code": "unreachable",
         "column": 12,
         "message": "Statement is unreachable",
-        "offset": 11,
+        "offset": 3,
+        "src": "if type_state.infer_unions:",
+        "target": "mypy.solve.solve_one"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 8,
+        "src": "if top is None:",
+        "target": "mypy.solve.solve_one"
+      },
+      {
+        "code": "unreachable",
+        "column": 12,
+        "message": "Statement is unreachable",
+        "offset": 3,
         "src": "top = meet_types(top, target, intersect=True)",
         "target": "mypy.solve.solve_one"
       }
@@ -22066,10 +22714,18 @@
         "target": "mypy.stubgenc.is_c_property_readonly"
       },
       {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always false",
+        "offset": 90,
+        "src": "if include_docstrings and docstr:",
+        "target": "mypy.stubgenc.generate_c_function_stub"
+      },
+      {
         "code": "unreachable",
         "column": 16,
         "message": "Statement is unreachable",
-        "offset": 91,
+        "offset": 1,
         "src": "docstr_quoted = mypy.util.quote_docstring(docstr.strip())",
         "target": "mypy.stubgenc.generate_c_function_stub"
       },
@@ -22612,10 +23268,18 @@
         "target": "mypy.stubtest"
       },
       {
+        "code": "redundant-expr",
+        "column": 7,
+        "message": "Condition is always false",
+        "offset": 7,
+        "src": "if not isinstance(runtime, types.ModuleType):",
+        "target": "mypy.stubtest.verify_mypyfile"
+      },
+      {
         "code": "unreachable",
         "column": 8,
         "message": "Statement is unreachable",
-        "offset": 8,
+        "offset": 1,
         "src": "yield Error(object_path, \"is not a module\", stub, runtime)",
         "target": "mypy.stubtest.verify_mypyfile"
       },
@@ -22852,10 +23516,18 @@
         "target": "mypy.stubtest.verify_typeinfo"
       },
       {
+        "code": "redundant-expr",
+        "column": 7,
+        "message": "Condition is always false",
+        "offset": 3,
+        "src": "if not isinstance(runtime, type):",
+        "target": "mypy.stubtest.verify_typeinfo"
+      },
+      {
         "code": "no-any-expr",
         "column": 22,
         "message": "Expression type contains \"Any\" (has type \"type[Any]\")",
-        "offset": 3,
+        "offset": 0,
         "src": "if not isinstance(runtime, type):",
         "target": "mypy.stubtest.verify_typeinfo"
       },
@@ -24484,10 +25156,18 @@
         "target": "mypy.stubtest.get_mypy_type_of_runtime_value"
       },
       {
+        "code": "redundant-expr",
+        "column": 21,
+        "message": "Condition is always true",
+        "offset": 3,
+        "src": "elif arg.kind == inspect.Parameter.VAR_KEYWORD:",
+        "target": "mypy.stubtest.get_mypy_type_of_runtime_value"
+      },
+      {
         "code": "no-any-expr",
         "column": 20,
         "message": "Expression type contains \"Any\" (has type \"type[Any]\")",
-        "offset": 22,
+        "offset": 19,
         "src": "stub = get_stub(type(runtime).__module__)",
         "target": "mypy.stubtest.get_mypy_type_of_runtime_value"
       },
@@ -24665,7 +25345,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_tuple_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 60,
+        "offset": 63,
         "src": "def visit_tuple_type(self, left: TupleType) -> bool:",
         "target": "mypy.subtypes.SubtypeVisitor.visit_tuple_type"
       },
@@ -25050,10 +25730,18 @@
         "target": "mypy.test.data.module_from_path"
       },
       {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always false",
+        "offset": 44,
+        "src": "if id:",
+        "target": "mypy.test.data.parse_test_data"
+      },
+      {
         "code": "unreachable",
         "column": 16,
         "message": "Statement is unreachable",
-        "offset": 45,
+        "offset": 1,
         "src": "data = collapse_line_continuation(data)",
         "target": "mypy.test.data.parse_test_data"
       },
@@ -25463,7 +26151,7 @@
         "code": "no-any-expr",
         "column": 7,
         "message": "Expression has type \"Untyped\"",
-        "offset": 114,
+        "offset": 116,
         "src": "if testcase.config.getoption(\"--mypy-verbose\"):",
         "target": "mypy.test.helpers.parse_options"
       },
@@ -26280,10 +26968,18 @@
         "target": "mypy.test.testmerge.ASTMergeSuite.run_case"
       },
       {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 125,
+        "src": "if isinstance(node.node, Node):",
+        "target": "mypy.test.testmerge.ASTMergeSuite.format_symbol_table_node"
+      },
+      {
         "code": "unreachable",
         "column": 12,
         "message": "Statement is unreachable",
-        "offset": 128,
+        "offset": 3,
         "src": "s = f\"? ({type(node.node)})\"",
         "target": "mypy.test.testmerge.ASTMergeSuite.format_symbol_table_node"
       }
@@ -27448,10 +28144,18 @@
         "target": "mypy.traverser.TraverserVisitor.visit_block"
       },
       {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 5,
+        "src": "if o.arguments is not None:",
+        "target": "mypy.traverser.TraverserVisitor.visit_func"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_func_def\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 16,
+        "offset": 11,
         "src": "def visit_func_def(self, o: FuncDef) -> None:",
         "target": "mypy.traverser.TraverserVisitor.visit_func_def"
       },
@@ -27536,18 +28240,34 @@
         "target": "mypy.traverser.TraverserVisitor.visit_assert_stmt"
       },
       {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 1,
+        "src": "if o.expr is not None:",
+        "target": "mypy.traverser.TraverserVisitor.visit_assert_stmt"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_del_stmt\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 6,
+        "offset": 5,
         "src": "def visit_del_stmt(self, o: DelStmt) -> None:",
+        "target": "mypy.traverser.TraverserVisitor.visit_del_stmt"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 1,
+        "src": "if o.expr is not None:",
         "target": "mypy.traverser.TraverserVisitor.visit_del_stmt"
       },
       {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_if_stmt\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 4,
+        "offset": 3,
         "src": "def visit_if_stmt(self, o: IfStmt) -> None:",
         "target": "mypy.traverser.TraverserVisitor.visit_if_stmt"
       },
@@ -30218,26 +30938,58 @@
     ],
     "mypy/typeops.py": [
       {
-        "code": "unreachable",
-        "column": 20,
-        "message": "Statement is unreachable",
-        "offset": 481,
-        "src": "extra_attrs_set.add(instance.extra_attrs)",
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always true",
+        "offset": 478,
+        "src": "if extra_attrs_set is None:",
         "target": "mypy.typeops.make_simplified_union"
       },
       {
         "code": "unreachable",
         "column": 20,
+        "message": "Statement is unreachable",
+        "offset": 3,
+        "src": "extra_attrs_set.add(instance.extra_attrs)",
+        "target": "mypy.typeops.make_simplified_union"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 16,
+        "message": "Condition is always false",
+        "offset": 33,
+        "src": "isinstance(proper_ti, LiteralType)",
+        "target": "mypy.typeops._remove_redundant_union_items"
+      },
+      {
+        "code": "unreachable",
+        "column": 20,
         "message": "Right operand of \"and\" is never evaluated",
-        "offset": 35,
+        "offset": 2,
         "src": "and proper_ti.fallback in unduplicated_literal_fallbacks",
         "target": "mypy.typeops._remove_redundant_union_items"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 23,
+        "message": "Condition is always true",
+        "offset": 42,
+        "src": "if unduplicated_literal_fallbacks is None:",
+        "target": "mypy.typeops._remove_redundant_union_items"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always true",
+        "offset": 54,
+        "src": "if extra_attrs_set is None:",
+        "target": "mypy.typeops.make_simplified_intersection"
       },
       {
         "code": "unreachable",
         "column": 16,
         "message": "Statement is unreachable",
-        "offset": 99,
+        "offset": 3,
         "src": "extra_attrs_set.add(instance.extra_attrs)",
         "target": "mypy.typeops.make_simplified_intersection"
       },
@@ -31463,15 +32215,31 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"__repr__\" is not using @override but is overriding a method in class \"mypy.types.Type\"",
-        "offset": 19,
+        "offset": 16,
         "src": "def __repr__(self) -> str:",
         "target": "mypy.types.TypeGuardType.__repr__"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 54,
+        "message": "Expression has type \"Any\"",
+        "offset": 6,
+        "src": "def copy_modified(self, type_guard: Bogus[Type] = _dummy) -> TypeGuardType:",
+        "target": "mypy.types.TypeGuardType.copy_modified"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 44,
+        "message": "Expression has type \"Any\"",
+        "offset": 3,
+        "src": "type_guard if type_guard is not _dummy else self.type_guard,",
+        "target": "mypy.types.TypeGuardType.copy_modified"
       },
       {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"accept\" is not using @override but is overriding a method in class \"mypy.types.Type\"",
-        "offset": 43,
+        "offset": 45,
         "src": "def accept(self, visitor: TypeVisitor[T]) -> T:",
         "target": "mypy.types.TypeGuardType.accept"
       },
@@ -31495,7 +32263,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"deserialize\" is not using @override but is overriding a method in class \"mypy.types.Type\"",
-        "offset": 7,
+        "offset": 8,
         "src": "def deserialize(cls, data: JsonDict) -> TypeGuardType:",
         "target": "mypy.types"
       },
@@ -31511,7 +32279,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"__hash__\" is not using @override but is overriding a method in class \"builtins.object\"",
-        "offset": 27,
+        "offset": 29,
         "src": "def __hash__(self) -> int:",
         "target": "mypy.types.ExtraAttrs.__hash__"
       },
@@ -33396,10 +34164,18 @@
         "target": "mypy.types.TypeStrVisitor.visit_type_var"
       },
       {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always false",
+        "offset": 1,
+        "src": "if t.name is None:",
+        "target": "mypy.types.TypeStrVisitor.visit_type_var"
+      },
+      {
         "code": "unreachable",
         "column": 12,
         "message": "Statement is unreachable",
-        "offset": 3,
+        "offset": 2,
         "src": "s = f\"`{t.id}\"",
         "target": "mypy.types.TypeStrVisitor.visit_type_var"
       },
@@ -33420,10 +34196,18 @@
         "target": "mypy.types.TypeStrVisitor.visit_param_spec"
       },
       {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always false",
+        "offset": 5,
+        "src": "if t.name is None:",
+        "target": "mypy.types.TypeStrVisitor.visit_param_spec"
+      },
+      {
         "code": "unreachable",
         "column": 12,
         "message": "Statement is unreachable",
-        "offset": 7,
+        "offset": 2,
         "src": "s += f\"`{t.id}\"",
         "target": "mypy.types.TypeStrVisitor.visit_param_spec"
       },
@@ -33444,10 +34228,18 @@
         "target": "mypy.types.TypeStrVisitor.visit_type_var_tuple"
       },
       {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always false",
+        "offset": 1,
+        "src": "if t.name is None:",
+        "target": "mypy.types.TypeStrVisitor.visit_type_var_tuple"
+      },
+      {
         "code": "unreachable",
         "column": 12,
         "message": "Statement is unreachable",
-        "offset": 3,
+        "offset": 2,
         "src": "s = f\"`{t.id}\"",
         "target": "mypy.types.TypeStrVisitor.visit_type_var_tuple"
       },
@@ -33463,7 +34255,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_overloaded\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 93,
+        "offset": 95,
         "src": "def visit_overloaded(self, t: Overloaded) -> str:",
         "target": "mypy.types.TypeStrVisitor.visit_overloaded"
       },
@@ -33631,7 +34423,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_instance\" is not using @override but is overriding a method in class \"mypy.typetraverser.TypeTraverserVisitor\"",
-        "offset": 29,
+        "offset": 31,
         "src": "def visit_instance(self, typ: Instance) -> None:",
         "target": "mypy.types.LocationSetter.visit_instance"
       },
@@ -35894,10 +36686,18 @@
         "target": "mypyc.analysis.dataflow.LivenessVisitor.visit_set_mem"
       },
       {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always true",
+        "offset": 98,
+        "src": "if new_before is None:",
+        "target": "mypyc.analysis.dataflow.run_analysis"
+      },
+      {
         "code": "unreachable",
         "column": 16,
         "message": "Statement is unreachable",
-        "offset": 100,
+        "offset": 2,
         "src": "elif kind == MAYBE_ANALYSIS:",
         "target": "mypyc.analysis.dataflow.run_analysis"
       }
@@ -35984,10 +36784,18 @@
         "target": "mypyc.analysis.ircheck.OpChecker.visit_load_literal"
       },
       {
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "Condition is always true",
+        "offset": 19,
+        "src": "elif isinstance(op.value, frozenset):",
+        "target": "mypyc.analysis.ircheck.OpChecker.visit_load_literal"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_get_attr\" is not using @override but is overriding a method in class \"mypyc.ir.ops.OpVisitor\"",
-        "offset": 34,
+        "offset": 15,
         "src": "def visit_get_attr(self, op: GetAttr) -> None:",
         "target": "mypyc.analysis.ircheck.OpChecker.visit_get_attr"
       },
@@ -36786,10 +37594,18 @@
         "target": "mypyc.codegen.emitfunc.FunctionEmitterVisitor.visit_raise_standard_error"
       },
       {
+        "code": "redundant-expr",
+        "column": 17,
+        "message": "Condition is always true",
+        "offset": 6,
+        "src": "elif isinstance(op.value, Value):",
+        "target": "mypyc.codegen.emitfunc.FunctionEmitterVisitor.visit_raise_standard_error"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_call_c\" is not using @override but is overriding a method in class \"mypyc.ir.ops.OpVisitor\"",
-        "offset": 18,
+        "offset": 12,
         "src": "def visit_call_c(self, op: CallC) -> None:",
         "target": "mypyc.codegen.emitfunc.FunctionEmitterVisitor.visit_call_c"
       },
@@ -36986,6 +37802,32 @@
         "offset": 5,
         "src": "modules = deserialize_modules(cache_data, ctx)",
         "target": "mypyc.codegen.emitmodule.load_scc_from_cache"
+      }
+    ],
+    "mypyc/codegen/literals.py": [
+      {
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "Condition is always true",
+        "offset": 66,
+        "src": "elif isinstance(value, frozenset):",
+        "target": "mypyc.codegen.literals.Literals.record_literal"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-redundant-expr for more info",
+        "offset": 0,
+        "src": "elif isinstance(value, frozenset):",
+        "target": null
+      },
+      {
+        "code": "redundant-expr",
+        "column": 11,
+        "message": "Condition is always true",
+        "offset": 39,
+        "src": "if isinstance(value, frozenset):",
+        "target": "mypyc.codegen.literals.Literals.literal_index"
       }
     ],
     "mypyc/common.py": [
@@ -38848,10 +39690,18 @@
         "target": "mypyc.ir.pprint.IRPrettyPrintVisitor.visit_raise_standard_error"
       },
       {
+        "code": "redundant-expr",
+        "column": 17,
+        "message": "Condition is always true",
+        "offset": 4,
+        "src": "elif isinstance(op.value, Value):",
+        "target": "mypyc.ir.pprint.IRPrettyPrintVisitor.visit_raise_standard_error"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_call_c\" is not using @override but is overriding a method in class \"mypyc.ir.ops.OpVisitor\"",
-        "offset": 11,
+        "offset": 7,
         "src": "def visit_call_c(self, op: CallC) -> str:",
         "target": "mypyc.ir.pprint.IRPrettyPrintVisitor.visit_call_c"
       },
@@ -39532,18 +40382,42 @@
         "target": "mypyc.irbuild.builder.IRBuilder.accept"
       },
       {
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "Condition is always true",
+        "offset": 310,
+        "src": "elif isinstance(val, complex):",
+        "target": "mypyc.irbuild.builder.IRBuilder.load_literal_value"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 23,
+        "message": "Condition is always false",
+        "offset": 67,
+        "src": "if star_idx is not None:",
+        "target": "mypyc.irbuild.builder.IRBuilder.get_assignment_target"
+      },
+      {
         "code": "unreachable",
         "column": 24,
         "message": "Statement is unreachable",
-        "offset": 378,
+        "offset": 1,
         "src": "self.error(\"Two starred expressions in assignment\", line)",
         "target": "mypyc.irbuild.builder.IRBuilder.get_assignment_target"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 15,
+        "message": "Condition is always true",
+        "offset": 21,
+        "src": "if reg is not None:",
+        "target": "mypyc.irbuild.builder.IRBuilder.read"
       },
       {
         "code": "possibly-undefined",
         "column": 19,
         "message": "Name \"fullname\" may be undefined",
-        "offset": 378,
+        "offset": 357,
         "src": "return fullname, final_var, native",
         "target": "mypyc.irbuild.builder"
       },
@@ -39686,6 +40560,14 @@
         "offset": 398,
         "src": "end = builder.load_int(MAX_SHORT_INT)",
         "target": "mypyc.irbuild.expression.try_gen_slice_op"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "Condition is always true",
+        "offset": 255,
+        "src": "elif isinstance(rhs, Expression):",
+        "target": "mypyc.irbuild.expression.translate_printf_style_formatting"
       }
     ],
     "mypyc/irbuild/for_helpers.py": [
@@ -39966,10 +40848,18 @@
     ],
     "mypyc/irbuild/ll_builder.py": [
       {
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "Condition is always true",
+        "offset": 486,
+        "src": "elif is_uint8_rprimitive(target_type):",
+        "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder.coerce_int_to_fixed_width"
+      },
+      {
         "code": "no-any-expr",
         "column": 48,
         "message": "Expression has type \"Any\"",
-        "offset": 526,
+        "offset": 40,
         "src": "c1 = self.add(ComparisonOp(src, Integer(MAX_SHORT_INT, src_type), ComparisonOp.SLE))",
         "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder.coerce_fixed_width_to_int"
       },
@@ -39982,10 +40872,34 @@
         "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder.coerce_fixed_width_to_int"
       },
       {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always true",
+        "offset": 228,
+        "src": "if star_result is None:",
+        "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder._construct_varargs"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always true",
+        "offset": 4,
+        "src": "if star2_result is None:",
+        "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder._construct_varargs"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always false",
+        "offset": 51,
+        "src": "if maybe_pos and maybe_named and seen_empty_reg:",
+        "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder._construct_varargs"
+      },
+      {
         "code": "unreachable",
         "column": 20,
         "message": "Statement is unreachable",
-        "offset": 284,
+        "offset": 1,
         "src": "pos_block, named_block = BasicBlock(), BasicBlock()",
         "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder._construct_varargs"
       },
@@ -40038,26 +40952,66 @@
         "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder.load_int"
       },
       {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always true",
+        "offset": 457,
+        "src": "if result is None:",
+        "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder.make_dict"
+      },
+      {
         "code": "unreachable",
         "column": 16,
         "message": "Statement is unreachable",
-        "offset": 462,
+        "offset": 5,
         "src": "self.translate_special_method_call(",
         "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder.make_dict"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always true",
+        "offset": 5,
+        "src": "if result is None:",
+        "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder.make_dict"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always false",
+        "offset": 280,
+        "src": "if matching:",
+        "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder.matching_call_c"
       },
       {
         "code": "unreachable",
         "column": 20,
         "message": "Statement is unreachable",
-        "offset": 286,
+        "offset": 1,
         "src": "assert matching.priority != desc.priority, \"Ambiguous:\\n1) {}\\n2) {}\".format(",
         "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder.matching_call_c"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 17,
+        "message": "Condition is always true",
+        "offset": 107,
+        "src": "elif is_uint8_rprimitive(type):",
+        "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder.fixed_width_int_op"
+      },
+      {
+        "code": "redundant-expr",
+        "column": 17,
+        "message": "Condition is always true",
+        "offset": 20,
+        "src": "elif is_uint8_rprimitive(type):",
+        "target": "mypyc.irbuild.ll_builder.LowLevelIRBuilder.fixed_width_int_op"
       },
       {
         "code": "possibly-undefined",
         "column": 36,
         "message": "Name \"false_block\" may be undefined",
-        "offset": 322,
+        "offset": 195,
         "src": "self.activate_block(false_block)",
         "target": "mypyc.irbuild.ll_builder"
       }
@@ -40360,10 +41314,18 @@
     ],
     "mypyc/irbuild/prepare.py": [
       {
+        "code": "redundant-expr",
+        "column": 9,
+        "message": "Condition is always true",
+        "offset": 184,
+        "src": "elif isinstance(node, Decorator):",
+        "target": "mypyc.irbuild.prepare.prepare_method_def"
+      },
+      {
         "code": "no-any-expr",
         "column": 12,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 251,
+        "offset": 67,
         "src": "attrs = get_mypyc_attrs(cdef)",
         "target": "mypyc.irbuild.prepare.prepare_class_def"
       },
@@ -40408,10 +41370,18 @@
         "target": "mypyc.irbuild.prepare.SingledispatchVisitor.visit_decorator"
       },
       {
+        "code": "redundant-expr",
+        "column": 23,
+        "message": "Condition is always false",
+        "offset": 14,
+        "src": "if last_non_register is not None:",
+        "target": "mypyc.irbuild.prepare.SingledispatchVisitor.visit_decorator"
+      },
+      {
         "code": "unreachable",
         "column": 24,
         "message": "Statement is unreachable",
-        "offset": 19,
+        "offset": 5,
         "src": "self.errors.error(",
         "target": "mypyc.irbuild.prepare.SingledispatchVisitor.visit_decorator"
       }
@@ -41188,10 +42158,18 @@
         "target": "mypyc.subtype.SubtypeVisitor.visit_rprimitive"
       },
       {
+        "code": "redundant-expr",
+        "column": 13,
+        "message": "Condition is always true",
+        "offset": 11,
+        "src": "elif is_fixed_width_rtype(left):",
+        "target": "mypyc.subtype.SubtypeVisitor.visit_rprimitive"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_rtuple\" is not using @override but is overriding a method in class \"mypyc.ir.rtypes.RTypeVisitor\"",
-        "offset": 16,
+        "offset": 5,
         "src": "def visit_rtuple(self, left: RTuple) -> bool:",
         "target": "mypyc.subtype.SubtypeVisitor.visit_rtuple"
       },
@@ -41242,10 +42220,18 @@
     ],
     "mypyc/test/test_cheader.py": [
       {
+        "code": "redundant-expr",
+        "column": 19,
+        "message": "Condition is always false",
+        "offset": 35,
+        "src": "if isinstance(ops, CFunctionDescription):",
+        "target": "mypyc.test.test_cheader.TestHeaderInclusion.test_primitives_included_in_header"
+      },
+      {
         "code": "unreachable",
         "column": 20,
         "message": "Statement is unreachable",
-        "offset": 36,
+        "offset": 1,
         "src": "ops = [ops]",
         "target": "mypyc.test.test_cheader.TestHeaderInclusion.test_primitives_included_in_header"
       },
