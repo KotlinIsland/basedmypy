@@ -55,7 +55,7 @@ class C(Generic[T]):
         return self.t
 c1: C[None]
 c1.get()
-d = c1.get()
+d = c1.get()  # E: "get" of "C" does not return a value
 reveal_type(d)  # N: Revealed type is "None"
 
 
@@ -83,7 +83,7 @@ def f(g: Callable[[], T]) -> T:
     return g()
 def h() -> None: pass
 f(h)
-a = f(h)
+a = f(h)  # E: "f" does not return a value
 reveal_type(a)  # N: Revealed type is "None"
 
 

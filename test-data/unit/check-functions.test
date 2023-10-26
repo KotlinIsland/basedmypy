@@ -2576,9 +2576,9 @@ from typing import TypeVar, Optional
 T = TypeVar('T')
 def X(val: T) -> T: ...
 x_in = None
-def Y(x: Optional[str] = X(x_in)): ...
+def Y(x: Optional[str] = X(x_in)): ...  # E: "X" does not return a value
 
-xx: Optional[int] = X(x_in)
+xx: Optional[int] = X(x_in)  # E: "X" does not return a value
 [out]
 
 [case testNoComplainInferredNoneStrict]
@@ -2586,9 +2586,9 @@ from typing import TypeVar, Optional
 T = TypeVar('T')
 def X(val: T) -> T: ...
 x_in = None
-def Y(x: Optional[str] = X(x_in)): ...
+def Y(x: Optional[str] = X(x_in)): ...   # E: "X" does not return a value
 
-xx: Optional[int] = X(x_in)
+xx: Optional[int] = X(x_in)  # E: "X" does not return a value
 [out]
 
 [case testNoComplainNoneReturnFromUntyped]

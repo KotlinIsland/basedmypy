@@ -1298,7 +1298,7 @@ def g(x: U, y: V) -> None:
          # N: Possible overload variants: \
          # N:     def [T <: str] f(x: T) -> T \
          # N:     def [T <: str] f(x: List[T]) -> None
-    a = f([x])
+    a = f([x])  # E: "f" does not return a value
     reveal_type(a)  # N: Revealed type is "None"
     f([y]) # E: Value of type variable "T" of "f" cannot be "V"
     f([x, y]) # E: Value of type variable "T" of "f" cannot be "object"

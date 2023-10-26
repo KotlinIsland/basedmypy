@@ -963,7 +963,8 @@ class M(Generic[_KT, _VT]):
     def get(self, k: _KT, default: _T) -> _T: ...
 
 def f(d: M[_KT, _VT], k: _KT) -> _VT:
-    return d.get(k, None)  # E: Incompatible return value type (got "None", expected "_VT")
+    return d.get(k, None)  # E: "get" of "M" does not return a value \
+                           # E: Incompatible return value type (got "None", expected "_VT")
 
 [case testGenericMethodCalledInGenericContext2]
 from typing import TypeVar, Generic, Union

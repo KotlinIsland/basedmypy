@@ -119,7 +119,7 @@ reveal_type(z2)  # N: Revealed type is "Union[builtins.int, builtins.str, None]"
 
 [case testLambdaReturningNone]
 f = lambda: None
-x = f()
+x = f()  # E: Function does not return a value
 reveal_type(x)  # N: Revealed type is "None"
 
 [case testNoneArgumentType]
@@ -362,7 +362,8 @@ def g(x: Optional[int]) -> int:
   pass
 
 x = f()  # E: "f" does not return a value
-f() + 1  # E: "f" does not return a value
+f() + 1  # E: "f" does not return a value \
+         # E: Unsupported left operand type for + ("None")
 g(f())  # E: "f" does not return a value
 
 [case testEmptyReturn]

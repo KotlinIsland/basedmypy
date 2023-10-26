@@ -14,6 +14,7 @@
 ### Fixes
 - Render star args in error messages properly (#551)
 - The first argument to `cast` is analyzed as evaluated (#564)
+- Decorated functions that return `None` correctly warn when used (#572)
 
 ## [2.2.1]
 ### Fixes

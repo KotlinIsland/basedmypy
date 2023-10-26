@@ -688,10 +688,10 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         if (
             not allow_none_return
             and isinstance(ret_type, NoneType)
-            and self.always_returns_none(e.callee)
+            # field lies about its return type and must be special-cased
+            and fullname != "dataclasses.field"
         ):
             self.chk.msg.does_not_return_value(callee_type, e)
-            return AnyType(TypeOfAny.from_error)
         return ret_type
 
     def check_str_format_call(self, e: CallExpr) -> None:
@@ -759,6 +759,8 @@ class ExpressionChecker(ExpressionVisitor[Type]):
 
     def defn_returns_none(self, defn: SymbolNode | None) -> bool:
         """Check if `defn` can _only_ return None."""
+        if isinstance(defn, Decorator):
+            defn = defn.func
         if isinstance(defn, FuncDef):
             return isinstance(defn.type, CallableType) and isinstance(
                 get_proper_type(defn.type.ret_type), NoneType

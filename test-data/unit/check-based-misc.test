@@ -154,3 +154,26 @@ def f():
     def guard(x: object) -> x is int:  # E: You need to put quotes around the entire type-guard, or enable `__future__.annotations`  [misc]
         ...
 [builtins fixtures/tuple.pyi]
+
+
+[case testUsingDecoratedNone]
+from typing import TypeVar, Callable
+T = TypeVar("T")
+def deco(t: T) -> T: ...
+@deco
+def f1(): ...
+
+a = f1()  # E: "f1" does not return a value  [func-returns-value]
+
+def becomes_none(f: object) -> Callable[[], None]: ...
+
+@becomes_none
+def f2() -> object: ...
+
+a = f2()  # E: "f2" does not return a value  [func-returns-value]
+def becomes_object(f: object) -> Callable[[], object]: ...
+
+@becomes_object
+def f3(): ...
+
+a = f3()
