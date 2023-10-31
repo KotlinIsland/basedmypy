@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from functools import reduce
-from typing import Final, Iterable, List, Mapping, cast
+from typing import Final, Iterable, List, Mapping, Optional, cast
 from typing_extensions import Literal
 
 import mypy.plugin  # To avoid circular imports.
@@ -656,7 +656,7 @@ def _parse_converter(
     else:
         is_attr_converters_optional = False
 
-    converter_type: Type | None = None
+    converter_type = cast(Optional[Type], None)
     if isinstance(converter_expr, RefExpr) and converter_expr.node:
         if isinstance(converter_expr.node, FuncDef):
             if converter_expr.node.type and isinstance(converter_expr.node.type, FunctionLike):
@@ -996,7 +996,7 @@ def _get_expanded_attr_types(
     if isinstance(typ, AnyType):
         return None
     elif isinstance(typ, UnionType):
-        ret: list[Mapping[str, Type]] | None = []
+        ret = cast(Optional[List[Mapping[str, Type]]], [])
         for item in typ.relevant_items():
             item = get_proper_type(item)
             item_types = _get_expanded_attr_types(ctx, item, item, parent_typ)

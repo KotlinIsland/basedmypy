@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional, cast
+
 from mypy.nodes import (
     ParamSpecExpr,
     SymbolTableNode,
@@ -51,7 +53,7 @@ class TypeVarLikeScope:
 
     def get_function_scope(self) -> TypeVarLikeScope | None:
         """Get the nearest parent that's a function scope, not a class scope"""
-        it: TypeVarLikeScope | None = self
+        it = cast(Optional[TypeVarLikeScope], self)
         while it is not None and it.is_class_scope:
             it = it.parent
         return it

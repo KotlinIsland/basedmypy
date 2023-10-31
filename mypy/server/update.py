@@ -118,7 +118,7 @@ import os
 import re
 import sys
 import time
-from typing import Callable, Final, NamedTuple, Sequence, Union
+from typing import Callable, Final, NamedTuple, Optional, Sequence, Union, cast
 from typing_extensions import TypeAlias as _TypeAlias
 
 from mypy.build import (
@@ -1112,7 +1112,7 @@ def lookup_target(
         components = rest.split(".")
     else:
         components = []
-    node: SymbolNode | None = modules[module]
+    node = cast(Optional[SymbolNode], modules[module])
     file: MypyFile | None = None
     active_class = None
     for c in components:

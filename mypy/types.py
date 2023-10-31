@@ -16,6 +16,7 @@ from typing import (
     Iterable,
     NamedTuple,
     NewType,
+    Optional,
     Sequence,
     TypeVar,
     Union,
@@ -2274,7 +2275,7 @@ class CallableType(FunctionLike):
         types_suffix = self.arg_types[var_arg_index + 1 :]
         kinds_suffix = self.arg_kinds[var_arg_index + 1 :]
         names_suffix = self.arg_names[var_arg_index + 1 :]
-        no_name: str | None = None  # to silence mypy
+        no_name = cast(Union[str, None], None)  # to silence mypy
 
         # Now we have something non-trivial to do.
         if unpack_index is None:
@@ -3854,7 +3855,7 @@ def flatten_nested_unions(
 
 
 def find_unpack_in_list(items: Sequence[Type]) -> int | None:
-    unpack_index: int | None = None
+    unpack_index = cast(Optional[int], None)
     for i, item in enumerate(items):
         if isinstance(item, UnpackType):
             # We cannot fail here, so we must check this in an earlier

@@ -21,7 +21,7 @@ if sys.version_info >= (3, 11):
 else:
     import tomli as tomllib
 
-from typing import Dict, Final, List, NamedTuple, Optional, Tuple, Union
+from typing import Dict, Final, List, NamedTuple, Optional, Tuple, Union, cast
 from typing_extensions import TypeAlias as _TypeAlias
 
 from mypy import pyinfo
@@ -324,7 +324,7 @@ class FindModuleCache:
     def _find_module_non_stub_helper(
         self, components: list[str], pkg_dir: str, ignore_missing_py_typed=False
     ) -> OnePackageDir | ModuleNotFoundReason:
-        plausible_match: OnePackageDir | None = None
+        plausible_match = cast(Optional[OnePackageDir], None)
         dir_path = pkg_dir
         for index, component in enumerate(components):
             dir_path = os.path.join(dir_path, component)

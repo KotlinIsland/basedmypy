@@ -11,6 +11,8 @@ only be placed at the end of a basic block.
 
 from __future__ import annotations
 
+from typing import Optional, cast
+
 from mypyc.ir.func_ir import FuncIR
 from mypyc.ir.ops import (
     ERR_ALWAYS,
@@ -43,7 +45,7 @@ def insert_exception_handling(ir: FuncIR) -> None:
     # Generate error block if any ops may raise an exception. If an op
     # fails without its own error handler, we'll branch to this
     # block. The block just returns an error value.
-    error_label: BasicBlock | None = None
+    error_label = cast(Optional[BasicBlock], None)
     for block in ir.blocks:
         adjust_error_kinds(block)
         if error_label is None and any(op.can_raise() for op in block.ops):

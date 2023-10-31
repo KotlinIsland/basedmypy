@@ -17,7 +17,7 @@ from __future__ import annotations
 import os
 import re
 import unittest
-from typing import Any
+from typing import Any, Dict, cast
 
 import pytest
 
@@ -309,15 +309,18 @@ class FineGrainedSuite(DataSuite):
             use_fixme = m.group(1) if m else None
             m = re.match("--max-guesses=([0-9]+)", flags)
             max_guesses = int(safe(m.group(1))) if m else None
-            res: dict[str, Any] = server.cmd_suggest(
-                target.strip(),
-                json=json,
-                no_any=no_any,
-                no_errors=no_errors,
-                flex_any=flex_any,
-                use_fixme=use_fixme,
-                callsites=callsites,
-                max_guesses=max_guesses,
+            res = cast(
+                Dict[str, Any],
+                server.cmd_suggest(
+                    target.strip(),
+                    json=json,
+                    no_any=no_any,
+                    no_errors=no_errors,
+                    flex_any=flex_any,
+                    use_fixme=use_fixme,
+                    callsites=callsites,
+                    max_guesses=max_guesses,
+                ),
             )
             val = res["error"] if "error" in res else res["out"] + res["err"]
             if json:
@@ -348,16 +351,19 @@ class FineGrainedSuite(DataSuite):
             include_object_attrs = "--include-object-attrs" in flags
             union_attrs = "--union-attrs" in flags
             force_reload = "--force-reload" in flags
-            res: dict[str, Any] = server.cmd_inspect(
-                show,
-                location,
-                verbosity=verbosity,
-                limit=limit,
-                include_span=include_span,
-                include_kind=include_kind,
-                include_object_attrs=include_object_attrs,
-                union_attrs=union_attrs,
-                force_reload=force_reload,
+            res = cast(
+                Dict[str, Any],
+                server.cmd_inspect(
+                    show,
+                    location,
+                    verbosity=verbosity,
+                    limit=limit,
+                    include_span=include_span,
+                    include_kind=include_kind,
+                    include_object_attrs=include_object_attrs,
+                    union_attrs=union_attrs,
+                    force_reload=force_reload,
+                ),
             )
             val = res["error"] if "error" in res else res["out"] + res["err"]
             output.extend(val.strip().split("\n"))

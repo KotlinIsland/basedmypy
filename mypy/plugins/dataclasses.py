@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final, Iterator, Literal
+from typing import TYPE_CHECKING, Final, Iterator, List, Literal, Optional, cast
 
 from mypy import errorcodes, message_registry
 from mypy.expandtype import expand_type, expand_type_by_instance
@@ -996,7 +996,7 @@ def _get_expanded_dataclasses_fields(
     if isinstance(typ, AnyType):
         return None
     elif isinstance(typ, UnionType):
-        ret: list[CallableType] | None = []
+        ret = cast(Optional[List[CallableType]], [])
         for item in typ.relevant_items():
             item = get_proper_type(item)
             item_types = _get_expanded_dataclasses_fields(ctx, item, item, parent_typ)

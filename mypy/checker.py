@@ -2685,7 +2685,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 def __new__(cls, val): ...
             class Baz(int, Foo, Bar, enum.Flag): ...
         """
-        enum_base: Instance | None = None
+        enum_base = cast(Optional[Instance], None)
         for base in defn.info.bases:
             if enum_base is None and base.type.is_enum:
                 enum_base = base

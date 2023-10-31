@@ -7,7 +7,7 @@ and mypyc.irbuild.builder.
 from __future__ import annotations
 
 import math
-from typing import Callable, Sequence
+from typing import Callable, Optional, Sequence, cast
 
 from mypy.nodes import (
     ARG_POS,
@@ -984,7 +984,7 @@ def _visit_display(
         else:
             accepted_items.append((False, builder.accept(item)))
 
-    result: Value | None = None
+    result = cast(Optional[Value], None)
     initial_items = []
     for starred, value in accepted_items:
         if result is None and not starred and is_list:
