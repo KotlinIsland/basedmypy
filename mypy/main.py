@@ -1139,6 +1139,10 @@ def process_options(
     )
     # This undocumented feature exports limited line-level dependency information.
     internals_group.add_argument("--export-ref-info", action="store_true", help=argparse.SUPPRESS)
+    # This undocumented feature makes callable subtypes with incorrect names count as valid (needed to check mypy itself)
+    internals_group.add_argument(
+        "--work-not-properly-function-names", action="store_true", help=argparse.SUPPRESS
+    )
 
     report_group = parser.add_argument_group(
         title="Report generation", description="Generate a report in the specified format."

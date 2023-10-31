@@ -105,6 +105,9 @@ class Options:
     """Options collected from flags."""
 
     def __init__(self) -> None:
+        # stupid thing to make mypy project check properly
+        self.work_not_properly_function_names = False
+
         # Cache for clone_for_module()
         self._per_module_cache: dict[str, Options] | None = None
         # Despite the warnings about _per_module_cache being slow, this one might be good

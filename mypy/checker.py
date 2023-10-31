@@ -2351,7 +2351,10 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         # Use boolean variable to clarify code.
         fail = False
         op_method_wider_note = False
-        if not is_subtype(override, original, ignore_pos_arg_names=True):
+
+        if not is_subtype(
+            override, original, ignore_pos_arg_names=self.options.work_not_properly_function_names
+        ):
             fail = True
         elif isinstance(override, Overloaded) and self.is_forward_op_method(name):
             # Operator method overrides cannot extend the domain, as
@@ -2837,7 +2840,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             call = find_member("__call__", first_type, first_type, is_operator=True)
         if call and isinstance(second_type, FunctionLike):
             second_sig = self.bind_and_map_method(second, second_type, ctx, base2)
-            ok = is_subtype(call, second_sig, ignore_pos_arg_names=True)
+            ok = is_subtype(call, second_sig)
         elif isinstance(first_type, FunctionLike) and isinstance(second_type, FunctionLike):
             if first_type.is_type_obj() and second_type.is_type_obj():
                 # For class objects only check the subtype relationship of the classes,
@@ -2850,7 +2853,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 # First bind/map method types when necessary.
                 first_sig = self.bind_and_map_method(first, first_type, ctx, base1)
                 second_sig = self.bind_and_map_method(second, second_type, ctx, base2)
-                ok = is_subtype(first_sig, second_sig, ignore_pos_arg_names=True)
+                ok = is_subtype(first_sig, second_sig)
         elif first_type and second_type:
             if isinstance(first.node, Var):
                 first_type = expand_self_type(first.node, first_type, fill_typevars(ctx))
@@ -7754,12 +7757,7 @@ def is_more_general_arg_prefix(t: FunctionLike, s: FunctionLike) -> bool:
 
 def is_same_arg_prefix(t: CallableType, s: CallableType) -> bool:
     return is_callable_compatible(
-        t,
-        s,
-        is_compat=is_same_type,
-        ignore_return=True,
-        check_args_covariantly=True,
-        ignore_pos_arg_names=True,
+        t, s, is_compat=is_same_type, ignore_return=True, check_args_covariantly=True
     )
 
 

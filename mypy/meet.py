@@ -467,11 +467,7 @@ def is_overlapping_types(
 
     if isinstance(left, CallableType) and isinstance(right, CallableType):
         return is_callable_compatible(
-            left,
-            right,
-            is_compat=_is_overlapping_types,
-            ignore_pos_arg_names=True,
-            allow_partial_overlap=True,
+            left, right, is_compat=_is_overlapping_types, allow_partial_overlap=True
         )
     elif isinstance(left, CallableType):
         left = left.fallback

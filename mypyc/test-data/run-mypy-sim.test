@@ -113,22 +113,22 @@ import native as nodes
 from other_visitor import NodeVisitor
 
 class StrConv(NodeVisitor[str]):
-    def visit_block(self, b: nodes.Block) -> str:
+    def visit_block(self, o: nodes.Block) -> str:
         # we really need comprehensions!
         # TODO: PartialType unsupported
         things = []  # type: List[str]
-        for s in b.stmts:
+        for s in o.stmts:
             things.append(s.accept(self))
         return "{" + "; ".join(things) + "}"
 
-    def visit_func_def(self, f: nodes.FuncDef) -> str:
-        return "def " + f.name() + "(): " + f.body.accept(self)
+    def visit_func_def(self, o: nodes.FuncDef) -> str:
+        return "def " + o.name() + "(): " + o.body.accept(self)
 
-    def visit_expr_stmt(self, e: nodes.ExprStmt) -> str:
-        return e.expr.accept(self)
+    def visit_expr_stmt(self, o: nodes.ExprStmt) -> str:
+        return o.expr.accept(self)
 
-    def visit_lambda_expr(self, b: nodes.LambdaExpr) -> str:
-        return "(fn: " + b.body.accept(self) + ")"
+    def visit_lambda_expr(self, o: nodes.LambdaExpr) -> str:
+        return "(fn: " + o.body.accept(self) + ")"
 
 [file driver.py]
 from native import *

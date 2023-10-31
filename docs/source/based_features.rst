@@ -296,3 +296,15 @@ Basedmypy handles type annotations in function bodies as unevaluated:
 
     def f():
         a: list[int]  # no error, this annotation isn't evaluated
+
+Checked Argument Names
+----------------------
+
+.. code-block::python
+
+    class A:
+        def f(self, a: int): ...
+
+    class B(A):
+        @override
+        def f(self, b: int): ...  # error: Signature of "f" incompatible with supertype "A"

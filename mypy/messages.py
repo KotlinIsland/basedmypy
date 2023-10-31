@@ -3026,7 +3026,7 @@ def get_conflict_protocol_types(
         subtype = mypy.typeops.get_protocol_member(left, member, class_obj)
         if not subtype:
             continue
-        is_compat = is_subtype(subtype, supertype, ignore_pos_arg_names=True, options=options)
+        is_compat = is_subtype(subtype, supertype, options=options)
         if IS_SETTABLE in get_member_flags(member, right):
             is_compat = is_compat and is_subtype(supertype, subtype, options=options)
         if not is_compat:

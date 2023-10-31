@@ -2622,7 +2622,12 @@ a: Other
 b: Bad
 
 func(a)
-func(b)  # E: Argument 1 to "func" has incompatible type "Bad"; expected "One"
+func(b)  # E: Argument 1 to "func" has incompatible type "Bad"; expected "One" \
+         # N: Following member(s) of "Bad" have conflicts: \
+         # N:     Expected: \
+         # N:         def __call__(self, x: str) -> None \
+         # N:     Got: \
+         # N:         def __call__(self, zzz: str) -> None
 [out]
 
 [case testJoinProtocolCallback]
@@ -3354,7 +3359,7 @@ test(D)  # OK
 from typing import Any, Protocol
 
 class P(Protocol):
-    def foo(self, obj: Any) -> int: ...
+    def foo(self, obj: Any, /) -> int: ...
 
 class B:
     def foo(self) -> int: ...
@@ -3366,7 +3371,7 @@ test(B)  # OK
 test(C)  # E: Argument 1 to "test" has incompatible type "Type[C]"; expected "P" \
          # N: Following member(s) of "C" have conflicts: \
          # N:     Expected: \
-         # N:         def foo(obj: Any) -> int \
+         # N:         def foo(Any, /) -> int \
          # N:     Got: \
          # N:         def foo(self: C) -> str
 
@@ -3374,7 +3379,7 @@ test(C)  # E: Argument 1 to "test" has incompatible type "Type[C]"; expected "P"
 from typing import Any, Protocol
 
 class P(Protocol):
-    def foo(self, obj: B) -> int: ...
+    def foo(self, obj: B, /) -> int: ...
 
 class B:
     def foo(self) -> int: ...
@@ -3386,7 +3391,7 @@ test(B)  # OK
 test(C)  # E: Argument 1 to "test" has incompatible type "Type[C]"; expected "P" \
          # N: Following member(s) of "C" have conflicts: \
          # N:     Expected: \
-         # N:         def foo(obj: B) -> int \
+         # N:         def foo(B, /) -> int \
          # N:     Got: \
          # N:         def foo(self: C) -> int
 
@@ -3395,9 +3400,9 @@ from typing import Any, Protocol, overload
 
 class P(Protocol):
     @overload
-    def foo(self, obj: Any, arg: int) -> int: ...
+    def foo(self, obj: Any, arg: int, /) -> int: ...
     @overload
-    def foo(self, obj: Any, arg: str) -> str: ...
+    def foo(self, obj: Any, arg: str, /) -> str: ...
 
 class B:
     @overload
@@ -3421,9 +3426,9 @@ test(C)  # E: Argument 1 to "test" has incompatible type "Type[C]"; expected "P"
          # N: Following member(s) of "C" have conflicts: \
          # N:     Expected: \
          # N:         @overload \
-         # N:         def foo(obj: Any, arg: int) -> int \
+         # N:         def foo(Any, int, /) -> int \
          # N:         @overload \
-         # N:         def foo(obj: Any, arg: str) -> str \
+         # N:         def foo(Any, str, /) -> str \
          # N:     Got: \
          # N:         @overload \
          # N:         def foo(self: C, arg: int) -> int \
@@ -3480,7 +3485,7 @@ test(C)  # E: Argument 1 to "test" has incompatible type "Type[C]"; expected "P"
 from typing import Any, Protocol, Generic, List, TypeVar
 
 class P(Protocol):
-    def foo(self, obj: Any) -> List[int]: ...
+    def foo(self, obj: Any, /) -> List[int]: ...
 
 T = TypeVar("T")
 class A(Generic[T]):
@@ -3495,7 +3500,7 @@ test(B)  # OK
 test(C)  # E: Argument 1 to "test" has incompatible type "Type[C]"; expected "P" \
          # N: Following member(s) of "C" have conflicts: \
          # N:     Expected: \
-         # N:         def foo(obj: Any) -> List[int] \
+         # N:         def foo(Any, /) -> List[int] \
          # N:     Got: \
          # N:         def foo(self: A[List[str]]) -> List[str]
 [builtins fixtures/list.pyi]
@@ -3530,7 +3535,7 @@ from typing import Protocol, TypeVar, Union
 
 T = TypeVar("T")
 class P(Protocol):
-    def foo(self, arg: T) -> T: ...
+    def foo(self, arg: T, /) -> T: ...
 
 class B:
     def foo(self: T) -> T: ...
@@ -3542,7 +3547,7 @@ test(B)  # OK
 test(C)  # E: Argument 1 to "test" has incompatible type "Type[C]"; expected "P" \
          # N: Following member(s) of "C" have conflicts: \
          # N:     Expected: \
-         # N:         def [T] foo(arg: T) -> T \
+         # N:         def [T] foo(T, /) -> T \
          # N:     Got: \
          # N:         def [T] foo(self: T) -> Union[T, int]
 
@@ -3672,7 +3677,7 @@ test(d)  # E: Argument 1 to "test" has incompatible type "Type[D]"; expected "P"
 from typing import Any, Protocol, Type
 
 class P(Protocol):
-    def foo(self, cls: Any) -> int: ...
+    def foo(self, cls: Any, /) -> int: ...
 
 class B:
     def foo(self) -> int: ...
@@ -3686,7 +3691,7 @@ test(b)  # OK
 test(c)  # E: Argument 1 to "test" has incompatible type "Type[C]"; expected "P" \
          # N: Following member(s) of "C" have conflicts: \
          # N:     Expected: \
-         # N:         def foo(cls: Any) -> int \
+         # N:         def foo(Any, /) -> int \
          # N:     Got: \
          # N:         def foo(self: C) -> str
 
@@ -3720,7 +3725,7 @@ from typing import Protocol, Type, TypeVar, Union
 
 T = TypeVar("T")
 class P(Protocol):
-    def foo(self, arg: T) -> T: ...
+    def foo(self, arg: T, /) -> T: ...
 
 class B:
     def foo(self: T) -> T: ...
@@ -3734,7 +3739,7 @@ test(b)  # OK
 test(c)  # E: Argument 1 to "test" has incompatible type "Type[C]"; expected "P" \
          # N: Following member(s) of "C" have conflicts: \
          # N:     Expected: \
-         # N:         def [T] foo(arg: T) -> T \
+         # N:         def [T] foo(T, /) -> T \
          # N:     Got: \
          # N:         def [T] foo(self: T) -> Union[T, int]
 
@@ -3743,7 +3748,7 @@ from typing import Any, Protocol, TypeVar
 
 T = TypeVar("T", contravariant=True)
 class P(Protocol[T]):
-    def foo(self, obj: T) -> int: ...
+    def foo(self, obj: T, /) -> int: ...
 
 class B:
     def foo(self) -> int: ...
@@ -3757,7 +3762,7 @@ from typing import Any, Protocol, TypeVar, Type
 
 T = TypeVar("T", contravariant=True)
 class P(Protocol[T]):
-    def foo(self, obj: T) -> int: ...
+    def foo(self, obj: T, /) -> int: ...
 
 class B:
     def foo(self) -> int: ...

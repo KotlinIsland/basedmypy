@@ -117,13 +117,13 @@ class EqualVisitor(TreeVisitor[bool]):
         self.left = left
     def equal(self, right: Tree) -> bool:
         return right.accept(self)
-    def visit_leaf(self, right: Leaf) -> bool:
+    def visit_leaf(self, x: Leaf) -> bool:
         return isinstance(self.left, Leaf)
-    def visit_node(self, right: Node) -> bool:
+    def visit_node(self, x: Node) -> bool:
         if isinstance(self.left, Node):
             # our boolean stuff is crap
-            if (self.left.value == right.value and equal(self.left.left, right.left)
-                    and equal(self.left.right, right.right)):
+            if (self.left.value == x.value and equal(self.left.left, x.left)
+                    and equal(self.left.right, x.right)):
                 return True
         return False
 

@@ -1064,7 +1064,7 @@ class A:
         return (x,), {}
 
 class B(A):
-    def f(self, *args: int) -> Tuple[int, ...]:
+    def f(self, *args: int) -> Tuple[int, ...]:  # type: ignore[override]
         return args
     def g(self, *args: int, **kwargs: int) -> Tuple[Tuple[int, ...], Dict[str, int]]:
         return args, kwargs

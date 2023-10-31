@@ -1977,7 +1977,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_class_def\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 432,
+        "offset": 435,
         "src": "def visit_class_def(self, defn: ClassDef) -> None:",
         "target": "mypy.checker.TypeChecker.visit_class_def"
       },
@@ -2353,7 +2353,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_uninhabited_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.BoolTypeQuery\"",
-        "offset": 197,
+        "offset": 192,
         "src": "def visit_uninhabited_type(self, t: UninhabitedType) -> bool:",
         "target": "mypy.checker.InvalidInferredTypes.visit_uninhabited_type"
       },
@@ -10771,7 +10771,7 @@
         "code": "no-any-expr",
         "column": 67,
         "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 285,
+        "offset": 289,
         "src": "\"--package-root\", metavar=\"ROOT\", action=\"append\", default=[], help=argparse.SUPPRESS",
         "target": "mypy.main.process_options"
       },
@@ -11429,7 +11429,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_unbound_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 642,
+        "offset": 638,
         "src": "def visit_unbound_type(self, t: UnboundType) -> ProperType:",
         "target": "mypy.meet.TypeMeetVisitor.visit_unbound_type"
       },
@@ -14119,7 +14119,7 @@
         "code": "no-any-expr",
         "column": 18,
         "message": "Expression has type \"Any\"",
-        "offset": 122,
+        "offset": 125,
         "src": "MACHDEP = sysconfig.get_config_var(\"MACHDEP\")",
         "target": "mypy.options.Options.__init__"
       },
@@ -24737,7 +24737,7 @@
         "code": "no-any-explicit",
         "column": 4,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 749,
+        "offset": 747,
         "src": "def report(*args: Any) -> None:",
         "target": "mypy.subtypes.unify_generic_callable"
       },

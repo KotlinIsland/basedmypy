@@ -61,7 +61,7 @@ class B(A):
                                               # N: See https://kotlinisland.github.io/basedmypy/common_issues.html#incompatible-overrides
 
 class C(A):
-    def f(self, foo: int, bar: str) -> None: pass
+    def f(self, a: int, b: str) -> None: pass
 
 
 [case testPositionalOverridingArgumentNamesCheckedWhenMismatchingPos]
@@ -2982,11 +2982,11 @@ class B(A):
 
 class C(A):
     @overload
-    def f(self, y: int) -> str: pass
+    def f(self, x: int) -> str: pass
     @override
     @overload
-    def f(self, y: str) -> str: pass
-    def f(self, y: int | str) -> str: pass
+    def f(self, x: str) -> str: pass
+    def f(self, x: int | str) -> str: pass
 [typing fixtures/typing-override.pyi]
 
 [case explicitOverrideOnMultipleOverloads]
@@ -3007,12 +3007,12 @@ class B(A):
 
 class C(A):
     @overload
-    def f(self, y: int) -> str: pass
+    def f(self, x: int) -> str: pass
     @override
     @overload
-    def f(self, y: str) -> str: pass
+    def f(self, x: str) -> str: pass
     @override
-    def f(self, y: int | str) -> str: pass
+    def f(self, x: int | str) -> str: pass
 [typing fixtures/typing-override.pyi]
 
 [case explicitOverrideCyclicDependency]
@@ -3050,13 +3050,13 @@ class A:
 
 class B(A):
     @override
-    def f(self, y: int) -> str: pass
+    def f(self, x: int) -> str: pass
 
 class C(A):
-    def f(self, y: int) -> str: pass  # E: Method "f" is not using @override but is overriding a method in class "__main__.A"
+    def f(self, x: int) -> str: pass  # E: Method "f" is not using @override but is overriding a method in class "__main__.A"
 
 class D(B):
-    def f(self, y: int) -> str: pass  # E: Method "f" is not using @override but is overriding a method in class "__main__.B"
+    def f(self, x: int) -> str: pass  # E: Method "f" is not using @override but is overriding a method in class "__main__.B"
 [typing fixtures/typing-override.pyi]
 
 [case requireExplicitOverrideSpecialMethod]
@@ -3122,10 +3122,10 @@ from typing import overload, override
 
 class A:
     @overload
-    def f(self, x: int) -> str: ...
+    def f(self, y: int) -> str: ...
     @overload
-    def f(self, x: str) -> str: ...
-    def f(self, x): pass
+    def f(self, y: str) -> str: ...
+    def f(self, y): pass
 
 class B(A):
     @overload
@@ -3158,12 +3158,12 @@ from typing import override
 class A:
     def f(self, x: int) -> str: pass
 class B:
-    def f(self, y: int) -> str: pass
+    def f(self, x: int) -> str: pass
 
 class C(A, B):
     @override
-    def f(self, z: int) -> str: pass
+    def f(self, x: int) -> str: pass
 
 class D(A, B):
-    def f(self, z: int) -> str: pass  # E: Method "f" is not using @override but is overriding a method in class "__main__.A"
+    def f(self, x: int) -> str: pass  # E: Method "f" is not using @override but is overriding a method in class "__main__.A"
 [typing fixtures/typing-override.pyi]
