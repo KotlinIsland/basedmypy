@@ -452,10 +452,18 @@
         "target": "mypy.build.BuildManager.__init__"
       },
       {
+        "code": "helpful-string",
+        "column": 22,
+        "message": "The string for \"object\" isn't helpful in a user-facing or semantic string",
+        "offset": 103,
+        "src": "print(f\"{key + ':':24}{value}\")",
+        "target": "mypy.build.BuildManager.dump_stats"
+      },
+      {
         "code": "no-any-expr",
         "column": 19,
         "message": "Expression has type \"Any\"",
-        "offset": 248,
+        "offset": 145,
         "src": "deps = json.loads(self.metastore.read(self.fg_deps_meta[id][\"path\"]))",
         "target": "mypy.build.BuildManager.load_fine_grained_deps"
       },
@@ -1244,10 +1252,18 @@
         "target": "mypy.build.find_cache_meta"
       },
       {
+        "code": "helpful-string",
+        "column": 24,
+        "message": "The string for \"object\" isn't helpful in a user-facing or semantic string",
+        "offset": 14,
+        "src": "\"    {}: {} != {}\".format(",
+        "target": "mypy.build.find_cache_meta"
+      },
+      {
         "code": "no-any-expr",
         "column": 18,
         "message": "Expression has type \"Any\"",
-        "offset": 27,
+        "offset": 13,
         "src": "plugin_data = json.loads(",
         "target": "mypy.build.find_cache_meta"
       },
@@ -1724,10 +1740,18 @@
         "target": "mypy.build.State.__init__"
       },
       {
+        "code": "helpful-string",
+        "column": 28,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 21,
+        "src": "manager.log(f\"Deferring module to fine-grained update {path} ({id})\")",
+        "target": "mypy.build.State.__init__"
+      },
+      {
         "code": "no-any-explicit",
         "column": 4,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 29,
+        "offset": 8,
         "src": "def xmeta(self) -> CacheMeta:",
         "target": "mypy.build.State.xmeta"
       },
@@ -2600,10 +2624,18 @@
     ],
     "mypy/checkexpr.py": [
       {
+        "code": "helpful-string",
+        "column": 33,
+        "message": "The type \"type[mypy.nodes.RefExpr]\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 277,
+        "src": "raise AssertionError(f\"Unknown RefExpr subclass: {type(expr)}\")",
+        "target": "mypy.checkexpr.extract_refexpr_names"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_name_expr\" is not using @override but is overriding a method in class \"mypy.visitor.ExpressionVisitor\"",
-        "offset": 341,
+        "offset": 64,
         "src": "def visit_name_expr(self, e: NameExpr) -> Type:",
         "target": "mypy.checkexpr.ExpressionChecker.visit_name_expr"
       },
@@ -2704,10 +2736,18 @@
         "target": "mypy.checkexpr.ExpressionChecker.check_overload_call"
       },
       {
+        "code": "helpful-string",
+        "column": 19,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 614,
+        "src": "name = f\"{context.callee.name} of {object_type}\"",
+        "target": "mypy.checkexpr.ExpressionChecker.check_intersection_call"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_member_expr\" is not using @override but is overriding a method in class \"mypy.visitor.ExpressionVisitor\"",
-        "offset": 619,
+        "offset": 5,
         "src": "def visit_member_expr(self, e: MemberExpr, is_lvalue: bool = False) -> Type:",
         "target": "mypy.checkexpr.ExpressionChecker.visit_member_expr"
       },
@@ -3394,14 +3434,30 @@
         "offset": 67,
         "src": "def visit_class_pattern(self, o: ClassPattern) -> PatternType:",
         "target": "mypy.checkpattern.PatternChecker.visit_class_pattern"
+      },
+      {
+        "code": "helpful-string",
+        "column": 20,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 138,
+        "src": "message_registry.CLASS_PATTERN_UNKNOWN_KEYWORD.format(",
+        "target": "mypy.checkpattern.PatternChecker.visit_class_pattern"
       }
     ],
     "mypy/checkstrformat.py": [
       {
+        "code": "helpful-string",
+        "column": 16,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 719,
+        "src": "\"Only index and member expressions are allowed in\"",
+        "target": "mypy.checkstrformat.StringFormatterChecker.validate_and_transform_accessors"
+      },
+      {
         "code": "redundant-expr",
         "column": 13,
         "message": "Condition is always true",
-        "offset": 724,
+        "offset": 54,
         "src": "elif isinstance(expr, StrExpr):",
         "target": "mypy.checkstrformat.StringFormatterChecker.check_str_interpolation"
       },
@@ -6352,6 +6408,14 @@
         "column": 22,
         "message": "Expression type contains \"Any\" (has type \"type[Any]\")",
         "offset": 1,
+        "src": "raise OSError(f\"Data received is not a dict ({type(data)})\")",
+        "target": "mypy.dmypy_util.receive"
+      },
+      {
+        "code": "helpful-string",
+        "column": 22,
+        "message": "The type \"type[Any]\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 0,
         "src": "raise OSError(f\"Data received is not a dict ({type(data)})\")",
         "target": "mypy.dmypy_util.receive"
       },
@@ -10158,10 +10222,18 @@
     ],
     "mypy/inspections.py": [
       {
+        "code": "helpful-string",
+        "column": 11,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 58,
+        "src": "return f\"{expr.line}:{expr.column + 1}:{expr.end_line}:{expr.end_column}\"",
+        "target": "mypy.inspections.expr_span"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit\" is not using @override but is overriding a method in class \"mypy.traverser.ExtendedTraverserVisitor\"",
-        "offset": 139,
+        "offset": 81,
         "src": "def visit(self, o: Node) -> bool:",
         "target": "mypy.inspections.SearchVisitor.visit"
       },
@@ -10172,6 +10244,14 @@
         "offset": 37,
         "src": "def visit(self, o: Node) -> bool:",
         "target": "mypy.inspections.SearchAllVisitor.visit"
+      },
+      {
+        "code": "helpful-string",
+        "column": 15,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 197,
+        "src": "return f\"{module.path}:{node.line}:{node.column + 1}:{node.name}\"",
+        "target": "mypy.inspections.InspectionEngine.format_node"
       }
     ],
     "mypy/join.py": [
@@ -11686,10 +11766,18 @@
     ],
     "mypy/meet.py": [
       {
+        "code": "helpful-string",
+        "column": 38,
+        "message": "The type \"type[mypy.types.ProperType]\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 565,
+        "src": "assert type(left) != type(right), f\"{type(left)} vs {type(right)}\"",
+        "target": "mypy.meet.is_overlapping_types"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_unbound_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 661,
+        "offset": 96,
         "src": "def visit_unbound_type(self, t: UnboundType) -> ProperType:",
         "target": "mypy.meet.TypeMeetVisitor.visit_unbound_type"
       },
@@ -12162,10 +12250,18 @@
         "target": "mypy.messages.MessageBuilder.unsupported_operand_types"
       },
       {
+        "code": "helpful-string",
+        "column": 20,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 350,
+        "src": "f'This is likely because \"{original_caller_type.name}\" has named arguments: '",
+        "target": "mypy.messages.MessageBuilder.maybe_note_concatenate_pos_args"
+      },
+      {
         "code": "possibly-undefined",
         "column": 18,
         "message": "Name \"msg\" may be undefined",
-        "offset": 423,
+        "offset": 73,
         "src": "self.fail(msg, context)",
         "target": "mypy.messages"
       },
@@ -12210,18 +12306,34 @@
         "target": "mypy.messages.MessageBuilder.maybe_note_about_special_args"
       },
       {
+        "code": "helpful-string",
+        "column": 12,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 44,
+        "src": "'{} gets multiple values for keyword argument \"{}\"'.format(",
+        "target": "mypy.messages.MessageBuilder.duplicate_argument_value"
+      },
+      {
         "code": "redundant-expr",
         "column": 13,
         "message": "Condition is always true",
-        "offset": 253,
+        "offset": 209,
         "src": "elif isinstance(tp, Overloaded):",
         "target": "mypy.messages.MessageBuilder.pretty_callable_or_overload"
+      },
+      {
+        "code": "helpful-string",
+        "column": 26,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 487,
+        "src": "self.note(f\"    {k}: {v.accept(visitor) if v is not None else None}\", context)",
+        "target": "mypy.messages.MessageBuilder.reveal_locals"
       },
       {
         "code": "redundant-expr",
         "column": 15,
         "message": "Condition is always false",
-        "offset": 861,
+        "offset": 374,
         "src": "if not isinstance(subtype.partial_fallback, Instance):",
         "target": "mypy.messages.MessageBuilder.report_protocol_problems"
       },
@@ -12274,10 +12386,42 @@
         "target": "mypy.messages.MessageBuilder.print_more"
       },
       {
+        "code": "helpful-string",
+        "column": 35,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 156,
+        "src": "arg_strings.append(f\"{arg_name}: {format(arg_type)}\")",
+        "target": "mypy.messages.format_callable_args"
+      },
+      {
+        "code": "helpful-string",
+        "column": 35,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 3,
+        "src": "arg_strings.append(f\"{arg_name}: {format(arg_type)}\")",
+        "target": "mypy.messages.format_callable_args"
+      },
+      {
+        "code": "helpful-string",
+        "column": 35,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 6,
+        "src": "arg_strings.append(f\"{arg_name}: {format(arg_type)}=...\")",
+        "target": "mypy.messages.format_callable_args"
+      },
+      {
+        "code": "helpful-string",
+        "column": 35,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 3,
+        "src": "arg_strings.append(f\"{arg_name}: {format(arg_type)} = ...\")",
+        "target": "mypy.messages.format_callable_args"
+      },
+      {
         "code": "redundant-expr",
         "column": 17,
         "message": "Condition is always true",
-        "offset": 175,
+        "offset": 7,
         "src": "elif arg_kind is ARG_STAR2:",
         "target": "mypy.messages.format_callable_args"
       },
@@ -14406,10 +14550,18 @@
         "target": "mypy.nodes.get_flags"
       },
       {
+        "code": "helpful-string",
+        "column": 11,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 21,
+        "src": "return f\"{initial}.{expr.name}\"",
+        "target": "mypy.nodes.get_member_expr_fullname"
+      },
+      {
         "code": "no-any-expr",
         "column": 25,
         "message": "Expression type contains \"Any\" (has type \"(str, Any)\")",
-        "offset": 24,
+        "offset": 3,
         "src": "deserialize_map: Final = {",
         "target": "mypy.nodes"
       },
@@ -15256,6 +15408,22 @@
         "offset": 0,
         "src": "getattr(arg.variable.type, \"type_of_any\", None) == TypeOfAny.unannotated",
         "target": "mypy.plugins.attrs._add_init"
+      },
+      {
+        "code": "helpful-string",
+        "column": 21,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 207,
+        "src": "ctx.api.fail(f'\"{ctx.default_signature.name}\" has unexpected type annotation', ctx.context)",
+        "target": "mypy.plugins.attrs.evolve_function_sig_callback"
+      },
+      {
+        "code": "helpful-string",
+        "column": 13,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 21,
+        "src": "name=f\"{ctx.default_signature.name} of {inst_type_str}\",",
+        "target": "mypy.plugins.attrs.evolve_function_sig_callback"
       }
     ],
     "mypy/plugins/dataclasses.py": [
@@ -15338,6 +15506,22 @@
         "offset": 386,
         "src": "info.metadata[\"dataclass_tag\"] = {}",
         "target": "mypy.plugins.dataclasses.add_dataclass_tag"
+      },
+      {
+        "code": "helpful-string",
+        "column": 21,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 151,
+        "src": "ctx.api.fail(f'\"{ctx.default_signature.name}\" has unexpected type annotation', ctx.context)",
+        "target": "mypy.plugins.dataclasses.replace_function_sig_callback"
+      },
+      {
+        "code": "helpful-string",
+        "column": 13,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 21,
+        "src": "name=f\"{ctx.default_signature.name} of {inst_type_str}\",",
+        "target": "mypy.plugins.dataclasses.replace_function_sig_callback"
       }
     ],
     "mypy/plugins/default.py": [
@@ -16746,10 +16930,18 @@
         "target": "mypy.semanal.SemanticAnalyzer.analyze_func_def"
       },
       {
+        "code": "helpful-string",
+        "column": 36,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 60,
+        "src": "overlapped = \", \".join([f'\"{name}\"' for name in overlap])",
+        "target": "mypy.semanal.SemanticAnalyzer.remove_unpack_kwargs"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_overloaded_func_def\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 211,
+        "offset": 151,
         "src": "def visit_overloaded_func_def(self, defn: OverloadedFuncDef) -> None:",
         "target": "mypy.semanal.SemanticAnalyzer.visit_overloaded_func_def"
       },
@@ -16794,10 +16986,18 @@
         "target": "mypy.semanal.SemanticAnalyzer.visit_class_def"
       },
       {
+        "code": "helpful-string",
+        "column": 26,
+        "message": "The type \"type[mypy.types.ProperType]\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 113,
+        "src": "assert False, f\"Unexpected special alias type: {type(target)}\"",
+        "target": "mypy.semanal.SemanticAnalyzer.setup_alias_type_vars"
+      },
+      {
         "code": "no-any-expr",
         "column": 43,
         "message": "Expression type contains \"Any\" (has type \"set[Any]\")",
-        "offset": 323,
+        "offset": 210,
         "src": "if not set(all_tvars).issubset(set(declared_tvars)):",
         "target": "mypy.semanal.SemanticAnalyzer.clean_up_bases_and_infer_type_variables"
       },
@@ -16906,18 +17106,34 @@
         "target": "mypy.semanal"
       },
       {
+        "code": "helpful-string",
+        "column": 20,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 759,
+        "src": "f'{message_registry.TYPEVAR_UNEXPECTED_ARGUMENT}: \"{param_name}\"', context",
+        "target": "mypy.semanal.SemanticAnalyzer.process_typevar_parameters"
+      },
+      {
         "code": "truthy-bool",
         "column": 15,
         "message": "\"call\" has type \"CallExpr\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 830,
+        "offset": 71,
         "src": "if not call:",
         "target": "mypy.semanal.SemanticAnalyzer.extract_typevarlike_name"
+      },
+      {
+        "code": "helpful-string",
+        "column": 26,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 134,
+        "src": "self.fail(f'Unexpected keyword argument \"{param_name}\" for \"TypeVarTuple\"', s)",
+        "target": "mypy.semanal.SemanticAnalyzer.process_typevartuple_declaration"
       },
       {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"basic_new_typeinfo\" is not using @override but is overriding a method in class \"mypy.semanal_shared.SemanticAnalyzerInterface\"",
-        "offset": 167,
+        "offset": 33,
         "src": "def basic_new_typeinfo(self, name: str, basetype_or_fallback: Instance, line: int) -> TypeInfo:",
         "target": "mypy.semanal.SemanticAnalyzer.basic_new_typeinfo"
       },
@@ -17796,10 +18012,18 @@
     ],
     "mypy/semanal_enum.py": [
       {
+        "code": "helpful-string",
+        "column": 40,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 157,
+        "src": "self.fail_enum_call_arg(f'Unexpected keyword argument \"{arg_name}\"', call)",
+        "target": "mypy.semanal_enum.EnumCallAnalyzer.parse_enum_call_args"
+      },
+      {
         "code": "redundant-expr",
         "column": 15,
         "message": "Condition is always false",
-        "offset": 180,
+        "offset": 23,
         "src": "if is_StrExpr_list(seq_items):",
         "target": "mypy.semanal_enum.EnumCallAnalyzer.parse_enum_call_args"
       },
@@ -18022,10 +18246,18 @@
         "target": "mypy.semanal_typeargs.TypeArgumentAnalyzer.visit_type_alias_type"
       },
       {
+        "code": "helpful-string",
+        "column": 36,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 12,
+        "src": "assert t.alias is not None, f\"Unfixed type alias {t.type_ref}\"",
+        "target": "mypy.semanal_typeargs.TypeArgumentAnalyzer.visit_type_alias_type"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_tuple_type\" is not using @override but is overriding a method in class \"mypy.typetraverser.TypeTraverserVisitor\"",
-        "offset": 44,
+        "offset": 32,
         "src": "def visit_tuple_type(self, t: TupleType) -> None:",
         "target": "mypy.semanal_typeargs.TypeArgumentAnalyzer.visit_tuple_type"
       },
@@ -18052,6 +18284,16 @@
         "offset": 100,
         "src": "def visit_unpack_type(self, typ: UnpackType) -> None:",
         "target": "mypy.semanal_typeargs.TypeArgumentAnalyzer.visit_unpack_type"
+      }
+    ],
+    "mypy/semanal_typeddict.py": [
+      {
+        "code": "helpful-string",
+        "column": 16,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 427,
+        "src": "f'Unexpected keyword argument \"{call.arg_names[2]}\" for \"TypedDict\"', call",
+        "target": "mypy.semanal_typeddict.TypedDictAnalyzer.parse_typeddict_args"
       }
     ],
     "mypy/server/astdiff.py": [
@@ -19278,6 +19520,30 @@
         "offset": 1,
         "src": "continue",
         "target": "mypy.server.mergecheck.check_consistency"
+      },
+      {
+        "code": "helpful-string",
+        "column": 26,
+        "message": "The string for \"object\" isn't helpful in a user-facing or semantic string",
+        "offset": 44,
+        "src": "result += f\".{attr}({t}:{obj.name})\"",
+        "target": "mypy.server.mergecheck.path_to_str"
+      },
+      {
+        "code": "helpful-string",
+        "column": 26,
+        "message": "The string for \"object\" isn't helpful in a user-facing or semantic string",
+        "offset": 4,
+        "src": "result += f\".{attr}\"",
+        "target": "mypy.server.mergecheck.path_to_str"
+      },
+      {
+        "code": "helpful-string",
+        "column": 26,
+        "message": "The string for \"object\" isn't helpful in a user-facing or semantic string",
+        "offset": 2,
+        "src": "result += f\".{attr}({t})\"",
+        "target": "mypy.server.mergecheck.path_to_str"
       }
     ],
     "mypy/server/objgraph.py": [
@@ -20270,10 +20536,26 @@
     ],
     "mypy/strconv.py": [
       {
+        "code": "helpful-string",
+        "column": 19,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 52,
+        "src": "return f\"<{self.get_id(o)}>\"",
+        "target": "mypy.strconv.StrConv.format_id"
+      },
+      {
+        "code": "helpful-string",
+        "column": 19,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 14,
+        "src": "tag += f\"<{self.get_id(obj)}>\"",
+        "target": "mypy.strconv.StrConv.dump"
+      },
+      {
         "code": "no-any-explicit",
         "column": 8,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 88,
+        "offset": 22,
         "src": "a: list[Any] = []",
         "target": "mypy.strconv.StrConv.func_helper"
       },
@@ -21030,10 +21312,26 @@
         "target": "mypy.strconv.StrConv.visit_name_expr"
       },
       {
+        "code": "helpful-string",
+        "column": 22,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 5,
+        "src": "pretty += f\" = {o.node.final_value}\"",
+        "target": "mypy.strconv.StrConv.visit_name_expr"
+      },
+      {
+        "code": "helpful-string",
+        "column": 17,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 22,
+        "src": "n += f\" [{fullname}{id}]\"",
+        "target": "mypy.strconv.StrConv.pretty_name"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_member_expr\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 38,
+        "offset": 11,
         "src": "def visit_member_expr(self, o: mypy.nodes.MemberExpr) -> str:",
         "target": "mypy.strconv.StrConv.visit_member_expr"
       },
@@ -21518,10 +21816,18 @@
         "target": "mypy.strconv.StrConv.visit_namedtuple_expr"
       },
       {
+        "code": "helpful-string",
+        "column": 15,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 1,
+        "src": "return f\"NamedTupleExpr:{o.line}({o.info.name}, {self.stringify_type(o.info.tuple_type) if o.info.tuple_type is not None else None})\"",
+        "target": "mypy.strconv.StrConv.visit_namedtuple_expr"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_enum_call_expr\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 3,
+        "offset": 2,
         "src": "def visit_enum_call_expr(self, o: mypy.nodes.EnumCallExpr) -> str:",
         "target": "mypy.strconv.StrConv.visit_enum_call_expr"
       },
@@ -21898,10 +22204,18 @@
         "target": "mypy.stubgen.AliasPrinter.visit_call_expr"
       },
       {
+        "code": "helpful-string",
+        "column": 28,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 13,
+        "src": "args.append(f\"{name}={arg.accept(self)}\")",
+        "target": "mypy.stubgen.AliasPrinter.visit_call_expr"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_name_expr\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 18,
+        "offset": 5,
         "src": "def visit_name_expr(self, node: NameExpr) -> str:",
         "target": "mypy.stubgen.AliasPrinter.visit_name_expr"
       },
@@ -22986,6 +23300,14 @@
         "offset": 0,
         "src": "strip_or_import(get_type_fullname(type(value)), module, known_modules, imports),",
         "target": "mypy.stubgenc.generate_c_type_stub"
+      },
+      {
+        "code": "helpful-string",
+        "column": 11,
+        "message": "The string for \"object\" isn't helpful in a user-facing or semantic string",
+        "offset": 49,
+        "src": "return f\"{typ.__module__}.{getattr(typ, '__qualname__', typ.__name__)}\"",
+        "target": "mypy.stubgenc.get_type_fullname"
       }
     ],
     "mypy/stubtest.py": [
@@ -23102,10 +23424,18 @@
         "target": "mypy.stubtest.test_module"
       },
       {
+        "code": "helpful-string",
+        "column": 16,
+        "message": "The type \"<Deleted 'e'>\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 4,
+        "src": "f\"encountered unexpected error, {type(e).__name__}: {e}\",",
+        "target": "mypy.stubtest.test_module"
+      },
+      {
         "code": "no-any-expr",
         "column": 1,
         "message": "Expression type contains \"Any\" (has type \"[_T] (func: (...) -> _T) -> _SingleDispatchCallable[_T]\")",
-        "offset": 17,
+        "offset": 13,
         "src": "@singledispatch",
         "target": "mypy.stubtest"
       },
@@ -23338,6 +23668,14 @@
         "column": 29,
         "message": "Expression type contains \"Any\" (has type \"type[type[Any]]\")",
         "offset": 2,
+        "src": "runtime_desc=f\"{runtime_metaclass}\",",
+        "target": "mypy.stubtest._verify_metaclass"
+      },
+      {
+        "code": "helpful-string",
+        "column": 29,
+        "message": "The type \"type[type[Any]]\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 0,
         "src": "runtime_desc=f\"{runtime_metaclass}\",",
         "target": "mypy.stubtest._verify_metaclass"
       },
@@ -24182,10 +24520,18 @@
         "target": "mypy.stubtest.verify_var"
       },
       {
+        "code": "helpful-string",
+        "column": 29,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 6,
+        "src": "object_path, f\"variable differs from runtime type {runtime_type}\", stub, runtime",
+        "target": "mypy.stubtest.verify_var"
+      },
+      {
         "code": "no-any-expr",
         "column": 89,
         "message": "Expression type contains \"Any\" (has type \"Enum | Any\")",
-        "offset": 6,
+        "offset": 0,
         "src": "object_path, f\"variable differs from runtime type {runtime_type}\", stub, runtime",
         "target": "mypy.stubtest.verify_var"
       },
@@ -25126,6 +25472,16 @@
         "target": "mypy.stubtest.parse_options"
       }
     ],
+    "mypy/stubutil.py": [
+      {
+        "code": "helpful-string",
+        "column": 10,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 121,
+        "src": "print(f\"{mod}: Failed to import, skipping{message}\")",
+        "target": "mypy.stubutil.report_missing"
+      }
+    ],
     "mypy/subtypes.py": [
       {
         "code": "explicit-override",
@@ -25881,7 +26237,7 @@
         "code": "no-any-expr",
         "column": 7,
         "message": "Expression has type \"Untyped\"",
-        "offset": 116,
+        "offset": 121,
         "src": "if testcase.config.getoption(\"--mypy-verbose\"):",
         "target": "mypy.test.helpers.parse_options"
       },
@@ -27780,6 +28136,14 @@
         "offset": 1,
         "src": "for fix in _iter_fixes(testcase, actual, incremental_step=incremental_step):",
         "target": "mypy.test.update_data.update_testcase_output"
+      },
+      {
+        "code": "helpful-string",
+        "column": 24,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 43,
+        "src": "file_path = f\"tmp/{test_item.arg}\"",
+        "target": "mypy.test.update_data._iter_fixes"
       }
     ],
     "mypy/test/visitors.py": [
@@ -30522,10 +30886,18 @@
         "target": "mypy.typeanal.TypeAnalyser.analyze_callable_args"
       },
       {
+        "code": "helpful-string",
+        "column": 30,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 20,
+        "src": "self.fail(f'Invalid argument constructor \"{found.fullname}\"', arg)",
+        "target": "mypy.typeanal.TypeAnalyser.analyze_callable_args"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"analyze_type\" is not using @override but is overriding a method in class \"mypy.plugin.TypeAnalyzerPluginInterface\"",
-        "offset": 164,
+        "offset": 144,
         "src": "def analyze_type(self, t: Type) -> Type:",
         "target": "mypy.typeanal.TypeAnalyser.analyze_type"
       },
@@ -30570,10 +30942,18 @@
         "target": "mypy.typeanal.DivergingAliasDetector.visit_type_alias_type"
       },
       {
+        "code": "helpful-string",
+        "column": 36,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 1,
+        "src": "assert t.alias is not None, f\"Unfixed type alias {t.type_ref}\"",
+        "target": "mypy.typeanal.DivergingAliasDetector.visit_type_alias_type"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_any\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeQuery\"",
-        "offset": 65,
+        "offset": 64,
         "src": "def visit_any(self, t: AnyType) -> bool:",
         "target": "mypy.typeanal.HasExplicitAny.visit_any"
       },
@@ -33774,10 +34154,18 @@
         "target": "mypy.types.PlaceholderType.serialize"
       },
       {
+        "code": "helpful-string",
+        "column": 22,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 3,
+        "src": "assert False, f\"Internal error: unresolved placeholder type {self.fullname}\"",
+        "target": "mypy.types.PlaceholderType.serialize"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_unbound_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 96,
+        "offset": 93,
         "src": "def visit_unbound_type(self, t: UnboundType) -> str:",
         "target": "mypy.types.TypeStrVisitor.visit_unbound_type"
       },
@@ -33798,10 +34186,26 @@
         "target": "mypy.types.TypeStrVisitor.visit_callable_argument"
       },
       {
+        "code": "helpful-string",
+        "column": 19,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 3,
+        "src": "return f\"{t.constructor}({typ})\"",
+        "target": "mypy.types.TypeStrVisitor.visit_callable_argument"
+      },
+      {
+        "code": "helpful-string",
+        "column": 19,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 2,
+        "src": "return f\"{t.constructor}({typ}, {t.name})\"",
+        "target": "mypy.types.TypeStrVisitor.visit_callable_argument"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_any\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 7,
+        "offset": 2,
         "src": "def visit_any(self, t: AnyType) -> str:",
         "target": "mypy.types.TypeStrVisitor.visit_any"
       },
@@ -34046,10 +34450,18 @@
         "target": "mypy.types.TypeStrVisitor.visit_placeholder_type"
       },
       {
+        "code": "helpful-string",
+        "column": 15,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 1,
+        "src": "return f\"<placeholder {t.fullname}>\"",
+        "target": "mypy.types.TypeStrVisitor.visit_placeholder_type"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_type_alias_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 3,
+        "offset": 2,
         "src": "def visit_type_alias_type(self, t: TypeAliasType) -> str:",
         "target": "mypy.types.TypeStrVisitor.visit_type_alias_type"
       },
@@ -34212,6 +34624,16 @@
         "offset": 53,
         "src": "def visit_union_type(self, t: UnionType) -> Type:",
         "target": "mypy.types.InstantiateAliasVisitor.visit_union_type"
+      }
+    ],
+    "mypy/types_utils.py": [
+      {
+        "code": "helpful-string",
+        "column": 29,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 64,
+        "src": "assert target.alias, f\"Unfixed type alias {target.type_ref}\"",
+        "target": "mypy.types_utils.is_invalid_recursive_alias"
       }
     ],
     "mypy/typetraverser.py": [
@@ -36402,10 +36824,26 @@
         "target": "mypyc.analysis.ircheck.FnError.__repr__"
       },
       {
+        "code": "helpful-string",
+        "column": 15,
+        "message": "The type \"mypyc.ir.ops.Op\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 1,
+        "src": "return f\"FnError(source={self.source}, desc={self.desc})\"",
+        "target": "mypyc.analysis.ircheck.FnError.__repr__"
+      },
+      {
+        "code": "helpful-string",
+        "column": 15,
+        "message": "The type \"mypyc.ir.ops.BasicBlock\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 0,
+        "src": "return f\"FnError(source={self.source}, desc={self.desc})\"",
+        "target": "mypyc.analysis.ircheck.FnError.__repr__"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_goto\" is not using @override but is overriding a method in class \"mypyc.ir.ops.OpVisitor\"",
-        "offset": 156,
+        "offset": 155,
         "src": "def visit_goto(self, op: Goto) -> None:",
         "target": "mypyc.analysis.ircheck.OpChecker.visit_goto"
       },
@@ -36458,10 +36896,26 @@
         "target": "mypyc.analysis.ircheck.OpChecker.visit_load_error_value"
       },
       {
+        "code": "helpful-string",
+        "column": 30,
+        "message": "The type \"type[object]\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 9,
+        "src": "self.fail(op, f\"Invalid type for item of tuple literal: {type(x)})\")",
+        "target": "mypyc.analysis.ircheck.OpChecker.check_tuple_items_valid_literals"
+      },
+      {
+        "code": "helpful-string",
+        "column": 30,
+        "message": "The type \"type[object]\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 11,
+        "src": "self.fail(op, f\"Invalid type for item of frozenset literal: {type(x)})\")",
+        "target": "mypyc.analysis.ircheck.OpChecker.check_frozenset_items_valid_literals"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_load_literal\" is not using @override but is overriding a method in class \"mypyc.ir.ops.OpVisitor\"",
-        "offset": 22,
+        "offset": 2,
         "src": "def visit_load_literal(self, op: LoadLiteral) -> None:",
         "target": "mypyc.analysis.ircheck.OpChecker.visit_load_literal"
       },
@@ -37066,10 +37520,18 @@
     ],
     "mypyc/codegen/emitclass.py": [
       {
+        "code": "helpful-string",
+        "column": 41,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 253,
+        "src": "fields[f\"tp_{table_name}\"] = f\"&{table_struct_name}\"",
+        "target": "mypyc.codegen.emitclass.generate_class"
+      },
+      {
         "code": "possibly-undefined",
         "column": 54,
         "message": "Name \"shadow_vtable_name\" may be undefined",
-        "offset": 363,
+        "offset": 110,
         "src": "cl, setup_name, defaults_fn, vtable_name, shadow_vtable_name, emitter",
         "target": "mypyc.codegen.emitclass"
       }
@@ -37584,6 +38046,16 @@
         "offset": 28,
         "src": "JsonDict = Dict[str, Any]",
         "target": "mypyc.common"
+      }
+    ],
+    "mypyc/crash.py": [
+      {
+        "code": "helpful-string",
+        "column": 10,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 30,
+        "src": "print(f\"{module_path}:{line}: {type(err).__name__}: {err}\")",
+        "target": "mypyc.crash.crash_report"
       }
     ],
     "mypyc/ir/class_ir.py": [
@@ -38522,10 +38994,18 @@
         "target": "mypyc.ir.ops.AssignMulti.accept"
       },
       {
+        "code": "helpful-string",
+        "column": 29,
+        "message": "The type \"mypyc.ir.ops.ControlOp\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 13,
+        "src": "raise AssertionError(f\"Invalid set_target({self}, {i})\")",
+        "target": "mypyc.ir.ops.ControlOp.set_target"
+      },
+      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"targets\" is not using @override but is overriding a method in class \"mypyc.ir.ops.ControlOp\"",
-        "offset": 25,
+        "offset": 12,
         "src": "def targets(self) -> Sequence[BasicBlock]:",
         "target": "mypyc.ir.ops.Goto.targets"
       },
@@ -40056,10 +40536,18 @@
         "target": "mypyc.irbuild.builder.IRBuilder.accept"
       },
       {
+        "code": "helpful-string",
+        "column": 22,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 292,
+        "src": "error_msg=f'value for final name \"{error_name}\" was not set',",
+        "target": "mypyc.irbuild.builder.IRBuilder.load_final_static"
+      },
+      {
         "code": "redundant-expr",
         "column": 13,
         "message": "Condition is always true",
-        "offset": 310,
+        "offset": 18,
         "src": "elif isinstance(val, complex):",
         "target": "mypyc.irbuild.builder.IRBuilder.load_literal_value"
       },
@@ -40216,6 +40704,16 @@
         "offset": 3,
         "src": "def get_type_annotation(self, stmt: AssignmentStmt) -> TypeInfo | None:",
         "target": "mypyc.irbuild.classdef.AttrsClassBuilder.get_type_annotation"
+      }
+    ],
+    "mypyc/irbuild/env_class.py": [
+      {
+        "code": "helpful-string",
+        "column": 44,
+        "message": "The type \"mypyc.ir.ops.Value\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 129,
+        "src": "assert isinstance(env.type, RInstance), f\"{env} must be of type RInstance\"",
+        "target": "mypyc.irbuild.env_class.load_outer_env"
       }
     ],
     "mypyc/irbuild/expression.py": [

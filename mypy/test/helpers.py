@@ -362,7 +362,12 @@ def parse_options(
         if based:
             options.show_column_numbers = False
             options.enabled_error_codes.update(
-                {errorcodes.NO_UNTYPED_USAGE, errorcodes.BAD_CAST, errorcodes.REDUNDANT_EXPR}
+                {
+                    errorcodes.NO_UNTYPED_USAGE,
+                    errorcodes.BAD_CAST,
+                    errorcodes.REDUNDANT_EXPR,
+                    errorcodes.HELPFUL_STRING,
+                }
             )
         else:
             options.default_return = False

@@ -346,3 +346,12 @@ Regex Checks
     if m := re.search("(?P<foo>a)", s):
         reveal_type(m.group("foo")
         reveal_type(m.group("bar")  # error: no such group: 'bar'  [regex]
+
+Helpful String Check
+--------------------
+
+.. code-block:: python
+
+    class A: ...
+    f"{A()}"  # error: The type "A" doesn't define a __str__ or __format__ method  [unhelpful-string]
+    f"{print("hi")}"  # error: The string for "None" isn't helpful for a user-facing message  [unhelpful-string]

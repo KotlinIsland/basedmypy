@@ -387,7 +387,7 @@ class Good:
 '{:OMG}'.format(Bad())  # E: Unrecognized format specification "OMG"
 '{!s:OMG}'.format(Good())  # E: Unrecognized format specification "OMG"
 '{:{}OMG{}}'.format(Bad(), 'too', 'dynamic')  # E: The type "__main__.Bad" doesn't support format-specifiers \
-                                                    # N: Maybe you want to add '!s' to the conversion
+                                              # N: Maybe you want to add '!s' to the conversion
 
 x: Union[Good, Bad]
 '{:OMG}'.format(x)  # E: Unrecognized format specification "OMG"
@@ -417,7 +417,7 @@ x: Union[Good, Bad]
 
 class C:
     ...
-'{:c}'.format(C())  # )  # E: The type "__main__.C" doesn't support format-specifiers \
+'{:c}'.format(C())  # E: The type "__main__.C" doesn't support format-specifiers \
                     # N: Maybe you want to add '!s' to the conversion
 x: str
 '{:c}'.format(x)

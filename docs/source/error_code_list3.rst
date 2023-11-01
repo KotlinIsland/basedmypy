@@ -92,6 +92,18 @@ Check for regex issues [regex]
     assert m
     m.group("nane")  # error: no such group: 'nane'  [regex]
 
+.. _code-helpful-string:
+
+Check that strings are useful [helpful-string]
+----------------------------------------------
+
+Catching unintentional values in f-strings:
+
+.. code-block:: python
+
+    def make_id(i: int | None) -> str:
+        return f"id-{i}"  # The string for "None" isn't helpful for a user-facing message  [helpful-string]
+
 .. _code-bad-cast:
 
 Check that casts are valid [bad-cast]

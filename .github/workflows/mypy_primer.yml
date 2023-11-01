@@ -62,7 +62,7 @@ jobs:
             --new $GITHUB_SHA --old base_commit \
             --num-shards 5 --shard-index ${{ matrix.shard-index }} \
             --debug \
-            --additional-flags="--debug-serialize --no-color-output" \
+            --additional-flags="--debug-serialize --no-color-output --enable-error-code=helpful-string" \
             --output concise \
             `# We don't want to run on spack because it has massive inferred types` \
             `#  https://github.com/KotlinIsland/basedmypy/issues/399` \

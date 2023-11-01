@@ -9,7 +9,7 @@ class object:
     def __init__(self): pass
 
 class type:
-    def __init__(self, x) -> None: pass
+    def __init__(self, x: object) -> None: pass
 
 class ellipsis: pass
 

@@ -11,6 +11,7 @@
 - Conditional types for asymmetric type-guards (#553)
 - Static conditions report an error (#553)
 - Regex groups are special-cased (#531)
+- f-strings will show an error if the value doesn't define a stringification (#565)
 ### Enhancements
 - Show 'narrowed from' in `reveal_type` (#550)
 - `--color-output` is enabled by default (#531)

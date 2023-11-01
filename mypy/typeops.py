@@ -1069,6 +1069,8 @@ def custom_special_method(typ: Type, name: str, check_all: bool = False) -> bool
         if check_all:
             return all(custom_special_method(t, name, check_all) for t in typ.items)
         return any(custom_special_method(t, name) for t in typ.items)
+    if isinstance(typ, IntersectionType):
+        return any(custom_special_method(t, name, check_all) for t in typ.items)
     if isinstance(typ, TupleType):
         return custom_special_method(tuple_fallback(typ), name, check_all)
     if isinstance(typ, CallableType) and typ.is_type_obj():

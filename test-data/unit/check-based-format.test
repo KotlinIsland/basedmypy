@@ -1,13 +1,15 @@
 [case testFormatObject]
 x: object
-f"{x:1}"  # E: The type "object" doesn't support format-specifiers  [str-format] \
+f"{x:1}"  # E: The string for "object" isn't helpful in a user-facing or semantic string  [helpful-string] \
+          # E: The type "object" doesn't support format-specifiers  [str-format] \
           # N: Maybe you want to add '!s' to the conversion
 [builtins fixtures/f_string.pyi]
 
 
 [case testFormatNone]
 x: None
-f"{x:1}"  # E: The type "None" doesn't support format-specifiers  [str-format] \
+f"{x:1}"  # E: The string for "None" isn't helpful in a user-facing or semantic string  [helpful-string] \
+          # E: The type "None" doesn't support format-specifiers  [str-format] \
           # N: Maybe you want to add '!s' to the conversion
 [builtins fixtures/f_string.pyi]
 
@@ -86,3 +88,44 @@ class A: ...
 a: A
 f"{s(a)}"
 [builtins fixtures/f_string.pyi]
+
+
+[case testFormatHelpful]
+from typing_extensions import override
+from datetime import datetime
+from dataclasses import dataclass
+
+o: object
+f"{o}"  # E: The string for "object" isn't helpful in a user-facing or semantic string  [helpful-string]
+n: None
+f"{n}"  # E: The string for "None" isn't helpful in a user-facing or semantic string  [helpful-string]
+
+def f(o: object): ...
+f"{f}"  # E: The type "def (o: object) -> None" doesn't define a __format__, __str__ or __repr__ method  [helpful-string]
+class A: ...
+f"{A}"  # E: The type "def () -> __main__.A" doesn't define a __format__, __str__ or __repr__ method  [helpful-string]
+f"{A()}"  # E: The type "__main__.A" doesn't define a __format__, __str__ or __repr__ method  [helpful-string]
+class F:
+    def __format__(self, format_spec: str) -> str: ...
+f"{F}"  # E: The type "def () -> __main__.F" doesn't define a __format__, __str__ or __repr__ method  [helpful-string]
+f"{F()}"
+class S:
+    @override
+    def __str__(self) -> str: ...
+
+class R:
+    def __repr__(self) -> str: ...
+f"{R}"  # E: The type "def () -> __main__.R" doesn't define a __format__, __str__ or __repr__ method  [helpful-string]
+f"{R()}"
+f"{1}"
+i: int
+f"{i}"
+d: datetime
+f"{d}"
+
+@dataclass
+class D:
+    a: int
+data: D
+f"{data}"
+[builtins fixtures/primitives.pyi]

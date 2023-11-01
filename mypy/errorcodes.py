@@ -129,6 +129,9 @@ VALID_NEWTYPE: Final = ErrorCode(
 STRING_FORMATTING: Final = ErrorCode(
     "str-format", "Check that string formatting/interpolation is type-safe", "General"
 )
+HELPFUL_STRING: Final = ErrorCode(
+    "helpful-string", "Check that string conversions are useful", "General", default_enabled=False
+)
 STR_BYTES_PY3: Final = ErrorCode(
     "str-bytes-safe", "Warn about implicit coercions related to bytes and string types", "General"
 )

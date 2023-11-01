@@ -44,8 +44,11 @@ from mypy.types import (
     AnyType,
     Instance,
     LiteralType,
+    NoneType,
+    ProperType,
     TupleType,
     Type,
+    TypedDictType,
     TypeOfAny,
     TypeStrVisitor,
     TypeVarType,
@@ -422,6 +425,7 @@ class StringFormatterChecker:
                 get_proper_types(a_type.items) if isinstance(a_type, UnionType) else [a_type]
             )
             for a_type in actual_items:
+                self.helpful_check(a_type, call)
                 if custom_special_method(a_type, "__format__"):
                     if spec.format_spec:
                         self.check_datetime(a_type, spec.format_spec, call)
@@ -431,6 +435,51 @@ class StringFormatterChecker:
                         continue
                 self.check_placeholder_type(a_type, expected_type, call)
                 self.perform_special_format_checks(spec, call, repl, a_type, expected_type)
+
+    def helpful_check(self, actual_type: ProperType, context: Context) -> bool:
+        if isinstance(actual_type, (TupleType, TypedDictType, LiteralType)):
+            return True
+        bad_builtin = False
+        if isinstance(actual_type, Instance):
+            if "dataclass" in actual_type.type.metadata:
+                return True
+            # TODO: improve this or add a configuration option or something
+            if actual_type.type.fullname == "builtins.object":
+                bad_builtin = True
+            else:
+                for base in actual_type.type.mro[:-1]:
+                    if base.fullname in {
+                        "builtins.map",
+                        "builtins.filter",
+                        "builtins.super",
+                        "builtins.enumerate",
+                        "builtins.reversed",
+                        "builtins.zip",
+                    }:
+                        bad_builtin = True
+                        break
+                    if base.module_name == "builtins":
+                        return True
+        type_string = actual_type.accept(TypeStrVisitor(options=self.chk.options))
+        if (
+            custom_special_method(actual_type, "__format__")
+            or custom_special_method(actual_type, "__str__")
+            or custom_special_method(actual_type, "__repr__")
+        ):
+            return True
+        if bad_builtin or isinstance(actual_type, NoneType):
+            self.msg.fail(
+                f'The string for "{type_string}" isn\'t helpful in a user-facing or semantic string',
+                context,
+                code=codes.HELPFUL_STRING,
+            )
+        else:
+            self.msg.fail(
+                f'The type "{type_string}" doesn\'t define a __format__, __str__ or __repr__ method',
+                context,
+                code=codes.HELPFUL_STRING,
+            )
+        return False
 
     def perform_special_format_checks(
         self,
