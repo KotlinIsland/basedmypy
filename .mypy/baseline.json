@@ -16437,7 +16437,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"analyze_simple_literal_type\" is not using @override but is overriding a method in class \"mypy.plugin.SemanticAnalyzerPluginInterface\"",
-        "offset": 241,
+        "offset": 245,
         "src": "def analyze_simple_literal_type(",
         "target": "mypy.semanal.SemanticAnalyzer.analyze_simple_literal_type"
       },
@@ -16821,7 +16821,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_assert_type_expr\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 6,
+        "offset": 9,
         "src": "def visit_assert_type_expr(self, expr: AssertTypeExpr) -> None:",
         "target": "mypy.semanal.SemanticAnalyzer.visit_assert_type_expr"
       },
@@ -17269,7 +17269,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"class_type\" is not using @override but is overriding a method in class \"mypy.plugin.SemanticAnalyzerPluginInterface\"",
-        "offset": 61,
+        "offset": 66,
         "src": "def class_type(self, self_type: Type) -> Type:",
         "target": "mypy.semanal.SemanticAnalyzer.class_type"
       },
@@ -30027,7 +30027,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_typeddict_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 31,
+        "offset": 44,
         "src": "def visit_typeddict_type(self, t: TypedDictType) -> Type:",
         "target": "mypy.typeanal.TypeAnalyser.visit_typeddict_type"
       },

@@ -4,6 +4,7 @@
 ### Added
 - f-string format specs are checked (#543)
 - Narrow type on initial assignment (#547)
+- Annotations in function bodies are not analyzed as evaluated (#564)
 ### Enhancements
 - Show 'narrowed from' in `reveal_type` (#550)
 - `--color-output` is enabled by default (#531)
@@ -11,6 +12,7 @@
 - Output lines won't wrap if not connected to a terminal (#531)
 ### Fixes
 - Render star args in error messages properly (#551)
+- The first argument to `cast` is analyzed as evaluated (#564)
 
 ## [2.2.1]
 ### Fixes

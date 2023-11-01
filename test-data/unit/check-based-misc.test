@@ -100,3 +100,57 @@ reveal_type(a.b2)  # N: Revealed type is "1"
 reveal_type(a.c1)  # N: Revealed type is "list[object]"
 reveal_type(a.c2)  # N: Revealed type is "list[object]"
 [builtins fixtures/tuple.pyi]
+
+
+[case testFunctionAnnotations]
+# flags: --python-version=3.8
+from typing import List
+def f():
+    a: list[int]
+    class A:
+        a: list[int]  # E: "list" is not subscriptable, use "typing.List" instead  [misc]
+        b: List[int]
+        def f(self):
+            a: list[int]
+            b: List[int]
+    def f(a: list[int], b: List[int]):  # E: "list" is not subscriptable, use "typing.List" instead  [misc]
+        ...
+[file main.pyi]
+from typing import List
+def f():
+    a: list[int]
+    class A:
+        a: list[int]
+        b: List[int]
+        def f(self):
+            a: list[int]
+            b: List[int]
+    def f(a: list[int], b: List[int]): ...
+
+[case testCastAtRuntime]
+# flags: --python-version=3.8
+from typing import cast, List
+cast(list[int], [])  # E: "list" is not subscriptable, use "typing.List" instead  [misc]
+cast("list[int]", [])
+cast(List[int], [])
+
+
+[case testCastAtRuntimeFuture]
+# flags: --python-version=3.8
+from __future__ import annotations
+from typing import cast, List
+cast(list[int], [])  # E: "list" is not subscriptable, use "typing.List" instead  [misc]
+cast("list[int]", [])
+cast(List[int], [])
+[builtins fixtures/tuple.pyi]
+
+
+[case testBasedTypesInFunction]
+def f():
+    a: 1 | 2
+    b: int & str
+    c: (int, str)
+    d: True | False
+    def guard(x: object) -> x is int:  # E: You need to put quotes around the entire type-guard, or enable `__future__.annotations`  [misc]
+        ...
+[builtins fixtures/tuple.pyi]

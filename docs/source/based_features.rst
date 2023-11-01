@@ -284,3 +284,15 @@ When a variable definition has an explicit annotation, the initialization value 
 
     a: object = 1
     reveal_type(a)  # Revealed type is "int"
+
+Annotations in Functions
+------------------------
+
+Basedmypy handles type annotations in function bodies as unevaluated:
+
+`PEP 526 <https://peps.python.org/pep-0526/#runtime-effects-of-type-annotations>`_
+
+.. code-block:: python
+
+    def f():
+        a: list[int]  # no error, this annotation isn't evaluated

@@ -1161,7 +1161,20 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             if t.partial_fallback.type
             else self.named_type("builtins.tuple", [any_type])
         )
-        return TupleType(self.anal_array(t.items, allow_unpack=True), fallback, t.line)
+        result = TupleType(self.anal_array(t.items, allow_unpack=True), fallback, t.line)
+        if (
+            self.nesting_level
+            and t.implicit
+            and not self.always_allow_new_syntax
+            and self.options.bare_literals
+        ):
+            self.fail(
+                f'"{result}" is a bare literal and shouldn\'t be used in a type operation without'
+                ' "__future__.annotations"',
+                t,
+                code=codes.VALID_TYPE,
+            )
+        return result
 
     def visit_typeddict_type(self, t: TypedDictType) -> Type:
         items = {
@@ -1220,7 +1233,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         if (
             self.nesting_level
             and t.bare_literal
-            and not (self.api.is_future_flag_set("annotations") or self.api.is_stub_file)
+            and not self.always_allow_new_syntax
             and self.options.bare_literals
         ):
             self.fail(

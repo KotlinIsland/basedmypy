@@ -3489,7 +3489,11 @@ class SemanticAnalyzer(
         if s.type:
             lvalue = s.lvalues[-1]
             allow_tuple_literal = isinstance(lvalue, TupleExpr)
-            analyzed = self.anal_type(s.type, allow_tuple_literal=allow_tuple_literal)
+            analyzed = self.anal_type(
+                s.type,
+                allow_tuple_literal=allow_tuple_literal,
+                runtime=False if self.is_func_scope() else None,
+            )
             # Don't store not ready types (including placeholders).
             if analyzed is None or has_placeholder(analyzed):
                 self.defer(s)
@@ -5495,7 +5499,10 @@ class SemanticAnalyzer(
 
     def visit_cast_expr(self, expr: CastExpr) -> None:
         expr.expr.accept(self)
-        analyzed = self.anal_type(expr.type)
+        analyzed = self.anal_type(
+            expr.type,
+            runtime=isinstance(expr.type, UnboundType) and expr.type.original_str_expr is None,
+        )
         if analyzed is not None:
             expr.type = analyzed
 
@@ -6738,6 +6745,7 @@ class SemanticAnalyzer(
         prohibit_self_type: str | None = None,
         allow_type_any: bool = False,
         third_pass: bool = False,
+        runtime: bool | None = None,
     ) -> Type | None:
         """Semantically analyze a type.
 
@@ -6776,6 +6784,10 @@ class SemanticAnalyzer(
             prohibit_self_type=prohibit_self_type,
             allow_type_any=allow_type_any,
         )
+        if not a.api.is_stub_file and runtime:
+            a.always_allow_new_syntax = False
+        if runtime is False:
+            a.always_allow_new_syntax = True
         tag = self.track_incomplete_refs()
         typ = typ.accept(a)
         if self.found_incomplete_ref(tag):

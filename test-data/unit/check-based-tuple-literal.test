@@ -44,3 +44,15 @@ B: TypeAlias = (int, str)  # E: Invalid type alias: expression is not a valid ty
 [case testInvalidSyntax]
 a: int, str = 1, ""  # E: invalid syntax  [syntax]
 [builtins fixtures/tuple.pyi]
+
+
+[case testTupleLiteralInOperation]
+# flags: --python-version 3.12
+a: (int, str) | int  # E: "(int, str)" is a bare literal and shouldn't be used in a type operation without "__future__.annotations"  [valid-type]
+[builtins fixtures/tuple.pyi]
+
+
+[case testTupleLiteralInOperationFuture]
+from __future__ import annotations
+a: (int, str) | int
+[builtins fixtures/tuple.pyi]
