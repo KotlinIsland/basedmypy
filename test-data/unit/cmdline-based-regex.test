@@ -256,7 +256,36 @@ reveal_type(r)   # N: Revealed type is "(str, int)"
 # cmd: mypy main.py --hide-column-numbers
 [file main.py]
 import re
-if m := re.match("(?P<a>)", ""):
-    reveal_type(m.groupdict())  # N: Revealed type is "TypedDict('builtins.dict', {'a': str})"
+if m := re.match("(?P<a>a)(?P<b>b)?", "a"):
+    d = reveal_type(m.groupdict())  # N: Revealed type is "TypedDict({'a': str, 'b': str | None})"
+    d['a'] = ""
+    reveal_type(m.groupdict(1))  # N: Revealed type is "TypedDict({'a': str, 'b': str | int})"
+[out]
+== Return code: 0
+
+
+[case testRegexVerbose]
+# cmd: mypy main.py --hide-column-numbers
+[file main.py]
+import re
+from re import X
+if m := re.match("()#()", "", X):
+    reveal_type(m.groups())   # N: Revealed type is "(str,)"
+if m := re.match("()#()", "", re.X):
+    reveal_type(m.groups())   # N: Revealed type is "(str,)"
+if m := re.match("()#()", "", re.VERBOSE):
+    reveal_type(m.groups())   # N: Revealed type is "(str,)"
+if m := re.match("()#()", "", flags=re.X):
+    reveal_type(m.groups())   # N: Revealed type is "(str,)"
+if m := re.match("()#()", "", flags=re.X | re.DOTALL):
+    reveal_type(m.groups())   # N: Revealed type is "(str,)"
+if m := re.match("()#()", "", flags=re.X | re.DOTALL | re.ASCII):
+    reveal_type(m.groups())   # N: Revealed type is "(str,)"
+if m := re.match("()#()", "", flags=re.VERBOSE & re.DOTALL):
+    reveal_type(m.groups())   # N: Revealed type is "tuple[str | None, ...]"
+if m := re.match("()#()", "", 1):
+    reveal_type(m.groups())   # N: Revealed type is "tuple[str | None, ...]"
+if m := re.match("()#()", "", flags=1):
+    reveal_type(m.groups())   # N: Revealed type is "tuple[str | None, ...]"
 [out]
 == Return code: 0

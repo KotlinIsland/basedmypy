@@ -8,7 +8,7 @@ from typing import Optional, Tuple, cast
 
 from mypy import errorcodes
 from mypy.messages import MessageBuilder
-from mypy.nodes import CallExpr, Context
+from mypy.nodes import CallExpr, Context, Expression, OpExpr, RefExpr
 from mypy.plugin import FunctionContext, FunctionSigContext, MethodContext, MethodSigContext
 from mypy.types import (
     AnyType,
@@ -35,7 +35,10 @@ def match(ctx: FunctionContext | MethodContext) -> Type:
         value = _get_first_str_arg(ctx.arg_types[0][0])
         if value is None:
             return default
-        groups = parse_groups(value, ctx.args[0][0], ctx.api.msg)
+        verbose = is_verbose(ctx)
+        if verbose is None:
+            return default
+        groups = parse_groups(value, ctx.args[0][0], ctx.api.msg, verbose=verbose)
         if groups is None:
             return AnyType(TypeOfAny.from_error)
     else:
@@ -46,6 +49,7 @@ def match(ctx: FunctionContext | MethodContext) -> Type:
     instance = default.items[0] if isinstance(default, UnionType) else default.args[0]
     # type ignore because this implementation is closely tied to the stubs and will never see a type alias
     assert isinstance(instance, Instance)  # type: ignore[misc]
+    instance = instance.copy_modified()
     instance.metadata["groups"] = groups
     return (
         UnionType([instance, NoneType()])
@@ -120,7 +124,10 @@ def compile(ctx: FunctionContext) -> Type:
     value = _get_first_str_arg(ctx.arg_types[0][0])
     if value is None:
         return default
-    groups = parse_groups(value, ctx.args[0][0], ctx.api.msg)
+    verbose = is_verbose(ctx)
+    if verbose is None:
+        return default
+    groups = parse_groups(value, ctx.args[0][0], ctx.api.msg, verbose=verbose)
     if groups is None:
         return AnyType(TypeOfAny.from_error)
     assert isinstance(default, Instance)  # type: ignore[misc]
@@ -134,7 +141,10 @@ def split(ctx: FunctionContext | MethodContext) -> Type:
         value = _get_first_str_arg(ctx.arg_types[0][0])
         if value is None:
             return default
-        groups = parse_groups(value, ctx.args[0][0], ctx.api.msg)
+        verbose = is_verbose(ctx)
+        if verbose is None:
+            return default
+        groups = parse_groups(value, ctx.args[0][0], ctx.api.msg, verbose=verbose)
         if groups is None:
             return AnyType(TypeOfAny.from_error)
     else:
@@ -157,7 +167,10 @@ def findall(ctx: FunctionContext | MethodContext) -> Type:
         value = _get_first_str_arg(ctx.arg_types[0][0])
         if value is None:
             return default
-        groups = parse_groups(value, ctx.args[0][0], ctx.api.msg)
+        verbose = is_verbose(ctx)
+        if verbose is None:
+            return default
+        groups = parse_groups(value, ctx.args[0][0], ctx.api.msg, verbose=verbose)
         if groups is None:
             return AnyType(TypeOfAny.from_error)
     else:
@@ -188,7 +201,10 @@ def sub(ctx: FunctionSigContext | MethodSigContext) -> CallableType:
         value = _get_first_str_arg(typ)
         if value is None:
             return default
-        groups = parse_groups(value, ctx.context, ctx.api.msg)
+        verbose = is_verbose(ctx)
+        if verbose is None:
+            return default
+        groups = parse_groups(value, ctx.context, ctx.api.msg, verbose=verbose)
         repl_index = 1
     else:
         groups = get_groups(cast(Instance, ctx.type))
@@ -240,19 +256,73 @@ def match_groupdict(ctx: MethodContext) -> Type:
     groups = get_groups(ctx.type)
     if groups is None:
         return default
-    str = ctx.type.args[0]
-    str_none = UnionType([str, NoneType()])
-    groups_keys = {key for key, _ in groups if key}
+
     assert isinstance(default, Instance)  # type: ignore[misc]
+    anystr_default = default.args[1]
+    anystr = ctx.type.args[0]
+    groups_keys = {key for key, _ in groups if key}
+
+    def t(name: str) -> Instance | None:
+        try:
+            return ctx.api.named_generic_type(name, [])
+        except KeyError:
+            return None
+
+    fallback = (
+        t("typing._TypedDict")
+        or t("typing_extensions._TypedDict")
+        or t("mypy_extensions._TypedDict")
+    )
+    assert fallback is not None
     return TypedDictType(
-        items={name: str if group else str_none for name, group in groups if name},
+        items={name: anystr if group else anystr_default for name, group in groups if name},
         required_keys=groups_keys,
-        fallback=default,
+        fallback=fallback,
     )
 
 
-def parse_groups(value: str, context: Context, msg: MessageBuilder) -> Groups | None:
-    groups = _parse_groups(value)
+def is_verbose(
+    ctx: FunctionContext | MethodContext | FunctionSigContext | MethodSigContext,
+) -> bool | None:
+    call = ctx.context
+    assert isinstance(call, CallExpr)
+    if isinstance(ctx, (FunctionContext, MethodContext)):
+        sig_names = ctx.callee_arg_names
+    else:
+        sig_names = ctx.default_signature.arg_names
+    if "flags" in call.arg_names:
+        supplied_flag = call.args[call.arg_names.index("flags")]
+    else:
+        flags_index = sig_names.index("flags")
+        if len(call.args) <= flags_index:
+            return False
+        supplied_flag = call.args[flags_index]
+
+    def inner_is_verbose(node: Expression) -> bool | None:
+        """None means unsure"""
+        if isinstance(node, OpExpr):
+            if node.op != "|":
+                return None
+            left = inner_is_verbose(node.left)
+            right = inner_is_verbose(node.right)
+            if left is None or right is None:
+                return None
+            return left or right
+        if not isinstance(node, RefExpr):
+            return None
+        if node.fullname in {"re.X", "re.VERBOSE"}:
+            return True
+        if node.fullname.startswith("re."):
+            return False
+        return None
+
+    return inner_is_verbose(supplied_flag)
+
+
+def parse_groups(
+    value: str, context: Context, msg: MessageBuilder, verbose=False
+) -> Groups | None:
+    groups = _parse_groups(value, verbose)
     if isinstance(groups, Exception):
         msg.fail(str(groups), context, code=errorcodes.REGEX)
         return None
@@ -260,10 +330,10 @@ def parse_groups(value: str, context: Context, msg: MessageBuilder) -> Groups | 
 
 
 @lru_cache(None)
-def _parse_groups(value: str) -> Groups | re.error:
+def _parse_groups(value: str, verbose=False) -> Groups | re.error:
     """The 'most important part' of this feature, we parse the regex pattern to discern which groups are optional."""
     try:
-        p = re.compile(value)
+        p = re.compile(value, flags=re.VERBOSE if verbose else 0)
     except re.error as e:
         return e
 
@@ -284,13 +354,23 @@ def _parse_groups(value: str) -> Groups | re.error:
     1 = `]` is literal in a character set
     2 = normal character set
     """
+    comment_group = False
     comment = False
+    backreference = False
     for i in range(len(value)):
         if escape:
             escape = False
             continue
         char = value[i]
-        if char == ")" and comment:
+        if backreference:
+            if char != ")":
+                continue
+            else:
+                backreference = False
+                continue
+        if comment_group and char == ")":
+            comment_group = False
+        if char == "\n" and comment:
             comment = False
             continue
         if char == "\\":
@@ -298,7 +378,7 @@ def _parse_groups(value: str) -> Groups | re.error:
                 character_set = 2
             escape = True
             continue
-        if comment:
+        if comment_group or comment:
             continue
         if char == "^" and character_set == 1:
             continue
@@ -314,6 +394,9 @@ def _parse_groups(value: str) -> Groups | re.error:
         if char == "|" and (union > depth or union == -1):
             union = depth
             continue
+        if verbose and char == "#":
+            comment = True
+            continue
         if char not in ("(", ")"):
             continue
         if char == "(":
@@ -321,10 +404,18 @@ def _parse_groups(value: str) -> Groups | re.error:
             if value[i + 1] == "?":
                 if value[i + 2 : i + 4] == "P<":
                     working.append(1)
+                elif value[i + 2] == "(":
+                    backreference = True
+                    working.append(-1)
                 elif value[i + 2] == "!":
                     working.append(-2)
-                elif value[i + 2] in "#":
-                    comment = True
+                elif value[i + 2] == ":":
+                    working.append(-1)
+                elif value[i + 2] == "#":
+                    comment_group = True
+                    continue
+                elif "x" in value[i + 2 : value.find(")", i)]:
+                    verbose = True
                     continue
                 else:
                     working.append(-1)

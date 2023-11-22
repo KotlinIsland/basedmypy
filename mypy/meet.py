@@ -131,7 +131,12 @@ def narrow_declared_type(declared: Type, narrowed: Type) -> Type:
     narrowed = get_proper_type(narrowed)
 
     if declared == narrowed:
+        # We do this logic to preserve the original order of things
+        #  but if the new ones metadata is different to the declared one we take it
         items = get_proper_types(narrowed.items if isinstance(narrowed, UnionType) else [narrowed])
+        if any(isinstance(item, Instance) and item.metadata for item in items):
+            return original_narrowed
+        items = get_proper_types(declared.items if isinstance(declared, UnionType) else [declared])
         if any(isinstance(item, Instance) and item.metadata for item in items):
             return original_narrowed
         return original_declared

@@ -11769,7 +11769,7 @@
         "code": "helpful-string",
         "column": 38,
         "message": "The type \"type[mypy.types.ProperType]\" doesn't define a __format__, __str__ or __repr__ method",
-        "offset": 565,
+        "offset": 569,
         "src": "assert type(left) != type(right), f\"{type(left)} vs {type(right)}\"",
         "target": "mypy.meet.is_overlapping_types"
       },
@@ -15647,7 +15647,7 @@
         "code": "no-any-expr",
         "column": 1,
         "message": "Expression type contains \"Any\" (has type \"[_T] ((...) -> _T) -> _lru_cache_wrapper[_T]\")",
-        "offset": 262,
+        "offset": 331,
         "src": "@lru_cache(None)",
         "target": "mypy.plugins.re"
       }
