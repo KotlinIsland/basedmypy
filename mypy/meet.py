@@ -41,7 +41,6 @@ from mypy.types import (
     Type,
     TypeAliasType,
     TypedDictType,
-    TypeGuardedType,
     TypeOfAny,
     TypeType,
     TypeVarLikeType,
@@ -121,9 +120,9 @@ def meet_types(s: Type, t: Type, intersect=False) -> ProperType:
 def narrow_declared_type(declared: Type, narrowed: Type) -> Type:
     """Return the declared type narrowed down to another type."""
     # TODO: check infinite recursion for aliases here.
-    if isinstance(narrowed, TypeGuardedType):  # type: ignore[misc]
-        # A type guard forces the new type even if it doesn't overlap the old.
-        return narrowed.type_guard
+    # if isinstance(narrowed, TypeGuardedType):  # type: ignore[misc]
+    # A type guard forces the new type even if it doesn't overlap the old.
+    # return narrowed.type_guard
 
     original_declared = declared
     original_narrowed = narrowed
