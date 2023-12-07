@@ -335,3 +335,28 @@ reveal_type(x)  # N: Revealed type is "__main__.A & __main__.B"
 assert isinstance(x, C)
 reveal_type(x)  # N: Revealed type is "__main__.A & __main__.B & __main__.C | __main__.A & __main__.C"
 [builtins fixtures/tuple.pyi]
+
+
+[case testIntersectionAlias]
+from basedtyping import Intersection
+class A: ...
+class B: ...
+C = Intersection[A, B]
+c: C
+
+
+[case testTypeVarIntersectionMessage]
+from typing import TypeVar
+
+class A: ...
+class B: ...
+
+T = TypeVar("T", bound=A & B)  # E: Use quoted types or "basedtyping.Intersection"
+
+
+[case testIncompatibleIntersectionBecomesNever]
+from __future__ import annotations
+a: int & str | None
+b: None = a
+def f(a: int & str | None):
+    return a

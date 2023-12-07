@@ -11,9 +11,11 @@ import itertools
 from collections import defaultdict
 from typing import Any, Callable, Iterable, List, Sequence, TypeVar, cast
 
+import mypy.checker
 from mypy.copytype import copy_type
 from mypy.expandtype import expand_type, expand_type_by_instance
 from mypy.maptype import map_instance_to_supertype
+from mypy.mro import MroError, calculate_mro
 from mypy.nodes import (
     ARG_POS,
     ARG_STAR,
@@ -571,7 +573,12 @@ def _remove_redundant_union_items(items: list[Type], keep_erased: bool) -> list[
 
 
 def make_simplified_intersection(
-    items: Sequence[Type], line: int = -1, column: int = -1, *, keep_erased: bool = False
+    items: Sequence[Type],
+    line: int = -1,
+    column: int = -1,
+    *,
+    keep_erased: bool = False,
+    check: mypy.checker.TypeChecker | None = None,
 ) -> ProperType:
     """Build intersection type with redundant intersection items removed.
 
@@ -585,6 +592,7 @@ def make_simplified_intersection(
     * [int, Any] -> Intersection[int, Any] (Any types are not simplified away!)
     * [Any, Any] -> Any
     * [int, Intersection[bytes, str]] -> Intersection[int, bytes, str]
+    * [int, str] -> Never (invalid types become Never!)
 
     Note: This must NOT be used during semantic analysis, since TypeInfos may not
           be fully initialized.
@@ -602,6 +610,24 @@ def make_simplified_intersection(
     # Step 3: remove redundant intersections
     simplified_set: Sequence[Type] = _remove_redundant_intersection_items(items, keep_erased)
 
+    if len(items) == 1:
+        return get_proper_type(items[0])
+
+    for item in items:
+        if isinstance(item, Instance):
+            if item.type.is_final:
+                return UninhabitedType()
+        if isinstance(item, LiteralType):
+            return UninhabitedType()
+
+    if check:
+        for i in range(len(simplified_set)):
+            for j in range(len(simplified_set))[i:]:
+                l = simplified_set[i]
+                r = simplified_set[j]
+                if isinstance(l, Instance) and isinstance(r, Instance):
+                    if _check_invalid_intersection((l, r), check):
+                        return UninhabitedType()
     result = get_proper_type(IntersectionType.make_intersection(simplified_set, line, column))
 
     # Step 5: At last, we erase any (inconsistent) extra attributes on instances.
@@ -646,6 +672,53 @@ def _remove_redundant_intersection_items(items: list[Type], keep_erased: bool) -
                 removed.add(outer_i)
 
     return [items[i] for i in range(len(items)) if i not in removed]
+
+
+def _check_invalid_intersection(
+    instances: (Instance, Instance), check: mypy.checker.TypeChecker
+) -> bool:
+    def _get_base_classes(instances_: (Instance, Instance)) -> list[Instance]:
+        base_classes_ = []
+        for inst in instances_:
+            if inst.type.is_intersection:
+                expanded = inst.type.bases
+            else:
+                expanded = [inst]
+
+            for expanded_inst in expanded:
+                base_classes_.append(expanded_inst)
+        return base_classes_
+
+    def make_fake_typeinfo(bases: list[Instance]) -> TypeInfo:
+        from mypy.nodes import Block, ClassDef, SymbolTable
+
+        cdef = ClassDef("sus", Block([]))
+        info = TypeInfo(SymbolTable(), cdef, "amongus")
+        info.bases = bases
+        calculate_mro(info)
+        info.metaclass_type = info.calculate_metaclass_type()
+        return info
+
+    base_classes = _get_base_classes(instances)
+
+    bases = base_classes
+    try:
+        info = make_fake_typeinfo(bases)
+        with check.msg.filter_errors() as local_errors:
+            check.check_multiple_inheritance(info)
+        if local_errors.has_new_errors():
+            # "class A(B, C)" unsafe, now check "class A(C, B)":
+            base_classes = _get_base_classes(instances[::-1])
+            info = make_fake_typeinfo(base_classes)
+            with check.msg.filter_errors() as local_errors:
+                check.check_multiple_inheritance(info)
+        info.is_intersection = True
+    except MroError:
+        return True
+    if local_errors.has_new_errors():
+        return True
+
+    return False
 
 
 def _get_type_special_method_bool_ret_type(t: Type) -> Type | None:

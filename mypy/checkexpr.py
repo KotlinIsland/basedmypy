@@ -700,7 +700,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         if isinstance(ret_type, UnionType):
             ret_type = make_simplified_union(ret_type.items)
         if isinstance(ret_type, IntersectionType):
-            ret_type = make_simplified_intersection(ret_type.items)
+            ret_type = make_simplified_intersection(ret_type.items, check=self.chk)
         if isinstance(ret_type, UninhabitedType) and not ret_type.ambiguous:
             self.chk.binder.unreachable()
         # Warn on calls to functions that always return None. The check

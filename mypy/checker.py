@@ -7531,10 +7531,15 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         out = []
         errors: list[tuple[str, str]] = []
         for v in possible_expr_types:
-            if not isinstance(v, Instance):
+            if isinstance(v, Instance):
+                if v.type.is_final:
+                    return UninhabitedType(), expr_type
+            else:
                 if not isinstance(v, IntersectionType):
                     return yes_type, no_type
                 for t in possible_target_types:
+                    if t.type.is_final:
+                        return UninhabitedType(), expr_type
                     for v_item in v.items:
                         v_type = get_proper_type(v_item)
                         if isinstance(v_type, Instance) and self.intersect_instances(
