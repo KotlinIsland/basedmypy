@@ -129,3 +129,13 @@ class D:
 data: D
 f"{data}"
 [builtins fixtures/primitives.pyi]
+
+
+[case testHelpfulStringGenericBound]
+from typing import TypeVar
+
+Int = TypeVar("Int", bound=int)
+
+
+def f(i: Int):
+    f"{i}"
