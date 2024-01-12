@@ -195,7 +195,7 @@ def getmodulename(path: StrPath) -> str | None: ...
 def ismodule(object: object) -> TypeGuard[ModuleType]: ...
 def isclass(object: object) -> TypeGuard[type[Any]]: ...
 def ismethod(object: object) -> TypeGuard[MethodType]: ...
-def isfunction(object: object) -> TypeGuard[FunctionType]: ...
+def isfunction(object: object) -> TypeGuard[FunctionType[..., Any]]: ...
 
 if sys.version_info >= (3, 12):
     def markcoroutinefunction(func: _F) -> _F: ...
@@ -270,7 +270,7 @@ if sys.version_info >= (3, 11):
 def isroutine(
     object: object,
 ) -> TypeGuard[
-    FunctionType
+    FunctionType[..., Any]
     | LambdaType
     | MethodType
     | BuiltinFunctionType
@@ -289,7 +289,7 @@ def isdatadescriptor(object: object) -> TypeGuard[_SupportsSet[Any, Any] | _Supp
 # Retrieving source code
 #
 _SourceObjectType: TypeAlias = (
-    ModuleType | type[Any] | MethodType | FunctionType | TracebackType | FrameType | CodeType | Callable[..., Any]
+    ModuleType | type[Any] | MethodType | FunctionType[..., Any] | TracebackType | FrameType | CodeType | Callable[..., Any]
 )
 
 def findsource(object: _SourceObjectType) -> tuple[list[str], int]: ...

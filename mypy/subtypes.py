@@ -69,6 +69,7 @@ from mypy.types import (
 from mypy.types_utils import flatten_types
 from mypy.typestate import SubtypeKind, type_state
 from mypy.typevars import fill_typevars_with_any
+from mypy.util import safe
 
 # Flags for detected protocol members
 IS_SETTABLE: Final = 1
@@ -103,6 +104,8 @@ class SubtypeContext:
         self.erase_instances = erase_instances
         self.keep_erased_types = keep_erased_types
         self.options = options
+        self.checking_callable_instance = False
+        """ergh, #cringe"""
 
     def check_context(self, proper_subtype: bool) -> None:
         # Historically proper and non-proper subtypes were defined using different helpers
@@ -640,7 +643,23 @@ class SubtypeVisitor(TypeVisitor[bool]):
             # Special case: Instance can be a subtype of Callable.
             call = find_member("__call__", left, left, is_operator=True)
             if call:
-                return self._is_subtype(call, right)
+                checking_callable_instance = self.subtype_context.checking_callable_instance
+                self.subtype_context.checking_callable_instance = True
+                try:
+                    result = self._is_subtype(call, right)
+                finally:
+                    self.subtype_context.checking_callable_instance = checking_callable_instance
+                if not result:
+                    return False
+                if right.is_named:
+                    str_type = safe(find_member("__name__", right.fallback, right.fallback))
+                    name = find_member("__name__", left, left)
+                    if not (name and is_subtype(name, str_type)):
+                        return False
+                    qualname = find_member("__qualname__", left, left)
+                    if not (qualname and is_subtype(qualname, str_type)):
+                        return False
+                return True
             return False
         else:
             return False
@@ -719,16 +738,30 @@ class SubtypeVisitor(TypeVisitor[bool]):
                 # This means that one function has `TypeGuard` and other does not.
                 # They are not compatible. See https://github.com/python/mypy/issues/11307
                 return False
-            return is_callable_compatible(
-                left,
-                right,
-                is_compat=self._is_subtype,
-                is_proper_subtype=self.proper_subtype,
-                ignore_pos_arg_names=self.subtype_context.ignore_pos_arg_names,
-                strict_concatenate=(self.options.extra_checks or self.options.strict_concatenate)
-                if self.options
-                else False,
-            )
+            checking_callable_instance = self.subtype_context.checking_callable_instance
+            self.subtype_context.checking_callable_instance = False
+            try:
+                result = is_callable_compatible(
+                    left,
+                    right,
+                    is_compat=self._is_subtype,
+                    is_proper_subtype=self.proper_subtype,
+                    ignore_pos_arg_names=self.subtype_context.ignore_pos_arg_names,
+                    strict_concatenate=(
+                        self.options.extra_checks or self.options.strict_concatenate
+                    )
+                    if self.options
+                    else False,
+                )
+            finally:
+                self.subtype_context.checking_callable_instance = checking_callable_instance
+            if not result:
+                return False
+            if checking_callable_instance:
+                return True
+            if right.is_named and left.is_callable:
+                return False
+            return True
         elif isinstance(right, Overloaded):
             return all(self._is_subtype(left, item) for item in right.items)
         elif isinstance(right, Instance):
@@ -1519,9 +1552,22 @@ def is_callable_compatible(
     if left.implicit or right.implicit:
         ignore_pos_arg_names = True
 
-    # Non-type cannot be a subtype of type.
-    if right.is_type_obj() and not left.is_type_obj() and not allow_partial_overlap:
-        return False
+    if not allow_partial_overlap:
+        # Non-type cannot be a subtype of type.
+        if right.is_type_obj() and not left.is_type_obj():
+            return False
+
+        # type can only be a subtype of Callable.
+        elif left.is_type_obj() and not (right.is_type_obj() or right.is_callable):
+            return False
+
+        # everything can be a 'named' (i think)
+        elif right.is_named:
+            pass
+
+        # Callable cannot be a subtype of different fallbacks. (assuming there are no subtypes between fallbacks)
+        elif not right.is_callable and left.fallback_name != right.fallback_name:
+            return False
 
     # A callable L is a subtype of a generic callable R if L is a
     # subtype of every type obtained from R by substituting types for

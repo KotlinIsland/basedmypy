@@ -452,7 +452,8 @@ class MessageBuilder:
             return codes.INDEX
         elif member == "__call__":
             if isinstance(original_type, Instance) and (
-                original_type.type.fullname == "builtins.function"
+                original_type.type.fullname
+                in {"typing._Callable", "typing._NamedCallable", "builtins.function"}
             ):
                 # "'function' not callable" is a confusing error message.
                 # Explain that the problem is that the type of the function is not known.
@@ -2756,6 +2757,15 @@ def format_type_inner(
             # return type (this always works).
             return format(TypeType.make_normalized(erase_type(func.items[0].ret_type)))
         elif isinstance(func, CallableType):
+            if func.fallback_name == "types.BuiltinFunctionType":
+                return format(
+                    func.fallback.copy_modified(
+                        args=[
+                            Parameters(func.arg_types, func.arg_kinds, func.arg_names),
+                            func.ret_type,
+                        ]
+                    )
+                )
             if func.variables:
                 disable_own_scope = func.variables
             if func.type_guard is not None:
@@ -2769,15 +2779,17 @@ def format_type_inner(
                     return_type = f"TypeGuard[{format(func.type_guard.type_guard)}]"
             else:
                 return_type = format(func.ret_type)
+
+            prefix = func.prefix
             if func.is_ellipsis_args:
                 if not mypy.options._based:
                     return f"Callable[..., {return_type}]"
-                return f"(...) -> {return_type}"
+                return f"{prefix}(...) -> {return_type}"
             param_spec = func.param_spec()
             if param_spec is not None:
                 if not mypy.options._based:
                     return f"Callable[{format(param_spec)}, {return_type}]"
-                return f"({param_spec.name}) -> {return_type}"
+                return f"{prefix}({param_spec.name}) -> {return_type}"
             args = format_callable_args(
                 func.arg_types, func.arg_kinds, func.arg_names, format, verbosity
             )
@@ -2787,7 +2799,7 @@ def format_type_inner(
                 TypeStrVisitor(options=options).render_callable_type_params(func, format)
                 + f"({args})"
             )
-            return f"{args} -> {return_type}"
+            return f"{prefix}{args} -> {return_type}"
         else:
             # Use a simple representation for function types; proper
             # function types may result in long and difficult-to-read
@@ -2965,6 +2977,7 @@ def pretty_callable(tp: CallableType, options: Options, skip_self: bool = False)
             slash = True
 
     # If we got a "special arg" (i.e: self, cls, etc...), prepend it to the arg list
+    is_def = False
     if (
         isinstance(tp.definition, FuncDef)
         and hasattr(tp.definition, "arguments")
@@ -2980,6 +2993,7 @@ def pretty_callable(tp: CallableType, options: Options, skip_self: bool = False)
                 s = ", " + s
             s = definition_arg_names[0] + s
         s = f"{tp.definition.name}({s})"
+        is_def = True
     elif tp.name:
         first_arg = tp.def_extras.get("first_arg")
         if first_arg:
@@ -2987,6 +3001,7 @@ def pretty_callable(tp: CallableType, options: Options, skip_self: bool = False)
                 s = ", " + s
             s = first_arg + s
         s = f"{tp.name.split()[0]}({s})"  # skip "of Class" part
+        is_def = True
     else:
         s = f"({s})"
 
@@ -3025,7 +3040,7 @@ def pretty_callable(tp: CallableType, options: Options, skip_self: bool = False)
                 # For other TypeVarLikeTypes, just use the repr
                 tvars.append(repr(tvar))
         s = f"[{', '.join(tvars)}] {s}"
-    return f"def {s}"
+    return f"{'def ' if is_def or not mypy.options._based else tp.prefix}{s}"
 
 
 def variance_string(variance: int) -> str:

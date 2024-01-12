@@ -40,6 +40,11 @@ S = TypeVar('S')
 # Note: definitions below are different from typeshed, variances are declared
 # to silence the protocol variance checks. Maybe it is better to use type: ignore?
 
+class _Callable:
+    def __call__(self): pass
+class _NamedCallable(_Callable):
+    __name__: str
+    __qualname__: str
 class Sized(Protocol):
     def __len__(self) -> int: pass
 
@@ -69,6 +74,7 @@ class ContextManager(Generic[T]):
     def __enter__(self) -> T: pass
     # Use Any because not all the precise types are in the fixtures.
     def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> Any: pass
+
 
 class _SpecialForm: pass
 

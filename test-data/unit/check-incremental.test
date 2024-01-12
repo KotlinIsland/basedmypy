@@ -6120,12 +6120,12 @@ import c
 def foo(arg: c.C) -> None: pass
 
 [file c.py]
-from types import C
+from types1 import C
 
-[file types.py]
+[file types1.py]
 import pb1
 C = pb1.C
-[file types.py.2]
+[file types1.py.2]
 import pb1, pb2
 C = pb2.C
 

@@ -16,7 +16,7 @@ from collections.abc import (
 from importlib.machinery import ModuleSpec
 
 # pytype crashes if types.MappingProxyType inherits from collections.abc.Mapping instead of typing.Mapping
-from typing import Any, ClassVar, Mapping, Protocol, TypeVar, overload  # noqa: Y022
+from typing import Any, Generic, ClassVar, Mapping, Protocol, TypeVar, overload  # noqa: Y022
 from typing_extensions import Literal, ParamSpec, Self, TypeVarTuple, final, Final
 
 __all__ = [
@@ -62,9 +62,11 @@ if sys.version_info >= (3, 12):
 # Note, all classes "defined" here require special handling.
 
 _T1 = TypeVar("_T1")
+_out_T = TypeVar("_out_T", covariant=True)
 _T2 = TypeVar("_T2")
 _KT = TypeVar("_KT")
 _VT_co = TypeVar("_VT_co", covariant=True)
+_P = ParamSpec("_P")
 
 @final
 class _Cell:
@@ -76,6 +78,7 @@ class _Cell:
     cell_contents: Any
 
 # Make sure this class definition stays roughly in line with `builtins.function`
+# This class is special-cased
 @final
 class FunctionType:
     @property
@@ -449,19 +452,20 @@ class MethodType:
     def __eq__(self, __value: object) -> bool: ...
     def __hash__(self) -> int: ...
 
+# this class is not generic at runtime and is special-cased by basedmypy
 @final
-class BuiltinFunctionType:
+class BuiltinFunctionType(Generic[_P, _out_T]):
     @property
     def __self__(self) -> object | ModuleType: ...
     @property
     def __name__(self) -> str: ...
     @property
     def __qualname__(self) -> str: ...
-    def __call__(self, *args: Any, **kwargs: Any) -> Any: ...
+    def __call__(self, *args: _P.args, **kwargs: _P.kwargs) -> _out_T: ...
     def __eq__(self, __value: object) -> bool: ...
     def __hash__(self) -> int: ...
 
-BuiltinMethodType = BuiltinFunctionType
+BuiltinMethodType = BuiltinFunctionType[_P, _out_T]
 
 @final
 class WrapperDescriptorType:
@@ -590,7 +594,6 @@ DynamicClassAttribute = property
 
 _Fn = TypeVar("_Fn", bound=Callable[..., object])
 _R = TypeVar("_R")
-_P = ParamSpec("_P")
 
 # it's not really an Awaitable, but can be used in an await expression. Real type: Generator & Awaitable
 @overload

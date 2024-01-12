@@ -22,6 +22,8 @@ from mypy.nodes import (
     ArgKind,
     Context,
     Decorator,
+    FakeInfo,
+    FuncBase,
     FuncDef,
     FuncItem,
     MypyFile,
@@ -124,6 +126,10 @@ GENERIC_STUB_NOT_AT_RUNTIME_TYPES: Final = {
     "builtins._PathLike",
     "asyncio.futures.Future",
 }
+
+CALLABLE_NAME = "typing._Callable"
+CALLABLE_TYPE: Instance | None = None
+"""Very hacky way to globally access this special cased type"""
 
 SELF_TYPE_NAMES: Final = {"typing.Self", "typing_extensions.Self"}
 
@@ -594,6 +600,17 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             return make_optional_type(item)
         elif fullname == "typing.Callable":
             return self.analyze_callable_type(t)
+        elif fullname == "typing._NamedCallable":
+            return self.analyze_callable_type(t, fullname)
+        elif fullname in {"types.FunctionType", "types.BuiltinFunctionType"}:
+            if not self.always_allow_new_syntax and not t.original_str_expr:
+                name = fullname.rsplit(".")[-1]
+                self.fail(
+                    f'Type parameters for "{name}" requires __future__.annotations or quoted types',
+                    t,
+                    code=codes.VALID_TYPE,
+                )
+            return self.analyze_callable_type(t, type_name=fullname)
         elif fullname == "typing.Type" or (
             fullname == "builtins.type"
             and (self.always_allow_new_syntax or self.options.python_version >= (3, 9))
@@ -1053,14 +1070,29 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             arg_kinds = t.arg_kinds[: len(arg_types)]
             arg_names = t.arg_names[: len(arg_types)]
 
+            use_callable = False
+            definition = t.definition
+            if definition:
+                assert isinstance(definition, FuncBase)
+                use_callable = definition.is_static and definition.name != "__new__"
+
             ret = t.copy_modified(
                 arg_types=arg_types,
                 arg_kinds=arg_kinds,
                 arg_names=arg_names,
                 ret_type=self.anal_type(t.ret_type, nested=nested),
                 # If the fallback isn't filled in yet,
-                # its type will be the falsey FakeInfo
-                fallback=(t.fallback if t.fallback.type else self.named_type("builtins.function")),
+                fallback=(
+                    t.fallback
+                    if not isinstance(t.fallback.type, FakeInfo)
+                    else (
+                        # Ah yes, we pretend that static methods are `Callable`, not `FunctionType`
+                        #  so that you can subtype it with a `classmethod`, because that makes sense!
+                        self.named_type("typing._Callable")
+                        if use_callable
+                        else self.named_type(t.fallback.type.msg)
+                    )
+                ),
                 variables=self.anal_var_defs(variables),
                 type_guard=special,
                 unpack_kwargs=unpacked_kwargs,
@@ -1409,8 +1441,10 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             from_concatenate=True,
         )
 
-    def analyze_callable_type(self, t: UnboundType) -> Type:
-        fallback = self.named_type("builtins.function")
+    def analyze_callable_type(self, t: UnboundType, type_name: str = CALLABLE_NAME) -> Type:
+        fallback = self.named_type(
+            "builtins.function" if type_name == "types.FunctionType" else type_name
+        )
         if len(t.args) == 0:
             # Callable (bare). Treat as Callable[..., Any].
             any_type = self.get_omitted_any(t)

@@ -637,7 +637,7 @@ class Two:
 
 c = Two()
 x = c.S
-reveal_type(x)  # N: Revealed type is "typing._SpecialForm"
+reveal_type(x)  # N: Revealed type is "def () -> typing._Callable"
 [builtins fixtures/dataclasses.pyi]
 [typing fixtures/typing-medium.pyi]
 

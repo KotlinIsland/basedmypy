@@ -1060,7 +1060,7 @@ CA = Callable[[T], int]
 TA = Tuple[T, int]
 UA = Union[T, int]
 
-cs = CA + 1 # E: Unsupported left operand type for + ("<typing special form>")
+cs = CA + 1 # E: Unsupported left operand type for + ("Type[_Callable]")
 reveal_type(cs) # N: Revealed type is "Any"
 
 ts = TA() # E: "<typing special form>" not callable
@@ -2878,12 +2878,13 @@ reveal_type(comb(id, id))  # N: Revealed type is "def [T] (T`1) -> T`1"
 [case testInferenceAgainstGenericCallableGenericNonLinear]
 # flags: --new-type-inference
 from typing import TypeVar, Callable, List
+from types import FunctionType
 
 S = TypeVar('S')
 T = TypeVar('T')
 U = TypeVar('U')
 
-def mix(fs: List[Callable[[S], T]]) -> Callable[[S], List[T]]:
+def mix(fs: List["FunctionType[[S], T]"]) -> "FunctionType[[S], List[T]]":
     def inner(x: S) -> List[T]:
         return [f(x) for f in fs]
     return inner

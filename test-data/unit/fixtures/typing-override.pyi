@@ -14,6 +14,11 @@ T = TypeVar('T')
 T_co = TypeVar('T_co', covariant=True)
 KT = TypeVar('KT')
 
+class _Callable:
+    def __call__(self): pass
+class _NamedCallable(_Callable):
+    __name__: str
+    __qualname__: str
 class Iterable(Generic[T_co]): pass
 class Iterator(Iterable[T_co]): pass
 class Sequence(Iterable[T_co]): pass

@@ -152,6 +152,8 @@ class function: pass
 class str: pass
 class dict: pass
 
+
+
 [case testBinaryOperationsWithDynamicAsRightOperand]
 from typing import Any
 d: Any

@@ -402,7 +402,7 @@ class DataDrivenTestCase(pytest.Item):
             excinfo.traceback = self.parent._traceback_filter(excinfo)
             excrepr = excinfo.getrepr(style="short")
 
-        return f"data: {self.file}:{self.line}:\n{excrepr}"
+        return f"data: {Path(self.file).as_uri()}:{self.line}:\n{excrepr}"
 
     def find_steps(self) -> list[list[FileOperation]]:
         """Return a list of descriptions of file operations for each incremental step.

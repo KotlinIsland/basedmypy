@@ -292,6 +292,15 @@ TYPEGUARD_LIMITATION: Final[ErrorCode] = ErrorCode(
 BAD_CAST: Final[ErrorCode] = ErrorCode(
     "bad-cast", "cast of non-overlapping types", "General", default_enabled=False
 )
+CALLABLE_FUNCTIONTYPE: Final[ErrorCode] = ErrorCode(
+    "callable-functiontype",
+    "usages of Callable and FunctionType",
+    "General",
+    default_enabled=False,
+)
+POSSIBLE_FUNCTION: Final[ErrorCode] = ErrorCode(
+    "possible-function", "possible FunctionType on class", "General", default_enabled=False
+)
 
 REGEX: Final = ErrorCode("regex", "Regex related errors", "General")
 REVEAL: Final = ErrorCode("reveal", "Reveal types at check time", "General")

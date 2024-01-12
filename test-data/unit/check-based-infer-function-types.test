@@ -351,8 +351,8 @@ def foo(a=1):
     1 + ""
 
 foo()  # E: Call to untyped function "foo" in typed context  [no-untyped-call]
-reveal_type(foo)  # E: Expression type contains "Any" (has type "(a: int=...) -> Untyped")  [no-any-expr] \
-                  # E: Expression type contains "Any" (has type "(a: int=...) -> Untyped")  [no-any-expr] \
+reveal_type(foo)  # E: Expression type contains "Any" (has type "def (a: int=...) -> Untyped")  [no-any-expr] \
+                  # E: Expression type contains "Any" (has type "def (a: int=...) -> Untyped")  [no-any-expr] \
                   # N: Revealed type is "def (a: int =) -> Untyped"
 
 def bar(a=1) -> None:
@@ -381,7 +381,7 @@ class B:
     @property
     def f(self): ...  # E: Function is missing a return type annotation  [no-untyped-def] \
                       # N: Use "-> None" if function does not return a value \
-                      # E: Type of decorated function contains type "Any" ("(self: B) -> Untyped")  [no-any-decorated]
+                      # E: Type of decorated function contains type "Any" ("def (self: B) -> Untyped")  [no-any-decorated]
     @f.setter
     def f(self, value):
         1 + ""

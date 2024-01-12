@@ -505,10 +505,10 @@ class B(A):  # E: Missing positional argument "x" in call to "__init_subclass__"
     def __init_subclass__(cls) -> None: pass
 
 [case testOverrideWithDecorator]
-from typing import Callable
+from types import FunctionType
 
-def int_to_none(f: Callable[..., int]) -> Callable[..., None]: ...
-def str_to_int(f: Callable[..., str]) -> Callable[..., int]: ...
+def int_to_none(f: "FunctionType[..., int]") -> "FunctionType[..., None]": ...
+def str_to_int(f: "FunctionType[..., str]") -> "FunctionType[..., int]": ...
 
 class A:
     def f(self) -> None: pass
@@ -523,6 +523,7 @@ class B(A):
     @int_to_none
     @str_to_int
     def h(self) -> str: pass
+[builtins fixtures/tuple.pyi]
 [out]
 main:15: error: Signature of "g" incompatible with supertype "A"
 main:15: note:      Superclass:
@@ -531,9 +532,9 @@ main:15: note:      Subclass:
 main:15: note:          def g(*Any, **Any) -> int
 
 [case testOverrideDecorated]
-from typing import Callable
+from types import FunctionType
 
-def str_to_int(f: Callable[..., str]) -> Callable[..., int]: ...
+def str_to_int(f: "FunctionType[..., str]") -> "FunctionType[..., int]": ...
 
 class A:
     @str_to_int
@@ -548,6 +549,7 @@ class B(A):
     def g(self) -> str: pass # Fail
     @str_to_int
     def h(self) -> str: pass
+[builtins fixtures/tuple.pyi]
 [out]
 main:15: error: Signature of "g" incompatible with supertype "A"
 main:15: note:      Superclass:
@@ -6575,6 +6577,7 @@ reveal_type(c.spec3)  # N: Revealed type is "Any"
 
 [case testDecoratedDunderSet]
 from typing import Any, Callable, TypeVar, Type
+from types import FunctionType
 
 F = TypeVar('F', bound=Callable)
 T = TypeVar('T')
@@ -6582,7 +6585,7 @@ T = TypeVar('T')
 def decorator(f: F) -> F:
     return f
 
-def change(f: Callable) -> Callable[[Any, Any, int], None]:
+def change(f: Callable) -> "FunctionType[[Any, Any, int], None]":
     pass
 
 def untyped(f):

@@ -1,4 +1,5 @@
 [![Discord](https://img.shields.io/discord/948915247073349673?logo=discord)](https://discord.gg/7y9upqPrk2)
+[![Playground](https://img.shields.io/badge/🛝%20playground-blue)](https://mypy-play.net/?mypy=basedmypy-latest)
 [![Stable Version](https://img.shields.io/pypi/v/basedmypy?color=blue)](https://pypi.org/project/basedmypy/)
 [![Downloads](https://img.shields.io/pypi/dm/basedmypy)](https://pypistats.org/packages/basedmypy)
 [![Documentation](https://img.shields.io/badge/📚%20docs-blue)](https://KotlinIsland.github.io/basedmypy)

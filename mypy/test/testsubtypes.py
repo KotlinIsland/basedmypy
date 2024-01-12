@@ -274,6 +274,22 @@ class SubtypingSuite(Suite):
             Instance(self.fx.gvi, [UnpackType(Instance(self.fx.std_tuplei, [self.fx.a]))]),
         )
 
+    def test_callables(self):
+        c = self.fx.callable(self.fx.nonet)
+        n = self.fx.named_callable()
+        f = self.fx.function_()
+
+        self.assert_subtype(c, c)
+        self.assert_subtype(n, n)
+        self.assert_subtype(n, c)
+        self.assert_subtype(f, n)
+        self.assert_subtype(f, c)
+        self.assert_subtype(f, f)
+
+        self.assert_not_subtype(c, n)
+        self.assert_not_subtype(c, f)
+        self.assert_not_subtype(n, f)
+
     # IDEA: Maybe add these test cases (they are tested pretty well in type
     #       checker tests already):
     #  * more interface subtyping test cases

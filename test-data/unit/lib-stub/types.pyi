@@ -15,3 +15,9 @@ if sys.version_info >= (3, 10):
 
     class NoneType:
         ...
+
+class FunctionType:
+    def __call__(self): ...
+
+class MethodType:
+    pass

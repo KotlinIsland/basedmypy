@@ -37,6 +37,12 @@ T_co = TypeVar('T_co', covariant=True)
 U = TypeVar('U')
 V = TypeVar('V')
 
+
+class _Callable:
+    def __call__(self): pass
+class _NamedCallable(_Callable):
+    __name__: str
+    __qualname__: str
 class Iterable(Protocol[T_co]):
     def __iter__(self) -> Iterator[T_co]: pass
 

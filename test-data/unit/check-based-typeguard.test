@@ -33,7 +33,7 @@ def typeguard1(x: object) -> "x is int": ...
 def typeguard2(x: object, y: object) -> "y is int": ...
 
 takes_typeguard(typeguard1)
-takes_typeguard(typeguard2)  # E: Argument 1 to "takes_typeguard" has incompatible type "(x: object, y: object) -> y is int"; expected "(object) -> first argument is int"  [arg-type]
+takes_typeguard(typeguard2)  # E: Argument 1 to "takes_typeguard" has incompatible type "def (x: object, y: object) -> y is int"; expected "(object) -> first argument is int"  [arg-type]
 [builtins fixtures/tuple.pyi]
 
 
@@ -278,7 +278,7 @@ class B(A): ...
 def guard(a: object, /) -> "a is B": ...
 
 f1 = guard
-f1 = A().guard  # E: Incompatible types in assignment (expression has type "(object) -> instance argument is B", variable has type "(object) -> argument 1 is B")  [assignment]
+f1 = A().guard  # E: Incompatible types in assignment (expression has type "_NamedCallable & (object) -> instance argument is B", variable has type "def (object) -> argument 1 is B")  [assignment]
 
 f2 = A().guard
 f2 = guard
@@ -383,8 +383,8 @@ if a.guard(o):  # E: type-guard on positional class function is unsupported  [ty
 class A:
     def guard(self, b: object, /) -> 'b is int': ...
 
-# Actually expect "def (object) -> argument 1 is int"
-reveal_type(A().guard)  # N: Revealed type is "def (object) -> argument 2 is int"
+# Actually expect "_NamedCallable & (object) -> argument 1 is int"
+reveal_type(A().guard)  # N: Revealed type is "_NamedCallable & (object) -> argument 2 is int"
 [builtins fixtures/tuple.pyi]
 
 
@@ -455,7 +455,7 @@ x = f2
 x = f1
 
 y = f1
-y = f2  # E: Incompatible types in assignment (expression has type "(x: object) -> x is int if True else False", variable has type "(x: object) -> x is int")  [assignment]
+y = f2  # E: Incompatible types in assignment (expression has type "def (x: object) -> x is int if True else False", variable has type "def (x: object) -> x is int")  [assignment]
 [builtins fixtures/tuple.pyi]
 
 

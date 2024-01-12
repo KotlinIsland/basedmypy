@@ -157,6 +157,8 @@ import typing
 8 > 3
 4 < 6 > 2
 [file builtins.py]
+import typing
+
 class object:
     def __init__(self) -> None: pass
 class int:

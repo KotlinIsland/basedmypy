@@ -116,4 +116,35 @@ Casting between two non-overlapping types is often a mistake:
     a: int
     cast(str, a)  # Conversion of type "int" to type "str" may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to "object" first.  [bad-cast]
 
+.. _code-callable-functiontype:
+
+Check for bad usages of callabes and function types [callable-functiontype]
+---------------------------------------------------------------------------
+
+Because functions can create methods when accessed in certain ways,
+basedmypy has checks regarding their usages:
+
+.. code-block:: python
+
+    class A:
+        a: "(int) -> object" = lambda i: i + 1  # Assigning a "FunctionType" on the class will become a "MethodType"  [callable-functiontype]
+
+    A().a(1)  # runtime TypeError: <lambda>() takes 1 positional argument but 2 were given
+
+.. _code-possible-function:
+
+Check that callables are valid [possible-function]
+--------------------------------------------------
+
+Because a function can create methods when accessed in certain ways,
+basedmypy has lint rules regarding their validity as ``Callable``\s:
+
+.. code-block:: python
+
+    c: "(int) -> object" = lambda i: i + 1
+    class A:
+        a: "(int) -> object" = c  # This "CallableType" could be a "FunctionType", which when assigned via the class, would produce a "MethodType"  [possible-function]
+
+    A().a(1)  # runtime TypeError: <lambda>() takes 1 positional argument but 2 were given
+
 .. _code-reveal:

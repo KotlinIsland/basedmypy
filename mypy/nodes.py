@@ -3416,7 +3416,7 @@ class FakeInfo(TypeInfo):
 
     def __getattribute__(self, attr: str) -> type:
         # Handle __class__ so that isinstance still works...
-        if attr == "__class__":
+        if attr in ("__class__", "msg"):
             return object.__getattribute__(self, attr)  # type: ignore[no-any-return]
         raise AssertionError(object.__getattribute__(self, "msg"))
 

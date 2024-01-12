@@ -9,6 +9,7 @@ import sys
 import tempfile
 import textwrap
 import unittest
+from types import FunctionType
 from typing import Any, Callable, Iterator
 
 import mypy.stubtest
@@ -61,6 +62,12 @@ _K = TypeVar("_K")
 _V = TypeVar("_V")
 _S = TypeVar("_S", contravariant=True)
 _R = TypeVar("_R", covariant=True)
+
+class _Callable:
+    def __call__(self): ...
+class _NamedCallable(_Callable):
+    __name__: str
+    __qualname__: str
 
 class Coroutine(Generic[_T_co, _S, _R]): ...
 class Iterable(Generic[_T_co]): ...
@@ -183,7 +190,7 @@ class Case:
         self.error = error
 
 
-def collect_cases(fn: Callable[..., Iterator[Case]]) -> Callable[..., None]:
+def collect_cases(fn: Callable[..., Iterator[Case]]) -> FunctionType[..., None]:
     """run_stubtest used to be slow, so we used this decorator to combine cases.
 
     If you're reading this and bored, feel free to refactor this and make it more like

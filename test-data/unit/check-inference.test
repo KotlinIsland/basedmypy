@@ -2152,6 +2152,7 @@ x = 1+int()
 
 [case testMultipassAndDecoratedMethod]
 from typing import Callable, TypeVar
+from types import FunctionType
 
 T = TypeVar('T')
 
@@ -2162,8 +2163,9 @@ class A:
     @dec
     def g(self, x: str) -> None: pass
 
-def dec(f: Callable[[A, str], T]) -> Callable[[A, int], T]: pass
+def dec(f: Callable[[A, str], T]) -> "FunctionType[[A, int], T]": pass
 [out]
+[builtins fixtures/tuple.pyi]
 
 [case testMultipassAndDefineAttributeBasedOnNotReadyAttribute]
 class A:

@@ -1348,6 +1348,8 @@ def process_options(
             "unused-awaitable",
             "redundant-self",
             "explicit-override",
+            "callable-functiontype",
+            "possible-function",
             "bad-cast",
         }
         if mypy.options._based

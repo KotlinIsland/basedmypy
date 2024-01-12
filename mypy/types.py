@@ -1728,6 +1728,36 @@ class FunctionLike(ProperType):
     def get_name(self) -> str | None:
         pass
 
+    @property
+    def prefix(self) -> str:
+        if self.is_function:
+            return "def "
+        elif self.is_method:
+            return "MethodType "
+        elif self.is_named:
+            return "_NamedCallable & "
+        return ""
+
+    @property
+    def fallback_name(self) -> str:
+        return self.fallback.type.fullname
+
+    @property
+    def is_callable(self) -> bool:
+        return self.fallback.type.fullname in {"typing._Callable", "collections.abc.Callable"}
+
+    @property
+    def is_function(self) -> bool:
+        return self.fallback.type.fullname in {"builtins.function", "types.FunctionType"}
+
+    @property
+    def is_method(self) -> bool:
+        return self.fallback.type.fullname == "types.MethodType"
+
+    @property
+    def is_named(self) -> bool:
+        return self.fallback.type.fullname == "typing._NamedCallable"
+
 
 class FormalArgument(NamedTuple):
     name: str | None
@@ -3575,6 +3605,13 @@ class TypeStrVisitor(SyntheticTypeVisitor[str]):
         return s
 
     def visit_callable_type(self, t: CallableType) -> str:
+        if t.fallback.type and t.fallback_name == "types.BuiltinFunctionType":
+            # ah yes
+            return self.visit_instance(
+                t.fallback.copy_modified(
+                    args=[Parameters(t.arg_types, t.arg_kinds, t.arg_names), t.ret_type]
+                )
+            )
         with self.own_type_vars(t.variables):
             param_spec = t.param_spec()
             if param_spec is not None:
@@ -3630,7 +3667,12 @@ class TypeStrVisitor(SyntheticTypeVisitor[str]):
 
             s = self.render_callable_type_params(t, lambda x: x.accept(self)) + s
 
-            return f"def {s}"
+            if not mypy.options._based:
+                return f"def {s}"
+            if not t.fallback.type:
+                # stupid test case moment
+                return "def " + s
+            return t.prefix + s
 
     def render_callable_type_params(self, t: CallableType, renderer: Callable[[Type], str]) -> str:
         if not t.variables:

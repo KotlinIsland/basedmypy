@@ -710,7 +710,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             not allow_none_return
             and isinstance(ret_type, NoneType)
             # field lies about its return type and must be special-cased
-            and fullname != "dataclasses.field"
+            and fullname not in {"dataclasses.field", "pydantic.fields.Field"}
         ):
             self.chk.msg.does_not_return_value(callee_type, e)
         return ret_type
@@ -1646,6 +1646,11 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                 callee, args, arg_kinds, arg_names, context, object_type
             )
         elif isinstance(callee, Instance):
+            if callee.type.fullname == "typing._Callable":
+                # YEAH!!!
+                # this is only the case when union joins are disabled
+                self.chk.fail("Cannot call function of unknown type", context, code=codes.OPERATOR)
+                return AnyType(0), AnyType(0)
             call_function = analyze_member_access(
                 "__call__",
                 callee,
@@ -4905,6 +4910,10 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                 fail=self.msg.fail,
             )
         )
+        # As an extension to the hack that Callable isn't a real type (#621),
+        #  we additionally pretend that BuiltInFunctionType is a Callable
+        if isinstance(item, CallableType):
+            item = item.fallback
         if isinstance(item, Instance):
             # Normally we get a callable type (or overloaded) with .is_type_obj() true
             # representing the class's constructor

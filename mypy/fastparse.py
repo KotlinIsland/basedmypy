@@ -284,15 +284,25 @@ def parse_type_ignore_tag(tag: str | None) -> list[str] | None:
 
 
 def parse_type_comment(
-    type_comment: str, line: int, column: int, errors: Errors | None
+    type_comment: str, line: int, column: int, errors: Errors | None, *, _mode=""
 ) -> tuple[list[str] | None, ProperType | None]:
     """Parse type portion of a type comment (+ optional type ignore).
 
     Return (ignore info, parsed type).
     """
+    function = False
+    if type_comment.startswith("def "):
+        function = True
+        type_comment = type_comment[4:]
+    mode = (
+        "func_type" if type_comment and type_comment[0] == "(" and "->" in type_comment else "eval"
+    )
     try:
-        typ = ast3_parse(type_comment, "<type_comment>", "eval")
+        typ = ast3_parse(type_comment, "<type_comment>", _mode or mode)
     except SyntaxError:
+        if not _mode and mode == "func_type":
+            # See testCallableSyntaxBreak
+            return parse_type_comment(type_comment, line, column, errors, _mode="eval")
         if errors is not None:
             stripped_type = type_comment.split("#", 2)[0].strip()
             err_msg = message_registry.TYPE_COMMENT_SYNTAX_ERROR_VALUE.format(stripped_type)
@@ -314,6 +324,19 @@ def parse_type_comment(
                     raise SyntaxError
         else:
             ignored = None
+        if isinstance(typ, ast3.FunctionType):
+            converter = TypeConverter(
+                errors, line=line, override_column=column, is_evaluated=False
+            )
+            from mypy.typeanal import CALLABLE_NAME
+
+            return ignored, CallableType(
+                converter.translate_expr_list(typ.argtypes),
+                [ArgKind.ARG_POS for arg in typ.argtypes],
+                [None for arg in typ.argtypes],
+                converter.visit(typ.returns),
+                Instance(FakeInfo("builtins.function" if function else CALLABLE_NAME), [], -1),
+            )
         assert isinstance(typ, ast3.Expression)
         converted = TypeConverter(
             errors, line=line, override_column=column, is_evaluated=False
@@ -335,7 +358,7 @@ def parse_type_string(
             node.original_str_expr = expr_string
             node.original_str_fallback = expr_fallback_name
             return node
-        elif isinstance(node, (UnionType, IntersectionType, TypeGuardType)):
+        elif isinstance(node, (UnionType, IntersectionType, TypeGuardType, CallableType)):
             return node
         else:
             return RawExpressionType(expr_string, expr_fallback_name, line, column)
@@ -983,7 +1006,7 @@ class ASTConverter:
                     arg_kinds,
                     arg_names,
                     return_type if return_type is not None else UntypedType(),
-                    _dummy_fallback,
+                    Instance(FakeInfo("builtins.function"), [], -1),
                 )
 
         # End position is always the same.

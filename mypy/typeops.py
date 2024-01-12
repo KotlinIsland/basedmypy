@@ -269,7 +269,12 @@ def supported_self_type(typ: ProperType, allow_callable: bool = True) -> bool:
 F = TypeVar("F", bound=FunctionLike)
 
 
-def bind_self(method: F, original_type: Type | None = None, is_classmethod: bool = False) -> F:
+def bind_self(
+    method: F,
+    original_type: Type | None = None,
+    is_classmethod: bool = False,
+    fallback: Instance | None = None,
+) -> F:
     """Return a copy of `method`, with the type of its first parameter (usually
     self or cls) bound to original_type.
 
@@ -292,6 +297,11 @@ def bind_self(method: F, original_type: Type | None = None, is_classmethod: bool
     b = B().copy()  # type: B
 
     """
+    from mypy.typeanal import CALLABLE_TYPE
+
+    assert CALLABLE_TYPE
+    if not fallback:
+        fallback = CALLABLE_TYPE
     if isinstance(method, Overloaded):
         return cast(
             F, Overloaded([bind_self(c, original_type, is_classmethod) for c in method.items])
@@ -300,14 +310,15 @@ def bind_self(method: F, original_type: Type | None = None, is_classmethod: bool
     func = method
     if not func.arg_types:
         # Invalid method, return something.
-        return cast(F, func)
+        return cast(F, func.copy_modified(fallback=fallback))
     if func.arg_kinds[0] == ARG_STAR:
         # The signature is of the form 'def foo(*args, ...)'.
         # In this case we shouldn't drop the first arg,
         # since func will be absorbed by the *args.
 
         # TODO: infer bounds on the type of *args?
-        return cast(F, func)
+        # TODO: MethodType
+        return cast(F, func.copy_modified(fallback=fallback))
     self_param_type = get_proper_type(func.arg_types[0])
 
     variables: Sequence[TypeVarLikeType]
@@ -352,12 +363,14 @@ def bind_self(method: F, original_type: Type | None = None, is_classmethod: bool
     original_type = get_proper_type(original_type)
     if isinstance(original_type, CallableType) and original_type.is_type_obj():
         original_type = TypeType.make_normalized(original_type.ret_type)
+
     res = func.copy_modified(
         arg_types=func.arg_types[1:],
         arg_kinds=func.arg_kinds[1:],
         arg_names=func.arg_names[1:],
         variables=variables,
         bound_args=[original_type],
+        fallback=fallback,
     )
     return cast(F, res)
 
@@ -1254,3 +1267,7 @@ def get_type_type_item(t: ProperType) -> Type | None:
         return inner(t)
     except _get_type_type_item_Exception:
         return None
+
+
+def is_callable(t: ProperType) -> t is FunctionLike | Instance if True else False:
+    return isinstance(t, FunctionLike) or isinstance(t, Instance) and "__call__" in t.type.names

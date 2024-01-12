@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable, Sequence, cast
 
-from mypy import meet, message_registry, subtypes
+from mypy import meet, message_registry, subtypes, typeanal
 from mypy.erasetype import erase_typevars
 from mypy.expandtype import (
     expand_self_type,
@@ -345,7 +345,12 @@ def analyze_instance_member_access(
             signature = check_self_arg(
                 signature, dispatched_type, method.is_class, mx.context, name, mx.msg
             )
-            signature = bind_self(signature, mx.self_type, is_classmethod=method.is_class)
+            signature = bind_self(
+                signature,
+                mx.self_type,
+                is_classmethod=method.is_class,
+                fallback=mx.named_type("typing._NamedCallable"),
+            )
         # TODO: should we skip these steps for static methods as well?
         # Since generic static methods should not be allowed.
         typ = map_instance_to_supertype(typ, method.info)
@@ -762,7 +767,7 @@ def is_instance_var(var: Var) -> bool:
         and var.info.names[var.name].node is var
         and not var.is_classvar
         # variables without annotations are treated as classvar
-        and not var.is_inferred
+        and not var.is_inferred  # Why????
     )
 
 
@@ -831,7 +836,10 @@ def analyze_var(
                 else:
                     mx.msg.cant_assign_to_method(mx.context)
 
-            if not var.is_staticmethod:
+            if var.is_staticmethod:
+                assert isinstance(result, CallableType)
+                result = result.copy_modified(fallback=mx.named_type("typing._NamedCallable"))
+            else:
                 # Class-level function objects and classmethods become bound methods:
                 # the former to the instance, the latter to the class.
                 functype: FunctionLike = call_type
@@ -847,10 +855,16 @@ def analyze_var(
                 bound = get_proper_type(expand_self_type(var, signature, mx.original_type))
                 assert isinstance(bound, FunctionLike)
                 signature = bound
-                signature = check_self_arg(
-                    signature, dispatched_type, var.is_classmethod, mx.context, name, mx.msg
-                )
-                signature = bind_self(signature, mx.self_type, var.is_classmethod)
+                if signature.is_function or var.is_classmethod:
+                    signature = check_self_arg(
+                        signature, dispatched_type, var.is_classmethod, mx.context, name, mx.msg
+                    )
+                    signature = bind_self(
+                        signature,
+                        mx.self_type,
+                        var.is_classmethod,
+                        fallback=mx.named_type("typing._NamedCallable"),
+                    )
                 expanded_signature = expand_type_by_instance(signature, itype)
                 freeze_all_type_vars(expanded_signature)
                 if var.is_property:
@@ -1096,7 +1110,11 @@ def analyze_class_attribute_access(
         )
         if not mx.is_lvalue:
             result = analyze_descriptor_access(result, mx)
-
+        proper_type = get_proper_type(result)
+        if (
+            isinstance(node.node, Decorator) and node.node.var.is_staticmethod or is_classmethod
+        ) and isinstance(proper_type, FunctionLike):
+            proper_type.fallback = mx.named_type("typing._NamedCallable")
         return apply_class_attr_hook(mx, hook, result)
     elif isinstance(node.node, Var):
         mx.not_ready_callback(name, mx.context)
@@ -1317,7 +1335,7 @@ def type_object_type(info: TypeInfo, named_type: Callable[[str], Instance]) -> P
                     arg_kinds=[ARG_STAR, ARG_STAR2],
                     arg_names=["_args", "_kwds"],
                     ret_type=any_type,
-                    fallback=named_type("builtins.function"),
+                    fallback=named_type(typeanal.CALLABLE_NAME),
                 )
                 return class_callable(sig, info, fallback, None, is_new=False)
 

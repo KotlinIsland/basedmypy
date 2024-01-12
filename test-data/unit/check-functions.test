@@ -161,9 +161,10 @@ if int():
 
 [case testSubtypingFunctionsArgsKwargs]
 from typing import Any, Callable
+from types import FunctionType
 
 def everything(*args: Any, **kwargs: Any) -> None: pass
-everywhere: Callable[..., None]
+everywhere: "FunctionType[..., None]"
 
 def specific_1(a: int, b: str) -> None: pass
 def specific_2(a: int, *, b: str) -> None: pass
@@ -579,37 +580,61 @@ A().f('') # E: Argument 1 to "f" of "A" has incompatible type "str"; expected "i
 
 [case testMethodAsDataAttribute]
 from typing import Any, Callable, ClassVar
+from types import FunctionType
 class B: pass
 x: Any
 class A:
     f = x # type: ClassVar[Callable[[A], None]]
     g = x # type: ClassVar[Callable[[A, B], None]]
+    f2: ClassVar["FunctionType[[A], None]"] = x
+    g2: ClassVar["FunctionType[[A, B], None]"] = x
 a: A
-a.f()
-a.g(B())
-a.f(a) # E: Too many arguments
+a.f(a)
+a.g(a, B())
+a.f(a)
 a.g()  # E: Too few arguments
+
+a.f2()
+a.g2(B())
+a.f2(a) # E: Too many arguments
+a.g2()  # E: Too few arguments
+[builtins fixtures/tuple.pyi]
 
 [case testMethodWithInvalidMethodAsDataAttribute]
 from typing import Any, Callable, ClassVar
+from types import FunctionType
 class B: pass
 x: Any
 class A:
     f = x # type: ClassVar[Callable[[], None]]
     g = x # type: ClassVar[Callable[[B], None]]
+
+    f2: ClassVar['FunctionType[[], None]'] = x
+    g2: ClassVar['FunctionType[[B], None]'] = x
 a: A
-a.f() # E: Attribute function "f" with type "Callable[[], None]" does not accept self argument
-a.g() # E: Invalid self argument "A" to attribute function "g" with type "Callable[[B], None]"
+a.f() # E:
+a.g() # E: Too few arguments
+
+a.f2() # E: Attribute function "f2" with type "Callable[[], None]" does not accept self argument
+a.g2() # E: Invalid self argument "A" to attribute function "g2" with type "Callable[[B], None]"
+[builtins fixtures/tuple.pyi]
+
 
 [case testMethodWithDynamicallyTypedMethodAsDataAttribute]
 from typing import Any, Callable, ClassVar
+from types import FunctionType
 class B: pass
 x: Any
 class A:
     f = x # type: ClassVar[Callable[[Any], Any]]
+    f2 = x # type: ClassVar["FunctionType[[Any], Any]"]
 a: A
-a.f()
-a.f(a) # E: Too many arguments
+a.f() # E: Too few arguments
+a.f(a)
+
+a.f2()
+a.f2(a) # E: Too many arguments
+[builtins fixtures/tuple.pyi]
 
 [case testMethodWithInferredMethodAsDataAttribute]
 from typing import Any
@@ -665,34 +690,39 @@ a.g(a)   # E: Argument 1 has incompatible type "A[B]"; expected "B"
 
 [case testInvalidMethodAsDataAttributeInGenericClass]
 from typing import Any, TypeVar, Generic, Callable, ClassVar
+from types import FunctionType
 t = TypeVar('t')
 class B: pass
 class C: pass
 x: Any
 class A(Generic[t]):
-    f = x # type: ClassVar[Callable[[A[B]], None]]
+    f = x # type: ClassVar["FunctionType[[A[B]], None]"]
 ab: A[B]
 ac: A[C]
 ab.f()
 ac.f()   # E: Invalid self argument "A[C]" to attribute function "f" with type "Callable[[A[B]], None]"
+[builtins fixtures/tuple.pyi]
 
 [case testPartiallyTypedSelfInMethodDataAttribute]
 from typing import Any, TypeVar, Generic, Callable, ClassVar
+from types import FunctionType
 t = TypeVar('t')
 class B: pass
 class C: pass
 x: Any
 class A(Generic[t]):
-    f = x # type: ClassVar[Callable[[A], None]]
+    f = x # type: ClassVar["FunctionType[[A], None]"]
 ab: A[B]
 ac: A[C]
 ab.f()
 ac.f()
+[builtins fixtures/tuple.pyi]
 
 [case testCallableDataAttribute]
 from typing import Callable, ClassVar
+from types import FunctionType
 class A:
-    g: ClassVar[Callable[[A], None]]
+    g: ClassVar["FunctionType[[A], None]"]
     def __init__(self, f: Callable[[], None]) -> None:
         self.f = f
 a = A(lambda: None)
@@ -700,7 +730,7 @@ a.f()
 a.g()
 a.f(a) # E: Too many arguments
 a.g(a) # E: Too many arguments
-
+[builtins fixtures/tuple.pyi]
 
 -- Nested functions
 -- ----------------
@@ -897,14 +927,16 @@ f()
 f(None) # E: Too many arguments for "f"
 
 [case testDecoratorThatSwitchesTypeWithMethod]
-from typing import Any, Callable
-def dec(x) -> Callable[[Any], None]: pass
+from typing import Any
+from types import FunctionType
+def dec(x) -> "FunctionType[[Any], None]": pass
 class A:
     @dec
     def f(self, a, b, c): pass
 a: A
 a.f()
 a.f(None) # E: Too many arguments for "f" of "A"
+[builtins fixtures/tuple.pyi]
 
 [case testNestedDecorators]
 from typing import Any, Callable
@@ -2246,6 +2278,7 @@ with a:
 
 [case testNameForDecoratorMethod]
 from typing import Callable
+from types import FunctionType
 
 class A:
     def f(self) -> None:
@@ -2255,8 +2288,8 @@ class A:
     @dec
     def g(self, x: str) -> None: pass
 
-def dec(f: Callable[[A, str], None]) -> Callable[[A, int], None]: pass
-[out]
+def dec(f: Callable[[A, str], None]) -> "FunctionType[[A, int], None]": pass
+[builtins fixtures/tuple.pyi]
 
 [case testUnknownFunctionNotCallable]
 def f() -> None:

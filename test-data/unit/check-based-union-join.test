@@ -50,7 +50,7 @@ class B(Base):
 class C(Base):
     pass
 
-reveal_type([A, B, C])  # N: Revealed type is "list[def () -> __main__.A | def () -> __main__.B | def () -> __main__.C]"
+reveal_type([A, B, C])  # N: Revealed type is "list[() -> __main__.A | () -> __main__.B | () -> __main__.C]"
 
 
 [case testTypeInIf]

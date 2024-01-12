@@ -103,11 +103,11 @@ f"{n}"  # E: The string for "None" isn't helpful in a user-facing or semantic st
 def f(o: object): ...
 f"{f}"  # E: The type "def (o: object) -> None" doesn't define a __format__, __str__ or __repr__ method  [helpful-string]
 class A: ...
-f"{A}"  # E: The type "def () -> __main__.A" doesn't define a __format__, __str__ or __repr__ method  [helpful-string]
+f"{A}"  # E: The type "() -> __main__.A" doesn't define a __format__, __str__ or __repr__ method  [helpful-string]
 f"{A()}"  # E: The type "__main__.A" doesn't define a __format__, __str__ or __repr__ method  [helpful-string]
 class F:
     def __format__(self, format_spec: str) -> str: ...
-f"{F}"  # E: The type "def () -> __main__.F" doesn't define a __format__, __str__ or __repr__ method  [helpful-string]
+f"{F}"  # E: The type "() -> __main__.F" doesn't define a __format__, __str__ or __repr__ method  [helpful-string]
 f"{F()}"
 class S:
     @override
@@ -115,7 +115,7 @@ class S:
 
 class R:
     def __repr__(self) -> str: ...
-f"{R}"  # E: The type "def () -> __main__.R" doesn't define a __format__, __str__ or __repr__ method  [helpful-string]
+f"{R}"  # E: The type "() -> __main__.R" doesn't define a __format__, __str__ or __repr__ method  [helpful-string]
 f"{R()}"
 f"{1}"
 i: int

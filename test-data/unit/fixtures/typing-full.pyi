@@ -39,6 +39,11 @@ U = TypeVar('U')
 V = TypeVar('V')
 S = TypeVar('S')
 
+class _Callable:
+    def __call__(self): pass
+class _NamedCallable(_Callable):
+    __name__: str
+    __qualname__: str
 class NamedTuple(tuple[Any, ...]): ...
 
 # Note: definitions below are different from typeshed, variances are declared

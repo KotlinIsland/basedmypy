@@ -44,6 +44,48 @@ Basedmypy joins types into unions instead:
     b: str
     reveal_type(a if bool() else b)  # Revealed type is "int | str"
 
+
+Based Callable
+--------------
+
+Basedmypy supports callable and function syntax types:
+
+.. code-block:: python
+
+    a: "(int) -> str" = lambda x: str(x)  # Callable
+    b: "def (int) -> str" = lambda x: str(x)  # FunctionType
+
+In mypy, all ``Callable``\s are assumed to be functions (``FunctionType``/``builtins.function``), but this is not the case for instances that have a `__call__` method.
+
+Basedmypy corrects this by separating `Callable` and `FunctionType`:
+
+.. code-block:: python
+
+    class A:
+        def __call__(self, i: int) -> str: ...
+    a: "(int) -> str" = A()
+    a.__name__  # error: "() -> int" has no attribute "__name__"  [attr-defined]
+    b: "def (int) -> str" = lambda i: ""
+    b.__name__  # okay: `FunctionType` has a `__name__` attribute
+
+Basedmypy warns against unsafe and ambiguous assignments of callables on classes:
+
+.. code-block:: python
+
+    class A:
+        a: "() -> int" = lambda: 10  # error: Don't assign a "FunctionType" via the class, it will become a "MethodType"
+
+
+Additionally, a ``Protocol`` ``_NamedCallable`` is introduced to represent the union of all 'named' callable implementations:
+
+.. code-block:: python
+
+    class A:
+        def f(self): ...
+
+    reveal_type(A.f)  # "def (self: A) -> None"
+    reveal_type(A().f)  # "_NamedCallable & () -> None"
+
 Bare Literals
 -------------
 
@@ -262,20 +304,20 @@ Basedmypy makes significant changes to error and info messages, consider:
 
     T = TypeVar("T", bound=int)
 
-    def f(a: T, b: list[str | 1 | 2]) -> Never:
+    def f(a: T, b: list[str | 1 | 2]):
         reveal_type((a, b))
 
     reveal_type(f)
 
 Mypy shows::
 
-    Revealed type is "Tuple[T`-1, Union[builtins.str, Literal[1], Literal[2]]]"
-    Revealed type is "def [T <: builtins.int] (a: T`-1, b: Union[builtins.str, Literal[1], Literal[2]]) -> <nothing>"
+    Revealed type is "tuple[T`-1, builtins.list[Union[builtins.str, Literal[1], Literal[2]]]]"
+    Revealed type is "def [T <: builtins.int] (a: T`-1, b: builtins.list[Union[builtins.str, Literal[1], Literal[2]]]) -> Any"
 
 Basedmypy shows::
 
-    Revealed type is "(T@f, str | 1 | 2)"
-    Revealed type is "def [T: int] (a: T, b: str | 1 | 2) -> Never"
+    Revealed type is "(T@f, list[str | 1 | 2])"
+    Revealed type is "def [T: int] (a: T, b: list[str | 1 | 2]) -> None"
 
 
 Reveal Type Narrowed
@@ -318,12 +360,14 @@ Basedmypy handles type annotations in function bodies as unevaluated:
 .. code-block:: python
 
     def f():
-        a: list[int]  # no error, this annotation isn't evaluated
+        a: int | str  # no error in python 3.9, this annotation isn't evaluated
 
 Checked Argument Names
 ----------------------
 
-.. code-block::python
+Basedmypy will warn when subtypes have different keyword arguments:
+
+.. code-block:: python
 
     class A:
         def f(self, a: int): ...
@@ -336,6 +380,9 @@ Checked Argument Names
 Regex Checks
 ------------
 
+Basedmypy will report invalid regex patterns, and also analyze regex values
+to infer the group composition of a resulting ``Match`` object:
+
 .. code-block:: python
 
     re.compile("as(df")  #  error: missing ), unterminated subpattern at position 0  [regex]
@@ -344,11 +391,14 @@ Regex Checks
         reveal_type(m.groups())  # Revealed type is "(str | None, str)"
 
     if m := re.search("(?P<foo>a)", s):
-        reveal_type(m.group("foo")
-        reveal_type(m.group("bar")  # error: no such group: 'bar'  [regex]
+        reveal_type(m.group("foo"))
+        reveal_type(m.group("bar"))  # error: no such group: 'bar'  [regex]
 
 Helpful String Check
 --------------------
+
+`<object object at 0x0123456789ABCDEF>` and `None` accidentally appearing in user facing messages
+is not ideal, so basedmypy will warn against it:
 
 .. code-block:: python
 

@@ -31,10 +31,11 @@ from _typeshed import (
 )
 from collections.abc import Awaitable, Callable, Iterable, Iterator, MutableSet, Reversible, Set as AbstractSet, Sized
 from io import BufferedRandom, BufferedReader, BufferedWriter, FileIO, TextIOWrapper
-from types import CodeType, TracebackType, _Cell
+from types import CodeType, TracebackType, _Cell, BuiltinFunctionType
 
 # mypy crashes if any of {ByteString, Sequence, MutableSequence, Mapping, MutableMapping} are imported from collections.abc in builtins.pyi
 from typing import (  # noqa: Y022
+    _NamedCallable,
     IO,
     Any,
     BinaryIO,
@@ -134,9 +135,9 @@ class staticmethod(Generic[_P, _R_co]):
     def __isabstractmethod__(self) -> bool: ...
     def __init__(self, __f: Callable[_P, _R_co]) -> None: ...
     @overload
-    def __get__(self, __instance: None, __owner: type) -> Callable[_P, _R_co]: ...
+    def __get__(self, __instance: None, __owner: type) -> _NamedCallable[_P, _R_co]: ...
     @overload
-    def __get__(self, __instance: _T, __owner: type[_T] | None = None) -> Callable[_P, _R_co]: ...
+    def __get__(self, __instance: _T, __owner: type[_T] | None = None) -> _NamedCallable[_P, _R_co]: ...
     if sys.version_info >= (3, 10):
         __name__: str
         __qualname__: str
@@ -1173,13 +1174,23 @@ class _NotImplementedType(Any):
 
 NotImplemented: _NotImplementedType
 
+@type_check_only
+def _as_builtin(fn: Callable[_P, _T]) -> BuiltinFunctionType[_P, _T]: ...
+
+@_as_builtin
 def abs(__x: SupportsAbs[_T]) -> _T: ...
+@_as_builtin
 def all(__iterable: Iterable[object]) -> bool: ...
+@_as_builtin
 def any(__iterable: Iterable[object]) -> bool: ...
+@_as_builtin
 def ascii(__obj: object) -> str: ...
+@_as_builtin
 def bin(__number: int | SupportsIndex) -> str: ...
+@_as_builtin
 def breakpoint(*args: Any, **kws: Any) -> None: ...
-def callable(__obj: object) -> TypeGuard[Callable[..., object]]: ...
+callable: BuiltinFunctionType[[object], TypeGuard[Callable[..., object]]]
+@_as_builtin
 def chr(__i: int) -> str: ...
 
 # We define this here instead of using os.PathLike to avoid import cycle issues.
@@ -1188,16 +1199,19 @@ class _PathLike(Protocol[AnyStr_co]):
     def __fspath__(self) -> AnyStr_co: ...
 
 if sys.version_info >= (3, 10):
+    @_as_builtin
     def aiter(__async_iterable: SupportsAiter[_SupportsAnextT]) -> _SupportsAnextT: ...
 
     class _SupportsSynchronousAnext(Protocol[_AwaitableT_co]):
         def __anext__(self) -> _AwaitableT_co: ...
 
+    @_as_builtin
     @overload
     # `anext` is not, in fact, an async function. When default is not provided
     # `anext` is just a passthrough for `obj.__anext__`
     # See discussion in #7491 and pure-Python implementation of `anext` at https://github.com/python/cpython/blob/ea786a882b9ed4261eafabad6011bc7ef3b5bf94/Lib/test/test_asyncgen.py#L52-L80
     def anext(__i: _SupportsSynchronousAnext[_AwaitableT]) -> _AwaitableT: ...
+    @_as_builtin
     @overload
     async def anext(__i: SupportsAnext[_T], __default: _VT) -> _T | _VT: ...
 
@@ -1205,6 +1219,7 @@ if sys.version_info >= (3, 10):
 # in which case it returns ast.AST. We have overloads for flag 0 (the default) and for
 # explicitly passing PyCF_ONLY_AST. We fall back to Any for other values of flags.
 if sys.version_info >= (3, 8):
+    @_as_builtin
     @overload
     def compile(
         source: str | ReadableBuffer | _ast.Module | _ast.Expression | _ast.Interactive,
@@ -1216,6 +1231,7 @@ if sys.version_info >= (3, 8):
         *,
         _feature_version: int = -1,
     ) -> CodeType: ...
+    @_as_builtin
     @overload
     def compile(
         source: str | ReadableBuffer | _ast.Module | _ast.Expression | _ast.Interactive,
@@ -1226,6 +1242,7 @@ if sys.version_info >= (3, 8):
         optimize: int = -1,
         _feature_version: int = -1,
     ) -> CodeType: ...
+    @_as_builtin
     @overload
     def compile(
         source: str | ReadableBuffer | _ast.Module | _ast.Expression | _ast.Interactive,
@@ -1237,6 +1254,7 @@ if sys.version_info >= (3, 8):
         *,
         _feature_version: int = -1,
     ) -> _ast.AST: ...
+    @_as_builtin
     @overload
     def compile(
         source: str | ReadableBuffer | _ast.Module | _ast.Expression | _ast.Interactive,
@@ -1250,6 +1268,7 @@ if sys.version_info >= (3, 8):
     ) -> Any: ...
 
 else:
+    @_as_builtin
     @overload
     def compile(
         source: str | ReadableBuffer | _ast.Module | _ast.Expression | _ast.Interactive,
@@ -1259,6 +1278,7 @@ else:
         dont_inherit: bool = False,
         optimize: int = -1,
     ) -> CodeType: ...
+    @_as_builtin
     @overload
     def compile(
         source: str | ReadableBuffer | _ast.Module | _ast.Expression | _ast.Interactive,
@@ -1268,6 +1288,7 @@ else:
         dont_inherit: bool = False,
         optimize: int = -1,
     ) -> CodeType: ...
+    @_as_builtin
     @overload
     def compile(
         source: str | ReadableBuffer | _ast.Module | _ast.Expression | _ast.Interactive,
@@ -1277,6 +1298,7 @@ else:
         dont_inherit: bool = False,
         optimize: int = -1,
     ) -> _ast.AST: ...
+    @_as_builtin
     @overload
     def compile(
         source: str | ReadableBuffer | _ast.Module | _ast.Expression | _ast.Interactive,
@@ -1287,17 +1309,24 @@ else:
         optimize: int = -1,
     ) -> Any: ...
 
+@_as_builtin
 def copyright() -> None: ...
+@_as_builtin
 def credits() -> None: ...
+@_as_builtin
 def delattr(__obj: object, __name: str) -> None: ...
+@_as_builtin
 def dir(__o: object = ...) -> list[str]: ...
+@_as_builtin
 @overload
 def divmod(__x: SupportsDivMod[_T_contra, _T_co], __y: _T_contra) -> _T_co: ...
+@_as_builtin
 @overload
 def divmod(__x: _T_contra, __y: SupportsRDivMod[_T_contra, _T_co]) -> _T_co: ...
 
 # The `globals` argument to `eval` has to be `dict[str, Any]` rather than `dict[str, object]` due to invariance.
 # (The `globals` argument has to be a "real dict", rather than any old mapping, unlike the `locals` argument.)
+@_as_builtin
 def eval(
     __source: str | ReadableBuffer | CodeType,
     __globals: dict[str, Any] | None = None,
@@ -1306,6 +1335,7 @@ def eval(
 
 # Comment above regarding `eval` applies to `exec` as well
 if sys.version_info >= (3, 11):
+    @_as_builtin
     def exec(
         __source: str | ReadableBuffer | CodeType,
         __globals: dict[str, Any] | None = None,
@@ -1315,12 +1345,14 @@ if sys.version_info >= (3, 11):
     ) -> None: ...
 
 else:
+    @_as_builtin
     def exec(
         __source: str | ReadableBuffer | CodeType,
         __globals: dict[str, Any] | None = None,
         __locals: Mapping[str, object] | None = None,
     ) -> None: ...
 
+@_as_builtin
 def exit(code: sys._ExitCode = None) -> NoReturn: ...
 
 class filter(Iterator[_T]):
@@ -1333,40 +1365,58 @@ class filter(Iterator[_T]):
     def __iter__(self) -> Self: ...
     def __next__(self) -> _T: ...
 
+@_as_builtin
 def format(__value: object, __format_spec: str = "") -> str: ...
+@_as_builtin
 @overload
 def getattr(__o: object, __name: str) -> Any: ...
 
 # While technically covered by the last overload, spelling out the types for None, bool
 # and basic containers help mypy out in some tricky situations involving type context
 # (aka bidirectional inference)
+@_as_builtin
 @overload
 def getattr(__o: object, __name: str, __default: None) -> Any | None: ...
+@_as_builtin
 @overload
 def getattr(__o: object, __name: str, __default: bool) -> Any | bool: ...
+@_as_builtin
 @overload
 def getattr(__o: object, __name: str, __default: list[Any]) -> Any | list[Any]: ...
+@_as_builtin
 @overload
 def getattr(__o: object, __name: str, __default: dict[Any, Any]) -> Any | dict[Any, Any]: ...
+@_as_builtin
 @overload
 def getattr(__o: object, __name: str, __default: _T) -> Any | _T: ...
+@_as_builtin
 def globals() -> dict[str, Any]: ...
+@_as_builtin
 def hasattr(__obj: object, __name: str) -> bool: ...
+@_as_builtin
 def hash(__obj: object) -> int: ...
+@_as_builtin
 def help(request: object = ...) -> None: ...
+@_as_builtin
 def hex(__number: int | SupportsIndex) -> str: ...
+@_as_builtin
 def id(__obj: object) -> int: ...
+@_as_builtin
 def input(__prompt: object = "") -> str: ...
 
 class _GetItemIterable(Protocol[_T_co]):
     def __getitem__(self, __i: int) -> _T_co: ...
 
+@_as_builtin
 @overload
 def iter(__object: SupportsIter[_SupportsNextT]) -> _SupportsNextT: ...
+@_as_builtin
 @overload
 def iter(__object: _GetItemIterable[_T]) -> Iterator[_T]: ...
+@_as_builtin
 @overload
 def iter(__object: Callable[[], _T | None], __sentinel: None) -> Iterator[_T]: ...
+@_as_builtin
 @overload
 def iter(__object: Callable[[], _T], __sentinel: object) -> Iterator[_T]: ...
 
@@ -1376,10 +1426,15 @@ if sys.version_info >= (3, 10):
 else:
     _ClassInfo: TypeAlias = type | tuple[_ClassInfo, ...]
 
+@_as_builtin
 def isinstance(__obj: object, __class_or_tuple: _ClassInfo) -> bool: ...
+@_as_builtin
 def issubclass(__cls: type, __class_or_tuple: _ClassInfo) -> bool: ...
+@_as_builtin
 def len(__obj: Sized) -> int: ...
+@_as_builtin
 def license() -> None: ...
+@_as_builtin
 def locals() -> dict[str, Any]: ...
 
 class map(Iterator[_S]):
@@ -1425,42 +1480,58 @@ class map(Iterator[_S]):
     def __iter__(self) -> Self: ...
     def __next__(self) -> _S: ...
 
+@_as_builtin
 @overload
 def max(
     __arg1: SupportsRichComparisonT, __arg2: SupportsRichComparisonT, *_args: SupportsRichComparisonT, key: None = None
 ) -> SupportsRichComparisonT: ...
+@_as_builtin
 @overload
 def max(__arg1: _T, __arg2: _T, *_args: _T, key: Callable[[_T], SupportsRichComparison]) -> _T: ...
+@_as_builtin
 @overload
 def max(__iterable: Iterable[SupportsRichComparisonT], *, key: None = None) -> SupportsRichComparisonT: ...
+@_as_builtin
 @overload
 def max(__iterable: Iterable[_T], *, key: Callable[[_T], SupportsRichComparison]) -> _T: ...
+@_as_builtin
 @overload
 def max(__iterable: Iterable[SupportsRichComparisonT], *, key: None = None, default: _T) -> SupportsRichComparisonT | _T: ...
+@_as_builtin
 @overload
 def max(__iterable: Iterable[_T1], *, key: Callable[[_T1], SupportsRichComparison], default: _T2) -> _T1 | _T2: ...
+@_as_builtin
 @overload
 def min(
     __arg1: SupportsRichComparisonT, __arg2: SupportsRichComparisonT, *_args: SupportsRichComparisonT, key: None = None
 ) -> SupportsRichComparisonT: ...
+@_as_builtin
 @overload
 def min(__arg1: _T, __arg2: _T, *_args: _T, key: Callable[[_T], SupportsRichComparison]) -> _T: ...
+@_as_builtin
 @overload
 def min(__iterable: Iterable[SupportsRichComparisonT], *, key: None = None) -> SupportsRichComparisonT: ...
+@_as_builtin
 @overload
 def min(__iterable: Iterable[_T], *, key: Callable[[_T], SupportsRichComparison]) -> _T: ...
+@_as_builtin
 @overload
 def min(__iterable: Iterable[SupportsRichComparisonT], *, key: None = None, default: _T) -> SupportsRichComparisonT | _T: ...
+@_as_builtin
 @overload
 def min(__iterable: Iterable[_T1], *, key: Callable[[_T1], SupportsRichComparison], default: _T2) -> _T1 | _T2: ...
+@_as_builtin
 @overload
 def next(__i: SupportsNext[_T]) -> _T: ...
+@_as_builtin
 @overload
 def next(__i: SupportsNext[_T], __default: _VT) -> _T | _VT: ...
+@_as_builtin
 def oct(__number: int | SupportsIndex) -> str: ...
 
 _Opener: TypeAlias = Callable[[str, int], int]
 
+# `open` is a `BuiltinFunctionType`, but isn't typed correctly due to a type cycle with `io`
 # Text mode: always returns a TextIOWrapper
 @overload
 def open(
@@ -1547,10 +1618,12 @@ def open(
     closefd: bool = True,
     opener: _Opener | None = None,
 ) -> IO[Any]: ...
+@_as_builtin
 def ord(__c: str | bytes | bytearray) -> int: ...
 
 class _SupportsWriteAndFlush(SupportsWrite[_T_contra], SupportsFlush, Protocol[_T_contra]): ...
 
+@_as_builtin
 @overload
 def print(
     *values: object,
@@ -1559,6 +1632,7 @@ def print(
     file: SupportsWrite[str] | None = None,
     flush: Literal[False] = False,
 ) -> None: ...
+@_as_builtin
 @overload
 def print(
     *values: object, sep: str | None = " ", end: str | None = "\n", file: _SupportsWriteAndFlush[str] | None = None, flush: bool
@@ -1583,74 +1657,105 @@ _SupportsSomeKindOfPow = (  # noqa: Y026  # TODO: Use TypeAlias once mypy bugs a
 if sys.version_info >= (3, 8):
     # TODO: `pow(int, int, Literal[0])` fails at runtime,
     # but adding a `NoReturn` overload isn't a good solution for expressing that (see #8566).
+    @_as_builtin
     @overload
     def pow(base: int, exp: int, mod: int) -> int: ...
+    @_as_builtin
     @overload
     def pow(base: int, exp: Literal[0], mod: None = None) -> Literal[1]: ...
+    @_as_builtin
     @overload
     def pow(base: int, exp: _PositiveInteger, mod: None = None) -> int: ...
+    @_as_builtin
     @overload
     def pow(base: int, exp: _NegativeInteger, mod: None = None) -> float: ...
     # int base & positive-int exp -> int; int base & negative-int exp -> float
     # return type must be Any as `int | float` causes too many false-positive errors
+    @_as_builtin
     @overload
     def pow(base: int, exp: int, mod: None = None) -> Any: ...
+    @_as_builtin
     @overload
     def pow(base: _PositiveInteger, exp: float, mod: None = None) -> float: ...
+    @_as_builtin
     @overload
     def pow(base: _NegativeInteger, exp: float, mod: None = None) -> complex: ...
+    @_as_builtin
     @overload
     def pow(base: float, exp: int, mod: None = None) -> float: ...
     # float base & float exp could return float or complex
     # return type must be Any (same as complex base, complex exp),
     # as `float | complex` causes too many false-positive errors
+    @_as_builtin
     @overload
     def pow(base: float, exp: complex | _SupportsSomeKindOfPow, mod: None = None) -> Any: ...
+    @_as_builtin
     @overload
     def pow(base: complex, exp: complex | _SupportsSomeKindOfPow, mod: None = None) -> complex: ...
+    @_as_builtin
     @overload
     def pow(base: _SupportsPow2[_E, _T_co], exp: _E, mod: None = None) -> _T_co: ...
+    @_as_builtin
     @overload
     def pow(base: _SupportsPow3NoneOnly[_E, _T_co], exp: _E, mod: None = None) -> _T_co: ...
+    @_as_builtin
     @overload
     def pow(base: _SupportsPow3[_E, _M, _T_co], exp: _E, mod: _M) -> _T_co: ...
+    @_as_builtin
     @overload
     def pow(base: _SupportsSomeKindOfPow, exp: float, mod: None = None) -> Any: ...
+    @_as_builtin
     @overload
     def pow(base: _SupportsSomeKindOfPow, exp: complex, mod: None = None) -> complex: ...
 
 else:
+    @_as_builtin
     @overload
     def pow(__x: int, __y: int, __z: int) -> int: ...
+    @_as_builtin
     @overload
     def pow(__x: int, __y: Literal[0], __z: None = None) -> Literal[1]: ...
+    @_as_builtin
     @overload
     def pow(__x: int, __y: _PositiveInteger, __z: None = None) -> int: ...
+    @_as_builtin
     @overload
     def pow(__x: int, __y: _NegativeInteger, __z: None = None) -> float: ...
+    @_as_builtin
     @overload
     def pow(__x: int, __y: int, __z: None = None) -> Any: ...
+    @_as_builtin
     @overload
     def pow(__x: _PositiveInteger, __y: float, __z: None = None) -> float: ...
+    @_as_builtin
     @overload
     def pow(__x: _NegativeInteger, __y: float, __z: None = None) -> complex: ...
+    @_as_builtin
     @overload
     def pow(__x: float, __y: int, __z: None = None) -> float: ...
+    @_as_builtin
     @overload
     def pow(__x: float, __y: complex | _SupportsSomeKindOfPow, __z: None = None) -> Any: ...
+    @_as_builtin
     @overload
     def pow(__x: complex, __y: complex | _SupportsSomeKindOfPow, __z: None = None) -> complex: ...
+    @_as_builtin
     @overload
     def pow(__x: _SupportsPow2[_E, _T_co], __y: _E, __z: None = None) -> _T_co: ...
+    @_as_builtin
     @overload
     def pow(__x: _SupportsPow3NoneOnly[_E, _T_co], __y: _E, __z: None = None) -> _T_co: ...
+    @_as_builtin
     @overload
     def pow(__x: _SupportsPow3[_E, _M, _T_co], __y: _E, __z: _M) -> _T_co: ...
+    @_as_builtin
     @overload
     def pow(__x: _SupportsSomeKindOfPow, __y: float, __z: None = None) -> Any: ...
+    @_as_builtin
     @overload
     def pow(__x: _SupportsSomeKindOfPow, __y: complex, __z: None = None) -> complex: ...
 
+@_as_builtin
 def quit(code: sys._ExitCode = None) -> NoReturn: ...
 
 class reversed(Iterator[_T]):
@@ -1662,6 +1767,7 @@ class reversed(Iterator[_T]):
     def __next__(self) -> _T: ...
     def __length_hint__(self) -> int: ...
 
+@_as_builtin
 def repr(__obj: object) -> str: ...
 
 # See https://github.com/python/typeshed/pull/9141
@@ -1674,18 +1780,23 @@ class _SupportsRound1(Protocol[_T_co]):
 class _SupportsRound2(Protocol[_T_co]):
     def __round__(self, __ndigits: int) -> _T_co: ...
 
+@_as_builtin
 @overload
 def round(number: _SupportsRound1[_T], ndigits: None = None) -> _T: ...
+@_as_builtin
 @overload
 def round(number: _SupportsRound2[_T], ndigits: SupportsIndex) -> _T: ...
 
 # See https://github.com/python/typeshed/pull/6292#discussion_r748875189
 # for why arg 3 of `setattr` should be annotated with `Any` and not `object`
+@_as_builtin
 def setattr(__obj: object, __name: str, __value: Any) -> None: ...
+@_as_builtin
 @overload
 def sorted(
     __iterable: Iterable[SupportsRichComparisonT], *, key: None = None, reverse: bool = False
 ) -> list[SupportsRichComparisonT]: ...
+@_as_builtin
 @overload
 def sorted(__iterable: Iterable[_T], *, key: Callable[[_T], SupportsRichComparison], reverse: bool = False) -> list[_T]: ...
 
@@ -1701,29 +1812,36 @@ _SupportsSumNoDefaultT = TypeVar("_SupportsSumNoDefaultT", bound=_SupportsSumWit
 # without creating many false-positive errors (see #7578).
 # Instead, we special-case the most common examples of this: bool and literal integers.
 if sys.version_info >= (3, 8):
+    @_as_builtin
     @overload
     def sum(__iterable: Iterable[bool], start: int = 0) -> int: ...  # type: ignore[overload-overlap]
 
 else:
+    @_as_builtin
     @overload
     def sum(__iterable: Iterable[bool], __start: int = 0) -> int: ...  # type: ignore[overload-overlap]
 
+@_as_builtin
 @overload
 def sum(__iterable: Iterable[_SupportsSumNoDefaultT]) -> _SupportsSumNoDefaultT | Literal[0]: ...
 
 if sys.version_info >= (3, 8):
+    @_as_builtin
     @overload
     def sum(__iterable: Iterable[_AddableT1], start: _AddableT2) -> _AddableT1 | _AddableT2: ...
 
 else:
+    @_as_builtin
     @overload
     def sum(__iterable: Iterable[_AddableT1], __start: _AddableT2) -> _AddableT1 | _AddableT2: ...
 
 # The argument to `vars()` has to have a `__dict__` attribute, so the second overload can't be annotated with `object`
 # (A "SupportsDunderDict" protocol doesn't work)
 # Use a type: ignore to make complaints about overlapping overloads go away
+@_as_builtin
 @overload
 def vars(__object: type) -> types.MappingProxyType[str, Any]: ...  # type: ignore[overload-overlap]
+@_as_builtin
 @overload
 def vars(__object: Any = ...) -> dict[str, Any]: ...
 
@@ -1811,6 +1929,7 @@ class zip(Iterator[_T_co]):
 
 # Signature of `builtins.__import__` should be kept identical to `importlib.__import__`
 # Return type of `__import__` should be kept the same as return type of `importlib.import_module`
+@_as_builtin
 def __import__(
     name: str,
     globals: Mapping[str, object] | None = None,
@@ -1818,6 +1937,7 @@ def __import__(
     fromlist: Sequence[str] = (),
     level: int = 0,
 ) -> types.ModuleType: ...
+@_as_builtin
 def __build_class__(__func: Callable[[], _Cell | Any], __name: str, *bases: Any, metaclass: Any = ..., **kwds: Any) -> Any: ...
 
 if sys.version_info >= (3, 10):

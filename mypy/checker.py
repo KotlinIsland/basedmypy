@@ -163,7 +163,12 @@ from mypy.subtypes import (
 )
 from mypy.traverser import TraverserVisitor, all_return_statements, has_return_statement
 from mypy.treetransform import TransformVisitor
-from mypy.typeanal import check_for_explicit_any, has_any_from_unimported_type, make_optional_type
+from mypy.typeanal import (
+    CALLABLE_NAME,
+    check_for_explicit_any,
+    has_any_from_unimported_type,
+    make_optional_type,
+)
 from mypy.typeops import (
     bind_self,
     coerce_to_literal,
@@ -747,6 +752,8 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             # This can happen if we've got an overload with a different
             # decorator or if the implementation is untyped -- we gave up on the types.
             impl_type = self.extract_callable_type(inner_type, defn.impl)
+            if impl_type and isinstance(defn.type, FunctionLike):
+                defn.type.fallback = impl_type.fallback
 
         is_descriptor_get = defn.info and defn.name == "__get__"
         for i, item in enumerate(defn.items):
@@ -815,7 +822,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 # the first arg from the method being checked against.
                 if sig1.arg_types and defn.info:
                     impl = impl.copy_modified(arg_types=[sig1.arg_types[0]] + impl.arg_types[1:])
-
+                impl.fallback = sig1.fallback
                 # Is the overload alternative's arguments subtypes of the implementation's?
                 if not is_callable_compatible(
                     impl, sig1, is_compat=is_subtype, is_proper_subtype=False, ignore_return=True
@@ -1940,6 +1947,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             arg_types=[reverse_type.arg_types[1], reverse_type.arg_types[0]],
             arg_kinds=[nodes.ARG_POS] * 2,
             arg_names=[None] * 2,
+            fallback=forward_item.fallback,
         )
 
         reverse_base_erased = reverse_type.arg_types[0]
@@ -1977,6 +1985,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             )
             fail = False
             if isinstance(typ2, FunctionLike):
+                typ2.fallback = typ.fallback
                 if not is_more_general_arg_prefix(typ, typ2):
                     fail = True
             else:
@@ -1999,7 +2008,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 [nodes.ARG_POS],
                 [None],
                 AnyType(TypeOfAny.special_form),
-                self.named_type("builtins.function"),
+                self.named_type(CALLABLE_NAME),
             )
         elif self.scope.active_class():
             method_type = CallableType(
@@ -2386,7 +2395,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             ):
                 fail = True
                 op_method_wider_note = True
-        if isinstance(override, FunctionLike):
+        if not fail and isinstance(override, FunctionLike):
             if original_class_or_static and not override_class_or_static:
                 fail = True
             elif isinstance(original, CallableType) and isinstance(override, CallableType):
@@ -3260,6 +3269,67 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 ):
                     self.msg.concrete_only_assign(p_lvalue_type, rvalue)
                     return
+
+                # Special case: function assigned to an instance var via the class will be methodised
+                type_type = None
+                expr_type = None
+                if isinstance(lvalue, MemberExpr):
+                    expr_type = self.expr_checker.accept(lvalue.expr)
+                    proper = get_proper_type(expr_type)
+                    if isinstance(proper, CallableType) and proper.is_type_obj():
+                        type_type = expr_type
+                if (
+                    (type_type or self.scope.active_class())
+                    and isinstance(p_rvalue_type, CallableType)
+                    and isinstance(p_lvalue_type, CallableType)
+                ):
+                    node = None
+                    if type_type:
+                        assert expr_type
+                        proper = get_proper_type(expr_type)
+                        assert isinstance(proper, CallableType)
+                        proper = get_proper_type(proper.ret_type)
+                        assert isinstance(proper, Instance)
+                        assert isinstance(lvalue, (NameExpr, MemberExpr))
+                        table_node = proper.type.get(lvalue.name)
+                        if table_node is None:
+                            # work around https://github.com/python/mypy/issues/17316
+                            return
+                        node = table_node.node
+                    class_var = (isinstance(node, Var) and node.is_classvar) or (
+                        isinstance(lvalue, NameExpr)
+                        and isinstance(lvalue.node, Var)
+                        and lvalue.node.is_classvar
+                    )
+                    if p_rvalue_type.is_function:
+                        if codes.CALLABLE_FUNCTIONTYPE in self.options.enabled_error_codes:
+                            if not (class_var and p_lvalue_type.is_function):
+                                self.msg.fail(
+                                    'Assigning a "FunctionType" on the class will become a "MethodType"',
+                                    rvalue,
+                                    code=codes.CALLABLE_FUNCTIONTYPE,
+                                )
+                            if not class_var:
+                                self.msg.note(
+                                    'Consider setting it on the instance, or using "ClassVar"',
+                                    rvalue,
+                                )
+                    elif (
+                        codes.POSSIBLE_FUNCTION in self.options.enabled_error_codes
+                        and type(p_rvalue_type) is CallableType
+                        and p_rvalue_type.is_callable
+                    ):
+                        self.msg.fail(
+                            'This "CallableType" could be a "FunctionType", which when assigned via the class, would produce a "MethodType"',
+                            rvalue,
+                            code=codes.POSSIBLE_FUNCTION,
+                        )
+                        if class_var:
+                            self.msg.note('Consider changing the type to "FunctionType"', rvalue)
+                        elif not p_lvalue_type.is_function:
+                            self.msg.note(
+                                'Consider setting it on the instance, or using "ClassVar"', rvalue
+                            )
                 proper_right = get_proper_type(rvalue_type)
                 if (
                     isinstance(lvalue, RefExpr)
@@ -5275,6 +5345,19 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 self.fail(
                     "Property is missing a type annotation", e.func, code=codes.NO_UNTYPED_DEF
                 )
+        # Special case: most decorators are typed to remove the FunctionType, so warn here
+        if (
+            e.func.info
+            and isinstance(sig, CallableType)
+            and not sig.is_function
+            and not e.func.is_static
+            and not e.func.is_class
+        ):
+            self.fail(
+                'This decorator returns a "Callable", not a "FunctionType". Decorate this decorator with "basedtyping.as_functiontype", or add a \'type: ignore\' it if it\'s intentional',
+                e,
+                code=codes.CALLABLE_FUNCTIONTYPE,
+            )
 
     def check_for_untyped_decorator(
         self, func: FuncDef, dec_type: Type, dec_expr: Expression

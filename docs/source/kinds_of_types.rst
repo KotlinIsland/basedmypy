@@ -146,8 +146,30 @@ purpose. Example:
 
 .. _callable-types:
 
-Callable types (and lambdas)
-****************************
+Callable types
+**************
+
+A callable type is a type that conforms to the ``collections.abc.Callable`` protocol, i.e. it has a ``__call__`` attribute (invoked with the call operator: ``X()``).
+There are three main kinds of these:
+
+- functions and lambdas (``types.FunctionType``/``builtins.function``)
+- ``type`` objects. (i.e. the ``int`` class)
+- instances that define a ``__call__`` method
+
+A callable type can be denoted as ``"(int, str) -> None"``. A function type (``types.FunctionType``) can be denoted as ``"def (int, str) -> None"``.
+
+``FunctionType`` does have some problematic behavior due to it's implementation of ``__get__``:
+
+.. code-block:: python
+
+    def f(a, b): ...
+    class A:
+        f = f
+
+    A.f(1, 2)
+    A().f(1, 2)  # TypeError: f() takes 2 positional arguments but 3 were given
+
+This is because when the class attribute is accessed through an instance, ``FunctionType`` will instead return a ``MethodType``, with the ``self`` argument pre-filled.
 
 You can pass around function objects and bound methods in statically
 typed code. The type of a function that accepts arguments ``A1``, ..., ``An``

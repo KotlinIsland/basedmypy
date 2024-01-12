@@ -1758,7 +1758,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(self: State) -> CacheMeta\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (self: State) -> CacheMeta\")",
         "offset": 0,
         "src": "def xmeta(self) -> CacheMeta:",
         "target": "mypy.build"
@@ -1839,7 +1839,7 @@
         "code": "no-any-expr",
         "column": 40,
         "message": "Expression type contains \"Any\" (has type \"(str, CacheMeta | None)\")",
-        "offset": 404,
+        "offset": 412,
         "src": "new_interface_hash, self.meta = write_cache(",
         "target": "mypy.build.State.write_cache"
       },
@@ -1969,7 +1969,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"type_context\" is not using @override but is overriding a method in class \"mypy.plugin.CheckerPluginInterface\"",
-        "offset": 449,
+        "offset": 454,
         "src": "def type_context(self) -> list[Type | None]:",
         "target": "mypy.checker"
       },
@@ -1993,7 +1993,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_func_def\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 272,
+        "offset": 283,
         "src": "def visit_func_def(self, defn: FuncDef) -> None:",
         "target": "mypy.checker.TypeChecker.visit_func_def"
       },
@@ -2009,7 +2009,7 @@
         "code": "no-any-expr",
         "column": 12,
         "message": "Expression type contains \"Any\" (has type \"tuple[Any, ...]\")",
-        "offset": 585,
+        "offset": 586,
         "src": "for substitutions in itertools.product(*subst):",
         "target": "mypy.checker.TypeChecker.expand_typevars"
       },
@@ -2030,18 +2030,10 @@
         "target": "mypy.checker.TypeChecker.expand_typevars"
       },
       {
-        "code": "redundant-expr",
-        "column": 11,
-        "message": "Condition is always true",
-        "offset": 306,
-        "src": "if isinstance(override, FunctionLike):",
-        "target": "mypy.checker.TypeChecker.check_override"
-      },
-      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_class_def\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 128,
+        "offset": 434,
         "src": "def visit_class_def(self, defn: ClassDef) -> None:",
         "target": "mypy.checker.TypeChecker.visit_class_def"
       },
@@ -2113,7 +2105,7 @@
         "code": "truthy-bool",
         "column": 24,
         "message": "\"rvalue_type\" has type \"Type\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 161,
+        "offset": 220,
         "src": "and rvalue_type",
         "target": "mypy.checker.TypeChecker.check_assignment"
       },
@@ -2353,7 +2345,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_with_stmt\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 104,
+        "offset": 117,
         "src": "def visit_with_stmt(self, s: WithStmt) -> None:",
         "target": "mypy.checker.TypeChecker.visit_with_stmt"
       },
@@ -2659,7 +2651,7 @@
         "code": "possibly-undefined",
         "column": 23,
         "message": "Name \"actual_types\" may be undefined",
-        "offset": 1718,
+        "offset": 1723,
         "src": "assert len(actual_types) == len(actuals) == len(actual_kinds)",
         "target": "mypy.checkexpr"
       },
@@ -2931,7 +2923,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_list_expr\" is not using @override but is overriding a method in class \"mypy.visitor.ExpressionVisitor\"",
-        "offset": 160,
+        "offset": 164,
         "src": "def visit_list_expr(self, e: ListExpr) -> Type:",
         "target": "mypy.checkexpr.ExpressionChecker.visit_list_expr"
       },
@@ -3317,7 +3309,7 @@
         "code": "truthy-bool",
         "column": 7,
         "message": "\"result\" has type \"Type\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 497,
+        "offset": 498,
         "src": "if result and not mx.is_lvalue and not implicit:",
         "target": "mypy.checkmember.analyze_var"
       },
@@ -7525,7 +7517,7 @@
         "code": "no-any-explicit",
         "column": 8,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 116,
+        "offset": 139,
         "src": "self.visitor_cache: dict[type, Callable[[AST | None], Any]] = {}",
         "target": "mypy.fastparse.ASTConverter.__init__"
       },
@@ -11321,7 +11313,7 @@
         "code": "no-any-expr",
         "column": 11,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 24,
+        "offset": 26,
         "src": "if not dummy.__dict__[\"special-opts:strict\"]:",
         "target": "mypy.main.process_options"
       },
@@ -12567,7 +12559,7 @@
         "code": "redundant-expr",
         "column": 9,
         "message": "Condition is always false",
-        "offset": 263,
+        "offset": 274,
         "src": "elif typ is None:",
         "target": "mypy.messages.format_type_inner"
       },
@@ -12607,7 +12599,7 @@
         "code": "no-any-expr",
         "column": 20,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 74,
+        "offset": 76,
         "src": "first_arg = tp.def_extras.get(\"first_arg\")",
         "target": "mypy.messages.pretty_callable"
       },
@@ -15204,10 +15196,18 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(self: SemanticAnalyzerPluginInterface, name: str, stnode: SymbolTableNode) -> Any\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (self: SemanticAnalyzerPluginInterface, name: str, stnode: SymbolTableNode) -> Any\")",
         "offset": 0,
         "src": "def add_symbol_table_node(self, name: str, stnode: SymbolTableNode) -> Any:",
         "target": "mypy.plugin"
+      },
+      {
+        "code": "no-any-decorated",
+        "column": 4,
+        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-no-any-decorated for more info",
+        "offset": 0,
+        "src": "def add_symbol_table_node(self, name: str, stnode: SymbolTableNode) -> Any:",
+        "target": null
       },
       {
         "code": "explicit-override",
@@ -17041,7 +17041,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_func_def\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 328,
+        "offset": 334,
         "src": "def visit_func_def(self, defn: FuncDef) -> None:",
         "target": "mypy.semanal.SemanticAnalyzer.visit_func_def"
       },
@@ -23108,7 +23108,7 @@
       {
         "code": "no-any-expr",
         "column": 46,
-        "message": "Expression type contains \"Any\" (has type \"(x: (str, Any)) -> str\")",
+        "message": "Expression type contains \"Any\" (has type \"def (x: (str, Any)) -> str\")",
         "offset": 0,
         "src": "all_items = sorted(all_items, key=lambda x: x[0])",
         "target": "mypy.stubgenc.InspectionStubGenerator.generate_module"
@@ -23410,14 +23410,6 @@
         "target": "mypy.stubgenc"
       },
       {
-        "code": "no-any-decorated",
-        "column": 4,
-        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-no-any-decorated for more info",
-        "offset": 0,
-        "src": "def is_property_readonly(prop: Any) -> bool:",
-        "target": null
-      },
-      {
         "code": "no-any-expr",
         "column": 23,
         "message": "Expression has type \"Any\"",
@@ -23652,7 +23644,7 @@
       {
         "code": "no-any-expr",
         "column": 38,
-        "message": "Expression type contains \"Any\" (has type \"(x: (str, Any)) -> (int, str)\")",
+        "message": "Expression type contains \"Any\" (has type \"def (x: (str, Any)) -> (int, str)\")",
         "offset": 0,
         "src": "items = sorted(items, key=lambda x: method_name_sort_key(x[0]))",
         "target": "mypy.stubgenc.InspectionStubGenerator.generate_class_stub"
@@ -24038,7 +24030,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"[_T] (func: (...) -> _T) -> _SingleDispatchCallable[_T]\")",
+        "message": "Expression type contains \"Any\" (has type \"def [_T] (func: (...) -> _T) -> _SingleDispatchCallable[_T]\")",
         "offset": 13,
         "src": "@singledispatch",
         "target": "mypy.stubtest"
@@ -24046,7 +24038,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"(stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Expression type contains \"Any\" (has type \"def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "@singledispatch",
         "target": "mypy.stubtest"
@@ -24062,7 +24054,7 @@
       {
         "code": "no-any-decorated",
         "column": 0,
-        "message": "Type of decorated function contains type \"Any\" (\"_SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
+        "message": "Type of decorated function contains type \"Any\" (\"_SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
         "offset": 0,
         "src": "def verify(",
         "target": "mypy.stubtest"
@@ -24078,7 +24070,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
         "offset": 64,
         "src": "@verify.register(nodes.MypyFile)",
         "target": "mypy.stubtest"
@@ -24086,7 +24078,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[MypyFile, _SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[MypyFile, _SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
         "offset": 0,
         "src": "@verify.register(nodes.MypyFile)",
         "target": "mypy.stubtest"
@@ -24302,7 +24294,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
         "offset": 6,
         "src": "@verify.register(nodes.TypeInfo)",
         "target": "mypy.stubtest"
@@ -24310,7 +24302,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[TypeInfo, _SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[TypeInfo, _SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
         "offset": 0,
         "src": "@verify.register(nodes.TypeInfo)",
         "target": "mypy.stubtest"
@@ -24318,7 +24310,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"(stub: TypeInfo, runtime: type[Any] | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Expression type contains \"Any\" (has type \"def (stub: TypeInfo, runtime: type[Any] | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "@verify.register(nodes.TypeInfo)",
         "target": "mypy.stubtest"
@@ -24334,7 +24326,7 @@
       {
         "code": "no-any-decorated",
         "column": 0,
-        "message": "Type of decorated function contains type \"Any\" (\"(stub: TypeInfo, runtime: type[Any] | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (stub: TypeInfo, runtime: type[Any] | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "def verify_typeinfo(",
         "target": "mypy.stubtest"
@@ -24536,6 +24528,14 @@
         "column": 43,
         "message": "Expression type contains \"Any\" (has type \"Any | None\")",
         "offset": 3,
+        "src": "probably_class_method = isinstance(getattr(runtime, \"__self__\", None), type)",
+        "target": "mypy.stubtest._verify_static_class_methods"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 51,
+        "message": "Expression type contains \"Any\" (has type \"BuiltinFunctionType[[*Untyped, **Untyped], Untyped]\")",
+        "offset": 0,
         "src": "probably_class_method = isinstance(getattr(runtime, \"__self__\", None), type)",
         "target": "mypy.stubtest._verify_static_class_methods"
       },
@@ -24822,7 +24822,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
         "offset": 6,
         "src": "@verify.register(nodes.FuncItem)",
         "target": "mypy.stubtest"
@@ -24830,7 +24830,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[FuncItem, _SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[FuncItem, _SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
         "offset": 0,
         "src": "@verify.register(nodes.FuncItem)",
         "target": "mypy.stubtest"
@@ -24838,7 +24838,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"(stub: FuncItem, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Expression type contains \"Any\" (has type \"def (stub: FuncItem, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "@verify.register(nodes.FuncItem)",
         "target": "mypy.stubtest"
@@ -24854,7 +24854,7 @@
       {
         "code": "no-any-decorated",
         "column": 0,
-        "message": "Type of decorated function contains type \"Any\" (\"(stub: FuncItem, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (stub: FuncItem, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "def verify_funcitem(",
         "target": "mypy.stubtest"
@@ -25014,7 +25014,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
         "offset": 5,
         "src": "@verify.register(Missing)",
         "target": "mypy.stubtest"
@@ -25022,7 +25022,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[Missing, _SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[Missing, _SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
         "offset": 0,
         "src": "@verify.register(Missing)",
         "target": "mypy.stubtest"
@@ -25030,7 +25030,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"(stub: Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Expression type contains \"Any\" (has type \"def (stub: Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "@verify.register(Missing)",
         "target": "mypy.stubtest"
@@ -25046,7 +25046,7 @@
       {
         "code": "no-any-decorated",
         "column": 0,
-        "message": "Type of decorated function contains type \"Any\" (\"(stub: Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (stub: Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "def verify_none(",
         "target": "mypy.stubtest"
@@ -25062,7 +25062,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
         "offset": 3,
         "src": "@verify.register(nodes.Var)",
         "target": "mypy.stubtest"
@@ -25070,7 +25070,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[Var, _SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[Var, _SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
         "offset": 0,
         "src": "@verify.register(nodes.Var)",
         "target": "mypy.stubtest"
@@ -25078,7 +25078,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"(stub: Var, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Expression type contains \"Any\" (has type \"def (stub: Var, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "@verify.register(nodes.Var)",
         "target": "mypy.stubtest"
@@ -25094,7 +25094,7 @@
       {
         "code": "no-any-decorated",
         "column": 0,
-        "message": "Type of decorated function contains type \"Any\" (\"(stub: Var, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (stub: Var, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "def verify_var(",
         "target": "mypy.stubtest"
@@ -25166,7 +25166,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
         "offset": 4,
         "src": "@verify.register(nodes.OverloadedFuncDef)",
         "target": "mypy.stubtest"
@@ -25174,7 +25174,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[OverloadedFuncDef, _SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[OverloadedFuncDef, _SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
         "offset": 0,
         "src": "@verify.register(nodes.OverloadedFuncDef)",
         "target": "mypy.stubtest"
@@ -25182,7 +25182,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"(stub: OverloadedFuncDef, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Expression type contains \"Any\" (has type \"def (stub: OverloadedFuncDef, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "@verify.register(nodes.OverloadedFuncDef)",
         "target": "mypy.stubtest"
@@ -25198,7 +25198,7 @@
       {
         "code": "no-any-decorated",
         "column": 0,
-        "message": "Type of decorated function contains type \"Any\" (\"(stub: OverloadedFuncDef, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (stub: OverloadedFuncDef, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "def verify_overloadedfuncdef(",
         "target": "mypy.stubtest"
@@ -25318,7 +25318,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
         "offset": 6,
         "src": "@verify.register(nodes.TypeVarExpr)",
         "target": "mypy.stubtest"
@@ -25326,7 +25326,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[TypeVarExpr, _SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[TypeVarExpr, _SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
         "offset": 0,
         "src": "@verify.register(nodes.TypeVarExpr)",
         "target": "mypy.stubtest"
@@ -25334,7 +25334,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"(stub: TypeVarExpr, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Expression type contains \"Any\" (has type \"def (stub: TypeVarExpr, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "@verify.register(nodes.TypeVarExpr)",
         "target": "mypy.stubtest"
@@ -25350,7 +25350,7 @@
       {
         "code": "no-any-decorated",
         "column": 0,
-        "message": "Type of decorated function contains type \"Any\" (\"(stub: TypeVarExpr, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (stub: TypeVarExpr, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "def verify_typevarexpr(",
         "target": "mypy.stubtest"
@@ -25382,7 +25382,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
         "offset": 4,
         "src": "@verify.register(nodes.ParamSpecExpr)",
         "target": "mypy.stubtest"
@@ -25390,7 +25390,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[ParamSpecExpr, _SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[ParamSpecExpr, _SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
         "offset": 0,
         "src": "@verify.register(nodes.ParamSpecExpr)",
         "target": "mypy.stubtest"
@@ -25398,7 +25398,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"(stub: ParamSpecExpr, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Expression type contains \"Any\" (has type \"def (stub: ParamSpecExpr, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "@verify.register(nodes.ParamSpecExpr)",
         "target": "mypy.stubtest"
@@ -25414,7 +25414,7 @@
       {
         "code": "no-any-decorated",
         "column": 0,
-        "message": "Type of decorated function contains type \"Any\" (\"(stub: ParamSpecExpr, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (stub: ParamSpecExpr, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "def verify_paramspecexpr(",
         "target": "mypy.stubtest"
@@ -25662,7 +25662,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
         "offset": 60,
         "src": "@verify.register(nodes.Decorator)",
         "target": "mypy.stubtest"
@@ -25670,7 +25670,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[Decorator, _SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[Decorator, _SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
         "offset": 0,
         "src": "@verify.register(nodes.Decorator)",
         "target": "mypy.stubtest"
@@ -25678,7 +25678,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"(stub: Decorator, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Expression type contains \"Any\" (has type \"def (stub: Decorator, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "@verify.register(nodes.Decorator)",
         "target": "mypy.stubtest"
@@ -25694,7 +25694,7 @@
       {
         "code": "no-any-decorated",
         "column": 0,
-        "message": "Type of decorated function contains type \"Any\" (\"(stub: Decorator, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (stub: Decorator, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "def verify_decorator(",
         "target": "mypy.stubtest"
@@ -25766,7 +25766,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
         "offset": 3,
         "src": "@verify.register(nodes.TypeAlias)",
         "target": "mypy.stubtest"
@@ -25774,7 +25774,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[TypeAlias, _SingleDispatchCallable[Iterator[Error], (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
+        "message": "Expression type contains \"Any\" (has type \"_SingleDispatchRegisterCallable[TypeAlias, _SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]]\")",
         "offset": 0,
         "src": "@verify.register(nodes.TypeAlias)",
         "target": "mypy.stubtest"
@@ -25782,7 +25782,7 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"(stub: TypeAlias, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Expression type contains \"Any\" (has type \"def (stub: TypeAlias, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "@verify.register(nodes.TypeAlias)",
         "target": "mypy.stubtest"
@@ -25798,7 +25798,7 @@
       {
         "code": "no-any-decorated",
         "column": 0,
-        "message": "Type of decorated function contains type \"Any\" (\"(stub: TypeAlias, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (stub: TypeAlias, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]\")",
         "offset": 0,
         "src": "def verify_typealias(",
         "target": "mypy.stubtest"
@@ -26427,14 +26427,14 @@
         "code": "no-any-explicit",
         "column": 4,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 792,
+        "offset": 801,
         "src": "def report(*args: Any) -> None:",
         "target": "mypy.subtypes.unify_generic_callable"
       },
       {
         "code": "no-any-expr",
         "column": 38,
-        "message": "Expression type contains \"Any\" (has type \"(*args: Any) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (*args: Any) -> None\")",
         "offset": 9,
         "src": "type, non_none_inferred_vars, report, context=target",
         "target": "mypy.subtypes.unify_generic_callable"
@@ -27001,7 +27001,7 @@
         "code": "no-any-expr",
         "column": 7,
         "message": "Expression has type \"Untyped\"",
-        "offset": 121,
+        "offset": 123,
         "src": "if testcase.config.getoption(\"--mypy-verbose\"):",
         "target": "mypy.test.helpers.parse_options"
       },
@@ -28096,7 +28096,7 @@
       {
         "code": "no-any-expr",
         "column": 32,
-        "message": "Expression type contains \"Any\" (has type \"(self: Any) -> str\")",
+        "message": "Expression type contains \"Any\" (has type \"def (self: Any) -> str\")",
         "offset": 458,
         "src": "test.__doc__ = property(lambda self: \"test(arg0: str) -> None\")  # type: ignore[assignment]",
         "target": "mypy.test.teststubgen.StubgencSuite.test_generate_c_function_no_crash_for_non_str_docstring"
@@ -28163,8 +28163,8 @@
         "code": "no-any-explicit",
         "column": 0,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 186,
-        "src": "def collect_cases(fn: Callable[..., Iterator[Case]]) -> Callable[..., None]:",
+        "offset": 189,
+        "src": "def collect_cases(fn: Callable[..., Iterator[Case]]) -> FunctionType[..., None]:",
         "target": "mypy.test.teststubtest.collect_cases"
       },
       {
@@ -28194,7 +28194,7 @@
       {
         "code": "no-any-expr",
         "column": 11,
-        "message": "Expression type contains \"Any\" (has type \"(*args: Any, **kwargs: Any) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (*args: Any, **kwargs: Any) -> None\")",
         "offset": 24,
         "src": "return test",
         "target": "mypy.test.teststubtest.collect_cases"
@@ -28202,7 +28202,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 4,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28210,7 +28210,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_basic_good(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28218,7 +28218,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 18,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28226,7 +28226,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_types(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28234,7 +28234,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 21,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28242,7 +28242,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_coroutines(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28250,7 +28250,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 9,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28258,7 +28258,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_arg_name(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28266,7 +28266,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 39,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28274,7 +28274,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_arg_kind(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28282,7 +28282,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 32,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28290,7 +28290,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_default_presence(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28298,7 +28298,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 34,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28306,7 +28306,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_default_value(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28314,7 +28314,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 62,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28322,7 +28322,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_static_class_method(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28330,7 +28330,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 64,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28338,7 +28338,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_arg_mismatch(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28346,7 +28346,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 17,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28354,7 +28354,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_varargs_varkwargs(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28362,7 +28362,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 66,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28370,7 +28370,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_overload(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28378,7 +28378,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 72,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28386,7 +28386,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_property(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28394,7 +28394,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 103,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28402,7 +28402,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_var(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28410,7 +28410,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 63,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28418,7 +28418,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_type_alias(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28426,7 +28426,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 190,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28434,7 +28434,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_enum(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28442,7 +28442,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 98,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28450,7 +28450,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_decorator(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28458,7 +28458,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 16,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28466,7 +28466,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_all_at_runtime_not_stub(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28474,7 +28474,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 9,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28482,7 +28482,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_all_in_stub_not_at_runtime(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28490,7 +28490,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 3,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28498,7 +28498,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_all_in_stub_different_to_all_at_runtime(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28506,7 +28506,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 16,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28514,7 +28514,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_missing(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28522,7 +28522,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 33,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28530,7 +28530,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_missing_no_runtime_all(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28538,7 +28538,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 8,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28546,7 +28546,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_non_public_1(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28554,7 +28554,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 6,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28562,7 +28562,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_non_public_2(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28570,7 +28570,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 5,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28578,7 +28578,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_dunders(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28586,7 +28586,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 28,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28594,7 +28594,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_not_subclassable(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28602,7 +28602,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 10,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28610,7 +28610,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_has_runtime_final_decorator(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28618,7 +28618,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 256,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28626,7 +28626,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_name_mangling(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28634,7 +28634,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 58,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28642,7 +28642,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_mro(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28650,7 +28650,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 31,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28658,7 +28658,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_good_literal(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28666,7 +28666,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 33,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28674,7 +28674,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_bad_literal(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28682,7 +28682,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 35,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28690,7 +28690,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_special_subtype(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28698,7 +28698,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 34,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28706,7 +28706,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_runtime_typing_objects(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28714,7 +28714,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 31,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28722,7 +28722,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_named_tuple(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28730,7 +28730,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 35,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28738,7 +28738,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_named_tuple_typing_and_collections(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28746,7 +28746,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 29,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28754,7 +28754,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_type_var(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28762,7 +28762,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 14,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28770,7 +28770,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_metaclass_match(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28778,7 +28778,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 48,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28786,7 +28786,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_metaclass_abcmeta(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28794,7 +28794,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 13,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28802,7 +28802,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_abstract_methods(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28810,7 +28810,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 97,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28818,7 +28818,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_abstract_properties(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28826,7 +28826,7 @@
       {
         "code": "no-any-expr",
         "column": 5,
-        "message": "Expression type contains \"Any\" (has type \"(fn: (...) -> Iterator[Case]) -> (...) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
         "offset": 66,
         "src": "@collect_cases",
         "target": "mypy.test.teststubtest"
@@ -28834,7 +28834,7 @@
       {
         "code": "no-any-decorated",
         "column": 4,
-        "message": "Type of decorated function contains type \"Any\" (\"(...) -> None\")",
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
         "offset": 1,
         "src": "def test_type_check_only(self) -> Iterator[Case]:",
         "target": "mypy.test.teststubtest"
@@ -28850,7 +28850,7 @@
       {
         "code": "no-any-expr",
         "column": 81,
-        "message": "Expression type contains \"Any\" (has type \"(a: int, b: int, *, c: int, d: int = ..., **kwargs: Any) -> None\")",
+        "message": "Expression type contains \"Any\" (has type \"def (a: int, b: int, *, c: int, d: int = ..., **kwargs: Any) -> None\")",
         "offset": 4,
         "src": "str(mypy.stubtest.Signature.from_inspect_signature(inspect.signature(f)))",
         "target": "mypy.test.teststubtest.StubtestMiscUnit.test_signature"
@@ -31497,7 +31497,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_unbound_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 264,
+        "offset": 270,
         "src": "def visit_unbound_type(self, t: UnboundType, defining_literal: bool = False) -> Type:",
         "target": "mypy.typeanal.TypeAnalyser.visit_unbound_type"
       },
@@ -31505,7 +31505,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_any\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 664,
+        "offset": 673,
         "src": "def visit_any(self, t: AnyType) -> Type:",
         "target": "mypy.typeanal.TypeAnalyser.visit_any"
       },
@@ -31625,7 +31625,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_overloaded\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 138,
+        "offset": 153,
         "src": "def visit_overloaded(self, t: Overloaded) -> Type:",
         "target": "mypy.typeanal.TypeAnalyser.visit_overloaded"
       },
@@ -31721,7 +31721,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"analyze_callable_args\" is not using @override but is overriding a method in class \"mypy.plugin.TypeAnalyzerPluginInterface\"",
-        "offset": 171,
+        "offset": 173,
         "src": "def analyze_callable_args(",
         "target": "mypy.typeanal.TypeAnalyser.analyze_callable_args"
       },
@@ -31843,7 +31843,7 @@
         "code": "redundant-expr",
         "column": 19,
         "message": "Condition is always true",
-        "offset": 485,
+        "offset": 492,
         "src": "if extra_attrs_set is None:",
         "target": "mypy.typeops.make_simplified_union"
       },
@@ -33317,7 +33317,7 @@
         "code": "no-any-expr",
         "column": 43,
         "message": "Expression has type \"Any\"",
-        "offset": 101,
+        "offset": 125,
         "src": "arg_types: Bogus[Sequence[Type]] = _dummy,",
         "target": "mypy.types.Parameters.copy_modified"
       },
@@ -35197,7 +35197,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_overloaded\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 96,
+        "offset": 108,
         "src": "def visit_overloaded(self, t: Overloaded) -> str:",
         "target": "mypy.types.TypeStrVisitor.visit_overloaded"
       },

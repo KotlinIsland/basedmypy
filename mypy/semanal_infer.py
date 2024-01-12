@@ -56,7 +56,7 @@ def infer_decorator_signature_if_simple(
     if decorator_preserves_type:
         # No non-identity decorators left. We can trivially infer the type
         # of the function here.
-        dec.var.type = function_type(dec.func, analyzer.named_type("builtins.function"))
+        dec.var.type = function_type(dec.func, analyzer.named_type("typing._Callable"))
     if dec.decorators:
         return_type = calculate_return_type(dec.decorators[0])
         if return_type and isinstance(return_type, AnyType):

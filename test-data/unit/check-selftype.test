@@ -577,6 +577,7 @@ reveal_type(x.f)  # N: Revealed type is "builtins.int"
 
 [case testSelfTypeProperSupertypeAttribute]
 from typing import Callable, TypeVar, ClassVar
+from types import FunctionType
 class K: pass
 T = TypeVar('T', bound=K)
 class A(K):
@@ -584,8 +585,8 @@ class A(K):
     def g(self: K) -> int: return 0
     @property
     def gt(self: T) -> T: return self
-    f: ClassVar[Callable[[object], int]]
-    ft: ClassVar[Callable[[T], T]]
+    f: ClassVar["FunctionType[[object], int]"]
+    ft: ClassVar["FunctionType[[T], T]"]
 
 class B(A):
     pass
@@ -603,14 +604,15 @@ reveal_type(B().ft())  # N: Revealed type is "__main__.B"
 
 [case testSelfTypeProperSupertypeAttributeTuple]
 from typing import Callable, TypeVar, Tuple, ClassVar
+from types import FunctionType
 T = TypeVar('T')
 class A(Tuple[int, int]):
     @property
     def g(self: object) -> int: return 0
     @property
     def gt(self: T) -> T: return self
-    f: ClassVar[Callable[[object], int]]
-    ft: ClassVar[Callable[[T], T]]
+    f: ClassVar["FunctionType[[object], int]"]
+    ft: ClassVar["FunctionType[[T], T]"]
 
 class B(A):
     pass
@@ -628,14 +630,15 @@ reveal_type(B().ft())  # N: Revealed type is "Tuple[builtins.int, builtins.int, 
 
 [case testSelfTypeProperSupertypeAttributeMeta]
 from typing import Callable, TypeVar, Type, ClassVar
+from types import FunctionType
 T = TypeVar('T')
 class A(type):
     @property
     def g(cls: object) -> int: return 0
     @property
     def gt(cls: T) -> T: return cls
-    f: ClassVar[Callable[[object], int]]
-    ft: ClassVar[Callable[[T], T]]
+    f: ClassVar["FunctionType[[object], int]"]
+    ft: ClassVar["FunctionType[[T], T]"]
 
 class B(A):
     pass
@@ -661,6 +664,7 @@ reveal_type(X1.ft())  # N: Revealed type is "Type[__main__.X]"
 
 [case testSelfTypeProperSupertypeAttributeGeneric]
 from typing import Callable, TypeVar, Generic, ClassVar
+from types import FunctionType
 Q = TypeVar('Q', covariant=True)
 class K(Generic[Q]):
     q: Q
@@ -670,8 +674,8 @@ class A(K[Q]):
     def g(self: K[object]) -> int: return 0
     @property
     def gt(self: K[T]) -> T: return self.q
-    f: ClassVar[Callable[[object], int]]
-    ft: ClassVar[Callable[[T], T]]
+    f: ClassVar["FunctionType[[object], int]"]
+    ft: ClassVar["FunctionType[[T], T]"]
 
 class B(A[Q]):
     pass
@@ -1887,25 +1891,32 @@ class C:
 
 [case testTypingSelfCallableClassVar]
 from typing import Self, ClassVar, Callable, TypeVar
+from types import FunctionType
 
 class C:
-    f: ClassVar[Callable[[Self], Self]]
+    f1: ClassVar[Callable[[Self], Self]]
+    f2: ClassVar["FunctionType[[Self], Self]"]
 class D(C): ...
 
-reveal_type(D.f)  # N: Revealed type is "def (__main__.D) -> __main__.D"
-reveal_type(D().f)  # N: Revealed type is "def () -> __main__.D"
+reveal_type(D.f1)  # N: Revealed type is "def (__main__.D) -> __main__.D"
+reveal_type(D().f1)  # N: Revealed type is "def (__main__.D) -> __main__.D"
+
+reveal_type(D.f2)  # N: Revealed type is "def (__main__.D) -> __main__.D"
+reveal_type(D().f2)  # N: Revealed type is "def () -> __main__.D"
+[builtins fixtures/tuple.pyi]
 
 [case testSelfTypeCallableClassVarOldStyle]
 from typing import ClassVar, Callable, TypeVar
-
+from types import FunctionType
 T = TypeVar("T")
 class C:
-    f: ClassVar[Callable[[T], T]]
+    f: ClassVar["FunctionType[[T], T]"]
 
 class D(C): ...
 
 reveal_type(D.f)  # N: Revealed type is "def [T] (T`1) -> T`1"
 reveal_type(D().f)  # N: Revealed type is "def () -> __main__.D"
+[builtins fixtures/tuple.pyi]
 
 [case testTypingSelfOnSuperTypeVarValues]
 from typing import Self, Generic, TypeVar
@@ -1978,13 +1989,14 @@ class B(A):
 [case testSelfTypesWithParamSpecExtract]
 from typing import Any, Callable, Generic, TypeVar
 from typing_extensions import ParamSpec
+from types import FunctionType
 
 P = ParamSpec("P")
 F = TypeVar("F", bound=Callable[..., Any])
 class Example(Generic[F]):
     def __init__(self, fn: F) -> None:
         ...
-    def __call__(self: Example[Callable[P, Any]], *args: P.args, **kwargs: P.kwargs) -> None:
+    def __call__(self: Example["FunctionType[P, Any]"], *args: P.args, **kwargs: P.kwargs) -> None:
         ...
 
 def test_fn(a: int, b: str) -> None:

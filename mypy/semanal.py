@@ -606,6 +606,12 @@ class SemanticAnalyzer(
             else:
                 self.recurse_into_functions = True
                 self.accept(node)
+
+        # For cringe reasons, we import the fake 'typing._Callable' as soon at it is loaded
+        from mypy import typeanal
+
+        if node.fullname == "typing" and not typeanal.CALLABLE_TYPE:
+            typeanal.CALLABLE_TYPE = self.named_type(typeanal.CALLABLE_NAME)
         del self.patches
 
     def refresh_top_level(self, file_node: MypyFile) -> None:

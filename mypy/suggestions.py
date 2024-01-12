@@ -1020,7 +1020,7 @@ def refine_callable(t: CallableType, s: CallableType) -> CallableType:
 
     See comments for refine_type.
     """
-    if t.fallback != s.fallback:
+    if (t.is_type_obj() or s.is_type_obj()) and t.fallback != s.fallback:
         return t
 
     if t.is_ellipsis_args and not is_tricky_callable(s):

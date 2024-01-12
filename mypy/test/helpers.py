@@ -113,10 +113,10 @@ def assert_string_arrays_equal(expected: list[str], actual: list[str], msg: str)
     if expected != actual:
         expected_ranges, actual_ranges = diff_ranges(expected, actual)
         sys.stderr.write("Expected:\n")
-        red = "\033[31m" if sys.platform != "win32" else None
+        red = "\033[31m"
         render_diff_range(expected_ranges, expected, colour=red)
         sys.stderr.write("Actual:\n")
-        green = "\033[32m" if sys.platform != "win32" else None
+        green = "\033[32m"
         render_diff_range(actual_ranges, actual, colour=green)
 
         sys.stderr.write("\n")
@@ -382,6 +382,8 @@ def parse_options(
                     errorcodes.BAD_CAST,
                     errorcodes.REDUNDANT_EXPR,
                     errorcodes.HELPFUL_STRING,
+                    errorcodes.CALLABLE_FUNCTIONTYPE,
+                    errorcodes.POSSIBLE_FUNCTION,
                 }
             )
         else:

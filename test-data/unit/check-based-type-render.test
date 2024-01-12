@@ -13,9 +13,9 @@ class A(Generic[T2]):
         return t
 
 reveal_type(A.f)  # N: Revealed type is "def [T2 (from A): int, T: str] (self: __main__.A[T2], t: T, t2: T2) -> T | T2"
-reveal_type(A[int]().f)  # N: Revealed type is "def [T: str] (t: T, t2: int) -> T | int"
+reveal_type(A[int]().f)  # N: Revealed type is "_NamedCallable & [T: str] (t: T, t2: int) -> T | int"
 A.f = 1  # E: Cannot assign to a method  [method-assign] \
-         # E: Incompatible types in assignment (expression has type "int", variable has type "[T2 (from A): int, T: str] (self: A[T2], t: T, t2: T2) -> T | T2")  [assignment]
+         # E: Incompatible types in assignment (expression has type "int", variable has type "def [T2 (from A): int, T: str] (self: A[T2], t: T, t2: T2) -> T | T2")  [assignment]
 
 
 [case testGenericFunction]
@@ -24,7 +24,7 @@ T = TypeVar("T", bound=int)
 
 def foo(t: T) -> T: ...
 reveal_type(foo)  # N: Revealed type is "def [T: int] (t: T) -> T"
-foo = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "[T: int] (t: T) -> T")  [assignment]
+foo = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "def [T: int] (t: T) -> T")  [assignment]
 
 
 [case testRenderAny]
@@ -72,13 +72,13 @@ a: NoReturn = 1  # E: Incompatible types in assignment (expression has type "int
 def b() -> NoReturn: ...
 reveal_type(a)  # N: Revealed type is "Never"
 reveal_type(b)  # N: Revealed type is "def () -> Never"
-b = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "() -> Never")  [assignment]
+b = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "def () -> Never")  [assignment]
 
 
 [case testRenderNoneReturn]
 def foo(): ...
 reveal_type(foo)  # N: Revealed type is "def () -> None"
-foo = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "() -> None")  [assignment]
+foo = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "def () -> None")  [assignment]
 
 
 [case testRenderErrorStar]
@@ -90,7 +90,7 @@ def f(fn: Callable[P, None]): ...
 f(1)  # E: Argument 1 to "f" has incompatible type "int"; expected "(*Never, **Never) -> None"  [arg-type]
 def f2(*args: int, **kwargs: str): ...
 a = f2
-a = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "(*args: int, **kwargs: str) -> None")  [assignment]
+a = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "def (*args: int, **kwargs: str) -> None")  [assignment]
 [builtins fixtures/tuple.pyi]
 
 

@@ -96,7 +96,9 @@ class TypeFixture:
         self.type_typei = self.make_type_info("builtins.type")  # class type
         self.bool_type_info = self.make_type_info("builtins.bool")
         self.str_type_info = self.make_type_info("builtins.str")
-        self.functioni = self.make_type_info("builtins.function")  # function TODO
+        self.functioni = self.make_type_info("typing._Callable")  # function TODO
+        self.defi = self.make_type_info("types.FunctionType")
+        self.named_callablei = self.make_type_info("typing._NamedCallable")
         self.ai = self.make_type_info("A", mro=[self.oi])  # class A
         self.bi = self.make_type_info("B", mro=[self.ai, self.oi])  # class B(A)
         self.ci = self.make_type_info("C", mro=[self.ai, self.oi])  # class C(A)
@@ -143,6 +145,8 @@ class TypeFixture:
         self.std_tuple = Instance(self.std_tuplei, [self.anyt])  # tuple
         self.type_type = Instance(self.type_typei, [])  # type
         self.function = Instance(self.functioni, [])  # function TODO
+        self.def_ = Instance(self.defi, [])  # function TODO
+        self._named_callable = Instance(self.named_callablei, [])  # function TODO
         self.str_type = Instance(self.str_type_info, [])
         self.bool_type = Instance(self.bool_type_info, [])
         self.a = Instance(self.ai, [])  # A
@@ -258,6 +262,18 @@ class TypeFixture:
         return CallableType(
             list(a[:-1]), [ARG_POS] * (len(a) - 1), [None] * (len(a) - 1), a[-1], self.function
         )
+
+    def named_callable(self) -> CallableType:
+        """callable(a1, ..., an, r) constructs a callable with argument types
+        a1, ... an and return type r.
+        """
+        return CallableType([], [], [], self.nonet, self._named_callable)
+
+    def function_(self) -> CallableType:
+        """callable(a1, ..., an, r) constructs a callable with argument types
+        a1, ... an and return type r.
+        """
+        return CallableType([], [], [], self.nonet, self.def_)
 
     def callable_type(self, *a: Type) -> CallableType:
         """callable_type(a1, ..., an, r) constructs a callable with

@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 ### Added
+- `Callable` syntax (`(int) -> str`) (#619)
+- `FunctionType` syntax (`def (int) -> str`) (#619)
+### Fixes
+- `Callable` is no longer `types.FunctionType` (#619)
+
+## [2.4.0]
+
+## [2.3.0]
+### Added
 - f-string format specs are checked (#543)
 - Narrow type on initial assignment (#547)
 - Annotations in function bodies are not analyzed as evaluated (#564)

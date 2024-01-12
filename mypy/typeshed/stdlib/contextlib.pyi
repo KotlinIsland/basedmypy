@@ -3,7 +3,7 @@ import sys
 from _typeshed import FileDescriptorOrPath, Unused
 from abc import abstractmethod
 from collections.abc import AsyncGenerator, AsyncIterator, Awaitable, Callable, Generator, Iterator
-from types import TracebackType
+from types import TracebackType, FunctionType
 from typing import IO, Any, Generic, Protocol, TypeVar, overload, runtime_checkable
 from typing_extensions import ParamSpec, Self, TypeAlias
 
@@ -73,7 +73,7 @@ class _GeneratorContextManager(AbstractContextManager[_T_co], ContextDecorator):
             self, type: type[BaseException] | None, value: BaseException | None, traceback: TracebackType | None
         ) -> bool | None: ...
 
-def contextmanager(func: Callable[_P, Iterator[_T_co]]) -> Callable[_P, _GeneratorContextManager[_T_co]]: ...
+def contextmanager(func: Callable[_P, Iterator[_T_co]]) -> FunctionType[_P, _GeneratorContextManager[_T_co]]: ...
 
 if sys.version_info >= (3, 10):
     _AF = TypeVar("_AF", bound=Callable[..., Awaitable[Any]])
@@ -104,7 +104,7 @@ else:
             self, typ: type[BaseException] | None, value: BaseException | None, traceback: TracebackType | None
         ) -> bool | None: ...
 
-def asynccontextmanager(func: Callable[_P, AsyncIterator[_T_co]]) -> Callable[_P, _AsyncGeneratorContextManager[_T_co]]: ...
+def asynccontextmanager(func: Callable[_P, AsyncIterator[_T_co]]) -> FunctionType[_P, _AsyncGeneratorContextManager[_T_co]]: ...
 
 class _SupportsClose(Protocol):
     def close(self) -> object: ...

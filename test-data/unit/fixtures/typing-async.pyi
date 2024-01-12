@@ -36,6 +36,11 @@ S = TypeVar('S')
 # Note: definitions below are different from typeshed, variances are declared
 # to silence the protocol variance checks. Maybe it is better to use type: ignore?
 
+class _Callable:
+    def __call__(self): pass
+class _NamedCallable(_Callable):
+    __name__: str
+    __qualname__: str
 class Container(Protocol[T_co]):
     @abstractmethod
     # Use int because bool isn't in the default test builtins
