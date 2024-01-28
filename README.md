@@ -32,6 +32,11 @@ Based features include:
 
 See the [features](#features) for more information, or [the docs](https://kotlinisland.github.io/basedmypy/based_features.html) for a comprehensive list.
 
+
+### BasedPyright
+
+Also, take a look at [BasedPyright](https://github.com/DetachHead/basedpyright), a based type checker based on Pyright!
+
 ## Usage
 
 ### Installation
@@ -48,11 +53,18 @@ Basedmypy is installed as an alternative to, and in place of, the `mypy` install
 
     python -m mypy test.py
 
+## Integrations
+
+If you are using IntelliJ IDEA/PyCharm, we recommend the [basedtyping plugin](https://plugins.jetbrains.com/plugin/23374-basedtyping)
+
+If you are using vscode,
+we recommend the [mypy extension](https://marketplace.visualstudio.com/items?itemName=ms-python.mypy-type-checker)
+
 ## Features
 
 Have you ever tried to use Python's type system and thought to yourself "This doesn't seem based"?
 
-Well fret no longer as basedmypy has got you covered!
+Well fret no longer, as basedmypy has got you covered!
 
 You can find a comprehensive list in [the docs](https://kotlinisland.github.io/basedmypy/based_features.html).
 
