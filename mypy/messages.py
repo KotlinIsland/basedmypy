@@ -2747,7 +2747,7 @@ def format_type_inner(
         else:
             return "Never"
     elif isinstance(typ, TypeType):
-        type_name = "type" if options.use_lowercase_names() else "Type"
+        type_name = typ.name if options.use_lowercase_names() else typ.name.title()
         return f"{type_name}[{format(typ.item)}]"
     elif isinstance(typ, FunctionLike):
         func = typ

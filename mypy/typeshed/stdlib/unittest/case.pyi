@@ -6,7 +6,7 @@ from collections.abc import Callable, Container, Iterable, Mapping, Sequence, Se
 from contextlib import AbstractContextManager
 from re import Pattern
 from types import TracebackType
-from typing import Any, AnyStr, ClassVar, Generic, NamedTuple, NoReturn, Protocol, SupportsAbs, SupportsRound, TypeVar, overload
+from typing import Any, AnyStr, ClassVar, Generic, NamedTuple, NoReturn, Protocol, SupportsAbs, SupportsRound, TypeVar, _UnionInstance, overload
 from typing_extensions import ParamSpec, Self, TypeAlias
 from warnings import WarningMessage
 
@@ -72,7 +72,7 @@ class _SupportsAbsAndDunderGE(SupportsDunderGE[Any], SupportsAbs[Any], Protocol)
 # We can't import it from builtins or pytype crashes,
 # due to the fact that pytype uses a custom builtins stub rather than typeshed's builtins stub
 if sys.version_info >= (3, 10):
-    _ClassInfo: TypeAlias = type | UnionType | tuple[_ClassInfo, ...]
+    _ClassInfo: TypeAlias = type | _UnionInstance | UnionType | tuple[_ClassInfo, ...]
 else:
     _ClassInfo: TypeAlias = type | tuple[_ClassInfo, ...]
 

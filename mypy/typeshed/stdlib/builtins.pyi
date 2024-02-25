@@ -31,6 +31,7 @@ from _typeshed import (
 )
 from collections.abc import Awaitable, Callable, Iterable, Iterator, MutableSet, Reversible, Set as AbstractSet, Sized
 from io import BufferedRandom, BufferedReader, BufferedWriter, FileIO, TextIOWrapper
+from mypy.types import SpecialFormType
 from types import CodeType, TracebackType, _Cell
 
 # mypy crashes if any of {ByteString, Sequence, MutableSequence, Mapping, MutableMapping} are imported from collections.abc in builtins.pyi
@@ -52,7 +53,7 @@ from typing import (  # noqa: Y022
     SupportsFloat,
     TypeVar,
     overload,
-    type_check_only,
+    type_check_only, Union,
 )
 from typing_extensions import (
     Concatenate,
@@ -1372,7 +1373,7 @@ def iter(__object: Callable[[], _T], __sentinel: object) -> Iterator[_T]: ...
 
 # Keep this alias in sync with unittest.case._ClassInfo
 if sys.version_info >= (3, 10):
-    _ClassInfo: TypeAlias = type | types.UnionType | tuple[_ClassInfo, ...]
+    _ClassInfo: TypeAlias = type | SpecialForm[Union[object]] | types.UnionType | tuple[_ClassInfo, ...]
 else:
     _ClassInfo: TypeAlias = type | tuple[_ClassInfo, ...]
 

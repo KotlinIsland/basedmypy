@@ -69,12 +69,14 @@ from mypy.types import (
     ProperType,
     RawExpressionType,
     RequiredType,
+    SpecialFormType,
     SyntheticTypeVisitor,
     TrivialSyntheticTypeTranslator,
     TupleType,
     Type,
     TypeAliasType,
     TypedDictType,
+    TypeFormType,
     TypeGuardType,
     TypeList,
     TypeOfAny,
@@ -584,6 +586,12 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         elif fullname == "basedtyping.Intersection":
             items = self.anal_array(t.args)
             return IntersectionType.make_intersection(items)
+        elif fullname == "test.SpecialForm":  # TODO:  "basedtyping.SpecialForm
+            item = self.anal_type(t.args[0])
+            return SpecialFormType(item, line=t.line, column=t.column)
+        elif fullname == "test.TypeForm":  # TODO:  "basedtyping.TypeForm
+            item = self.anal_type(t.args[0])
+            return TypeFormType(item, line=t.line, column=t.column)
         elif fullname == "typing.Optional":
             if len(t.args) != 1:
                 self.fail(

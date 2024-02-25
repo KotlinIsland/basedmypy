@@ -174,21 +174,30 @@ class TypeVar:
 # Used for an undocumented mypy feature. Does not exist at runtime.
 _promote = object()
 
+_TSpecialInstance = TypeVar("_TSpecialForm", bound=_SpecialInstance)
+
+
 # N.B. Keep this definition in sync with typing_extensions._SpecialForm
 @_final
-class _SpecialForm:
-    def __getitem__(self, parameters: Any) -> object: ...
+class _SpecialForm(Generic[_TSpecialInstance]):
+    def __getitem__(self, parameters: Any) -> _TSpecialInstance: ...
     if sys.version_info >= (3, 10):
-        def __or__(self, other: Any) -> _SpecialForm: ...
-        def __ror__(self, other: Any) -> _SpecialForm: ...
+        def __or__(self, other: Any) -> _SpecialForm[_UnionInstance]: ...
+        def __ror__(self, other: Any) -> _SpecialForm[_UnionInstance]: ...
 
 _F = TypeVar("_F", bound=Callable[..., Any])
 _P = _ParamSpec("_P")
 _T = TypeVar("_T")
+_Ts = TypeVarTuple("_Ts")
 
 def overload(func: _F) -> _F: ...
 
-Union: _SpecialForm
+@type_check_only
+class _SpecialInstance(Generic[Unpack[_Ts]]): ...
+@type_check_only
+class _UnionInstance(_SpecialInstance[Unpack[_Ts]]): ...
+
+Union: _SpecialForm[_UnionInstance]
 Generic: _SpecialForm
 # Protocol is only present in 3.8 and later, but mypy needs it unconditionally
 Protocol: _SpecialForm
@@ -824,10 +833,10 @@ if sys.version_info >= (3, 9):
 else:
     def get_type_hints(
         obj: _get_type_hints_obj_allowed_types, globalns: dict[str, Any] | None = None, localns: dict[str, Any] | None = None
-    ) -> dict[str, Any]: ...
+    ) -> dict[str, object]: ...
 
 if sys.version_info >= (3, 8):
-    def get_args(tp: Any) -> tuple[Any, ...]: ...
+    def get_args(tp: Any) -> tuple[object, ...]: ...
 
     if sys.version_info >= (3, 10):
         @overload
