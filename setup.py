@@ -415,7 +415,7 @@ setup(
     cmdclass=cmdclass,
     # When changing this, also update mypy-requirements.txt.
     install_requires=[
-        "basedtyping>=0.0.3",
+        "basedtyping>=0.1.4",
         "typing_extensions>=4.1.0",
         "mypy_extensions >= 1.0.0",
         "tomli>=1.1.0; python_version<'3.11'",
