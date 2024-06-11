@@ -6,6 +6,7 @@ import sys
 
 from pytest import skip
 
+import mypy.options
 from mypy import defaults
 from mypy.config_parser import parse_mypy_comments
 from mypy.errors import CompileError
@@ -53,7 +54,13 @@ def test_parser(testcase: DataDrivenTestCase) -> None:
         n = parse(
             bytes(source, "ascii"), fnam="main", module="__main__", errors=None, options=options
         )
-        a = n.str_with_options(options).split("\n")
+
+        based = mypy.options._based
+        mypy.options._based = False
+        try:
+            a = n.str_with_options(options).split("\n")
+        finally:
+            mypy.options._based = based
     except CompileError as e:
         a = e.messages
     assert_string_arrays_equal(
