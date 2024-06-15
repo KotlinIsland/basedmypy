@@ -223,9 +223,9 @@ class Server:
             while True:
                 with server:
                     data = receive(server)
-                    sys.stdout = WriteToConn(server, "stdout")  # type: ignore[assignment]
-                    sys.stderr = WriteToConn(server, "stderr")  # type: ignore[assignment]
-                    self.options.color_output = False  # needed so that initialize_unix_colors doesn't try to get the `fileno` of the WriteToConn
+                    sys.stdout = WriteToConn(server, "stdout", sys.stdout.isatty())
+                    sys.stderr = WriteToConn(server, "stderr", sys.stderr.isatty())
+                    # TODO: self.options.color_output = False  # needed so that initialize_unix_colors doesn't try to get the `fileno` of the WriteToConn
                     resp: dict[str, Any] = {}
                     if "command" not in data:
                         resp = {"error": "No command found in request"}
@@ -1058,7 +1058,7 @@ def fix_module_deps(graph: mypy.build.Graph) -> None:
     This can make some suppressed dependencies non-suppressed, and vice versa (if modules
     have been added to or removed from the build).
     """
-    for module, state in graph.items():
+    for state in graph.values():
         new_suppressed = []
         new_dependencies = []
         for dep in state.dependencies + state.suppressed:

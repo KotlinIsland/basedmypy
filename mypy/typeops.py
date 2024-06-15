@@ -1011,9 +1011,11 @@ def try_contracting_literals_in_union(types: Sequence[Type]) -> list[ProperType]
             if typ.fallback.type.is_enum or isinstance(typ.value, bool):
                 if fullname not in sum_types:
                     sum_types[fullname] = (
-                        set(typ.fallback.get_enum_values())
-                        if typ.fallback.type.is_enum
-                        else {True, False},
+                        (
+                            set(typ.fallback.get_enum_values())
+                            if typ.fallback.type.is_enum
+                            else {True, False}
+                        ),
                         [],
                     )
                 literals, indexes = sum_types[fullname]
@@ -1155,9 +1157,11 @@ def infer_impl_from_parts(
         if ret_type not in ret_types:
             ret_types.append(ret_type)
     res_arg_types = [
-        UnionType.make_union((arg_types[arg_name_] if arg_name_ else []) + arg_types[i])
-        if arg_kind not in (ARG_STAR, ARG_STAR2)
-        else UntypedType()
+        (
+            UnionType.make_union((arg_types[arg_name_] if arg_name_ else []) + arg_types[i])
+            if arg_kind not in (ARG_STAR, ARG_STAR2)
+            else UntypedType()
+        )
         for i, (arg_name_, arg_kind) in enumerate(zip(impl_func.arg_names, impl_func.arg_kinds))
     ]
 
@@ -1179,9 +1183,13 @@ def infer_impl_from_parts(
                     impl_func.type.arg_types, impl_func.unanalyzed_type.arg_types, res_arg_types
                 )
             ],
-            ret_type=ret_type
-            if isinstance(get_proper_type(impl_func.unanalyzed_type.ret_type), (AnyType, NoneType))
-            else impl_func.type.ret_type,
+            ret_type=(
+                ret_type
+                if isinstance(
+                    get_proper_type(impl_func.unanalyzed_type.ret_type), (AnyType, NoneType)
+                )
+                else impl_func.type.ret_type
+            ),
         )
     else:
         impl_func.type = CallableType(

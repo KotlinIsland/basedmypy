@@ -78,7 +78,7 @@ This is the case even if you misuse the function!
    def greeting(name):
        return 'Hello ' + name
 
-   # These calls will fail when the program run, and basedmypy does report an error
+   # These calls will fail when the program runs, and basedmypy does report an error
    # even though "greeting" does not have type annotations.
    greeting(123)
    greeting(b"Alice")

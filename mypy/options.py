@@ -367,6 +367,10 @@ class Options:
         # Use stub builtins fixtures to speed up tests
         self.use_builtins_fixtures = False
 
+        # This should only be set when running certain mypy tests.
+        # Use this sparingly to avoid tests diverging from non-test behavior.
+        self.test_env = False
+
         # -- experimental options --
         self.shadow_file: list[list[str]] | None = None
         self.show_column_numbers: bool = flip_if_not_based(True)

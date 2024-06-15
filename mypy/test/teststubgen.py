@@ -10,6 +10,8 @@ import unittest
 from types import ModuleType
 from typing import Any
 
+import pytest
+
 from mypy.errors import CompileError
 from mypy.moduleinspect import InspectError, ModuleInspect
 from mypy.stubdoc import (
@@ -698,6 +700,8 @@ class StubgenPythonSuite(DataSuite):
                 f.write(content)
 
         options = self.parse_flags(source, extra)
+        if sys.version_info < options.pyversion:
+            pytest.skip()
         if "based" not in testcase.parent.name:
             options.legacy = True
         modules = self.parse_modules(source)
@@ -1133,8 +1137,7 @@ class StubgencSuite(unittest.TestCase):
         assert_equal(gen.get_imports().splitlines(), ["import foo", "import other"])
 
     def test_generate_c_function_no_crash_for_non_str_docstring(self) -> None:
-        def test(arg0: str) -> None:
-            ...
+        def test(arg0: str) -> None: ...
 
         test.__doc__ = property(lambda self: "test(arg0: str) -> None")  # type: ignore[assignment]
 

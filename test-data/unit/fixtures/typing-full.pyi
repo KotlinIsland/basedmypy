@@ -10,13 +10,17 @@ from abc import abstractmethod, ABCMeta
 
 class GenericMeta(type): pass
 
+class _SpecialForm: ...
+class TypeVar: ...
+class ParamSpec: ...
+class TypeVarTuple: ...
+
 def cast(t, o): ...
 def assert_type(o, t): ...
 overload = 0
 Any = 0
 Union = 0
 Optional = 0
-TypeVar = 0
 Generic = 0
 Protocol = 0
 Tuple = 0
@@ -44,6 +48,8 @@ class _Callable:
 class _NamedCallable(_Callable):
     __name__: str
     __qualname__: str
+def final(x: T) -> T: ...
+
 class NamedTuple(tuple[Any, ...]): ...
 
 # Note: definitions below are different from typeshed, variances are declared
@@ -187,8 +193,6 @@ class _TypedDict(Mapping[str, object]):
     def update(self: T, __m: T) -> None: ...
     def __delitem__(self, k: NoReturn) -> None: ...
 
-class _SpecialForm: pass
-
 def dataclass_transform(
     *,
     eq_default: bool = ...,
@@ -204,3 +208,10 @@ def reveal_type(__obj: T) -> T: ...
 
 # Only exists in type checking time:
 def type_check_only(__func_or_class: T) -> T: ...
+
+# Was added in 3.12
+@final
+class TypeAliasType:
+    def __init__(
+        self, name: str, value: Any, *, type_params: Tuple[Union[TypeVar, ParamSpec, TypeVarTuple], ...] = ()
+    ) -> None: ...

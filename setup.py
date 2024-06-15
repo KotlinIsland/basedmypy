@@ -387,6 +387,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Software Development",
     "Typing :: Typed",
 ]
@@ -433,6 +434,7 @@ setup(
         "News": "https://github.com/KotlinIsland/basedmypy/releases",
         "Documentation": "https://KotlinIsland.github.io/basedmypy",
         "Repository": "https://github.com/KotlinIsland/basedmypy",
+        "Changelog": "https://github.com/KotlinIsland/basedmypy/blob/master/CHANGELOG.md",
         "Discord": "https://discord.gg/7y9upqPrk2",
     },
 )

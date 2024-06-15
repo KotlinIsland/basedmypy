@@ -734,9 +734,22 @@ class SubtypeVisitor(TypeVisitor[bool]):
                     return False
                 if not self._is_subtype(left.type_guard.type_guard, right.type_guard.type_guard):
                     return False
+            elif left.type_is is not None and right.type_is is not None:
+                # For TypeIs we have to check both ways; it is unsafe to pass
+                # a TypeIs[Child] when a TypeIs[Parent] is expected, because
+                # if the narrower returns False, we assume that the narrowed value is
+                # *not* a Parent.
+                if not self._is_subtype(left.type_is, right.type_is) or not self._is_subtype(
+                    right.type_is, left.type_is
+                ):
+                    return False
             elif right.type_guard is not None and left.type_guard is None:
                 # This means that one function has `TypeGuard` and other does not.
                 # They are not compatible. See https://github.com/python/mypy/issues/11307
+                return False
+            elif right.type_is is not None and left.type_is is None:
+                # Similarly, if one function has `TypeIs` and the other does not,
+                # they are not compatible.
                 return False
             checking_callable_instance = self.subtype_context.checking_callable_instance
             self.subtype_context.checking_callable_instance = False
@@ -748,10 +761,10 @@ class SubtypeVisitor(TypeVisitor[bool]):
                     is_proper_subtype=self.proper_subtype,
                     ignore_pos_arg_names=self.subtype_context.ignore_pos_arg_names,
                     strict_concatenate=(
-                        self.options.extra_checks or self.options.strict_concatenate
-                    )
-                    if self.options
-                    else False,
+                        (self.options.extra_checks or self.options.strict_concatenate)
+                        if self.options
+                        else False
+                    ),
                 )
             finally:
                 self.subtype_context.checking_callable_instance = checking_callable_instance
@@ -1684,7 +1697,6 @@ def are_parameters_compatible(
         # HACK: working around upstream issues:
         #  https://github.com/python/mypy/issues/16567
         #  https://github.com/python/mypy/issues/16568
-        #  https://github.com/python/mypy/issues/16569
         # if all(k.is_positional() for k in left.arg_kinds) and ignore_pos_arg_names:
         if all(k.is_positional() for k in left.arg_kinds):
             return True

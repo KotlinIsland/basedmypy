@@ -1157,7 +1157,7 @@ class ClassDef(Statement):
         }
 
     @classmethod
-    def deserialize(self, data: JsonDict) -> ClassDef:
+    def deserialize(cls, data: JsonDict) -> ClassDef:
         assert data[".class"] == "ClassDef"
         res = ClassDef(
             data["name"],
@@ -1757,6 +1757,7 @@ class RefExpr(Expression):
         "is_inferred_def",
         "is_alias_rvalue",
         "type_guard",
+        "type_is",
     )
 
     def __init__(self) -> None:
@@ -1778,6 +1779,8 @@ class RefExpr(Expression):
         self.is_alias_rvalue = False
         # Cache type guard from callable_type.type_guard
         self.type_guard: mypy.types.TypeGuardType | None = None
+        # And same for TypeIs
+        self.type_is: mypy.types.Type | None = None
 
     @property
     def fullname(self) -> str:
@@ -3151,7 +3154,7 @@ class TypeInfo(SymbolNode):
                     if name in EXCLUDED_PROTOCOL_ATTRIBUTES:
                         continue
                     members.add(name)
-        return sorted(list(members))
+        return sorted(members)
 
     def __getitem__(self, name: str) -> SymbolTableNode:
         n = self.get(name)
@@ -3301,16 +3304,16 @@ class TypeInfo(SymbolNode):
             "declared_metaclass": (
                 None if self.declared_metaclass is None else self.declared_metaclass.serialize()
             ),
-            "metaclass_type": None
-            if self.metaclass_type is None
-            else self.metaclass_type.serialize(),
+            "metaclass_type": (
+                None if self.metaclass_type is None else self.metaclass_type.serialize()
+            ),
             "tuple_type": None if self.tuple_type is None else self.tuple_type.serialize(),
-            "typeddict_type": None
-            if self.typeddict_type is None
-            else self.typeddict_type.serialize(),
+            "typeddict_type": (
+                None if self.typeddict_type is None else self.typeddict_type.serialize()
+            ),
             "flags": get_flags(self, TypeInfo.FLAGS),
             "metadata": self.metadata,
-            "slots": list(sorted(self.slots)) if self.slots is not None else None,
+            "slots": sorted(self.slots) if self.slots is not None else None,
             "deletable_attributes": self.deletable_attributes,
             "self_type": self.self_type.serialize() if self.self_type is not None else None,
             "dataclass_transform_spec": (
@@ -3980,7 +3983,7 @@ class DataclassTransformSpec:
         # frozen_default was added to CPythonin https://github.com/python/cpython/pull/99958 citing
         # positive discussion in typing-sig
         frozen_default: bool | None = None,
-    ):
+    ) -> None:
         self.eq_default = eq_default if eq_default is not None else True
         self.order_default = order_default if order_default is not None else False
         self.kw_only_default = kw_only_default if kw_only_default is not None else False
