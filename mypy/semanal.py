@@ -7313,6 +7313,8 @@ def infer_fdef_types_from_defaults(defn: FuncDef | Decorator, self: SemanticAnal
                 if arg.variable.is_inferred and arg.initializer:
                     arg.initializer.accept(self)
                     typ = self.analyze_simple_literal_type(arg.initializer, False, do_inner=True)
+                elif all(char == "_" for char in arg.variable.name):
+                    typ = self.named_type("builtins.object")
                 arg_types.append(typ or UntypedType())
         ret_type = None
         if self.options.default_return and self.options.disallow_untyped_defs:
@@ -7344,13 +7346,16 @@ def infer_fdef_types_from_defaults(defn: FuncDef | Decorator, self: SemanticAnal
             defn.type.ret_type = NoneType()
         if self.options.infer_function_types:
             for i, arg in enumerate(defn.arguments):
+                ret = None
                 if is_unannotated_any(defn.type.arg_types[i]):
                     if arg.variable.is_inferred and arg.initializer:
                         ret = self.analyze_simple_literal_type(
                             arg.initializer, False, do_inner=True
                         )
-                        if ret:
-                            defn.type.arg_types[i] = ret
+                    if ret:
+                        defn.type.arg_types[i] = ret
+                    if all(char == "_" for char in arg.variable.name):
+                        defn.type.arg_types[i] = self.named_type("builtins.object")
 
 
 def is_trivial_body(block: Block) -> bool:

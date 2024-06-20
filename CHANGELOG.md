@@ -1,6 +1,8 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Added
+- Any parameter `_` will be inferred as `object` (#687)
 
 ## [2.5.0]
 ### Added

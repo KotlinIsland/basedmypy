@@ -472,3 +472,26 @@ def f1():
 # flags: --show-error-context
 def f(): ...  # N: "f" defined here
 f(x=1)  # E: Unexpected keyword argument "x" for "f"  [call-arg]
+
+
+[case testUnusedParamObject]
+def f0(_: int):
+    reveal_type(_)  # N: Revealed type is "int"
+reveal_type(f0)  # N: Revealed type is "def (_: int) -> None"
+def f1(_):
+    reveal_type(_)  # N: Revealed type is "object"
+reveal_type(f1)  # N: Revealed type is "def (_: object) -> None"
+def f2(a: int, _):
+    reveal_type(a)  # N: Revealed type is "int"
+    reveal_type(_)  # N: Revealed type is "object"
+reveal_type(f2)  # N: Revealed type is "def (a: int, _: object) -> None"
+def f3(*_):
+    reveal_type(_)  # N: Revealed type is "tuple[object, ...]"
+reveal_type(f3)  # N: Revealed type is "def (*_: object) -> None"
+def f4(**_):
+    reveal_type(_)  # N: Revealed type is "dict[str, object]"
+reveal_type(f4)  # N: Revealed type is "def (**_: object) -> None"
+def f5(_, __, ___):
+    reveal_type((_, __, ___))  # N: Revealed type is "(object, object, object)"
+reveal_type(f5)  # N: Revealed type is "def (_: object, __: object, ___: object) -> None"
+[builtins fixtures/tuple.pyi]
