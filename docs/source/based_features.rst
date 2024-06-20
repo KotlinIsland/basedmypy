@@ -242,39 +242,6 @@ If you want to achieve something similar to the old ``TypeGuard``:
         str_a = cast(list[str], a)
         ...
 
-Overload Implementation Inference
----------------------------------
-
-The types in overload implementations (including properties) can be inferred:
-
-.. code-block:: python
-
-    @overload
-    def f(a: int) -> str: ...
-
-    @overload
-    def f(a: str) -> int: ...
-
-    def f(a):
-        reveal_type(a)  # int | str
-        return None  # error: expected str | int
-
-    class A:
-        @property
-        def foo(self) -> int: ...
-        @foo.setter
-        def foo(self, value): ...  # no need for annotations
-
-
-Infer Function Parameters
--------------------------
-
-Infer the type of a function parameter from its default value:
-
-.. code-block:: python
-
-    def f(a=1, b=True):
-        reveal_type((a, b))  # (int, bool)
 
 Covariant Mapping key type
 --------------------------
@@ -340,15 +307,6 @@ Checked f-strings
     f"{date(1,1,1):%}"  # error: Invalid trailing '%', escape with '%%'
     f"{'s':.2f}"  # error: Incompatible types in string interpolation (expression has type "str", placeholder has type "int | float | complex")
 
-Narrow On Initial Assignment
-----------------------------
-
-When a variable definition has an explicit annotation, the initialization value will be used to narrow it's type:
-
-.. code-block:: python
-
-    a: object = 1
-    reveal_type(a)  # Revealed type is "int"
 
 Annotations in Functions
 ------------------------

@@ -62,6 +62,7 @@ Contents
 
    baseline
    based_features
+   based_inference
 
 .. _overview-type-system-reference:
 
