@@ -50,10 +50,12 @@ Some important properties:
 
 from __future__ import annotations
 
+from collections import defaultdict
 from contextlib import contextmanager, nullcontext
 from typing import Any, Callable, Collection, Final, Iterable, Iterator, List, TypeVar, cast
 from typing_extensions import TypeAlias as _TypeAlias, TypeGuard
 
+import mypy.state
 from mypy import errorcodes as codes, message_registry
 from mypy.constant_fold import constant_fold_expr
 from mypy.errorcodes import ErrorCode
@@ -221,6 +223,7 @@ from mypy.semanal_shared import (
     set_callable_name as set_callable_name,
 )
 from mypy.semanal_typeddict import TypedDictAnalyzer
+from mypy.subtypes import is_subtype
 from mypy.tvar_scope import TypeVarLikeScope
 from mypy.typeanal import (
     SELF_TYPE_NAMES,
@@ -242,7 +245,6 @@ from mypy.typeops import (
     callable_type,
     function_type,
     get_type_vars,
-    infer_impl_from_parts,
     try_getting_str_literals_from_type,
 )
 from mypy.types import (
@@ -283,6 +285,7 @@ from mypy.types import (
     TypeVarTupleType,
     TypeVarType,
     UnboundType,
+    UnionType,
     UnpackType,
     UntypedType,
     get_proper_type,
@@ -1333,7 +1336,7 @@ class SemanticAnalyzer(
                 else:
                     non_overload_indexes.append(i)
         if self.options.infer_function_types and impl and not non_overload_indexes:
-            infer_impl_from_parts(
+            self.infer_impl_from_parts(
                 impl, types, self.named_type("builtins.function"), self.named_type
             )
         return types, impl, non_overload_indexes
@@ -7161,6 +7164,104 @@ class SemanticAnalyzer(
                 return ()
             names.append(specifier.fullname)
         return tuple(names)
+
+    def infer_impl_from_parts(
+        self,
+        impl: OverloadPart,
+        types: list[CallableType],
+        fallback: Instance,
+        named_type: Callable[[str, list[Type]], Type],
+    ):
+        impl_func = impl if isinstance(impl, FuncDef) else impl.func
+        # infer the types of the impl from the overload types
+        arg_types: dict[str | int, dict[Type, None]] = defaultdict(dict)
+        ret_types: dict[Type, None] = {}
+        for tp in types:
+            for i, arg_type in enumerate(tp.arg_types):
+                arg_name = tp.arg_names[i]
+                if not arg_name:  # if it's positional only
+                    arg_types[i][arg_type] = None
+                else:
+                    if arg_name in impl_func.arg_names:
+                        if arg_type not in arg_types[arg_name]:
+                            arg_types[arg_name][arg_type] = None
+                    if arg_name and arg_name in impl_func.arg_names:
+                        if arg_type not in arg_types[arg_name]:
+                            arg_types[arg_name][arg_type] = None
+            t = get_proper_type(tp.ret_type)
+            if isinstance(t, Instance) and t.type.fullname == "typing.Coroutine":
+                ret_type = t.args[2]
+            else:
+                ret_type = tp.ret_type
+            ret_types[ret_type] = None
+
+        res_arg_types = [
+            (
+                UnionType.make_union(
+                    tuple({**(arg_types[arg_name_] if arg_name_ else {}), **arg_types[i]})
+                )
+                if arg_kind not in (ARG_STAR, ARG_STAR2)
+                else UntypedType()
+            )
+            for i, (arg_name_, arg_kind) in enumerate(
+                zip(impl_func.arg_names, impl_func.arg_kinds)
+            )
+        ]
+
+        if isinstance(impl, Decorator):
+            impl = impl.func
+        for i, arg in enumerate(impl.arguments):
+            init = arg.initializer
+            if not arg.initializer:
+                continue
+            typ: Type | None
+            if isinstance(init, NameExpr) and init.fullname == "builtins.None":
+                typ = NoneType()
+            else:
+                typ = self.analyze_simple_literal_type(arg.initializer, True, do_inner=True)
+                if not typ:
+                    continue
+            with mypy.state.state.strict_optional_set(self.options.strict_optional):
+                if not is_subtype(typ, res_arg_types[i], options=self.options):
+                    res_arg_types[i] = UnionType.make_union((res_arg_types[i], typ))
+
+        ret_type = UnionType.make_union(tuple(ret_types))
+
+        if impl_func.is_coroutine:
+            # if the impl is a coroutine, then assume the parts are also, if not need annotation
+            any_type = AnyType(TypeOfAny.special_form)
+            ret_type = named_type("typing.Coroutine", [any_type, any_type, ret_type])
+
+        # use unanalyzed_type because we would have already tried to infer from defaults
+        if impl_func.unanalyzed_type:
+            assert isinstance(impl_func.unanalyzed_type, CallableType)
+            assert isinstance(impl_func.type, CallableType)
+            impl_func.type = impl_func.type.copy_modified(
+                arg_types=[
+                    i if not is_unannotated_any(u) else r
+                    for i, u, r in zip(
+                        impl_func.type.arg_types,
+                        impl_func.unanalyzed_type.arg_types,
+                        res_arg_types,
+                    )
+                ],
+                ret_type=(
+                    ret_type
+                    if isinstance(
+                        get_proper_type(impl_func.unanalyzed_type.ret_type), (AnyType, NoneType)
+                    )
+                    else impl_func.type.ret_type
+                ),
+            )
+        else:
+            impl_func.type = CallableType(
+                res_arg_types,
+                impl_func.arg_kinds,
+                impl_func.arg_names,
+                ret_type,
+                fallback,
+                definition=impl_func,
+            )
 
 
 def replace_implicit_first_type(sig: FunctionLike, new: Type) -> FunctionLike:

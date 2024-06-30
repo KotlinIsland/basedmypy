@@ -6,6 +6,10 @@
 - `work_not_properly_function_names` made available to per module configuration (#699)
 - Support `BASEDMYPY_TYPE_CHECKING` (#702)
 - Enable stub mode within `TYPE_CHECKING` branches (#702)
+- Infer from overloads - add default value in impl (#697)
+### Fixes
+- positional arguments on overloads break super (#697)
+- positional arguments on overloads duplicate unions (#697)
 
 ## [2.5.0]
 ### Added

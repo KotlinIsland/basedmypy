@@ -184,7 +184,7 @@ def f(a, b):
     reveal_type(a)
     reveal_type(b)
 [out]
-main:9: note: Revealed type is "int | int"
+main:9: note: Revealed type is "int"
 main:10: note: Revealed type is "str"
 
 

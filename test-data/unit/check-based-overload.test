@@ -39,3 +39,28 @@ o: object
 assert isinstance(o, str)
 f(lambda _: reveal_type(o))  # N: Revealed type is "object"
 [builtins fixtures/tuple.pyi]
+
+
+[case testPositional]
+from typing import overload
+
+@overload
+def f(a: int, b: int): ...
+@overload
+def f(a: int, c: str, /): ...
+def f(a, b):
+    reveal_type(a)  # N: Revealed type is "int"
+    reveal_type(b)  # N: Revealed type is "int | str"
+
+
+[case testInferDefault]
+from typing import overload
+
+@overload
+def f(a: int, b: int, c: 1): ...
+@overload
+def f(a: int, b: str, c: 2): ...
+def f(a="who", b=None, c=3):
+    reveal_type(a)  # N: Revealed type is "int | 'who'"
+    reveal_type(b)  # N: Revealed type is "int | str | None"
+    reveal_type(c)  # N: Revealed type is "1 | 2 | 3"

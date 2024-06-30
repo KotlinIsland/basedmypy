@@ -10467,7 +10467,7 @@
         "code": "redundant-expr",
         "column": 18,
         "message": "Condition is always true",
-        "offset": 105,
+        "offset": 71,
         "src": "while True:",
         "target": "mypy.ipc.IPCBase.read"
       }
@@ -17097,7 +17097,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"type\" is not using @override but is overriding a method in class \"mypy.semanal_shared.SemanticAnalyzerCoreInterface\"",
-        "offset": 477,
+        "offset": 480,
         "src": "def type(self) -> TypeInfo | None:",
         "target": "mypy.semanal"
       },
@@ -18297,7 +18297,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_any\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeTranslator\"",
-        "offset": 117,
+        "offset": 215,
         "src": "def visit_any(self, t: AnyType) -> Type:",
         "target": "mypy.semanal.MakeAnyNonExplicit.visit_any"
       },
@@ -32283,7 +32283,7 @@
         "code": "redundant-expr",
         "column": 19,
         "message": "Condition is always true",
-        "offset": 498,
+        "offset": 495,
         "src": "if extra_attrs_set is None:",
         "target": "mypy.typeops.make_simplified_union"
       },
