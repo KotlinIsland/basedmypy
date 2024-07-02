@@ -60,6 +60,7 @@ PER_MODULE_OPTIONS: Final = {
     "warn_return_any",
     "warn_unreachable",
     "warn_unused_ignores",
+    "work_not_properly_function_names",
 }
 
 OPTIONS_AFFECTING_CACHE: Final = (

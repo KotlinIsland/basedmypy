@@ -209,3 +209,29 @@ for _ in [1]:
 while True:
     if True:  # E: Condition is always true  [redundant-expr]
         reveal_type(1)  # N: Revealed type is "1"
+
+
+[case testWorkNotProperlyFunctionNamesModule]
+# flags: --config-file tmp/pyproject.toml
+import other
+
+class A:
+    def f(self, a: int): ...
+class B(A):
+    def f(self, b: int): ...  # E: Signature of "f" incompatible with supertype "A"  [override] \
+                              # N:      Superclass: \
+                              # N:          def f(self, a: int) -> None \
+                              # N:      Subclass: \
+                              # N:          def f(self, b: int) -> None \
+                              # E: Method "f" is not using @override but is overriding a method in class "__main__.A"  [explicit-override]
+
+[file other.py]
+class A:
+    def f(self, a: int): ...
+class B(A):
+    def f(self, b: int): ...  # E: Method "f" is not using @override but is overriding a method in class "other.A"  [explicit-override]
+
+[file pyproject.toml]
+\[[tool.mypy.overrides]]
+module="other"
+work_not_properly_function_names=true

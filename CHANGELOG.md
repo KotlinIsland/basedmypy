@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 - Any parameter `_` will be inferred as `object` (#687)
+- `work_not_properly_function_names` made available to per module configuration (#699)
 
 ## [2.5.0]
 ### Added
