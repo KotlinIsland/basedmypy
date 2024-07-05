@@ -5388,7 +5388,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             and not e.func.is_class
         ):
             self.fail(
-                'This decorator returns a "Callable", not a "FunctionType". Decorate this decorator with "basedtyping.as_functiontype", or add a \'type: ignore\' it if it\'s intentional',
+                'This decorator returns a "Callable", not a "FunctionType". Decorate this decorator with "basedtyping.as_functiontype", or add a \'type: ignore\' if it\'s intentional',
                 e,
                 code=codes.CALLABLE_FUNCTIONTYPE,
             )
