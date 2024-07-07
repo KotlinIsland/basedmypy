@@ -2241,7 +2241,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_while_stmt\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 36,
+        "offset": 43,
         "src": "def visit_while_stmt(self, s: WhileStmt) -> None:",
         "target": "mypy.checker.TypeChecker.visit_while_stmt"
       },
@@ -5901,7 +5901,7 @@
         "code": "no-any-explicit",
         "column": 20,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 4,
+        "offset": 5,
         "src": "resp: dict[str, Any] = {}",
         "target": "mypy.dmypy_server.Server.serve"
       },
@@ -6347,17 +6347,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 12,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 12,
-        "src": "res[\"memory_maxrss_mib\"] = rusage.ru_maxrss * factor / MiB",
-        "target": "mypy.dmypy_server.get_meminfo"
-      },
-      {
-        "code": "no-any-expr",
         "column": 11,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 1,
+        "offset": 13,
         "src": "return res",
         "target": "mypy.dmypy_server.get_meminfo"
       }
@@ -13395,7 +13387,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"name\" is not using @override but is overriding a method in class \"mypy.nodes.FuncBase\"",
-        "offset": 91,
+        "offset": 93,
         "src": "def name(self) -> str:",
         "target": "mypy.nodes"
       },
@@ -13835,7 +13827,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"accept\" is not using @override but is overriding a method in class \"mypy.nodes.Statement\"",
-        "offset": 19,
+        "offset": 27,
         "src": "def accept(self, visitor: StatementVisitor[T]) -> T:",
         "target": "mypy.nodes.IfStmt.accept"
       },
@@ -14845,7 +14837,7 @@
         "code": "no-any-expr",
         "column": 18,
         "message": "Expression has type \"Any\"",
-        "offset": 128,
+        "offset": 129,
         "src": "MACHDEP = sysconfig.get_config_var(\"MACHDEP\")",
         "target": "mypy.options.Options.__init__"
       },
@@ -15895,7 +15887,7 @@
         "code": "no-any-expr",
         "column": 49,
         "message": "Expression has type \"Any\"",
-        "offset": 146,
+        "offset": 150,
         "src": "result = consider_sys_platform(expr, options.platform)",
         "target": "mypy.reachability.infer_condition_value"
       },
@@ -15954,6 +15946,14 @@
         "offset": 3,
         "src": "def visit_func_def(self, node: FuncDef) -> None:",
         "target": "mypy.reachability.MarkImportsMypyOnlyVisitor.visit_func_def"
+      },
+      {
+        "code": "explicit-override",
+        "column": 4,
+        "message": "Method \"visit_overloaded_func_def\" is not using @override but is overriding a method in class \"mypy.traverser.TraverserVisitor\"",
+        "offset": 3,
+        "src": "def visit_overloaded_func_def(self, o: OverloadedFuncDef) -> None:",
+        "target": "mypy.reachability.MarkImportsMypyOnlyVisitor.visit_overloaded_func_def"
       }
     ],
     "mypy/refinfo.py": [
@@ -17145,7 +17145,7 @@
         "code": "possibly-undefined",
         "column": 41,
         "message": "Name \"original_target\" may be undefined",
-        "offset": 68,
+        "offset": 71,
         "src": "if defn.info and original_target == defn.arguments[0].variable.name:",
         "target": "mypy.semanal"
       },
@@ -17177,7 +17177,7 @@
         "code": "redundant-expr",
         "column": 17,
         "message": "Condition is always true",
-        "offset": 137,
+        "offset": 138,
         "src": "elif isinstance(item, FuncDef):",
         "target": "mypy.semanal.SemanticAnalyzer.analyze_overload_sigs_and_impl"
       },
@@ -17185,7 +17185,7 @@
         "code": "redundant-expr",
         "column": 17,
         "message": "Condition is always true",
-        "offset": 88,
+        "offset": 89,
         "src": "elif isinstance(item, FuncDef):",
         "target": "mypy.semanal.SemanticAnalyzer.process_static_or_class_method_in_overload"
       },
@@ -17281,7 +17281,7 @@
         "code": "no-any-expr",
         "column": 67,
         "message": "Expression type contains \"Any\" (has type \"set[Any]\")",
-        "offset": 162,
+        "offset": 164,
         "src": "alternatives = set(module.names.keys()).difference({source_id})",
         "target": "mypy.semanal.SemanticAnalyzer.report_missing_module_attribute"
       },
@@ -17569,7 +17569,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_try_stmt\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 8,
+        "offset": 16,
         "src": "def visit_try_stmt(self, s: TryStmt) -> None:",
         "target": "mypy.semanal.SemanticAnalyzer.visit_try_stmt"
       },
@@ -18249,7 +18249,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"class_type\" is not using @override but is overriding a method in class \"mypy.plugin.SemanticAnalyzerPluginInterface\"",
-        "offset": 66,
+        "offset": 68,
         "src": "def class_type(self, self_type: Type) -> Type:",
         "target": "mypy.semanal.SemanticAnalyzer.class_type"
       },
@@ -31721,7 +31721,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_any\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 692,
+        "offset": 693,
         "src": "def visit_any(self, t: AnyType) -> Type:",
         "target": "mypy.typeanal.TypeAnalyser.visit_any"
       },

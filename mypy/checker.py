@@ -4918,6 +4918,9 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         # This frame records the knowledge from previous if/elif clauses not being taken.
         # Fall-through to the original frame is handled explicitly in each block.
         with self.binder.frame_context(can_skip=False, conditional_frame=True, fall_through=0):
+            is_stub = self.is_stub
+            if s.is_mypy_only:
+                self.is_stub = True
             for e, b in zip(s.expr, s.body):
                 t = get_proper_type(self.expr_checker.accept(e))
                 allow_redundant_expr = self.allow_redundant_expr
@@ -4944,10 +4947,14 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 ):
                     self.msg.fail("Condition is always true", e, code=codes.REDUNDANT_EXPR)
                 self.push_type_map(else_map)
-
+            if s.is_mypy_only is False:
+                self.is_stub = True
+            else:
+                self.is_stub = is_stub
             with self.binder.frame_context(can_skip=False, fall_through=2):
                 if s.else_body:
                     self.accept(s.else_body)
+            self.is_stub = is_stub
 
     def visit_while_stmt(self, s: WhileStmt) -> None:
         """Type check a while statement."""

@@ -42,12 +42,12 @@ from types import FunctionType
 import future
 
 a: FunctionType[[int], str]  # E: Type parameters for "FunctionType" requires __future__.annotations or quoted types  [valid-type]
-FunctionType[[int], str]  # E: The type "type[FunctionType]" is not generic and not indexable  [misc]
+Foo = FunctionType[[int], str]  # E: Type parameters for "FunctionType" requires __future__.annotations or quoted types  [valid-type]
 [file future.py]
 from __future__ import annotations
 from types import FunctionType
 a: FunctionType[[int], str]
-FunctionType[[int], str]  # E: The type "type[FunctionType]" is not generic and not indexable  [misc]
+Foo = FunctionType[[int], str]  # E: Type parameters for "FunctionType" requires __future__.annotations or quoted types  [valid-type]
 [builtins fixtures/tuple.pyi]
 
 

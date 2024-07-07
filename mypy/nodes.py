@@ -558,11 +558,12 @@ class OverloadedFuncDef(FuncBase, SymbolNode, Statement):
     Overloaded variants must be consecutive in the source file.
     """
 
-    __slots__ = ("items", "unanalyzed_items", "impl")
+    __slots__ = ("items", "unanalyzed_items", "impl", "is_mypy_only")
 
     items: list[OverloadPart]
     unanalyzed_items: list[OverloadPart]
     impl: OverloadPart | None
+    is_mypy_only: bool
 
     def __init__(self, items: list[OverloadPart]) -> None:
         super().__init__()
@@ -572,6 +573,7 @@ class OverloadedFuncDef(FuncBase, SymbolNode, Statement):
         if items:
             # TODO: figure out how to reliably set end position (we don't know the impl here).
             self.set_line(items[0].line, items[0].column)
+        self.is_mypy_only = False
 
     @property
     def name(self) -> str:
@@ -1475,19 +1477,27 @@ class PassStmt(Statement):
 
 
 class IfStmt(Statement):
-    __slots__ = ("expr", "body", "else_body")
+    __slots__ = ("expr", "body", "else_body", "is_mypy_only")
 
-    __match_args__ = ("expr", "body", "else_body")
+    __match_args__ = ("expr", "body", "else_body", "is_mypy_only")
 
     expr: list[Expression]
     body: list[Block]
     else_body: Block | None
+    is_mypy_only: bool | None
 
-    def __init__(self, expr: list[Expression], body: list[Block], else_body: Block | None) -> None:
+    def __init__(
+        self,
+        expr: list[Expression],
+        body: list[Block],
+        else_body: Block | None,
+        is_mypy_only: bool | None = None,
+    ) -> None:
         super().__init__()
         self.expr = expr
         self.body = body
         self.else_body = else_body
+        self.is_mypy_only = is_mypy_only
 
     def accept(self, visitor: StatementVisitor[T]) -> T:
         return visitor.visit_if_stmt(self)

@@ -907,6 +907,9 @@ class SemanticAnalyzer(
                 # Signature must be analyzed in the surrounding scope so that
                 # class-level imported names and type variables are in scope.
                 analyzer = self.type_analyzer()
+                analyzer.always_allow_new_syntax = (
+                    analyzer.always_allow_new_syntax or defn.is_mypy_only
+                )
                 tag = self.track_incomplete_refs()
                 result = analyzer.visit_callable_type(defn.type, nested=False)
                 # Don't store not ready types (including placeholders).
@@ -1189,7 +1192,8 @@ class SemanticAnalyzer(
     def visit_overloaded_func_def(self, defn: OverloadedFuncDef) -> None:
         self.statement = defn
         self.add_function_to_symbol_table(defn)
-
+        if self.is_stub_file:
+            defn.is_mypy_only = True
         if not self.recurse_into_functions:
             return
 
@@ -1369,7 +1373,7 @@ class SemanticAnalyzer(
 
     def handle_missing_overload_implementation(self, defn: OverloadedFuncDef) -> None:
         """Generate error about missing overload implementation (only if needed)."""
-        if not self.is_stub_file:
+        if not self.is_stub_file and not defn.is_mypy_only:
             if self.type and self.type.is_protocol and not self.is_func_scope():
                 # An overloaded protocol method doesn't need an implementation,
                 # but if it doesn't have one, then it is considered abstract.
@@ -1379,6 +1383,7 @@ class SemanticAnalyzer(
                     else:
                         item.abstract_status = IS_ABSTRACT
             else:
+
                 # TODO: also allow omitting an implementation for abstract methods in ABCs?
                 self.fail(
                     "An overloaded function outside a stub file must have an implementation",
@@ -2701,7 +2706,9 @@ class SemanticAnalyzer(
             # Modules imported in a stub file without using 'from Y import X as X' will
             # not get exported.
             # When implicit re-exporting is disabled, we have the same behavior as stubs.
-            use_implicit_reexport = not self.is_stub_file and self.options.implicit_reexport
+            # we recheck if it's a stub manually to avoid TYPE_CHECKING blocks
+            is_stub_file = self.cur_mod_node.path.lower().endswith(".pyi")
+            use_implicit_reexport = not is_stub_file and self.options.implicit_reexport
             module_public = use_implicit_reexport or (as_id is not None and id == as_id)
 
             # If the module does not contain a symbol with the name 'id',
@@ -5128,10 +5135,18 @@ class SemanticAnalyzer(
     def visit_if_stmt(self, s: IfStmt) -> None:
         self.statement = s
         infer_reachability_of_if_statement(s, self.options)
+        is_stub_file = self.is_stub_file
+        if s.is_mypy_only:
+            self._is_stub_file = True
         for i in range(len(s.expr)):
             s.expr[i].accept(self)
             self.visit_block(s.body[i])
+        if s.is_mypy_only is False:
+            self._is_stub_file = True
+        else:
+            self._is_stub_file = is_stub_file
         self.visit_block_maybe(s.else_body)
+        self._is_stub_file = is_stub_file
 
     def visit_try_stmt(self, s: TryStmt) -> None:
         self.statement = s
@@ -7016,6 +7031,8 @@ class SemanticAnalyzer(
         if not a.api.is_stub_file and runtime:
             a.always_allow_new_syntax = False
         if runtime is False:
+            a.always_allow_new_syntax = True
+        if self.is_stub_file:
             a.always_allow_new_syntax = True
         tag = self.track_incomplete_refs()
         typ = typ.accept(a)

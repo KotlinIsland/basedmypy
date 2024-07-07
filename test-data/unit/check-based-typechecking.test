@@ -1,0 +1,40 @@
+[case testBasedmypyTypeChecking]
+BASEDMYPY_TYPE_CHECKING = False
+if not BASEDMYPY_TYPE_CHECKING:
+    1 + ""
+
+
+[case testTypeChecking]
+from typing import TYPE_CHECKING
+from typing_extensions import TypeAlias
+
+if TYPE_CHECKING:
+    a: list[1 | 2]
+    class B: ...
+    b: B & int
+    c: (int, str) | int
+    def f(l: object) -> l is list[1 | 2]: ...
+    A: TypeAlias = list[1 | 2]
+    C = list[1 | 2]
+[builtins fixtures/tuple.pyi]
+
+
+[case testOverload]
+from typing import TYPE_CHECKING, overload
+
+if TYPE_CHECKING:
+    @overload
+    def f(): ...
+    @overload
+    def f(i: int): ...
+
+
+[case testStringType]
+# flags: --python-version 3.8
+a: "list[list[str]]"
+b: "int | str"
+from typing import List
+c: List["list[str]"]
+from types import FunctionType
+d: "list[FunctionType[[], None]]"
+[builtins fixtures/tuple.pyi]

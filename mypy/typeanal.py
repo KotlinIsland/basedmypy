@@ -173,6 +173,7 @@ def analyze_type_alias(
         allowed_alias_tvars=allowed_alias_tvars,
         alias_type_params_names=alias_type_params_names,
     )
+    analyzer.always_allow_new_syntax = api.is_stub_file
     analyzer.in_dynamic_func = in_dynamic_func
     analyzer.global_scope = global_scope
     res = type.accept(analyzer)
@@ -280,7 +281,8 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         return self.api.lookup_fully_qualified(name)
 
     def visit_unbound_type(self, t: UnboundType, defining_literal: bool = False) -> Type:
-        typ = self.visit_unbound_type_nonoptional(t, defining_literal)
+        with self.string_type(t):
+            typ = self.visit_unbound_type_nonoptional(t, defining_literal)
         if t.optional:
             # We don't need to worry about double-wrapping Optionals or
             # wrapping Anys: Union simplification will take care of that.
@@ -292,6 +294,15 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             self.alias_type_params_names is not None
             and tvar_name not in self.alias_type_params_names
         )
+
+    @contextmanager
+    def string_type(self, t: UnboundType) -> Iterator[None]:
+        always_allow_new_syntax = self.always_allow_new_syntax
+        self.always_allow_new_syntax = always_allow_new_syntax or bool(t.original_str_expr)
+        try:
+            yield
+        finally:
+            self.always_allow_new_syntax = always_allow_new_syntax
 
     def visit_unbound_type_nonoptional(self, t: UnboundType, defining_literal: bool) -> Type:
         sym = self.lookup_qualified(t.name, t)
@@ -484,6 +495,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 return res
             elif isinstance(node, TypeInfo):
                 return self.analyze_type_with_type_info(node, t.args, t, t.empty_tuple_index)
+
             elif node.fullname in TYPE_ALIAS_NAMES:
                 return AnyType(TypeOfAny.special_form)
             # Concatenate is an operator, no need for a proper type

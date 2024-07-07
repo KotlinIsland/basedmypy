@@ -4,6 +4,8 @@
 ### Added
 - Any parameter `_` will be inferred as `object` (#687)
 - `work_not_properly_function_names` made available to per module configuration (#699)
+- Support `BASEDMYPY_TYPE_CHECKING` (#702)
+- Enable stub mode within `TYPE_CHECKING` branches (#702)
 
 ## [2.5.0]
 ### Added

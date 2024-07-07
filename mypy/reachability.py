@@ -23,6 +23,7 @@ from mypy.nodes import (
     MemberExpr,
     NameExpr,
     OpExpr,
+    OverloadedFuncDef,
     SliceExpr,
     StrExpr,
     TupleExpr,
@@ -54,12 +55,15 @@ def infer_reachability_of_if_statement(s: IfStmt, options: Options) -> None:
     for i in range(len(s.expr)):
         result = infer_condition_value(s.expr[i], options)
         if result in (ALWAYS_FALSE, MYPY_FALSE):
+            if result == MYPY_FALSE:
+                s.is_mypy_only = False
             # The condition is considered always false, so we skip the if/elif body.
             mark_block_unreachable(s.body[i])
         elif result in (ALWAYS_TRUE, MYPY_TRUE):
             # This condition is considered always true, so all of the remaining
             # elif/else bodies should not be checked.
             if result == MYPY_TRUE:
+                s.is_mypy_only = True
                 # This condition is false at runtime; this will affect
                 # import priorities.
                 mark_block_mypy_only(s.body[i])
@@ -149,7 +153,7 @@ def infer_condition_value(expr: Expression, options: Options) -> int:
             result = ALWAYS_FALSE
         elif name == "PY3":
             result = ALWAYS_TRUE
-        elif name == "MYPY" or name == "TYPE_CHECKING":
+        elif name in {"BASEDMYPY_TYPE_CHECKING", "MYPY", "TYPE_CHECKING"}:
             result = MYPY_TRUE
         elif name in options.always_true:
             result = ALWAYS_TRUE
@@ -360,3 +364,6 @@ class MarkImportsMypyOnlyVisitor(TraverserVisitor):
 
     def visit_func_def(self, node: FuncDef) -> None:
         node.is_mypy_only = True
+
+    def visit_overloaded_func_def(self, o: OverloadedFuncDef) -> None:
+        o.is_mypy_only = True
