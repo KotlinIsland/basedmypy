@@ -987,7 +987,7 @@ class Errors:
             a.append(s)
             if self.options.pretty:
                 # Add source code fragment and a location marker.
-                if severity == "error" and source_lines and line > 0:
+                if severity == "error" and source_lines and len(source_lines) >= line > 0:
                     source_line = source_lines[line - 1]
                     source_line_expanded = source_line.expandtabs()
                     if column < 0:
@@ -1201,7 +1201,10 @@ class Errors:
                         )
                     )
             src = (
-                file == current_file and source_lines and e.line > 0 and source_lines[e.line - 1]
+                file == current_file
+                and source_lines
+                and len(source_lines) >= e.line > 0
+                and source_lines[e.line - 1]
             ) or ""
             # when there is no column, but we still want an ide to show an error
             if e.column == -1 and self.options.show_error_end:
