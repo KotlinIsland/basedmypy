@@ -301,6 +301,12 @@ CALLABLE_FUNCTIONTYPE: Final[ErrorCode] = ErrorCode(
 POSSIBLE_FUNCTION: Final[ErrorCode] = ErrorCode(
     "possible-function", "possible FunctionType on class", "General", default_enabled=False
 )
+UNHANDLED_SCENARIO: Final[ErrorCode] = ErrorCode(
+    "unhandled-scenario",
+    "an unknown error occurred. raise an issue",
+    "General",
+    default_enabled=False,
+)
 
 REGEX: Final = ErrorCode("regex", "Regex related errors", "General")
 REVEAL: Final = ErrorCode("reveal", "Reveal types at check time", "General")

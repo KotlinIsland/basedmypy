@@ -271,3 +271,14 @@ reveal_type(A().f)  # N: Revealed type is "_NamedCallable & () -> None"
 reveal_type(A().c)  # N: Revealed type is "_NamedCallable & () -> None"
 reveal_type(A().s)  # N: Revealed type is "_NamedCallable & () -> None"
 [builtins fixtures/callable.pyi]
+
+
+[case testNonInstanceThing]
+# test a crash when the subject isn't an instance
+from collections import namedtuple
+
+f = namedtuple("f", "")
+f.__repr__ = lambda _: ""  # E: "type[f]" has no attribute "__repr__"  [attr-defined] \
+                           # E: Expression type contains "Any" (has type "def (_: Untyped) -> str")  [no-any-expr]
+reveal_type(f)  # N: Revealed type is "() -> tuple[(), fallback=__main__.f]"
+[builtins fixtures/tuple.pyi]

@@ -3152,6 +3152,80 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         alias_type = self.expr_checker.accept(s.rvalue)
         self.store_type(s.lvalues[-1], alias_type)
 
+    def check_function_on_class(
+        self,
+        lvalue: Lvalue,
+        rvalue: Expression,
+        p_lvalue_type: ProperType | None,
+        p_rvalue_type: ProperType | None,
+    ):
+        """Special case: function assigned to an instance var via the class will be methodised"""
+        type_type = None
+        expr_type = None
+        if isinstance(lvalue, MemberExpr):
+            expr_type = self.expr_checker.accept(lvalue.expr)
+            proper = get_proper_type(expr_type)
+            if isinstance(proper, CallableType) and proper.is_type_obj():
+                type_type = expr_type
+        if not (
+            (type_type or self.scope.active_class())
+            and isinstance(p_rvalue_type, CallableType)
+            and isinstance(p_lvalue_type, CallableType)
+        ):
+            return
+        node = None
+        if type_type:
+            assert expr_type
+            proper = get_proper_type(expr_type)
+            assert isinstance(proper, CallableType)
+            proper = get_proper_type(proper.ret_type)
+            if isinstance(proper, TupleType):
+                proper = proper.partial_fallback
+            if not isinstance(proper, Instance):
+                self.msg.fail(
+                    "This value is some special cased thing, needs to be handled separately",
+                    rvalue,
+                    code=codes.UNHANDLED_SCENARIO,
+                )
+                return
+            assert isinstance(lvalue, (NameExpr, MemberExpr))
+            table_node = proper.type.get(lvalue.name)
+            if table_node is None:
+                # work around https://github.com/python/mypy/issues/17316
+                return
+            node = table_node.node
+        class_var = (isinstance(node, Var) and node.is_classvar) or (
+            isinstance(lvalue, NameExpr)
+            and isinstance(lvalue.node, Var)
+            and lvalue.node.is_classvar
+        )
+        if p_rvalue_type.is_function:
+            if codes.CALLABLE_FUNCTIONTYPE in self.options.enabled_error_codes:
+                if not (class_var and p_lvalue_type.is_function):
+                    self.msg.fail(
+                        'Assigning a "FunctionType" on the class will become a "MethodType"',
+                        rvalue,
+                        code=codes.CALLABLE_FUNCTIONTYPE,
+                    )
+                if not class_var:
+                    self.msg.note(
+                        'Consider setting it on the instance, or using "ClassVar"', rvalue
+                    )
+        elif (
+            codes.POSSIBLE_FUNCTION in self.options.enabled_error_codes
+            and type(p_rvalue_type) is CallableType
+            and p_rvalue_type.is_callable
+        ):
+            self.msg.fail(
+                'This "CallableType" could be a "FunctionType", which when assigned via the class, would produce a "MethodType"',
+                rvalue,
+                code=codes.POSSIBLE_FUNCTION,
+            )
+            if class_var:
+                self.msg.note('Consider changing the type to "FunctionType"', rvalue)
+            elif not p_lvalue_type.is_function:
+                self.msg.note('Consider setting it on the instance, or using "ClassVar"', rvalue)
+
     def check_assignment(
         self,
         lvalue: Lvalue,
@@ -3306,66 +3380,8 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                     self.msg.concrete_only_assign(p_lvalue_type, rvalue)
                     return
 
-                # Special case: function assigned to an instance var via the class will be methodised
-                type_type = None
-                expr_type = None
-                if isinstance(lvalue, MemberExpr):
-                    expr_type = self.expr_checker.accept(lvalue.expr)
-                    proper = get_proper_type(expr_type)
-                    if isinstance(proper, CallableType) and proper.is_type_obj():
-                        type_type = expr_type
-                if (
-                    (type_type or self.scope.active_class())
-                    and isinstance(p_rvalue_type, CallableType)
-                    and isinstance(p_lvalue_type, CallableType)
-                ):
-                    node = None
-                    if type_type:
-                        assert expr_type
-                        proper = get_proper_type(expr_type)
-                        assert isinstance(proper, CallableType)
-                        proper = get_proper_type(proper.ret_type)
-                        assert isinstance(proper, Instance)
-                        assert isinstance(lvalue, (NameExpr, MemberExpr))
-                        table_node = proper.type.get(lvalue.name)
-                        if table_node is None:
-                            # work around https://github.com/python/mypy/issues/17316
-                            return
-                        node = table_node.node
-                    class_var = (isinstance(node, Var) and node.is_classvar) or (
-                        isinstance(lvalue, NameExpr)
-                        and isinstance(lvalue.node, Var)
-                        and lvalue.node.is_classvar
-                    )
-                    if p_rvalue_type.is_function:
-                        if codes.CALLABLE_FUNCTIONTYPE in self.options.enabled_error_codes:
-                            if not (class_var and p_lvalue_type.is_function):
-                                self.msg.fail(
-                                    'Assigning a "FunctionType" on the class will become a "MethodType"',
-                                    rvalue,
-                                    code=codes.CALLABLE_FUNCTIONTYPE,
-                                )
-                            if not class_var:
-                                self.msg.note(
-                                    'Consider setting it on the instance, or using "ClassVar"',
-                                    rvalue,
-                                )
-                    elif (
-                        codes.POSSIBLE_FUNCTION in self.options.enabled_error_codes
-                        and type(p_rvalue_type) is CallableType
-                        and p_rvalue_type.is_callable
-                    ):
-                        self.msg.fail(
-                            'This "CallableType" could be a "FunctionType", which when assigned via the class, would produce a "MethodType"',
-                            rvalue,
-                            code=codes.POSSIBLE_FUNCTION,
-                        )
-                        if class_var:
-                            self.msg.note('Consider changing the type to "FunctionType"', rvalue)
-                        elif not p_lvalue_type.is_function:
-                            self.msg.note(
-                                'Consider setting it on the instance, or using "ClassVar"', rvalue
-                            )
+                self.check_function_on_class(lvalue, rvalue, p_lvalue_type, p_rvalue_type)
+
                 proper_right = get_proper_type(rvalue_type)
                 if (
                     isinstance(lvalue, RefExpr)

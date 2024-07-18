@@ -147,4 +147,13 @@ basedmypy has lint rules regarding their validity as ``Callable``\s:
 
     A().a(1)  # runtime TypeError: <lambda>() takes 1 positional argument but 2 were given
 
+
+.. _code-unhandled-scenario:
+
+A scenario isn't being handled correctly by basedmypy itself
+------------------------------------------------------------
+
+Sometimes, the implementation of a the type system is not completely sound
+and basedmypy needs to be updated.
+
 .. _code-reveal:
