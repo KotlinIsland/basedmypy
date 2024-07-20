@@ -116,6 +116,7 @@ type_constructors: Final = {
     "typing.Tuple",
     "typing.Type",
     "typing.Union",
+    "basedtyping.Intersection",
     *LITERAL_TYPE_NAMES,
     *ANNOTATED_TYPE_NAMES,
 }

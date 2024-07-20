@@ -10,6 +10,7 @@
 ### Fixes
 - positional arguments on overloads break super (#697)
 - positional arguments on overloads duplicate unions (#697)
+- fix intersection type aliases (#716)
 
 ## [2.5.0]
 ### Added

@@ -335,3 +335,9 @@ reveal_type(x)  # N: Revealed type is "__main__.A & __main__.B"
 assert isinstance(x, C)
 reveal_type(x)  # N: Revealed type is "__main__.A & __main__.B & __main__.C | __main__.A & __main__.C"
 [builtins fixtures/tuple.pyi]
+
+
+[case testIntersectionAlias]
+from basedtyping import Intersection
+A = Intersection[int, str]
+a: A
