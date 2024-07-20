@@ -7,6 +7,7 @@
 - Support `BASEDMYPY_TYPE_CHECKING` (#702)
 - Enable stub mode within `TYPE_CHECKING` branches (#702)
 - Infer from overloads - add default value in impl (#697)
+- Warn for missing returns with explicit `Any` return types (#715)
 ### Fixes
 - positional arguments on overloads break super (#697)
 - positional arguments on overloads duplicate unions (#697)

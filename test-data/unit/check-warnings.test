@@ -140,6 +140,39 @@ def f() -> int:
     pass
 [out]
 
+[case testNoReturnExplicitAny]
+# flags: --warn-no-return
+from typing import Any
+from unknown import Mystery  # type: ignore[import]
+from basedtyping import Untyped
+
+def maybe() -> bool: ...
+
+def implicit(x: Any):
+    if maybe():
+        return x
+
+def explicit(x: Any) -> Any:  # E: Missing return statement
+    if maybe():
+        return x
+
+def explicit_with_none(x: Any) -> Any:
+    if maybe():
+        return x
+    return None
+
+def explicit_with_just_return(x: Any) -> Any:
+    if maybe():
+        return x
+    return
+
+def mystery(x: Any) -> Mystery:
+    if maybe():
+        return x
+
+def untyped(x: Any) -> Untyped:
+    if maybe():
+        return x
 
 -- Returning Any
 -- -------------
