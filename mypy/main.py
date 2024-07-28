@@ -9,6 +9,7 @@ import sys
 import time
 from collections import defaultdict
 from gettext import gettext
+from operator import itemgetter
 from typing import IO, Any, Final, NoReturn, Sequence, TextIO
 
 import mypy.options
@@ -26,6 +27,7 @@ from mypy.fscache import FileSystemCache
 from mypy.modulefinder import BuildSource, FindModuleCache, SearchPaths, get_search_dirs, mypy_path
 from mypy.options import COMPLETE_FEATURES, INCOMPLETE_FEATURES, BuildType, Options
 from mypy.split_namespace import SplitNamespace
+from mypy.util import plural_s
 from mypy.version import __based_version__, __version__
 
 orig_stat: Final = os.stat
@@ -122,40 +124,62 @@ def main(
     if messages and n_notes < len(messages):
         code = 2 if blockers else 1
     if options.error_summary:
+        if options.summary and res and n_errors:
+            stdout.write("\n")
+            stdout.write(formatter.style("error summary:\n", color="none", bold=True))
+            all_errors = defaultdict(lambda: 0)
+            for errors in res.manager.errors.error_info_map.values():
+                for error in errors:
+                    if error.severity != "error" or not error.code:
+                        continue
+                    all_errors[error.code.code] += 1
+            if all_errors:
+                max_code_name_length = max(len(code_name) for code_name in all_errors)
+                for error_code, count in sorted(all_errors.items(), key=itemgetter(1)):
+                    stdout.write(f"  {error_code:<{max_code_name_length}} {count:>5}\n")
         if options.write_baseline and res:
-            new_errors = n_errors
             n_files = len(res.manager.errors.all_errors)
-            total = []
-            # This is stupid, but it's just to remove the dupes from the unfiltered errors
-            for errors in res.manager.errors.all_errors.values():
-                temp = res.manager.errors.render_messages(errors)
-                total.extend(res.manager.errors.remove_duplicates(temp))
-            n_errors = len([error for error in total if error[5] == "error"])
-        else:
-            new_errors = -1
+            stats = res.manager.errors.baseline_stats
+            rejected = stats["rejected"]
+            total = len(stats["total"])
+            new_errors = n_errors - rejected
+            previous = res.manager.errors.original_baseline
+            stdout.write(formatter.style("baseline:\n", color="none", bold=True))
+            if new_errors >= 0:
+                stdout.write(f"  {new_errors} new error{plural_s(new_errors)}\n")
+            stdout.write(f"  {total} error{plural_s(total)} in baseline\n")
+            difference = (
+                len(
+                    [
+                        error
+                        for file in previous.values()
+                        for error in file
+                        if error["code"].startswith("error:")
+                    ]
+                )
+                - total
+            )
+            if difference > 0:
+                stdout.write(
+                    f"  {difference} error{plural_s(difference)} less than previous baseline\n"
+                )
+            if rejected:
+                stdout.write(f"  {rejected} error{plural_s(rejected)} rejected\n")
+            stdout.write(f"  baseline successfully written to {options.baseline_file}\n")
+            stdout.flush()
         if n_errors:
             summary = formatter.format_error(
-                n_errors,
-                n_files,
-                len(sources),
-                new_errors=new_errors,
-                blockers=blockers,
-                use_color=options.color_output,
+                n_errors, n_files, len(sources), blockers=blockers, use_color=options.color_output
             )
             stdout.write(summary + "\n")
+        if n_errors >= 100 and not options.write_baseline:
+            stdout.write(
+                "That's a lot of errors, perhaps you would want to write an error baseline (`--write-baseline`)\n"
+            )
         # Only notes should also output success
         elif not messages or n_notes == len(messages):
             stdout.write(formatter.format_success(len(sources), options.color_output) + "\n")
         stdout.flush()
-
-    if options.write_baseline:
-        stdout.write(
-            formatter.style(
-                f"Baseline successfully written to {options.baseline_file}\n", "green", bold=True
-            )
-        )
-        stdout.flush()
-        code = 0
 
     if options.install_types and not options.non_interactive:
         result = install_types(formatter, options, after_run=True, non_interactive=False)
@@ -563,6 +587,20 @@ def process_options(
         action="store",
         help=f"Use baseline info in the given file (defaults to '{defaults.BASELINE_FILE}')",
     )
+    based_group.add_argument(
+        "--baseline-allow",
+        metavar="NAME",
+        action="append",
+        default=[],
+        help="Allow error codes into the baseline",
+    )
+    based_group.add_argument(
+        "--baseline-ban",
+        metavar="NAME",
+        action="append",
+        default=[],
+        help="Prevent error codes from being written to the baseline",
+    )
     add_invertible_flag(
         "--no-auto-baseline",
         default=True,
@@ -617,6 +655,12 @@ def process_options(
         default=False,
         help="Use types from a package, even if it doesn't have a py.typed. "
         "You probably want to set this on a module override",
+        group=based_group,
+    )
+    add_invertible_flag(
+        "--no-summary",
+        default=True,
+        help="don't show an error code summary at the end",
         group=based_group,
     )
     add_invertible_flag(
@@ -1460,6 +1504,8 @@ def process_options(
     if invalid_codes:
         parser.error(f"Invalid error code(s): {', '.join(sorted(invalid_codes))}")
 
+    options.baseline_bans |= {error_codes[code] for code in set(options.baseline_ban)}
+    options.baseline_allows |= {error_codes[code] for code in set(options.baseline_allow)}
     options.disabled_error_codes |= {error_codes[code] for code in disabled_codes}
     options.enabled_error_codes |= {error_codes[code] for code in enabled_codes}
 

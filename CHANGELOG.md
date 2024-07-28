@@ -8,6 +8,7 @@
 - Enable stub mode within `TYPE_CHECKING` branches (#702)
 - Infer from overloads - add default value in impl (#697)
 - Warn for missing returns with explicit `Any` return types (#715)
+- `--baseline-allow` and `--baseline-ban` for baseline management (#710)
 ### Fixes
 - positional arguments on overloads break super (#697)
 - positional arguments on overloads duplicate unions (#697)

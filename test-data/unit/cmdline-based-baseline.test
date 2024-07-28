@@ -9,17 +9,12 @@
 a
 [out]
 pkg/a.py:1:1: error: Name "a" is not defined  [name-defined]
+
+baseline:
+
 Found 1 error (1 new error) in 1 file (checked 1 source file)
 Baseline successfully written to a/b
 == Return code: 0
-
-
--- TODO merge this with the first one?
-[case testWriteBaseline2]
-# cmd: mypy --write-baseline --baseline-file a/b pkg
-# dont-normalize-output:
-[file pkg/a.py]
-a
 [outfile a/b]
 {
   "files": {
@@ -34,7 +29,7 @@ a
       }
     ]
   },
-  "format": "1.7",
+  "format": "2.6",
   "targets": [
     "file:pkg"
   ]
@@ -43,12 +38,13 @@ a
 
 [case testRewriteBaseline]
 # cmd: mypy --write-baseline --error-summary pkg
+-- TODO merge this with the first one?
 [file pkg/a.py]
 1 + ""
 "" + 1
 [file .mypy/baseline.json]
 {"files": {"pkg/a.py": [{"code": "operator", "offset": 2, "message": "Unsupported operand types for + (\"str\" and \"int\")", "src": "\"\" + 1"}]},
-"format": "1.7",
+"format": "2.6",
 "targets": ["file:pkg"]
 }
 [out]
@@ -56,17 +52,6 @@ pkg/a.py:1:5: error: Unsupported operand types for + ("int" and "str")  [operato
 Found 2 errors (1 new error) in 1 file (checked 1 source file)
 Baseline successfully written to .mypy/baseline.json
 == Return code: 0
--- TODO merge this with the first one?
-
-
-[case testRewriteBaseline2]
-# cmd: mypy --write-baseline --error-summary pkg
-# dont-normalize-output:
-[file pkg/a.py]
-1 + ""
-"" + 1
-[file .mypy/baseline.json]
-{"pkg/a.py": [{"code": "operator", "offset": 2, "message": "Unsupported operand types for + (\"str\" and \"int\")", "src": ""}]}
 [outfile .mypy/baseline.json]
 {
   "files": {
@@ -89,7 +74,7 @@ Baseline successfully written to .mypy/baseline.json
       }
     ]
   },
-  "format": "1.7",
+  "format": "2.6",
   "targets": [
     "file:pkg"
   ]
@@ -103,7 +88,7 @@ Baseline successfully written to .mypy/baseline.json
 "" + ""
 [file .mypy/baseline.json]
 {"files": {"pkg/a.py": [{"code": "operator", "offset": 2, "message": "Unsupported operand types for + (\"str\" and \"int\")", "src": ""}]},
-"format": "1.7",
+"format": "2.6",
 "targets": ["file:pkg"]
 }
 [out]
@@ -120,7 +105,7 @@ a
 {
 "targets": ["file:pkg"],
 "files": {"pkg/a.py": [{"code": "name-defined", "column": 0, "offset": 1, "message": "Name \"a\" is not defined", "target": "pkg.a", "src": "a"}]},
-"format": "1.7"
+"format": "2.6"
 }
 [out]
 Found 1 error (0 new errors) in 1 file (checked 1 source file)
@@ -134,7 +119,7 @@ Baseline successfully written to .mypy/baseline.json
 1 + 1
 [file .mypy/baseline.json]
 {"targets": ["file:pkg"],
-"format": "1.7",
+"format": "2.6",
 "files": {"pkg/a.py": [{"offset": 2, "code": "name-defined", "message": "Name \"a\" is not defined", "src": ""}]
 }}
 [out]
@@ -149,7 +134,7 @@ Success: no issues found in 1 source file
 a
 b
 [file .mypy/baseline.json]
-{"targets": ["file:pkg"], "format": "1.7",
+{"targets": ["file:pkg"], "format": "2.6",
 "files": {"pkg/a.py": [{"offset": 2, "code": "name-defined", "message": "Name \"a\" is not defined", "src": "a"}]}
 }
 [out]
@@ -164,7 +149,7 @@ a
 [file .mypy/baseline.json]
 {
 "targets": ["file:pkg"],
-"format": "1.7",
+"format": "2.6",
 "files": {"pkg/a.py": [{"offset": 2, "code": "name-defined", "message": "Name \"a\" is not defined", "src": "a"}]}
 }
 [out]
@@ -174,29 +159,18 @@ Success: no issues found in 1 source file
 
 
 [case testAutoBaselineDoesntMessageWhenSame]
-# cmd: mypy pkg
+# cmd: mypy pkg --error-summary
 # dont-normalize-output:
 [file pkg/a.py]
 a
 [file .mypy/baseline.json]
 {"targets": ["file:pkg"],
-"format": "1.7",
+"format": "2.6",
 "files": {"pkg/a.py": [{"code": "name-defined", "column": 0, "offset": 1, "message": "Name \"a\" is not defined", "target": "a", "src": "a"}]}
 }
 [outfile .mypy/baseline.json]
 {"targets": ["file:pkg"],
-"format": "1.7",
-"files": {"pkg/a.py": [{"code": "name-defined", "column": 0, "offset": 1, "message": "Name \"a\" is not defined", "target": "a", "src": "a"}]}
-}
-
-
-[case testAutoBaselineDoesntMessageWhenSame2]
-# cmd: mypy --error-summary pkg
-[file pkg/a.py]
-a
-[file .mypy/baseline.json]
-{"targets": ["file:pkg"],
-"format": "1.7",
+"format": "2.6",
 "files": {"pkg/a.py": [{"code": "name-defined", "column": 0, "offset": 1, "message": "Name \"a\" is not defined", "target": "a", "src": "a"}]}
 }
 [out]
@@ -223,7 +197,7 @@ a
 [file .mypy/baseline.json]
 {
 "targets": ["file:pkg/a.py"],
-"format": "1.7",
+"format": "2.6",
 "files": {"pkg/a.py": [{"offset": 2, "code": "name-defined", "message": "Name \"a\" is not defined", "src": "a"}]}
 }
 [out]
@@ -236,7 +210,7 @@ Success: no issues found in 1 source file
 [file pkg/a.py]
 a
 [file .mypy/baseline.json]
-{"files": {"pkg/a.py": [{"offset": 2, "code": "name-defined", "message": "Name \"a\" is not defined", "src": "a"}]}, "format": "1.7",
+{"files": {"pkg/a.py": [{"offset": 2, "code": "name-defined", "message": "Name \"a\" is not defined", "src": "a"}]}, "format": "2.6",
 "targets": ["file:pkg"]
 }
 [out]
@@ -268,7 +242,7 @@ error: Invalid JSON in baseline file a/b
 1 + ""
 "" + 1
 [file .mypy/baseline.json]
-{"files": {"pkg/a.py": [{"code": "operator", "offset": 2, "message": "Unsupported operand types for + (\"str\" and \"int\")", "src": "\"\" + 1"}]}, "format": "1.7",
+{"files": {"pkg/a.py": [{"code": "operator", "offset": 2, "message": "Unsupported operand types for + (\"str\" and \"int\")", "src": "\"\" + 1"}]}, "format": "2.6",
 "targets": ["file:pkg"]}
 [out]
 pkg/a.py:1:5: error: Unsupported operand types for + ("int" and "str")  [operator]
@@ -297,7 +271,7 @@ Found 1 error in 1 file (errors prevented further checking)
       {"code": "operator", "column": 0, "message": "Unsupported operand types for + (\"int\" and \"str\")", "offset": 0, "src": "(a, 1 + \"\")  # type: ignore[name-defined]"}
     ]
   },
-  "format": "1.7",
+  "format": "2.6",
   "targets": [ "file:pkg" ]
 }
 [out]
@@ -312,7 +286,7 @@ Success: no issues found in 1 source file
 a: int
 reveal_type(a)
 [file .mypy/baseline.json]
-{"files": {"pkg/main.py": [{"offset": 1, "code": "misc", "message": "test", "src": ""}]}, "format": "1.7", "targets": ["file:pkg"]}
+{"files": {"pkg/main.py": [{"offset": 1, "code": "misc", "message": "test", "src": ""}]}, "format": "2.6", "targets": ["file:pkg"]}
 [out]
 pkg/main.py:2:13: note: Revealed type is "int"
 Success: no issues found in 1 source file
@@ -326,7 +300,7 @@ def foo() -> None:
     a: int
     reveal_locals()
 [file .mypy/baseline.json]
-{"files": {"main.py": [{"offset": 1, "code": "misc", "message": "test", "src": ""}]}, "format": "1.7", "targets": ["file:pkg"]}
+{"files": {"main.py": [{"offset": 1, "code": "misc", "message": "test", "src": ""}]}, "format": "2.6", "targets": ["file:pkg"]}
 [out]
 pkg/main.py: note: In function "foo":
 pkg/main.py:3:5: note: Revealed local types are:
@@ -424,7 +398,7 @@ foo()
         }
     ]
   },
-  "format": "1.7",
+  "format": "2.6",
   "targets": [
     "package:pkg"
   ]
@@ -432,58 +406,6 @@ foo()
 [out]
 Success: no issues found in 1 source file
 == Return code: 0
-
-
-[case testBaselineWithPrettyAndDuplicatesOutFile]
-# cmd: mypy --error-summary --pretty --show-error-context pkg
-# dont-normalize-output:
-[file pkg/main.py]
-def foo(a=b):
-    pass
-foo()
-[file .mypy/baseline.json]
-{
-    "files": {
-        "pkg/main.py": [
-            {
-                "code": "no-untyped-def",
-                "column": 0,
-                "message": "Function is missing a type annotation for one or more arguments",
-                "offset": 1,
-                "src": "def foo(a=b):",
-                "target": "test.foo"
-            },
-            {
-                "code": "name-defined",
-                "column": 10,
-                "message": "Name \"b\" is not defined",
-                "offset": 0,
-                "src": "def foo(a=b):",
-                "target": "test"
-            },
-            {
-                "code": "no-untyped-call",
-                "column": 0,
-                "message": "Call to incomplete function \"foo\" in typed context",
-                "offset": 2,
-                "src": "foo()",
-                "target": "test"
-            },
-            {
-                "code": "no-untyped-call",
-                "column": 0,
-                "message": "Type is \"def (a: Untyped =) -> None\"",
-                "offset": 0,
-                "src": "foo()",
-                "target": "test"
-            }
-        ]
-    },
-    "format": "1.7",
-    "targets": [
-        "package:pkg"
-    ]
-}
 [outfile .mypy/baseline.json]
 {
     "files": {
@@ -522,11 +444,12 @@ foo()
             }
         ]
     },
-    "format": "1.7",
+    "format": "2.6",
     "targets": [
         "package:pkg"
     ]
 }
+
 
 [case testSrcOtherFile]
 # cmd: mypy --write-baseline a.py --show-error-context
@@ -568,7 +491,7 @@ def f(): ...
             }
         ]
     },
-    "format": "1.7",
+    "format": "2.6",
     "targets": [
         "file:a.py"
     ]
@@ -588,6 +511,42 @@ a
     "files": {
         "a.py": [
             {
+                "code": "error:name-defined",
+                "column": 0,
+                "message": "Name \"a\" is not defined",
+                "offset": 1,
+                "src": "a",
+                "target": "a"
+            }
+        ]
+    },
+    "format": "2.6",
+    "targets": [
+        "file:a.py"
+    ]
+}
+
+
+[case testBaselineAllow]
+# cmd: mypy --write-baseline --baseline-allow=operator a.py --show-summary
+[file a.py]
+a
+1 + ""
+[out]
+a.py:1:1: error: Name "a" is not defined  [name-defined]
+a.py:2:5: error: Unsupported operand types for + ("int" and "str")  [operator]
+
+
+[case testBaselineAllowUpdate]
+# cmd: mypy --write-baseline --baseline-allow=operator a.py --error-summary
+[file a.py]
+a
+1 + ""
+[file .mypy/baseline.json]
+{
+    "files": {
+        "a.py": [
+            {
                 "code": "name-defined",
                 "column": 0,
                 "message": "Name \"a\" is not defined",
@@ -597,8 +556,49 @@ a
             }
         ]
     },
-    "format": "1.7",
+    "format": "2.6",
     "targets": [
         "file:a.py"
     ]
+}
+[out]
+a.py:2:5: error: Unsupported operand types for + ("int" and "str")  [operator]
+
+
+[case testBaselineBan]
+# cmd: mypy --write-baseline --baseline-ban operator a.py --error-summary
+[file a.py]
+a
+1 + ""
+[out]
+a.py:1:1: error: Name "a" is not defined  [name-defined]
+a.py:2:5: error: Unsupported operand types for + ("int" and "str")  [operator]
+
+error summary:
+  name-defined     1
+  operator         1
+baseline:
+  1 new error
+  1 error in baseline
+  1 error rejected
+  baseline successfully written to .mypy/baseline.json
+Found 2 errors in 1 file (checked 1 source file)
+[outfile .mypy/baseline.json]
+{
+  "files": {
+    "a.py": [
+      {
+        "code": "error:name-defined",
+        "column": 0,
+        "message": "Name /"a/" is not defined",
+        "offset": 1,
+        "src": "a",
+        "target": "a"
+      }
+    ]
+  },
+  "format": "2.6",
+  "targets": [
+    "file:a.py"
+  ]
 }

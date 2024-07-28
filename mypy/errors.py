@@ -1362,7 +1362,9 @@ class Errors:
         self.baseline = baseline_errors
         self.baseline_targets = targets
 
-    def prepare_baseline_errors(self) -> dict[str, list[StoredBaselineError]]:
+    def prepare_baseline_errors(
+        self,
+    ) -> (dict[str, list[StoredBaselineError]], list[StoredBaselineError]):
         """Create a dict representing the error portion of an error baseline file"""
 
         def remove_duplicates(errors: list[ErrorInfo]) -> list[ErrorInfo]:
@@ -1386,10 +1388,29 @@ class Errors:
                 i += 1
             return unduplicated_result
 
+        allowed = self.options.baseline_allows
+        banned = self.options.baseline_bans
+        rejected = []
+        error_list = []
+
+        def gate_keep(error: ErrorInfo) -> bool:
+            """should an error be accepted into the baseline"""
+
+            def yes_no(condition: bool) -> bool:
+                if error.severity == "error":
+                    (error_list if condition else rejected).append(error)
+                return condition
+
+            if allowed:
+                return yes_no(error.code in allowed)
+            if banned:
+                return yes_no(error.code not in banned)
+            return yes_no(True)
+
         result = {
             self.common_path(file): [
                 {
-                    "code": error.code.code if error.code else None,
+                    "code": f"{error.severity}:{error.code.code if error.code else None}",
                     "column": error.column,
                     "line": error.line,
                     "message": error.message,
@@ -1399,18 +1420,21 @@ class Errors:
                     and cast(List[str], self.read_source(file))[error.line - 1].strip(),
                 }
                 for error in remove_duplicates(errors)
+                if gate_keep(error)
                 # don't store reveal errors
                 if error.code != codes.REVEAL
             ]
             for file, errors in self.all_errors.items()
         }
+        result = {file: errors for file, errors in result.items() if errors}
         for file in result.values():
             previous = 0
             for error in file:
                 error["offset"] = cast(int, error["line"]) - previous
                 previous = cast(int, error["line"])
                 del error["line"]
-        return cast(Dict[str, List[StoredBaselineError]], result)
+        self.baseline_stats = {"total": error_list, "rejected": len(rejected)}
+        return cast(Dict[str, List[StoredBaselineError]], result), rejected
 
     def filter_baseline(
         self, errors: list[ErrorInfo], path: str, source_lines: list[str] | None

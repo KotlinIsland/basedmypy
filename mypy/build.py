@@ -66,6 +66,7 @@ from mypy.util import (
     is_sub_path,
     is_typeshed_file,
     module_prefix,
+    plural_s,
     read_py_file,
     time_ref,
     time_spent_us,
@@ -1073,14 +1074,14 @@ def save_baseline(manager: BuildManager):
         # Indicate that writing was canceled
         manager.options.write_baseline = False
         return
-    new_baseline = manager.errors.prepare_baseline_errors()
+    new_baseline, rejected = manager.errors.prepare_baseline_errors()
     file = Path(manager.options.baseline_file)
     if not new_baseline:
         if file.exists():
             file.unlink()
-            print("No errors, baseline file removed")
+            print("No baselinable errors, baseline file removed")
         elif manager.options.write_baseline:
-            print("No errors, no baseline to write")
+            print("No baselinable errors, no baseline to write")
         # Indicate that writing was canceled
         manager.options.write_baseline = False
         return
@@ -1090,13 +1091,21 @@ def save_baseline(manager: BuildManager):
         file.parent.mkdir(parents=True)
     data: BaselineType = {
         "files": new_baseline,
-        "format": "1.7",
+        "format": "2.6",
         "targets": manager.options._targets,
     }
     with file.open("w") as f:
         json.dump(data, f, indent=2, sort_keys=True)
     if not manager.options.write_baseline and manager.options.auto_baseline:
-        manager.stdout.write(f"Baseline successfully updated at {file}\n")
+        removed = len(
+            [
+                error
+                for file in manager.errors.original_baseline.values()
+                for error in file
+                if error["code"].startswith("error:")
+            ]
+        ) - len(manager.errors.baseline_stats["total"])
+        manager.stdout.write(f"{removed} error{plural_s(removed)} removed from baseline {file}\n")
 
 
 def load_baseline(options: Options, errors: Errors, stdout: TextIO) -> None:
@@ -1150,7 +1159,7 @@ def load_baseline(options: Options, errors: Errors, stdout: TextIO) -> None:
 
     if baseline_format is None and error():
         return
-    elif baseline_format != "1.7":
+    elif baseline_format != "2.6":
         if not options.write_baseline:
             error(
                 f"error: Baseline file '{file}' was generated with an old version of basedmypy.\n"

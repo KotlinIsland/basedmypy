@@ -165,6 +165,11 @@ class Options:
         # Based options
         self.write_baseline = False
         self.baseline_file = defaults.BASELINE_FILE
+        self.baseline_allow: list[str] = []
+        self.baseline_allows: set[ErrorCode] = set()
+        self.baseline_ban: list[str] = []
+        self.baseline_bans: set[ErrorCode] = set()
+        self.summary = True
         self.auto_baseline = True
         self.default_return = True
         self.infer_function_types = True
@@ -609,7 +614,12 @@ class Options:
         result: dict[str, object] = {}
         for opt in OPTIONS_AFFECTING_CACHE:
             val = getattr(self, opt)
-            if opt in ("disabled_error_codes", "enabled_error_codes"):
+            if opt in (
+                "disabled_error_codes",
+                "enabled_error_codes",
+                "baseline_allows",
+                "baseline_bans",
+            ):
                 val = sorted([code.code for code in val])
             result[opt] = val
         return result

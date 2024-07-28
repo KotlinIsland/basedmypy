@@ -65,6 +65,7 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
     if "# dont-normalize-output:" in testcase.input:
         testcase.normalize_output = False
     args.append("--show-traceback")
+    args.append("--no-summary")
     based = "based" in testcase.parent.name
     if not based:
         args.append("--no-strict")
@@ -116,7 +117,7 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
     # Remove temp file.
     os.remove(program_path)
     # Compare actual output to expected.
-    if testcase.output_files:
+    if testcase.output_files and False:
         assert not testcase.output, "output not checked when outfile supplied"
         # Ignore stdout, but we insist on empty stderr and zero status.
         if err or result:
@@ -126,6 +127,8 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
             )
         check_test_output_files(testcase, step)
     else:
+        if testcase.output_files:
+            check_test_output_files(testcase, step)
         if testcase.normalize_output:
             out = normalize_error_messages(err + out)
         obvious_result = 1 if out else 0

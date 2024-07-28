@@ -21,7 +21,7 @@ $ dmypy recheck
             }
         ]
     },
-    "format": "1.7",
+    "format": "2.6",
     "targets": [
         "file:test.py"
     ]
