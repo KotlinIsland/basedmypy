@@ -51,6 +51,7 @@ from mypy.types import (
     TypedDictType,
     TypeOfAny,
     TypeStrVisitor,
+    TypeVarLikeType,
     TypeVarTupleType,
     TypeVarType,
     UnionType,
@@ -442,6 +443,13 @@ class StringFormatterChecker:
     def helpful_check(self, actual_type: ProperType, context: Context) -> bool:
         if isinstance(actual_type, (TupleType, TypedDictType, LiteralType)):
             return True
+        if isinstance(actual_type, TypeVarType):
+            if actual_type.values:
+                for value in actual_type.values:
+                    self.helpful_check(get_proper_type(value), context)
+                return False
+        while isinstance(actual_type, TypeVarLikeType):
+            actual_type = actual_type.upper_bound
         bad_builtin = False
         if isinstance(actual_type, Instance):
             if "dataclass" in actual_type.type.metadata:
@@ -464,13 +472,11 @@ class StringFormatterChecker:
                     if base.module_name == "builtins":
                         return True
         type_string = actual_type.accept(TypeStrVisitor(options=self.chk.options))
-        if (
-            custom_special_method(actual_type, "__format__")
-            or custom_special_method(actual_type, "__str__")
-            or custom_special_method(actual_type, "__repr__")
-        ):
+        if custom_special_method(actual_type, ("__format__", "__str__", "__repr__")):
             return True
-        if bad_builtin or isinstance(actual_type, NoneType):
+        if bad_builtin or (
+            not self.msg.options.helpful_string_allow_none and isinstance(actual_type, NoneType)
+        ):
             self.msg.fail(
                 f'The string for "{type_string}" isn\'t helpful in a user-facing or semantic string',
                 context,

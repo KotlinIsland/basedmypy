@@ -1078,11 +1078,13 @@ class TypeVarExtractor(TypeQuery[List[TypeVarLikeType]]):
         return [t] if self.include_all else []
 
 
-def custom_special_method(typ: Type, name: str, check_all: bool = False) -> bool:
+def custom_special_method(typ: Type, name: str | Iterable[str], check_all: bool = False) -> bool:
     """Does this type have a custom special method such as __format__() or __eq__()?
 
     If check_all is True ensure all items of a union have a custom method, not just some.
     """
+    if not isinstance(name, str):
+        return any(custom_special_method(typ, n, check_all) for n in name)
     typ = get_proper_type(typ)
     if isinstance(typ, Instance):
         method = typ.type.get(name)
@@ -1104,6 +1106,8 @@ def custom_special_method(typ: Type, name: str, check_all: bool = False) -> bool
     if isinstance(typ, AnyType):
         # Avoid false positives in uncertain cases.
         return True
+    if isinstance(typ, TypeVarLikeType):
+        return custom_special_method(typ.upper_bound, name, check_all)
     # TODO: support other types (see ExpressionChecker.has_member())?
     return False
 

@@ -620,6 +620,12 @@ def process_options(
         group=based_group,
     )
     add_invertible_flag(
+        "--helpful-string-allow-none",
+        default=False,
+        help="Allow Nones to appear in f-strings",
+        group=based_group,
+    )
+    add_invertible_flag(
         "--ide", default=False, help="Best default for IDE integration.", group=based_group
     )
 
@@ -1351,6 +1357,7 @@ def process_options(
             "callable-functiontype",
             "possible-function",
             "bad-cast",
+            "helpful-string",
         }
         if mypy.options._based
         else set()

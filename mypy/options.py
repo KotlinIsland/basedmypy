@@ -43,6 +43,7 @@ PER_MODULE_OPTIONS: Final = {
     "extra_checks",
     "follow_imports_for_stubs",
     "follow_imports",
+    "helpful_string_allow_none",
     "ignore_errors",
     "ignore_missing_imports",
     "ignore_missing_py_typed",
@@ -175,6 +176,7 @@ class Options:
         self.bare_literals = True
         self.ignore_missing_py_typed = False
         self.ide = False
+        self.helpful_string_allow_none = False
 
         # disallow_any options
         self.disallow_any_generics = flip_if_not_based(True)
