@@ -1661,7 +1661,7 @@ def create_errors(error_tuples: list[ErrorTuple]) -> list[MypyError]:
     latest_error_at_location: dict[_ErrorLocation, MypyError] = {}
 
     for error_tuple in error_tuples:
-        file_path, line, column, _, _, severity, message, _, errorcode = error_tuple
+        file_path, line, column, _, _, severity, message, _, errorcode, _, _ = error_tuple
         if file_path is None:
             continue
 

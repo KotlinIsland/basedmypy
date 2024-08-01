@@ -6087,7 +6087,7 @@ class SemanticAnalyzer(
         expr.expr.accept(self)
         analyzed = self.anal_type(
             expr.type,
-            runtime=isinstance(expr.type, RawExpressionType),
+            runtime=not isinstance(expr.type, RawExpressionType),
         )
         if analyzed is not None:
             expr.type = analyzed

@@ -42,7 +42,7 @@ class C(A):
 [out]
 main:10: error: Argument 1 of "f" is incompatible with supertype "A"; supertype defines the argument type as "str"
 main:10: note: This violates the Liskov substitution principle
-main:10: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides
+main:10: note: See https://kotlinisland.github.io/basedmypy/common_issues.html#incompatible-overrides
 main:10: error: Argument 2 of "f" is incompatible with supertype "A"; supertype defines the argument type as "int"
 
 [case testPositionalOverridingArgumentNameInsensitivity]
@@ -3361,7 +3361,7 @@ class Bar(Foo):
     @property
     def method(self) -> Callable[[int, A], None]:  # E: Argument 2 of "method" is incompatible with supertype "Foo"; supertype defines the argument type as "Union[Callable[[C], None], Callable[[D], None]]" \
                                                    # N: This violates the Liskov substitution principle \
-                                                   # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides
+                                                   # N: See https://kotlinisland.github.io/basedmypy/common_issues.html#incompatible-overrides
         ...
 [builtins fixtures/property.pyi]
 

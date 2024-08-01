@@ -36,7 +36,9 @@ def test_parser(testcase: DataDrivenTestCase) -> None:
 
     The argument contains the description of the test case.
     """
+    mypy.options._based = False
     options = Options()
+    mypy.options._based = True
     options.force_uppercase_builtins = True
     options.hide_error_codes = True
 
