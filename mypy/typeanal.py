@@ -1184,7 +1184,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
 
         proper = get_proper_type(t)
         if isinstance(proper, TypeGuardType):
-            if not self.always_allow_new_syntax:
+            if not self.always_allow_new_syntax and proper.is_evaluated:
                 self.fail(
                     "You need to put quotes around the entire type-guard, or enable `__future__.annotations`",
                     t,

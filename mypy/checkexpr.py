@@ -610,7 +610,6 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             self.chk.options.disallow_untyped_calls
             and self.chk.in_checked_function()
             and isinstance(callee_type, CallableType)
-            and callee_type.implicit
             and callee_type.name != LAMBDA_NAME
         ):
             if fullname is None and member is not None:

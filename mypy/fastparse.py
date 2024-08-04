@@ -2019,7 +2019,11 @@ class TypeConverter:
     def visit_IfExp(self, n: ast3.IfExp) -> Type:
         condition = self.visit(n.test)
         true = self.visit(n.body)
+        if isinstance(true, RawExpressionType):
+            true = true.node
         false = self.visit(n.orelse)
+        if isinstance(true, RawExpressionType):
+            true = true.node
         result = None
         if not (isinstance(condition, RawExpressionType) and condition.literal_value is True):
             result = self.invalid_type(n.test, note='The condition can only be "True"')
