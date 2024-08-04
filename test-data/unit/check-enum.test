@@ -2122,6 +2122,7 @@ class MyEnum(Enum):
 
 # TODO: change the next line to use MyEnum._MyEnum__my_dict when mypy implements name mangling
 x: MyEnum = MyEnum.__my_dict  # E: Incompatible types in assignment (expression has type "Dict[int, str]", variable has type "MyEnum")
+[builtins fixtures/tuple.pyi]
 
 [case testEnumWithPrivateAttributeReachability]
 # flags: --warn-unreachable
