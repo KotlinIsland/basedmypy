@@ -1255,7 +1255,7 @@ class B:
     field_1: Mapped[int] = Mapped(2)
     field_2: Mapped[str] = Mapped('2')
 
-mix: Union[Type[A], Type[B]] = A
+mix: Union[Type[A], Type[B]]
 reveal_type(mix)  # N: Revealed type is "Union[Type[__main__.A], Type[__main__.B]]"
 reveal_type(mix.field_1)  # N: Revealed type is "builtins.list[builtins.int]"
 reveal_type(mix().field_1)  # N: Revealed type is "builtins.int"

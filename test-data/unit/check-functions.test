@@ -44,6 +44,8 @@ main:10: error: Argument 1 of "f" is incompatible with supertype "A"; supertype 
 main:10: note: This violates the Liskov substitution principle
 main:10: note: See https://kotlinisland.github.io/basedmypy/common_issues.html#incompatible-overrides
 main:10: error: Argument 2 of "f" is incompatible with supertype "A"; supertype defines the argument type as "int"
+main:10: note: This violates the Liskov substitution principle
+main:10: note: See https://kotlinisland.github.io/basedmypy/common_issues.html#incompatible-overrides
 
 [case testPositionalOverridingArgumentNameInsensitivity]
 import typing
@@ -3403,7 +3405,7 @@ class C(B):
         self, *,
         y: int,  # E: Argument 1 of "meth" is incompatible with supertype "B"; supertype defines the argument type as "str" \
                  # N: This violates the Liskov substitution principle \
-                 # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides
+                 # N: See https://kotlinisland.github.io/basedmypy/common_issues.html#incompatible-overrides
         x: int,
     ) -> None:
         ...

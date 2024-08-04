@@ -2939,6 +2939,9 @@ class RawExpressionType(ProperType):
 
     def accept(self, visitor: TypeVisitor[T]) -> T:
         if self.node is not None:
+            if hasattr(visitor, "string_type"):
+                with visitor.string_type():
+                    return self.node.accept(visitor)
             return self.node.accept(visitor)
         assert isinstance(visitor, SyntheticTypeVisitor)
         ret: T = visitor.visit_raw_expression_type(self)

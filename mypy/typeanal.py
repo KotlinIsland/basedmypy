@@ -1332,7 +1332,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         # Based: signatures like "foo(x: 20) -> None" are legal, this method
         # generates and returns an actual LiteralType instead.
         if t.node is not None:
-            with  self.string_type():
+            with self.string_type():
                 return t.node.accept(self)
 
         if self.report_invalid_types:
