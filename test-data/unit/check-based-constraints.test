@@ -1,0 +1,22 @@
+[case testSimpleConstraint]
+# flags: --allow-untyped-calls
+from typing import TypeVar
+
+T = TypeVar("T", int, str)
+
+def f(t: T):
+    if isinstance(t, int):
+        reveal_type(t)  #  N: Revealed type is "int"
+        if isinstance(t, int):  #  E: Condition is always true  [redundant-expr]
+            ...
+    else:
+        reveal_type(t)  #  N: Revealed type is "str"
+        if isinstance(t, int):  #  E: Condition is always false  [redundant-expr]
+            ...
+    if isinstance(t, object):  #  E: Condition is always true  [redundant-expr]
+        ...
+    if isinstance(t, list):  #  E: Condition is always false  [redundant-expr]
+        ...
+
+
+[builtins fixtures/isinstancelist.pyi]
