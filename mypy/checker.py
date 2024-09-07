@@ -219,6 +219,7 @@ from mypy.types import (
     TypeOfAny,
     TypeTranslator,
     TypeType,
+    TypeVarConstraintWrapper,
     TypeVarId,
     TypeVarLikeType,
     TypeVarTupleType,
@@ -234,7 +235,7 @@ from mypy.types import (
     get_proper_types,
     is_literal_type,
     is_named_instance,
-    is_unannotated_any, TypeVarConstraintWrapper,
+    is_unannotated_any,
 )
 from mypy.types_utils import is_overlapping_none, remove_optional, store_argument_type, strip_type
 from mypy.typetraverser import TypeTraverserVisitor
@@ -2149,7 +2150,9 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             tvars += defn.info.defn.type_vars or []
         for tvar in tvars:
             if isinstance(tvar, TypeVarType) and tvar.values:
-                subst.append([(tvar.id, TypeVarConstraintWrapper(value, None)) for value in tvar.values])
+                subst.append(
+                    [(tvar.id, TypeVarConstraintWrapper(value, None)) for value in tvar.values]
+                )
         # Make a copy of the function to check for each combination of
         # value restricted type variables. (Except when running mypyc,
         # where we need one canonical version of the function.)
@@ -5032,11 +5035,17 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 if isinstance(t, DeletedType):
                     self.msg.deleted_as_rvalue(t, s)
 
-                if_map, else_map, is_constrained = self.find_isinstance_check(e, returned_type_constrained_param=True)
+                if_map, else_map, is_constrained = self.find_isinstance_check(
+                    e, returned_type_constrained_param=True
+                )
 
                 # If if_map is None then we know mypy considers the expression
                 # to be redundant.
-                if codes.REDUNDANT_EXPR in self.options.enabled_error_codes and if_map is None and not is_constrained:
+                if (
+                    codes.REDUNDANT_EXPR in self.options.enabled_error_codes
+                    and if_map is None
+                    and not is_constrained
+                ):
                     self.msg.fail("Condition is always false", e, code=codes.REDUNDANT_EXPR)
 
                 with self.binder.frame_context(can_skip=True, fall_through=2):
@@ -6223,17 +6232,23 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
 
     @overload
     def find_isinstance_check(
-        self, node: Expression, *, in_boolean_context: bool = True, returned_type_constrained_param: True
-    ) -> tuple[TypeMap, TypeMap, bool]:
-        ...
+        self,
+        node: Expression,
+        *,
+        in_boolean_context: bool = True,
+        returned_type_constrained_param: True,
+    ) -> tuple[TypeMap, TypeMap, bool]: ...
     @overload
     def find_isinstance_check(
         self, node: Expression, *, in_boolean_context: bool = True
-    ) -> tuple[TypeMap, TypeMap]:
-        ...
+    ) -> tuple[TypeMap, TypeMap]: ...
 
     def find_isinstance_check(
-        self, node: Expression, *, in_boolean_context: bool = True, returned_type_constrained_param: bool = False,
+        self,
+        node: Expression,
+        *,
+        in_boolean_context: bool = True,
+        returned_type_constrained_param: bool = False,
     ) -> tuple[TypeMap, TypeMap] | tuple[TypeMap, TypeMap, bool]:
         """Find any isinstance checks (within a chain of ands).  Includes
         implicit and explicit checks for None and calls to callable.
@@ -6311,7 +6326,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
         return {}, {}
 
     def find_isinstance_check_helper(
-        self, node: Expression, *, in_boolean_context: bool = True,
+        self, node: Expression, *, in_boolean_context: bool = True
     ) -> tuple[TypeMap, TypeMap, bool]:
         default_return = {}, {}, False
         if is_true_literal(node):
@@ -6327,14 +6342,17 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                         return {}, {}, False
                     if literal(expr) == LITERAL_TYPE:
                         typ = self.lookup_type(expr)
-                        return (*conditional_types_to_typemaps(
-                            expr,
-                            *self.conditional_types_with_intersection(
-                                self.lookup_type(expr),
-                                self.get_isinstance_type(node.args[1]),
+                        return (
+                            *conditional_types_to_typemaps(
                                 expr,
+                                *self.conditional_types_with_intersection(
+                                    self.lookup_type(expr),
+                                    self.get_isinstance_type(node.args[1]),
+                                    expr,
+                                ),
                             ),
-                        ), isinstance(typ, TypeVarConstraintWrapper))
+                            isinstance(typ, TypeVarConstraintWrapper),
+                        )
                 elif refers_to_fullname(node.callee, "builtins.issubclass"):
                     if len(node.args) != 2:  # the error will be reported elsewhere
                         return {}, {}, False
@@ -6351,7 +6369,10 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                         return default_return
                     attr = try_getting_str_literals(node.args[1], self.lookup_type(node.args[1]))
                     if literal(expr) == LITERAL_TYPE and attr and len(attr) == 1:
-                        return (*self.hasattr_type_maps(expr, self.lookup_type(expr), attr[0]), False)
+                        return (
+                            *self.hasattr_type_maps(expr, self.lookup_type(expr), attr[0]),
+                            False,
+                        )
                 if isinstance(node.callee, RefExpr) and node.callee.type_is:
                     return (*self.upstream_typeis(node, expr), False)
             if isinstance(node.callee, (RefExpr, CallExpr, LambdaExpr)):
@@ -6433,15 +6454,18 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                         if guard.only_true:
                             return {expr: guard.type_guard}, {}, False
                         typ = self.lookup_type(expr)
-                        return (*conditional_types_to_typemaps(
-                            expr,
-                            *self.conditional_types_with_intersection(
-                                typ,
-                                [TypeRange(guard.type_guard, is_upper_bound=False)],
+                        return (
+                            *conditional_types_to_typemaps(
                                 expr,
-                                erase=False,
+                                *self.conditional_types_with_intersection(
+                                    typ,
+                                    [TypeRange(guard.type_guard, is_upper_bound=False)],
+                                    expr,
+                                    erase=False,
+                                ),
                             ),
-                        ), isinstance(typ, TypeVarConstraintWrapper))
+                            isinstance(typ, TypeVarConstraintWrapper),
+                        )
         if isinstance(node, CallExpr) and isinstance(node.callee, LambdaExpr):
             return self.find_isinstance_check_helper(
                 safe(cast(ReturnStmt, node.callee.body.body[0]).expr)
@@ -6616,7 +6640,10 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             else:
                 # Use meet for `and` maps to get correct results for chained checks
                 # like `if 1 < len(x) < 4: ...`
-                return (*reduce_conditional_maps(self.find_tuple_len_narrowing(node), use_meet=True), False)
+                return (
+                    *reduce_conditional_maps(self.find_tuple_len_narrowing(node), use_meet=True),
+                    False,
+                )
         elif isinstance(node, AssignmentExpr):
             if_map = {}
             else_map = {}
@@ -6640,7 +6667,8 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             return (
                 (None if if_assignment_map is None or if_condition_map is None else if_map),
                 (None if else_assignment_map is None or else_condition_map is None else else_map),
-            False)
+                False,
+            )
         elif isinstance(node, OpExpr) and node.op == "and":
             left_if_vars, left_else_vars = self.find_isinstance_check(node.left)
             right_if_vars, right_else_vars = self.find_isinstance_check(node.right)
@@ -6653,7 +6681,8 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 # types to it, since the right maps were computed assuming
                 # the left is True, which may be not the case in the else branch.
                 or_conditional_maps(left_else_vars, right_else_vars, coalesce_any=True),
-            False)
+                False,
+            )
         elif isinstance(node, OpExpr) and node.op == "or":
             left_if_vars, left_else_vars = self.find_isinstance_check(node.left)
             right_if_vars, right_else_vars = self.find_isinstance_check(node.right)
@@ -6663,7 +6692,8 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             return (
                 or_conditional_maps(left_if_vars, right_if_vars),
                 and_conditional_maps(left_else_vars, right_else_vars),
-            False)
+                False,
+            )
         elif isinstance(node, UnaryExpr) and node.op == "not":
             left, right = self.find_isinstance_check(node.expr)
             return right, left, False
