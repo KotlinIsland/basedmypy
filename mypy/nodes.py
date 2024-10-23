@@ -490,7 +490,7 @@ class ImportAll(ImportBase):
         return visitor.visit_import_all(self)
 
 
-FUNCBASE_FLAGS: Final = ["is_property", "is_class", "is_static", "is_final"]
+FUNCBASE_FLAGS: Final = ["is_property", "is_class", "is_static", "is_final", "is_type_check_only"]
 
 
 class FuncBase(Node):
@@ -3130,6 +3130,7 @@ class TypeInfo(SymbolNode):
         "runtime_protocol",
         "is_final",
         "is_intersection",
+        "is_type_check_only",
     ]
 
     def __init__(self, names: SymbolTable, defn: ClassDef, module_name: str) -> None:

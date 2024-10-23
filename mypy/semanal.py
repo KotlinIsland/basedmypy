@@ -886,6 +886,9 @@ class SemanticAnalyzer(
             if not defn.is_decorated and not defn.is_overload:
                 self.add_function_to_symbol_table(defn)
 
+        if defn.fullname == "typing.type_check_only":
+            defn.is_type_check_only = True
+
         if not self.recurse_into_functions:
             return
 
@@ -2999,6 +3002,13 @@ class SemanticAnalyzer(
             or not fullname.startswith(self.cur_mod_id + ".")
         )
 
+        if not self.is_stub_file and (
+            isinstance(node.node, (TypeInfo, FuncDef))
+            and node.node.is_type_check_only
+            or isinstance(node.node, Decorator)
+            and node.node.func.is_type_check_only
+        ):
+            self.fail(message_registry.TYPE_CHECK_ONLY.format(node.node.name), context)
         if isinstance(node.node, PlaceholderNode):
             if self.final_iteration:
                 self.report_missing_module_attribute(

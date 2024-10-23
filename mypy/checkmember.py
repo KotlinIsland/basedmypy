@@ -526,6 +526,9 @@ def analyze_member_var_access(
     vv = v
     if isinstance(vv, Decorator):
         # The associated Var node of a decorator contains the type.
+        if vv.func.is_type_check_only and not mx.chk.is_stub:
+            message = message_registry.TYPE_CHECK_ONLY.format(vv.name)
+            mx.msg.fail(message.value, mx.context, code=message.code)
         v = vv.var
         if mx.is_super:
             validate_super_call(vv.func, mx)

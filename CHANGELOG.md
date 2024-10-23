@@ -5,6 +5,7 @@
 - typed `functools.wraps` correctly
 - typed `builtins.ellipsis`/`types.EllipsisType` correctly
 - disable `bytearray` and `memoryview` promotions by default
+- support `typing.type_check_only`
 ### Fixes
 - fixed crash with `re` plugin
 - fixed crash with `Intersection` cache

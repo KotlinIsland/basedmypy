@@ -2421,7 +2421,7 @@
         "code": "redundant-expr",
         "column": 19,
         "message": "Condition is always false",
-        "offset": 414,
+        "offset": 416,
         "src": "if type_being_compared is not None:",
         "target": "mypy.checker.TypeChecker.find_type_equals_check"
       },
@@ -2679,7 +2679,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_call_expr\" is not using @override but is overriding a method in class \"mypy.visitor.ExpressionVisitor\"",
-        "offset": 121,
+        "offset": 127,
         "src": "def visit_call_expr(self, e: CallExpr, allow_none_return: bool = False) -> Type:",
         "target": "mypy.checkexpr.ExpressionChecker.visit_call_expr"
       },
@@ -3297,7 +3297,7 @@
         "code": "truthy-bool",
         "column": 7,
         "message": "\"result\" has type \"Type\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 868,
+        "offset": 871,
         "src": "if result and not mx.is_lvalue and not implicit:",
         "target": "mypy.checkmember.analyze_var"
       },
@@ -7577,7 +7577,7 @@
         "code": "redundant-expr",
         "column": 23,
         "message": "Condition is always false",
-        "offset": 162,
+        "offset": 172,
         "src": "if name is not None:",
         "target": "mypy.exprtotype.expr_to_unanalyzed_type"
       }
@@ -8211,7 +8211,7 @@
         "code": "no-any-expr",
         "column": 26,
         "message": "Expression has type \"Any\"",
-        "offset": 3,
+        "offset": 4,
         "src": "if isinstance(p, ast_ParamSpec):  # type: ignore[misc]",
         "target": "mypy.fastparse.ASTConverter.translate_type_params"
       },
@@ -8369,25 +8369,25 @@
       },
       {
         "code": "no-any-expr",
-        "column": 54,
+        "column": 30,
         "message": "Expression has type \"Any\"",
-        "offset": 1,
-        "src": "explicit_type_params.append(TypeParam(p.name, TYPE_VAR_KIND, bound, values))",
+        "offset": 4,
+        "src": "TypeParam(p.name, TYPE_VAR_KIND, bound, values, default)",
         "target": "mypy.fastparse.ASTConverter.translate_type_params"
       },
       {
         "code": "no-any-expr",
-        "column": 77,
+        "column": 53,
         "message": "Expression type contains \"Any\" (has type \"Any | None\")",
         "offset": 0,
-        "src": "explicit_type_params.append(TypeParam(p.name, TYPE_VAR_KIND, bound, values))",
+        "src": "TypeParam(p.name, TYPE_VAR_KIND, bound, values, default)",
         "target": "mypy.fastparse.ASTConverter.translate_type_params"
       },
       {
         "code": "no-any-expr",
         "column": 26,
         "message": "Expression has type \"Any\"",
-        "offset": 5,
+        "offset": 6,
         "src": "node = ReturnStmt(self.visit(n.value))",
         "target": "mypy.fastparse.ASTConverter.visit_Return"
       },
@@ -11687,7 +11687,7 @@
         "code": "no-any-expr",
         "column": 16,
         "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 41,
+        "offset": 53,
         "src": "default=[],",
         "target": "mypy.main.process_options"
       },
@@ -13841,7 +13841,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"name\" is not using @override but is overriding a method in class \"mypy.nodes.FuncBase\"",
-        "offset": 170,
+        "offset": 172,
         "src": "def name(self) -> str:",
         "target": "mypy.nodes"
       },
@@ -14761,7 +14761,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"name\" is not using @override but is overriding a method in class \"mypy.nodes.SymbolNode\"",
-        "offset": 305,
+        "offset": 306,
         "src": "def name(self) -> str:",
         "target": "mypy.nodes"
       },
@@ -16249,7 +16249,7 @@
         "code": "no-any-expr",
         "column": 1,
         "message": "Expression type contains \"Any\" (has type \"[_T] ((...) -> _T) -> _lru_cache_wrapper[_T]\")",
-        "offset": 332,
+        "offset": 331,
         "src": "@lru_cache(None)",
         "target": "mypy.plugins.re"
       }
@@ -17519,7 +17519,7 @@
         "code": "redundant-expr",
         "column": 21,
         "message": "Condition is always true",
-        "offset": 75,
+        "offset": 78,
         "src": "elif self.options.infer_function_types:",
         "target": "mypy.semanal.SemanticAnalyzer.analyze_func_def"
       },
@@ -17599,7 +17599,7 @@
         "code": "possibly-undefined",
         "column": 35,
         "message": "Name \"type_params_names\" may be undefined",
-        "offset": 197,
+        "offset": 202,
         "src": "self.locals.append(type_params_names)",
         "target": "mypy.semanal"
       },
@@ -17671,7 +17671,7 @@
         "code": "no-any-expr",
         "column": 67,
         "message": "Expression type contains \"Any\" (has type \"set[Any]\")",
-        "offset": 164,
+        "offset": 171,
         "src": "alternatives = set(module.names.keys()).difference({source_id})",
         "target": "mypy.semanal.SemanticAnalyzer.report_missing_module_attribute"
       },
@@ -17751,7 +17751,7 @@
         "code": "redundant-expr",
         "column": 19,
         "message": "Condition is always false",
-        "offset": 45,
+        "offset": 47,
         "src": "if last_tvar_name_with_default is not None and not tvar_def.has_default():",
         "target": "mypy.semanal.SemanticAnalyzer.analyze_alias"
       },
@@ -18183,7 +18183,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_slice_expr\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 126,
+        "offset": 135,
         "src": "def visit_slice_expr(self, expr: SliceExpr) -> None:",
         "target": "mypy.semanal.SemanticAnalyzer.visit_slice_expr"
       },
@@ -32265,7 +32265,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_any\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 726,
+        "offset": 728,
         "src": "def visit_any(self, t: AnyType) -> Type:",
         "target": "mypy.typeanal.TypeAnalyser.visit_any"
       },
@@ -32441,7 +32441,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_partial_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 13,
+        "offset": 14,
         "src": "def visit_partial_type(self, t: PartialType) -> Type:",
         "target": "mypy.typeanal.TypeAnalyser.visit_partial_type"
       },
@@ -35901,7 +35901,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"__hash__\" is not using @override but is overriding a method in class \"builtins.object\"",
-        "offset": 23,
+        "offset": 25,
         "src": "def __hash__(self) -> int:",
         "target": "mypy.types.IntersectionType.__hash__"
       },

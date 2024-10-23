@@ -28,6 +28,7 @@ from mypy.types import (
     ANNOTATED_TYPE_NAMES,
     CallableArgument,
     EllipsisType,
+    IntersectionType,
     ProperType,
     RawExpressionType,
     Type,

@@ -345,7 +345,7 @@ if sys.version_info >= (3, 10):
 else:
     def NewType(name: str, tp: Any) -> Any: ...
 
-_F = TypeVar("_F", bound=Callable[..., Any])
+_F = TypeVar("_F", bound=Callable[..., object])
 _P = _ParamSpec("_P")
 _T = TypeVar("_T")
 

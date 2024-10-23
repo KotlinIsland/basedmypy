@@ -382,6 +382,8 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                 result = self.chk.handle_partial_var_type(result, lvalue, node, e)
         elif isinstance(node, FuncDef):
             # Reference to a global function.
+            if node.is_type_check_only and not self.chk.is_stub:
+                self.chk.fail(message_registry.TYPE_CHECK_ONLY.format(node.name), e)
             result = function_type(node, self.named_type("builtins.function"))
         elif isinstance(node, OverloadedFuncDef):
             if node.type is None:
@@ -392,6 +394,8 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                 result = node.type
         elif isinstance(node, TypeInfo):
             # Reference to a type object.
+            if node.is_type_check_only and not self.chk.is_stub:
+                self.chk.fail(message_registry.TYPE_CHECK_ONLY.format(node.name), e)
             if node.typeddict_type:
                 # We special-case TypedDict, because they don't define any constructor.
                 result = self.typeddict_callable(node)
@@ -415,6 +419,8 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             # Reference to a module object.
             result = self.module_type(node)
         elif isinstance(node, Decorator):
+            if node.func.is_type_check_only and not self.chk.is_stub:
+                self.chk.fail(message_registry.TYPE_CHECK_ONLY.format(node.name), e)
             result = self.analyze_var_ref(node.var, e)
         elif isinstance(node, TypeAlias):
             # Something that refers to a type alias appears in runtime context.

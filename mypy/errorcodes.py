@@ -309,6 +309,9 @@ UNHANDLED_SCENARIO: Final[ErrorCode] = ErrorCode(
 )
 
 REGEX: Final = ErrorCode("regex", "Regex related errors", "General")
+TYPE_CHECK_ONLY: Final[ErrorCode] = ErrorCode(
+    "type-check-only", "Value doesn't exist at runtime", "General"
+)
 REVEAL: Final = ErrorCode("reveal", "Reveal types at check time", "General")
 
 # Syntax errors are often blocking.

@@ -800,7 +800,9 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         if len(args) > 0 and info.fullname == "builtins.tuple":
             fallback = Instance(info, [AnyType(TypeOfAny.special_form)], ctx.line)
             return TupleType(self.anal_array(args, allow_unpack=True), fallback, ctx.line)
-
+        if info.is_type_check_only and not self.always_allow_new_syntax:
+            message = message_registry.TYPE_CHECK_ONLY.format(info.name)
+            self.fail(message.value, ctx, code=message.code)
         # Analyze arguments and (usually) construct Instance type. The
         # number of type arguments and their values are
         # checked only later, since we do not always know the

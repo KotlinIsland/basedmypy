@@ -156,4 +156,13 @@ A scenario isn't being handled correctly by basedmypy itself
 Sometimes, the implementation of a the type system is not completely sound
 and basedmypy needs to be updated.
 
+
+.. _code-type-check-only:
+
+Support typing.type_check_only [type-check-only]
+------------------------------------------------
+
+Something is being used in a runtime position that is not actually
+accessible or available at runtime.
+
 .. _code-reveal:
