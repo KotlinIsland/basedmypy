@@ -6,6 +6,7 @@
 - typed `builtins.ellipsis`/`types.EllipsisType` correctly
 - disable `bytearray` and `memoryview` promotions by default
 - support `typing.type_check_only`
+- support default values on type parameters
 ### Fixes
 - fixed crash with `re` plugin
 - fixed crash with `Intersection` cache

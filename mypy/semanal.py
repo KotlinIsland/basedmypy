@@ -1888,7 +1888,12 @@ class SemanticAnalyzer(
                 upper_bound = self.named_type("builtins.tuple", [self.object_type()])
             else:
                 upper_bound = self.object_type()
-        default = AnyType(TypeOfAny.from_omitted_generics)
+        if type_param.default:
+            default = self.anal_type(type_param.default, allow_placeholder=True)
+            if default is None:
+                default = PlaceholderType(None, [], context.line)
+        else:
+            default = AnyType(TypeOfAny.from_omitted_generics)
         if type_param.kind == TYPE_VAR_KIND:
             values = []
             if type_param.values:

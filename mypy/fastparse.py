@@ -1203,6 +1203,7 @@ class ASTConverter:
         explicit_type_params = []
         for p in type_params:
             bound = None
+            default: ProperType | None = None
             values: list[Type] = []
             if isinstance(p, ast_ParamSpec):  # type: ignore[misc]
                 explicit_type_params.append(TypeParam(p.name, PARAM_SPEC_KIND, None, []))
@@ -1222,7 +1223,9 @@ class ASTConverter:
                         values = [conv.visit(t) for t in p.bound.elts]
                 elif p.bound is not None:
                     bound = TypeConverter(self.errors, line=p.lineno).visit(p.bound)
-                explicit_type_params.append(TypeParam(p.name, TYPE_VAR_KIND, bound, values))
+                if sys.version_info >= (3, 13) and p.default_value is not None:
+                    default = TypeConverter(self.errors, line=p.lineno).visit(p.default_value)
+                explicit_type_params.append(TypeParam(p.name, TYPE_VAR_KIND, bound, values, default))
         return explicit_type_params
 
     # Return(expr? value)
