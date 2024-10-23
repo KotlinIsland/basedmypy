@@ -661,7 +661,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         elif fullname == "typing._NamedCallable":
             return self.analyze_callable_type(t, fullname)
         elif fullname in {"types.FunctionType", "types.BuiltinFunctionType"}:
-            if not self.always_allow_new_syntax:
+            if not self.always_allow_new_syntax and not self.python_3_12_type_alias:
                 name = fullname.rsplit(".")[-1]
                 self.fail(
                     f'Type parameters for "{name}" requires __future__.annotations or quoted types',
@@ -1344,7 +1344,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                     # The only time it makes sense to use an int or bool is inside of
                     # a literal type.
                     msg = f"Invalid type: try using Literal[{repr(t.literal_value)}] instead?"
-                if t.expression:
+                if t.expression and not self.python_3_12_type_alias:
                     msg = message_registry.INVALID_BARE_LITERAL.value.format(t.literal_value)
             elif t.base_type_name in ("builtins.float", "builtins.complex"):
                 # We special-case warnings for floats and complex numbers.
@@ -1405,6 +1405,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             t.uses_based_syntax is True
             and t.is_evaluated is True
             and not self.always_allow_new_syntax
+            and not self.python_3_12_type_alias
         ):
             self.fail(
                 '"X & Y" syntax for intersections requires __future__.annotations or quoted types',

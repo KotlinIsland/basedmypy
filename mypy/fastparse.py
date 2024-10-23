@@ -1225,7 +1225,9 @@ class ASTConverter:
                     bound = TypeConverter(self.errors, line=p.lineno).visit(p.bound)
                 if sys.version_info >= (3, 13) and p.default_value is not None:
                     default = TypeConverter(self.errors, line=p.lineno).visit(p.default_value)
-                explicit_type_params.append(TypeParam(p.name, TYPE_VAR_KIND, bound, values, default))
+                explicit_type_params.append(
+                    TypeParam(p.name, TYPE_VAR_KIND, bound, values, default)
+                )
         return explicit_type_params
 
     # Return(expr? value)

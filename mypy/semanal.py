@@ -3903,7 +3903,9 @@ class SemanticAnalyzer(
         dynamic = bool(self.function_stack and self.function_stack[-1].is_dynamic())
         global_scope = not self.type and not self.function_stack
         try:
-            typ = expr_to_unanalyzed_type(rvalue, self.options, self.is_stub_file)
+            typ = expr_to_unanalyzed_type(
+                rvalue, self.options, self.is_stub_file or python_3_12_type_alias
+            )
         except TypeTranslationError:
             self.fail(
                 "Invalid type alias: expression is not a valid type", rvalue, code=codes.VALID_TYPE
@@ -6066,8 +6068,17 @@ class SemanticAnalyzer(
             try:
                 typearg = self.expr_to_unanalyzed_type(item, allow_unpack=True)
             except TypeTranslationError:
-                self.fail("Type expected within [...]", expr)
-                return None
+                try:
+                    is_stub_file = self.is_stub_file
+                    self._is_stub_file = True
+                    try:
+                        typearg = self.expr_to_unanalyzed_type(item, allow_unpack=True)
+                    finally:
+                        self._is_stub_file = is_stub_file
+                    self.fail("Enclose this expression in quotes", item)
+                except TypeTranslationError:
+                    self.fail("Type expected within [...]", expr)
+                    return None
             analyzed = self.anal_type(
                 typearg,
                 # The type application may appear in base class expression,

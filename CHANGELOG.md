@@ -7,6 +7,7 @@
 - disable `bytearray` and `memoryview` promotions by default
 - support `typing.type_check_only`
 - support default values on type parameters
+- support based type notation in type alias statements
 ### Fixes
 - fixed crash with `re` plugin
 - fixed crash with `Intersection` cache
