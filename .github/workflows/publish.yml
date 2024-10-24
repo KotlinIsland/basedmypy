@@ -1,9 +1,31 @@
-name: Publish documentation
+name: Publish
 
 on:
-  workflow_dispatch:
+  release:
 
 jobs:
+  pypi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: publish
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        shell: bash
+        run: |
+          version=$(python -c "import mypy.version; print(mypy.version.__based_version__)")
+          python misc/upload-pypi.py $version
+
+      # Upload wheels as a release asset
+      - name: Upload Release Assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload ${{ github.event.release.tag_name }} ./dist/*
+
   docs:
     permissions:
       pages: write      # to deploy to Pages
