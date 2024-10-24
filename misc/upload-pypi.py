@@ -132,7 +132,7 @@ def upload_dist(dist: Path, dry_run: bool = True) -> None:
             subprocess.check_call(cmd)
 
 
-def upload_to_pypi(version: str, dry_run: bool = True) -> None:
+def upload_to_pypi(version: str, dry_run: bool = True, save_dist=False) -> None:
     # Verify `version` is a valid version, eg: 1.3.1rc2
     assert re.match(r"v?\d+\.\d+\.\d+(\+dev\.\S+|(a|b|rc)\d+)?$", version)
     if "dev" in version:
@@ -140,10 +140,15 @@ def upload_to_pypi(version: str, dry_run: bool = True) -> None:
     if version.startswith("v"):
         version = version[1:]
 
-    target_dir = tempfile.mkdtemp()
-    dist = Path(target_dir) / "dist"
-    dist.mkdir()
-    print(f"Temporary target directory: {target_dir}")
+    if save_dist:
+        dist = Path() / "dist"
+        dist.mkdir()
+        print("Saving wheels in project")
+    else:
+        target_dir = tempfile.mkdtemp()
+        dist = Path(target_dir) / "dist"
+        dist.mkdir()
+        print(f"Temporary target directory: {target_dir}")
 
     release = get_release_for_tag(f"v{version}")
     download_all_release_assets(release, dist)
@@ -159,10 +164,13 @@ def main() -> None:
     parser.add_argument(
         "--dry-run", action="store_true", default=False, help="Don't actually upload packages"
     )
+    parser.add_argument(
+        "--save-dist", action="store_true", default=False, help="location to store wheels"
+    )
     parser.add_argument("version", help="mypy version to release")
     args = parser.parse_args()
 
-    upload_to_pypi(args.version, args.dry_run)
+    upload_to_pypi(args.version, args.dry_run, args.save_dist)
 
 
 if __name__ == "__main__":
