@@ -1,16 +1,9 @@
 # Contributing to Mypy
 
-Welcome!  Mypy is a community project that aims to work for a wide
-range of Python users and Python codebases.  If you're trying mypy on
+welcome! basedmypy is a community project that aims to work for a wide
+range of Python users and Python codebases. If you're trying basedmypy on
 your Python code, your experience and what you can contribute are
-important to the project's success.
-
-## Code of Conduct
-
-Everyone participating in the Mypy community, and in particular in our
-issue tracker, pull requests, and chat, is expected to treat
-other people with respect and more generally to follow the guidelines
-articulated in the [Python Community Code of Conduct](https://www.python.org/psf/codeofconduct/).
+important to the project's success
 
 ## Getting started with development
 
@@ -18,41 +11,31 @@ articulated in the [Python Community Code of Conduct](https://www.python.org/psf
 
 #### (1) Fork the mypy repository
 
-Within Github, navigate to <https://github.com/python/mypy> and fork the repository.
+Within Github, navigate to <https://github.com/KotlinIsland/basedmypy> and fork the repository.
 
 #### (2) Clone the mypy repository and enter into it
 
-```bash
-git clone git@github.com:<your_username>/mypy.git
-cd mypy
+clone the project using your IDE
+
+if you don't use an IDE, you can also use the terminal (not recommended, the terminal is better left in the 80's):
+```shell
+git clone https://github.com/<your_username>/basedmypy.git
+cd basedmypy
 ```
 
-#### (3) Create then activate a virtual environment
+#### (3) Setup the project
 
-```bash
-python3 -m venv venv
-source venv/bin/activate
+```shell
+./pw install
 ```
 
-```bash
-# For Windows use
-python -m venv venv
-. venv/Scripts/activate
-
-# For more details, see https://docs.python.org/3/library/venv.html#creating-virtual-environments
-```
-
-#### (4) Install the test requirements and the project
-
-```bash
-python -m pip install -r test-requirements.txt
-python -m pip install -e .
-hash -r  # This resets shell PATH cache, not necessary on Windows
-```
-
-> **Note**
-> You'll need Python 3.8 or higher to install all requirements listed in
-> test-requirements.txt
+> [!Note]
+> You'll need Python 3.8 or higher to install all requirements
+> you can specify the version and the desired venv directory:
+>
+> ```shell
+> ./pw install --python 3.13 .venv13
+> ```
 
 ### Running tests
 
@@ -70,64 +53,29 @@ python3 runtests.py
 
 Some useful commands for running specific tests include:
 
-```bash
+```shell
 # Use mypy to check mypy's own code
-python3 runtests.py self
-# or equivalently:
-python3 -m mypy --config-file mypy_self_check.ini -p mypy
+.\pw typecheck
 
 # Run a single test from the test suite
-pytest -n0 -k 'test_name'
+.\pw test test_name
 
 # Run all test cases in the "test-data/unit/check-dataclasses.test" file
 pytest mypy/test/testcheck.py::TypeCheckSuite::check-dataclasses.test
 
 # Run the formatters and linters
-python runtests.py lint
+.\pw format
+.\pw lint
 ```
 
 For an in-depth guide on running and writing tests,
 see [the README in the test-data directory](test-data/unit/README.md).
 
-#### Using `tox`
-
-You can also use [`tox`](https://tox.wiki/en/latest/) to run tests and other commands.
-`tox` handles setting up test environments for you.
-
-```bash
-# Run tests
-tox run -e py
-
-# Run tests using some specific Python version
-tox run -e py311
-
-# Run a specific command
-tox run -e lint
-
-# Run a single test from the test suite
-tox run -e py -- -n0 -k 'test_name'
-
-# Run all test cases in the "test-data/unit/check-dataclasses.test" file using
-# Python 3.11 specifically
-tox run -e py311 -- mypy/test/testcheck.py::TypeCheckSuite::check-dataclasses.test
-
-# Set up a development environment with all the project libraries and run a command
-tox -e dev -- mypy --verbose test_case.py
-tox -e dev --override testenv:dev.allowlist_externals+=env -- env  # inspect the environment
-```
-
-If you don't already have `tox` installed, you can use a virtual environment as
-described above to install `tox` via `pip` (e.g., ``python3 -m pip install tox``).
-
 ## First time contributors
 
-If you're looking for things to help with, browse our [issue tracker](https://github.com/python/mypy/issues)!
+If you're looking for things to help with, browse our [issue tracker](https://github.com/KotlinIsland/basedmypy/issues)!
 
-In particular, look for:
-
-- [good first issues](https://github.com/python/mypy/labels/good-first-issue)
-- [good second issues](https://github.com/python/mypy/labels/good-second-issue)
-- [documentation issues](https://github.com/python/mypy/labels/documentation)
+In particular, look for [good first issues](https://github.com/KotlinIsland/basedmypy/labels/good-first-issue)
 
 You do not need to ask for permission to work on any of these issues.
 Just fix the issue yourself, [try to add a unit test](#running-tests) and

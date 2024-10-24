@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name":"Python Current File (justMyCode=false)",
+            "type":"debugpy",
+            "request":"launch",
+            "program":"${file}",
+            "console":"integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Basedmypy current file",
+            "type": "debugpy",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "program": "mypy",
+            "args": ["--show-traceback", "${file}"]
+        }
+    ]
+}

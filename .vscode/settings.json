@@ -1,0 +1,53 @@
+{
+    "editor.formatOnSave": true,
+    "git.allowForcePush": true,
+    "git.autofetch": "all",
+    "git.autoStash": true,
+    "git.pruneOnFetch": true,
+    "git.rebaseWhenSync": true,
+    "git.suggestSmartCommit": false,
+    "git.supportCancellation": true,
+    "git.useEditorAsCommitInput": false,
+    "git.pullBeforeCheckout": true,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "terminal.integrated.persistentSessionReviveProcess": "never",
+    "files.autoSave": "onFocusChange",
+    "search.useIgnoreFiles": true,
+    "git.useCommitInputAsStashMessage": true,
+    "files.eol": "\n",
+    "python.testing.pytestEnabled": true,
+    "testing.automaticallyOpenPeekView": "never",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "always"
+        }
+    },
+    "explorer.compactFolders": false,
+    "search.exclude": {
+        "pw": true
+    },
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "terminal.integrated.env.windows": {
+      "PATH": "${env:PATH};./.pyprojectx/main"
+    },
+    "terminal.integrated.env.osx": { "PATH": "${env:PATH};./.pyprojectx/main" },
+    "terminal.integrated.env.linux": {
+      "PATH": "${env:PATH};./.pyprojectx/main"
+    },
+    "task.problemMatchers.neverPrompt": true,
+    "editor.unicodeHighlight.nonBasicASCII": true,
+    "ruff.nativeServer": true,
+    "files.readonlyInclude": {
+        ".pyprojectx/**/*": true,
+        ".pytest_cache/**/*": true,
+        ".venv*/**/*": true,
+        "**/dist/**/*": true,
+        "**/out/**/*": true,
+        "test-requirements.txt": true,
+        "pw": true,
+        "pw.bat": true,
+        "pw.lock": true
+    }
+}
