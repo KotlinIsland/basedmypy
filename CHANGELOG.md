@@ -11,6 +11,7 @@
 ### Fixes
 - fixed crash with `re` plugin
 - fixed crash with `Intersection` cache
+- fixed definition of `types.NoneType`
 ### Enhancements
 - fixed default configuration in the docs
 

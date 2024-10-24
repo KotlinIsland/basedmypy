@@ -18,7 +18,7 @@ from importlib.machinery import ModuleSpec
 
 # pytype crashes if types.MappingProxyType inherits from collections.abc.Mapping instead of typing.Mapping
 from typing import Any, Generic, ClassVar, Mapping, TypeVar, final, overload  # noqa: Y022
-from typing_extensions import ParamSpec, Self, TypeVarTuple, Final, deprecated
+from typing_extensions import ParamSpec, Self, TypeVarTuple, deprecated, TypeAlias
 
 __all__ = [
     "FunctionType",
@@ -602,10 +602,11 @@ if sys.version_info >= (3, 9):
         def __getattr__(self, name: str) -> Any: ...
 
 if sys.version_info >= (3, 10):
-    # This annotation allows `NoneType` to be used as a value of `type[None]`
-    NoneType: Final[type[None]] = ...
+    # ideally, this would have a `: TypeAlias`, but it makes mypy output
+    #  an invalid error on this line
+    NoneType = type(None)
 
-    EllipsisType: type[ellipsis]
+    EllipsisType: TypeAlias = ellipsis
     from builtins import _NotImplementedType
 
     NotImplementedType = _NotImplementedType
