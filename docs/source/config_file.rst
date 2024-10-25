@@ -36,7 +36,7 @@ To expand environment variables use ``$VARNAME`` or ``${VARNAME}``.
 Config file format
 ******************
 
-The configuration file format is the usual
+The configuration file format is `toml` (like `pyproject.toml`) or the legacy
 :doc:`ini file <python:library/configparser>` format. It should contain
 section names in square brackets and flag settings of the form
 `NAME = VALUE`. Comments start with ``#`` characters.
@@ -543,7 +543,7 @@ section of the command line docs.
 .. confval:: disallow_any_unimported
 
     :type: boolean
-    :default: False
+    :default: True
 
     Disallows usage of types that come from unfollowed imports (anything imported from
     an unfollowed import is automatically given a type of ``Any``).
@@ -551,21 +551,21 @@ section of the command line docs.
 .. confval:: disallow_any_expr
 
     :type: boolean
-    :default: False
+    :default: True
 
     Disallows all expressions in the module that have type ``Any``.
 
 .. confval:: disallow_any_decorated
 
     :type: boolean
-    :default: False
+    :default: True
 
     Disallows functions that have ``Any`` in their signature after decorator transformation.
 
 .. confval:: disallow_any_explicit
 
     :type: boolean
-    :default: False
+    :default: True
 
     Disallows explicit ``Any`` in type positions such as type annotations and generic
     type parameters.
@@ -573,14 +573,14 @@ section of the command line docs.
 .. confval:: disallow_any_generics
 
     :type: boolean
-    :default: False
+    :default: True
 
     Disallows usage of generic types that do not specify explicit type parameters.
 
 .. confval:: disallow_subclassing_any
 
     :type: boolean
-    :default: False
+    :default: True
 
     Disallows subclassing a value of type ``Any``.
 
@@ -594,7 +594,7 @@ section of the command line docs.
 .. confval:: disallow_untyped_calls
 
     :type: boolean
-    :default: False
+    :default: True
 
     Disallows calling functions without type annotations from functions with type
     annotations. Note that when used in per-module options, it enables/disables
@@ -633,7 +633,7 @@ section of the command line docs.
 .. confval:: disallow_untyped_defs
 
     :type: boolean
-    :default: False
+    :default: True
 
     Disallows defining functions without type annotations or with incomplete type
     annotations (a superset of :confval:`disallow_incomplete_defs`).
@@ -643,7 +643,7 @@ section of the command line docs.
 .. confval:: disallow_incomplete_defs
 
     :type: boolean
-    :default: False
+    :default: True
 
     Disallows defining functions with incomplete type annotations, while still
     allowing entirely unannotated definitions.
@@ -653,14 +653,14 @@ section of the command line docs.
 .. confval:: check_untyped_defs
 
     :type: boolean
-    :default: False
+    :default: True
 
     Type-checks the interior of functions without type annotations.
 
 .. confval:: disallow_untyped_decorators
 
     :type: boolean
-    :default: False
+    :default: True
 
     Reports an error whenever a function with type annotations is decorated with a
     decorator without annotations.
@@ -709,7 +709,7 @@ section of the command line docs.
 .. confval:: warn_redundant_casts
 
     :type: boolean
-    :default: False
+    :default: True
 
     Warns about casting an expression to its inferred type.
 
@@ -718,7 +718,7 @@ section of the command line docs.
 .. confval:: warn_unused_ignores
 
     :type: boolean
-    :default: False
+    :default: True
 
     Warns about unneeded ``# type: ignore`` comments.
 
@@ -732,7 +732,7 @@ section of the command line docs.
 .. confval:: warn_return_any
 
     :type: boolean
-    :default: False
+    :default: True
 
     Shows a warning when returning a value with type ``Any`` from a function
     declared with a non- ``Any`` return type.
@@ -740,7 +740,7 @@ section of the command line docs.
 .. confval:: warn_unreachable
 
     :type: boolean
-    :default: False
+    :default: True
 
     Shows a warning when encountering any code inferred to be unreachable or
     redundant after performing type analysis.
@@ -769,7 +769,7 @@ section of the command line docs.
 .. confval:: allow_untyped_globals
 
     :type: boolean
-    :default: False
+    :default: True
 
     Causes mypy to suppress errors caused by not being able to fully
     infer the types of global and class variables.
@@ -777,7 +777,7 @@ section of the command line docs.
 .. confval:: allow_redefinition
 
     :type: boolean
-    :default: False
+    :default: True
 
     Allows variables to be redefined with an arbitrary type, as long as the redefinition
     is in the same block and nesting level as the original definition.
@@ -803,7 +803,7 @@ section of the command line docs.
 .. confval:: local_partial_types
 
     :type: boolean
-    :default: False
+    :default: True
 
     Disallows inferring variable type for ``None`` from two assignments in different scopes.
     This is always implicitly enabled when using the :ref:`mypy daemon <mypy_daemon>`.
@@ -852,7 +852,7 @@ section of the command line docs.
 .. confval:: strict_equality
 
     :type: boolean
-    :default: False
+    :default: True
 
    Prohibit equality checks, identity checks, and container checks between
    non-overlapping types.
@@ -860,7 +860,7 @@ section of the command line docs.
 .. confval:: strict
 
     :type: boolean
-    :default: False
+    :default: True
 
    Enable all optional error checking flags.  You can see the list of
    flags enabled by strict mode in the full :option:`mypy --help`
@@ -881,21 +881,21 @@ These options may only be set in the global section (``[mypy]``).
 .. confval:: show_error_context
 
     :type: boolean
-    :default: False
+    :default: True
 
     Prefixes each error with the relevant context.
 
 .. confval:: show_column_numbers
 
     :type: boolean
-    :default: False
+    :default: True
 
     Shows column numbers in error messages.
 
 .. confval:: show_error_code_links
 
     :type: boolean
-    :default: False
+    :default: True
 
     Shows documentation link to corresponding error code.
 
@@ -909,7 +909,7 @@ These options may only be set in the global section (``[mypy]``).
 .. confval:: pretty
 
     :type: boolean
-    :default: False
+    :default: True
 
     Use visually nicer output in error messages: use soft word wrap,
     show source code snippets, and show error location markers.

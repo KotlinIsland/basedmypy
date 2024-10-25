@@ -83,15 +83,14 @@ else:
     ]
 WRAPPER_UPDATES: tuple[Literal["__dict__"]]
 
-class _Wrapped(Generic[_PWrapped, _RWrapped, _PWrapper, _RWrapper]):
-    __wrapped__: Callable[_PWrapped, _RWrapped]
-    def __call__(self, *args: _PWrapper.args, **kwargs: _PWrapper.kwargs) -> _RWrapper: ...
-    # as with ``Callable``, we'll assume that these attributes exist
-    __name__: str
-    __qualname__: str
+_TCallable = TypeVar("_TCallable", bound=Callable[..., object])
+_TCallable2 = TypeVar("_TCallable2", bound=Callable[..., object])
 
-class _Wrapper(Generic[_PWrapped, _RWrapped]):
-    def __call__(self, f: Callable[_PWrapper, _RWrapper]) -> _Wrapped[_PWrapped, _RWrapped, _PWrapper, _RWrapper]: ...
+class _Wrapped(Generic[_TCallable]):
+    __wrapped__: _TCallable
+
+class _Wrapper(Generic[_TCallable]):
+    def __call__(self, f: _TCallable2) -> _TCallable2 & _Wrapped[_TCallable]: ...
 
 if sys.version_info >= (3, 12):
     def update_wrapper(
@@ -101,23 +100,23 @@ if sys.version_info >= (3, 12):
         updated: Sequence[str] = ("__dict__",),
     ) -> _Wrapped[_PWrapped, _RWrapped, _PWrapper, _RWrapper]: ...
     def wraps(
-        wrapped: Callable[_PWrapped, _RWrapped],
+        wrapped: _TCallable[_PWrapped, _RWrapped],
         assigned: Sequence[str] = ("__module__", "__name__", "__qualname__", "__doc__", "__annotations__", "__type_params__"),
         updated: Sequence[str] = ("__dict__",),
-    ) -> _Wrapper[_PWrapped, _RWrapped]: ...
+    ) -> _Wrapper[_TCallable, _PWrapped, _RWrapped]: ...
 
 else:
     def update_wrapper(
-        wrapper: Callable[_PWrapper, _RWrapper],
-        wrapped: Callable[_PWrapped, _RWrapped],
+        wrapper: _TCallable,
+        wrapped: _TCallable2,
         assigned: Sequence[str] = ("__module__", "__name__", "__qualname__", "__doc__", "__annotations__"),
         updated: Sequence[str] = ("__dict__",),
-    ) -> _Wrapped[_PWrapped, _RWrapped, _PWrapper, _RWrapper]: ...
+    ) -> _TCallable & _Wrapped[_TCallable2]: ...
     def wraps(
-        wrapped: Callable[_PWrapped, _RWrapped],
+        wrapped: _TCallable,
         assigned: Sequence[str] = ("__module__", "__name__", "__qualname__", "__doc__", "__annotations__"),
         updated: Sequence[str] = ("__dict__",),
-    ) -> _Wrapper[_PWrapped, _RWrapped]: ...
+    ) -> _Wrapper[_TCallable]: ...
 
 def total_ordering(cls: type[_T]) -> type[_T]: ...
 def cmp_to_key(mycmp: Callable[[_T, _T], int]) -> Callable[[_T], SupportsAllComparisons]: ...

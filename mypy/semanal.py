@@ -886,6 +886,9 @@ class SemanticAnalyzer(
             if not defn.is_decorated and not defn.is_overload:
                 self.add_function_to_symbol_table(defn)
 
+        if defn.fullname == "typing.type_check_only":
+            defn.is_type_check_only = True
+
         if not self.recurse_into_functions:
             return
 
@@ -1885,7 +1888,12 @@ class SemanticAnalyzer(
                 upper_bound = self.named_type("builtins.tuple", [self.object_type()])
             else:
                 upper_bound = self.object_type()
-        default = AnyType(TypeOfAny.from_omitted_generics)
+        if type_param.default:
+            default = self.anal_type(type_param.default, allow_placeholder=True)
+            if default is None:
+                default = PlaceholderType(None, [], context.line)
+        else:
+            default = AnyType(TypeOfAny.from_omitted_generics)
         if type_param.kind == TYPE_VAR_KIND:
             values = []
             if type_param.values:
@@ -2999,6 +3007,13 @@ class SemanticAnalyzer(
             or not fullname.startswith(self.cur_mod_id + ".")
         )
 
+        if not self.is_stub_file and (
+            isinstance(node.node, (TypeInfo, FuncDef))
+            and node.node.is_type_check_only
+            or isinstance(node.node, Decorator)
+            and node.node.func.is_type_check_only
+        ):
+            self.fail(message_registry.TYPE_CHECK_ONLY.format(node.node.name), context)
         if isinstance(node.node, PlaceholderNode):
             if self.final_iteration:
                 self.report_missing_module_attribute(
@@ -3888,7 +3903,9 @@ class SemanticAnalyzer(
         dynamic = bool(self.function_stack and self.function_stack[-1].is_dynamic())
         global_scope = not self.type and not self.function_stack
         try:
-            typ = expr_to_unanalyzed_type(rvalue, self.options, self.is_stub_file)
+            typ = expr_to_unanalyzed_type(
+                rvalue, self.options, self.is_stub_file or python_3_12_type_alias
+            )
         except TypeTranslationError:
             self.fail(
                 "Invalid type alias: expression is not a valid type", rvalue, code=codes.VALID_TYPE
@@ -6051,8 +6068,17 @@ class SemanticAnalyzer(
             try:
                 typearg = self.expr_to_unanalyzed_type(item, allow_unpack=True)
             except TypeTranslationError:
-                self.fail("Type expected within [...]", expr)
-                return None
+                try:
+                    is_stub_file = self.is_stub_file
+                    self._is_stub_file = True
+                    try:
+                        typearg = self.expr_to_unanalyzed_type(item, allow_unpack=True)
+                    finally:
+                        self._is_stub_file = is_stub_file
+                    self.fail("Enclose this expression in quotes", item)
+                except TypeTranslationError:
+                    self.fail("Type expected within [...]", expr)
+                    return None
             analyzed = self.anal_type(
                 typearg,
                 # The type application may appear in base class expression,

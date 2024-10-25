@@ -1,0 +1,14 @@
+[case testNoneTypeIsNone]
+from typing import Type
+from typing_extensions import TypeAlias
+
+# should be the same as types.pyi
+NoneType: TypeAlias = type(None)
+
+reveal_type(NoneType) # N: Revealed type is "type[None]"
+n1: NoneType = None
+n2: Type[NoneType] = NoneType
+n3: Type[NoneType] = type(None)
+n4: Type[None] = NoneType
+n5: Type[None] = type(None)
+[builtins fixtures/tuple.pyi]

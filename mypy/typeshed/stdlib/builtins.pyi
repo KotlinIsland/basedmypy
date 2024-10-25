@@ -1836,23 +1836,13 @@ def __import__(
 @_as_builtin
 def __build_class__(func: Callable[[], CellType | Any], name: str, /, *bases: Any, metaclass: Any = ..., **kwds: Any) -> Any: ...
 
-if sys.version_info >= (3, 10):
-    from types import EllipsisType
+# the type of Ellipsis is <type 'ellipsis'>, but since it's
+# not exposed anywhere under that name, we make it private here.
+@final
+@type_check_only
+class ellipsis: ...
 
-    # Backwards compatibility hack for folks who relied on the ellipsis type
-    # existing in typeshed in Python 3.9 and earlier.
-    ellipsis = EllipsisType
-
-    Ellipsis: EllipsisType
-
-else:
-    # Actually the type of Ellipsis is <type 'ellipsis'>, but since it's
-    # not exposed anywhere under that name, we make it private here.
-    @final
-    @type_check_only
-    class ellipsis: ...
-
-    Ellipsis: ellipsis
+Ellipsis: ellipsis
 
 class BaseException:
     args: tuple[Any, ...]

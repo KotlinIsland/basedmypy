@@ -5,7 +5,8 @@ labels: "bug"
 body:
   - type: textarea
     attributes:
-      label: Describe the problem, ie expected/actual result (if it's not blatantly obvious)
+      label: Describe the problem
+      description: add expected and actual result if it's not blatantly obvious
   - type: textarea
     attributes:
       label: Gist to reproduce
@@ -13,23 +14,17 @@ body:
         Full source code is appreciated. We also very much appreciate
         it if you try to narrow the source down to a small stand-alone example.
       render: python
-  - type: markdown
+  - type: dropdown
     attributes:
-      value: "# Your Environment"
+      label: Severity
+      description: How does this affect you?
+      options:
+        - annoying but workaround is available
+        - annoying but i can live with it
+        - blocker (literally unusable)
+    validations:
+      required: true
   - type: textarea
     attributes:
-      label: Basedmypy version
-      description: output of `mypy --version`
-  - type: input
-    attributes:
-      label: Command-line flags
-  - type: input
-    attributes:
-      label: Configuration options from `pyproject.toml` (and other config files)
-  - type: input
-    attributes:
-      label: Python version used
-  - type: input
-    attributes:
-      label: Operating system and version
-      description: Linux/macOS/Windows/wsl etc
+      label: Your Environment
+      description: include any relevant information such as operating system and the output of `mypy --version`

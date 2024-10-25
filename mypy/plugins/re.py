@@ -16,7 +16,6 @@ from mypy.types import (
     Instance,
     LiteralType,
     NoneType,
-    ProperType,
     TupleType,
     Type,
     TypedDictType,
@@ -228,7 +227,7 @@ def sub(ctx: FunctionSigContext | MethodSigContext) -> CallableType:
 
 
 def _get_first_arg(arg: Type) -> str | int | None:
-    assert isinstance(arg, ProperType)
+    arg = get_proper_type(arg)
     if isinstance(arg, LiteralType):
         result = arg.value
         if not isinstance(result, (str, int)):

@@ -1271,7 +1271,19 @@ def process_options(
     parser.add_argument("--debug-serialize", action="store_true", help=argparse.SUPPRESS)
 
     parser.add_argument(
+        "--enable-bytearray-promotion",
+        action="store_false",
+        dest="disable_bytearray_promotion",
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
         "--disable-bytearray-promotion", action="store_true", help=argparse.SUPPRESS
+    )
+    parser.add_argument(
+        "--enable-memoryview-promotion",
+        action="store_false",
+        dest="disable_memoryview_promotion",
+        help=argparse.SUPPRESS,
     )
     parser.add_argument(
         "--disable-memoryview-promotion", action="store_true", help=argparse.SUPPRESS

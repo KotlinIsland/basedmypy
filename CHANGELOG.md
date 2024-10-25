@@ -1,6 +1,19 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Added
+- typed `functools.wraps` correctly
+- typed `builtins.ellipsis`/`types.EllipsisType` correctly
+- disable `bytearray` and `memoryview` promotions by default
+- support `typing.type_check_only`
+- support default values on type parameters
+- support based type notation in type alias statements
+### Fixes
+- fixed crash with `re` plugin
+- fixed crash with `Intersection` cache
+- fixed definition of `types.NoneType`
+### Enhancements
+- fixed default configuration in the docs
 
 ## [2.6.0]
 ### Added

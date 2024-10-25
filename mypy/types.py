@@ -3160,7 +3160,9 @@ class IntersectionType(ProperType):
         uses_based_syntax=False,
     ):
         super().__init__(line, column)
-        self.items = flatten_nested_unions(items, type_type=IntersectionType)
+        self.items = flatten_nested_unions(
+            items, type_type=IntersectionType, handle_type_alias_type=False
+        )
         self.can_be_true = any(item.can_be_true for item in items)
         self.can_be_false = any(item.can_be_false for item in items)
         self.is_evaluated = is_evaluated

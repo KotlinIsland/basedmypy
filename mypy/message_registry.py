@@ -278,9 +278,14 @@ TOO_MANY_UNION_COMBINATIONS: Final = ErrorMessage(
 
 CONTIGUOUS_ITERABLE_EXPECTED: Final = ErrorMessage("Contiguous iterable with same type expected")
 ITERABLE_TYPE_EXPECTED: Final = ErrorMessage("Invalid type '{}' for *expr (iterable expected)")
+
+# Based
 TYPE_GUARD_POS_ARG_REQUIRED: Final = ErrorMessage("Type {} requires positional argument")
 TYPE_GUARD_POS_LIMITATION: Final = ErrorMessage(
     "Type guard on star argument is not yet supported", codes.TYPEGUARD_LIMITATION
+)
+TYPE_CHECK_ONLY: Final = ErrorMessage(
+    'Symbol "{}" is not accessible at runtime', codes.TYPE_CHECK_ONLY
 )
 
 # Match Statement

@@ -253,6 +253,7 @@ The key type of ``Mapping`` is fixed to be covariant:
     a: Mapping[str, str]
     b: Mapping[object, object] = a  # no error
 
+
 Tuple Literal Types
 -------------------
 
@@ -261,6 +262,7 @@ Basedmypy allows denotation of tuple types with tuple literals:
 .. code-block:: python
 
     a: (int, str) = (1, "a")
+
 
 Types in Messages
 -----------------
@@ -298,6 +300,7 @@ The defined type of a variable will be shown in the message for `reveal_type`:
     a = 1
     reveal_type(a)  # Revealed type is "int" (narrowed from "object")
 
+
 Checked f-strings
 -----------------
 
@@ -306,6 +309,17 @@ Checked f-strings
     f"{None:0>2}"  # error: The type "None" doesn't support format-specifiers
     f"{date(1,1,1):%}"  # error: Invalid trailing '%', escape with '%%'
     f"{'s':.2f}"  # error: Incompatible types in string interpolation (expression has type "str", placeholder has type "int | float | complex")
+
+
+Support for `typing.type_check_only`
+------------------------------------
+
+`typing.type_check_only` is a decorator that specifies that a value is not available at runtime.type_check_only
+
+.. code-block:: python
+
+    ellipsis  # error: Symbol "ellipsis" is not accessible at runtime  [type-check-only]
+    function  # error: Symbol "function" is not accessible at runtime  [type-check-only]
 
 
 Annotations in Functions
@@ -319,6 +333,7 @@ Basedmypy handles type annotations in function bodies as unevaluated:
 
     def f():
         a: int | str  # no error in python 3.9, this annotation isn't evaluated
+
 
 Checked Argument Names
 ----------------------

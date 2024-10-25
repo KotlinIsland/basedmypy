@@ -1,0 +1,46 @@
+[case testSimple]
+from typing import type_check_only  # E: Symbol "type_check_only" is not accessible at runtime  [type-check-only]
+
+from a import a, A  # E: Symbol "a" is not accessible at runtime  [type-check-only] \
+                    # E: Symbol "A" is not accessible at runtime  [type-check-only]
+a  # E: Symbol "a" is not accessible at runtime  [type-check-only]
+A  # E: Symbol "A" is not accessible at runtime  [type-check-only]
+b: A  # E: Symbol "A" is not accessible at runtime  [type-check-only]
+
+import f
+[file f.py]
+from __future__ import annotations
+
+from a import a, A  # E: Symbol "a" is not accessible at runtime  [type-check-only] \
+                    # E: Symbol "A" is not accessible at runtime  [type-check-only]
+a  # E: Symbol "a" is not accessible at runtime  [type-check-only]
+A  # E: Symbol "A" is not accessible at runtime  [type-check-only]
+b: A
+
+[file a.pyi]
+from typing import type_check_only
+
+@type_check_only
+def a(): ...
+a
+
+@type_check_only
+class A: pass
+
+A
+b: A
+[builtins fixtures/tuple.pyi]
+[typing fixtures/typing-full.pyi]
+
+
+[case testTypeImport]
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import type_check_only
+
+    @type_check_only
+    def f():
+        ...
+f()  # E: Symbol "f" is not accessible at runtime  [type-check-only]
+[builtins fixtures/tuple.pyi]
+[typing fixtures/typing-full.pyi]

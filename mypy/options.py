@@ -422,8 +422,8 @@ class Options:
         # (undocumented feature).
         self.export_ref_info = False
 
-        self.disable_bytearray_promotion = False
-        self.disable_memoryview_promotion = False
+        self.disable_bytearray_promotion = flip_if_not_based(True)
+        self.disable_memoryview_promotion = flip_if_not_based(True)
         self.force_uppercase_builtins = False
         self.force_union_syntax = False
 

@@ -490,7 +490,7 @@ class ImportAll(ImportBase):
         return visitor.visit_import_all(self)
 
 
-FUNCBASE_FLAGS: Final = ["is_property", "is_class", "is_static", "is_final"]
+FUNCBASE_FLAGS: Final = ["is_property", "is_class", "is_static", "is_final", "is_type_check_only"]
 
 
 class FuncBase(Node):
@@ -668,7 +668,7 @@ TYPE_VAR_TUPLE_KIND: Final = 2
 
 
 class TypeParam:
-    __slots__ = ("name", "kind", "upper_bound", "values")
+    __slots__ = ("name", "kind", "upper_bound", "values", "default")
 
     def __init__(
         self,
@@ -676,11 +676,13 @@ class TypeParam:
         kind: int,
         upper_bound: mypy.types.Type | None,
         values: list[mypy.types.Type],
+        default: mypy.types.Type | None = None,
     ) -> None:
         self.name = name
         self.kind = kind
         self.upper_bound = upper_bound
         self.values = values
+        self.default = default
 
 
 FUNCITEM_FLAGS: Final = FUNCBASE_FLAGS + [
@@ -3130,6 +3132,7 @@ class TypeInfo(SymbolNode):
         "runtime_protocol",
         "is_final",
         "is_intersection",
+        "is_type_check_only",
     ]
 
     def __init__(self, names: SymbolTable, defn: ClassDef, module_name: str) -> None:
