@@ -113,6 +113,7 @@ Contents
    error_code_list3
    additional_features
    faq
+   changelog
 
 .. toctree::
    :hidden:

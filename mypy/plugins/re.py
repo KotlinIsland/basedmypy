@@ -276,6 +276,7 @@ def match_groupdict(ctx: MethodContext) -> Type:
     return TypedDictType(
         items={name: anystr if group else anystr_default for name, group in groups if name},
         required_keys=groups_keys,
+        readonly_keys=set(),
         fallback=fallback,
     )
 

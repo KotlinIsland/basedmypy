@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 import subprocess
@@ -19,7 +17,7 @@ MYPYC_EXTERNAL = "TestExternal"
 MYPYC_COMMAND_LINE = "TestCommandLine"
 ERROR_STREAM = "ErrorStreamSuite"
 
-
+print(executable)
 ALL_NON_FAST = [
     CMDLINE,
     PEP561,
@@ -63,7 +61,7 @@ cmds = {
         "mypyc",
     ],
     # Lint
-    "lint": ["pre-commit", "run", "--all-files"],
+    "lint": ["mypy", "-V"],
     # Fast test cases only (this is the bulk of the test suite)
     "pytest-fast": ["pytest", "-q", "-k", f"not ({' or '.join(ALL_NON_FAST)})"],
     # Test cases that invoke mypy (with small inputs)

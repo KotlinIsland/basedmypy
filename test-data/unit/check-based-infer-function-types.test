@@ -122,7 +122,7 @@ def f(i):
     reveal_type(f)  # N: Revealed type is "Overload(def (i: int) -> int, def (i: str) -> str)"
     if i:
         return "asdf"
-    elif i:
+    elif bool():
         return 100
     return None  # E: Incompatible return value type (got "None", expected "int | str")  [return-value]
 
@@ -140,7 +140,7 @@ def f(i: object = 1, j = "1"):
     reveal_type(j)  # N: Revealed type is "int | str"
     if j:
         return "asdf"
-    elif j:
+    elif i:
         return 100
     return None  # E: Incompatible return value type (got "None", expected "int | str")  [return-value]
 

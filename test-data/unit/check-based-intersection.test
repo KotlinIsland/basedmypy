@@ -367,6 +367,7 @@ b: List[int & str]
 def f():
     a: List[int & str]
     b: List[int & str]
-List[1 >> 2]  # E: Type expected within [...]  [misc] \
+List[1 >> 2]  # E: The type "type[list[Any]]" is not generic and not indexable  [misc] \
+              # E: Type expected within [...]  [misc] \
               # E: Unsupported left operand type for >> ("int")  [operator]
 [builtins fixtures/tuple.pyi]

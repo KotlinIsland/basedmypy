@@ -1083,6 +1083,10 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         always_present_keys: set[str],
     ) -> Type:
         actual_keys = kwargs.keys()
+        if callee.to_be_mutated:
+            assigned_readonly_keys = actual_keys & callee.readonly_keys
+            if assigned_readonly_keys:
+                self.msg.readonly_keys_mutated(assigned_readonly_keys, context=context)
         if not (
             callee.required_keys <= always_present_keys and actual_keys <= callee.items.keys()
         ):
@@ -1865,7 +1869,11 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                 )
 
         param_spec = callee.param_spec()
-        if param_spec is not None and arg_kinds == [ARG_STAR, ARG_STAR2]:
+        if (
+            param_spec is not None
+            and arg_kinds == [ARG_STAR, ARG_STAR2]
+            and len(formal_to_actual) == 2
+        ):
             arg1 = self.accept(args[0])
             arg2 = self.accept(args[1])
             if (
@@ -2471,6 +2479,9 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                 # Positional argument when expecting a keyword argument.
                 self.msg.too_many_positional_arguments(callee, context)
                 ok = False
+            elif callee.param_spec() is not None and not formal_to_actual[i]:
+                self.msg.too_few_arguments(callee, context, actual_names)
+                ok = False
         return ok
 
     def check_for_extra_actual_arguments(
@@ -2884,9 +2895,9 @@ class ExpressionChecker(ExpressionVisitor[Type]):
     ) -> list[CallableType]:
         """Returns all overload call targets that having matching argument counts.
 
-        If the given args contains a star-arg (*arg or **kwarg argument), this method
-        will ensure all star-arg overloads appear at the start of the list, instead
-        of their usual location.
+        If the given args contains a star-arg (*arg or **kwarg argument, including
+        ParamSpec), this method will ensure all star-arg overloads appear at the start
+        of the list, instead of their usual location.
 
         The only exception is if the starred argument is something like a Tuple or a
         NamedTuple, which has a definitive "shape". If so, we don't move the corresponding
@@ -2914,9 +2925,13 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             formal_to_actual = map_actuals_to_formals(
                 arg_kinds, arg_names, typ.arg_kinds, typ.arg_names, lambda i: arg_types[i]
             )
-
             with self.msg.filter_errors():
-                if self.check_argument_count(
+                if typ.param_spec() is not None:
+                    # ParamSpec can be expanded in a lot of different ways. We may try
+                    # to expand it here instead, but picking an impossible overload
+                    # is safe: it will be filtered out later.
+                    star_matches.append(typ)
+                elif self.check_argument_count(
                     typ, arg_types, arg_kinds, arg_names, formal_to_actual, None
                 ):
                     if args_have_var_arg and typ.is_var_arg:
@@ -4434,6 +4449,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         op = e.op
         if op == "not":
             result: Type = self.bool_type()
+            self.chk.check_for_truthy_type(operand_type, e.expr)
         else:
             method = operators.unary_op_methods[op]
             result, method_type = self.check_method_call_by_name(method, operand_type, [], [], e)
@@ -4515,18 +4531,15 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             else:
                 return self.nonliteral_tuple_index_helper(left_type, index)
         elif isinstance(left_type, TypedDictType):
-            return self.visit_typeddict_index_expr(left_type, e.index)
+            return self.visit_typeddict_index_expr(left_type, e.index)[0]
         elif isinstance(left_type, FunctionLike) and left_type.is_type_obj():
             if left_type.type_object().is_enum:
                 return self.visit_enum_index_expr(left_type.type_object(), e.index, e)
-            elif left_type.type_object().type_vars:
-                return self.named_type("types.GenericAlias")
-            elif (
-                left_type.type_object().fullname == "builtins.type"
-                and self.chk.options.python_version >= (3, 9)
+            elif self.chk.options.python_version >= (3, 9) and (
+                left_type.type_object().type_vars
+                or left_type.type_object().fullname == "builtins.type"
             ):
-                # builtins.type is special: it's not generic in stubs, but it supports indexing
-                return self.named_type("typing._SpecialForm")
+                return self.named_type("types.GenericAlias")
 
         if isinstance(left_type, TypeVarType) and not self.has_member(
             left_type.upper_bound, "__getitem__"
@@ -4699,7 +4712,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
 
     def visit_typeddict_index_expr(
         self, td_type: TypedDictType, index: Expression, setitem: bool = False
-    ) -> Type:
+    ) -> tuple[Type, set[str]]:
         if isinstance(index, StrExpr):
             key_names = [index.value]
         else:
@@ -4722,17 +4735,17 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                     key_names.append(key_type.value)
                 else:
                     self.msg.typeddict_key_must_be_string_literal(td_type, index)
-                    return AnyType(TypeOfAny.from_error)
+                    return AnyType(TypeOfAny.from_error), set()
 
         value_types = []
         for key_name in key_names:
             value_type = td_type.items.get(key_name)
             if value_type is None:
                 self.msg.typeddict_key_not_found(td_type, key_name, index, setitem)
-                return AnyType(TypeOfAny.from_error)
+                return AnyType(TypeOfAny.from_error), set()
             else:
                 value_types.append(value_type)
-        return make_simplified_union(value_types)
+        return make_simplified_union(value_types), set(key_names)
 
     def visit_enum_index_expr(
         self, enum_type: TypeInfo, index: Expression, context: Context
@@ -4884,7 +4897,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         """
         if isinstance(tapp.expr, RefExpr) and isinstance(tapp.expr.node, TypeAlias):
             if tapp.expr.node.python_3_12_type_alias:
-                return self.named_type("typing.TypeAliasType")
+                return self.type_alias_type_type()
             # Subscription of a (generic) alias in runtime context, expand the alias.
             item = instantiate_type_alias(
                 tapp.expr.node,
@@ -4948,7 +4961,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             y = cast(A, ...)
         """
         if alias.python_3_12_type_alias:
-            return self.named_type("typing.TypeAliasType")
+            return self.type_alias_type_type()
         if isinstance(alias.target, Instance) and alias.target.invalid:  # type: ignore[misc]
             # An invalid alias, error already has been reported
             return AnyType(TypeOfAny.from_error)
@@ -5839,8 +5852,13 @@ class ExpressionChecker(ExpressionVisitor[Type]):
 
     def visit_generator_expr(self, e: GeneratorExpr) -> Type:
         # If any of the comprehensions use async for, the expression will return an async generator
-        # object, or if the left-side expression uses await.
-        if any(e.is_async) or has_await_expression(e.left_expr):
+        # object, or await is used anywhere but in the leftmost sequence.
+        if (
+            any(e.is_async)
+            or has_await_expression(e.left_expr)
+            or any(has_await_expression(sequence) for sequence in e.sequences[1:])
+            or any(has_await_expression(cond) for condlist in e.condlists for cond in condlist)
+        ):
             typ = "typing.AsyncGenerator"
             # received type is always None in async generator expressions
             additional_args: list[Type] = [NoneType()]
@@ -6015,16 +6033,15 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                 context=if_type_fallback,
                 allow_none_return=allow_none_return,
             )
-
-        # Only create a union type if the type context is a union, to be mostly
-        # compatible with older mypy versions where we always did a join.
-        #
-        # TODO: Always create a union or at least in more cases?
-        if isinstance(get_proper_type(self.type_context[-1]), UnionType):
-            res: Type = make_simplified_union([if_type, full_context_else_type])
-        else:
-            res = join.join_types(if_type, else_type)
-
+        res: Type = make_simplified_union([if_type, else_type])
+        if has_uninhabited_component(res) and not isinstance(
+            get_proper_type(self.type_context[-1]), UnionType
+        ):
+            # In rare cases with empty collections join may give a better result.
+            alternative = join.join_types(if_type, else_type)
+            p_alt = get_proper_type(alternative)
+            if not isinstance(p_alt, Instance) or p_alt.type.fullname != "builtins.object":
+                res = alternative
         return res
 
     def analyze_cond_branch(
@@ -6120,6 +6137,12 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         arguments. Alias for TypeChecker.named_type.
         """
         return self.chk.named_type(name)
+
+    def type_alias_type_type(self) -> Instance:
+        """Returns a `typing.TypeAliasType` or `typing_extensions.TypeAliasType`."""
+        if self.chk.options.python_version >= (3, 12):
+            return self.named_type("typing.TypeAliasType")
+        return self.named_type("typing_extensions.TypeAliasType")
 
     def is_valid_var_arg(self, typ: Type) -> bool:
         """Is a type valid as a *args argument?"""

@@ -67,6 +67,7 @@ _T1 = TypeVar("_T1")
 _out_T = TypeVar("_out_T", covariant=True)
 _T2 = TypeVar("_T2")
 _KT = TypeVar("_KT")
+_KT_co = TypeVar("_KT_co", covariant=True)
 _VT_co = TypeVar("_VT_co", covariant=True)
 _P = ParamSpec("_P")
 
@@ -248,7 +249,7 @@ class CodeType:
             co_qualname: str = ...,
             co_linetable: bytes = ...,
             co_exceptiontable: bytes = ...,
-        ) -> CodeType: ...
+        ) -> Self: ...
     elif sys.version_info >= (3, 10):
         def replace(
             self,
@@ -269,7 +270,7 @@ class CodeType:
             co_filename: str = ...,
             co_name: str = ...,
             co_linetable: bytes = ...,
-        ) -> CodeType: ...
+        ) -> Self: ...
     else:
         def replace(
             self,
@@ -290,10 +291,13 @@ class CodeType:
             co_filename: str = ...,
             co_name: str = ...,
             co_lnotab: bytes = ...,
-        ) -> CodeType: ...
+        ) -> Self: ...
+
+    if sys.version_info >= (3, 13):
+        __replace__ = replace
 
 @final
-class MappingProxyType(Mapping[_KT, _VT_co]):
+class MappingProxyType(Mapping[_KT_co, _VT_co]):
     __hash__: ClassVar[None]  # type: ignore[assignment]
     def __new__(cls, mapping: SupportsKeysAndGetItem[_KT, _VT_co]) -> Self: ...
     def __getitem__(self, key: _KT, /) -> _VT_co: ...
@@ -304,6 +308,10 @@ class MappingProxyType(Mapping[_KT, _VT_co]):
     def keys(self) -> KeysView[_KT]: ...
     def values(self) -> ValuesView[_VT_co]: ...
     def items(self) -> ItemsView[_KT, _VT_co]: ...
+    @overload  # type: ignore[override]
+    def get(self, key: _KT_co, /) -> _VT_co | None: ...  # type: ignore[unsafe-variance]
+    @overload
+    def get(self, key: _KT_co, default: _VT_co | _T2, /) -> _VT_co | _T2: ...  # type: ignore[unsafe-variance]
     if sys.version_info >= (3, 9):
         def __class_getitem__(cls, item: Any, /) -> GenericAlias: ...
         def __reversed__(self) -> Iterator[_KT]: ...
@@ -312,11 +320,17 @@ class MappingProxyType(Mapping[_KT, _VT_co]):
 
 class SimpleNamespace:
     __hash__: ClassVar[None]  # type: ignore[assignment]
-    def __init__(self, **kwargs: Any) -> None: ...
+    if sys.version_info >= (3, 13):
+        def __init__(self, mapping_or_iterable: Mapping[str, Any] | Iterable[tuple[str, Any]] = (), /, **kwargs: Any) -> None: ...
+    else:
+        def __init__(self, **kwargs: Any) -> None: ...
+
     def __eq__(self, value: object, /) -> bool: ...
     def __getattribute__(self, name: str, /) -> Any: ...
     def __setattr__(self, name: str, value: Any, /) -> None: ...
     def __delattr__(self, name: str, /) -> None: ...
+    if sys.version_info >= (3, 13):
+        def __replace__(self, **kwargs: Any) -> Self: ...
 
 class ModuleType:
     __name__: str
@@ -573,7 +587,7 @@ _R = TypeVar("_R")
 
 # it's not really an Awaitable, but can be used in an await expression. Real type: Generator & Awaitable
 @overload
-def coroutine(func: Callable[_P, Generator[Any, Any, _R]]) -> Callable[_P, Awaitable[_R]]: ...  # type: ignore[overload-overlap]
+def coroutine(func: Callable[_P, Generator[Any, Any, _R]]) -> Callable[_P, Awaitable[_R]]: ...
 @overload
 def coroutine(func: _Fn) -> _Fn: ...
 

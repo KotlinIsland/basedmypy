@@ -9,7 +9,7 @@ from mypy.versionutil import VersionInfo
 # - Release versions have the form "1.2.3".
 # - Dev versions have the form "1.2.3+dev" (PLUS sign to conform to PEP 440).
 # - Before 1.0 we had the form "0.NNN".
-__version__ = "1.11.0+dev"
+__version__ = "1.12.0+dev"
 base_version = __version__
 
 # friendly version information
