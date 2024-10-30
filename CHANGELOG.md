@@ -1,6 +1,6 @@
 # Basedmypy Changelog
 
-## [Unreleased]
+## [2.7.0]
 ### Added
 - typed `functools.wraps` correctly
 - typed `builtins.ellipsis`/`types.EllipsisType` correctly
