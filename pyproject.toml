@@ -19,9 +19,9 @@ build-backend = "setuptools.build_meta"
 
 [tool.pyprojectx]
 main = ["uv"]
+scripts_dir = "misc"
 
 [tool.pyprojectx.aliases]
-install = ["uv venv", "uv pip install -r test-requirements.txt -e ."]
 format = "black mypy mypyc misc"
 lint = "ruff check mypy mypyc misc"
 _typecheck = "mypy --config-file mypy_self_check.ini -p mypy -p mypyc"

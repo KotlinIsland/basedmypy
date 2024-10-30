@@ -2,6 +2,7 @@ name: Publish
 
 on:
   release:
+    types: [published]
 
 jobs:
   pypi:
@@ -18,7 +19,7 @@ jobs:
         shell: bash
         run: |
           version=$(python -c "import mypy.version; print(mypy.version.__based_version__)")
-          python misc/upload-pypi.py $version
+          python misc/upload-pypi.py $version --save-dist
 
       # Upload wheels as a release asset
       - name: Upload Release Assets
@@ -42,7 +43,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.8'
+          python-version: '3.12'
       - name: Install tox
         run: pip install --upgrade 'setuptools!=50' tox==4.11.0
       - name: Setup tox environment

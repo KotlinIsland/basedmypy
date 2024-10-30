@@ -31,10 +31,10 @@ cd basedmypy
 
 > [!Note]
 > You'll need Python 3.8 or higher to install all requirements
-> you can specify the version and the desired venv directory:
+> you can specify the version:
 >
 > ```shell
-> ./pw install --python 3.13 .venv13
+> ./pw install --python 3.13
 > ```
 
 ### Running tests
