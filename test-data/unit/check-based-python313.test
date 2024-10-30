@@ -1,0 +1,5 @@
+[case testTypeVarDefault]
+# this will probable be fixed upstream
+class A[T=None]: pass
+
+reveal_type(A)  # N: Revealed type is "[T = None] () -> __main__.A[T = None]"

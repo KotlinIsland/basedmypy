@@ -1230,13 +1230,16 @@ class ASTConverter:
             bound = None
             default: ProperType | None = None
             values: list[Type] = []
-            if sys.version_info >= (3, 13) and p.default_value is not None:
-                self.fail(
-                    message_registry.TYPE_PARAM_DEFAULT_NOT_SUPPORTED,
-                    p.lineno,
-                    p.col_offset,
-                    blocker=False,
-                )
+            import mypy.options
+
+            if not mypy.options._based:
+                if sys.version_info >= (3, 13) and p.default_value is not None:
+                    self.fail(
+                        message_registry.TYPE_PARAM_DEFAULT_NOT_SUPPORTED,
+                        p.lineno,
+                        p.col_offset,
+                        blocker=False,
+                    )
             if isinstance(p, ast_ParamSpec):  # type: ignore[misc]
                 explicit_type_params.append(TypeParam(p.name, PARAM_SPEC_KIND, None, []))
             elif isinstance(p, ast_TypeVarTuple):  # type: ignore[misc]

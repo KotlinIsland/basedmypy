@@ -8,4 +8,5 @@ def f[T = list[int]]() -> None:  # E: Type parameter default types not supported
 def g[**P = [int, str]]() -> None:  # E: Type parameter default types not supported when using Python 3.12 type parameter syntax
     pass
 
-type A[T, S = int, U = str] = list[T]  # E: Type parameter default types not supported when using Python 3.12 type parameter syntax
+type A[T, S = int, U = str] = list[T]  # E: Type parameter default types not supported when using Python 3.12 type parameter syntax \
+                                       # E: Type parameter default types not supported when using Python 3.12 type parameter syntax
