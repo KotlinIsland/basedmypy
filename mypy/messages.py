@@ -114,6 +114,7 @@ TYPES_FOR_UNIMPORTED_HINTS: Final = {
     "typing.Union",
     "typing.cast",
     "basedtyping.Intersection",
+    "basedtyping.FunctionType",
     "basedtyping.Untyped",
 }
 
