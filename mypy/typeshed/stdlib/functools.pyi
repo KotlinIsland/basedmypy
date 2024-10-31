@@ -83,8 +83,9 @@ else:
     ]
 WRAPPER_UPDATES: tuple[Literal["__dict__"]]
 
-_TCallable = TypeVar("_TCallable", bound=Callable[..., object])
-_TCallable2 = TypeVar("_TCallable2", bound=Callable[..., object])
+_AnyCallable = Callable[..., object]
+_TCallable = TypeVar("_TCallable", bound=_AnyCallable)
+_TCallable2 = TypeVar("_TCallable2", bound=_AnyCallable)
 
 class _Wrapped(Generic[_TCallable]):
     __wrapped__: _TCallable
@@ -94,16 +95,16 @@ class _Wrapper(Generic[_TCallable]):
 
 if sys.version_info >= (3, 12):
     def update_wrapper(
-        wrapper: Callable[_PWrapper, _RWrapper],
-        wrapped: Callable[_PWrapped, _RWrapped],
+        wrapper: _TCallable,
+        wrapped: _TCallable2,
         assigned: Sequence[str] = ("__module__", "__name__", "__qualname__", "__doc__", "__annotations__", "__type_params__"),
         updated: Sequence[str] = ("__dict__",),
-    ) -> _Wrapped[_PWrapped, _RWrapped, _PWrapper, _RWrapper]: ...
+    ) -> _TCallable & _Wrapped[_TCallable2]: ...
     def wraps(
-        wrapped: _TCallable[_PWrapped, _RWrapped],
+        wrapped: _TCallable,
         assigned: Sequence[str] = ("__module__", "__name__", "__qualname__", "__doc__", "__annotations__", "__type_params__"),
         updated: Sequence[str] = ("__dict__",),
-    ) -> _Wrapper[_TCallable, _PWrapped, _RWrapped]: ...
+    ) -> _Wrapper[_TCallable]: ...
 
 else:
     def update_wrapper(
