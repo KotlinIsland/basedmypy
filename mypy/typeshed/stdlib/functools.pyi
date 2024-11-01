@@ -2,9 +2,10 @@ import sys
 import types
 from _typeshed import SupportsAllComparisons, SupportsItems
 from collections.abc import Callable, Hashable, Iterable, Sequence, Sized
-from typing import Any, Generic, Literal, NamedTuple, TypedDict, TypeVar, final, overload
-from typing_extensions import ParamSpec, Self, TypeAlias
-
+from typing import Any, Generic, Literal, NamedTuple, TypedDict, TypeVar, final, overload, Protocol, Final, \
+    type_check_only
+from typing_extensions import ParamSpec, Self, TypeAlias, Never, Concatenate
+from types import MethodType, FunctionType
 if sys.version_info >= (3, 9):
     from types import GenericAlias
 
@@ -30,6 +31,7 @@ if sys.version_info >= (3, 9):
 _T = TypeVar("_T")
 _T_co = TypeVar("_T_co", covariant=True)
 _S = TypeVar("_S")
+_P = ParamSpec("_P")
 _PWrapped = ParamSpec("_PWrapped")
 _RWrapped = TypeVar("_RWrapped")
 _PWrapper = ParamSpec("_PWrapper")
@@ -51,22 +53,46 @@ if sys.version_info >= (3, 9):
         maxsize: int
         typed: bool
 
-@final
-class _lru_cache_wrapper(Generic[_T]):
-    __wrapped__: Callable[..., _T]
-    def __call__(self, *args: Hashable, **kwargs: Hashable) -> _T: ...
+@type_check_only
+class _HashCallable(Protocol):
+    def __call__(self, /, *args: Hashable, **kwargs: Hashable) -> Never: ...
+
+@type_check_only
+class _LruCacheWrapperBase(Protocol[_out_TCallable]):
+    __wrapped__: Final[_out_TCallable] = ... # type: ignore[misc]
+    __call__: Final[_out_TCallable | _HashCallable] = ... # type: ignore[misc]
+
+
     def cache_info(self) -> _CacheInfo: ...
     def cache_clear(self) -> None: ...
     if sys.version_info >= (3, 9):
         def cache_parameters(self) -> _CacheParameters: ...
 
-    def __copy__(self) -> _lru_cache_wrapper[_T]: ...
-    def __deepcopy__(self, memo: Any, /) -> _lru_cache_wrapper[_T]: ...
+    def __copy__(self) -> Self: ...
+    def __deepcopy__(self, memo: Any, /) -> Self: ...
+
+@final
+# actually defined in `_functools`
+class _lru_cache_wrapper(_LruCacheWrapperBase[_out_TCallable]):
+    def __init__(self, user_function: Never, maxsize: Never, typed: Never, cache_info_type: Never): ...
+
+    # TODO: reintroduce this once mypy 1.14 fork is merged
+    # @overload
+    # def __get__(self, instance: None, owner: object) -> Self: ...
+    # @overload
+    def __get__(
+        self: _lru_cache_wrapper[Callable[Concatenate[Never, _PWrapped], _RWrapped]],
+        instance: object,
+        owner: type[object] | None = None,
+        /,
+        # ideally, we would capture the Callable here, and intersect with `MethodType`
+    ) ->  _LruCacheWrapperBase[Callable[_PWrapped, _RWrapped]]: ...
+
 
 @overload
-def lru_cache(maxsize: int | None = 128, typed: bool = False) -> Callable[[Callable[..., _T]], _lru_cache_wrapper[_T]]: ...
+def lru_cache(maxsize: int | None = 128, typed: bool = False) -> FunctionType[[_TCallable], _lru_cache_wrapper[_TCallable]]: ...
 @overload
-def lru_cache(maxsize: Callable[..., _T], typed: bool = False) -> _lru_cache_wrapper[_T]: ...
+def lru_cache(maxsize: _TCallable, typed: bool = False) -> _lru_cache_wrapper[_TCallable]: ...
 
 if sys.version_info >= (3, 12):
     WRAPPER_ASSIGNMENTS: tuple[
@@ -85,6 +111,7 @@ WRAPPER_UPDATES: tuple[Literal["__dict__"]]
 
 _AnyCallable = Callable[..., object]
 _TCallable = TypeVar("_TCallable", bound=_AnyCallable)
+_out_TCallable = TypeVar("_out_TCallable", bound=_AnyCallable, covariant=True)
 _TCallable2 = TypeVar("_TCallable2", bound=_AnyCallable)
 
 class _Wrapped(Generic[_TCallable]):
@@ -199,7 +226,7 @@ class cached_property(Generic[_T_co]):
         def __class_getitem__(cls, item: Any, /) -> GenericAlias: ...
 
 if sys.version_info >= (3, 9):
-    def cache(user_function: Callable[..., _T], /) -> _lru_cache_wrapper[_T]: ...
+    def cache(user_function: _TCallable, /) -> _lru_cache_wrapper[_TCallable]: ...
 
 def _make_key(
     args: tuple[Hashable, ...],
