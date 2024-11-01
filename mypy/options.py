@@ -8,7 +8,7 @@ from typing import Any, Callable, Final, Mapping, Pattern
 
 from mypy import defaults
 from mypy.errorcodes import ErrorCode, error_codes
-from mypy.util import get_class_descriptors, replace_object_state
+from mypy.util import get_class_descriptors, getattr, replace_object_state
 
 
 class BuildType:

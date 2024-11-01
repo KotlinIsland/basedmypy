@@ -740,7 +740,7 @@ def read_status(status_file: str) -> dict[str, object]:
         raise BadStatus("No status file found")
     with open(status_file) as f:
         try:
-            data = json.load(f)
+            data: Any = json.load(f)
         except Exception as e:
             raise BadStatus("Malformed status file (not JSON)") from e
     if not isinstance(data, dict):

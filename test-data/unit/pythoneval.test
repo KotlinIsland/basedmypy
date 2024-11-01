@@ -1983,10 +1983,10 @@ Foo.__dict__ = {}
 Foo().__dict__ = {}
 
 [out]
-_testInferenceOfDunderDictOnClassObjects.py:2: note: Revealed type is "types.MappingProxyType[builtins.str, Any]"
-_testInferenceOfDunderDictOnClassObjects.py:3: note: Revealed type is "builtins.dict[builtins.str, Any]"
+_testInferenceOfDunderDictOnClassObjects.py:2: note: Revealed type is "types.MappingProxyType[builtins.str, builtins.object]"
+_testInferenceOfDunderDictOnClassObjects.py:3: note: Revealed type is "builtins.dict[builtins.str, builtins.object]"
 _testInferenceOfDunderDictOnClassObjects.py:4: error: Property "__dict__" defined in "type" is read-only
-_testInferenceOfDunderDictOnClassObjects.py:4: error: Incompatible types in assignment (expression has type "Dict[Never, Never]", variable has type "MappingProxyType[str, Any]")
+_testInferenceOfDunderDictOnClassObjects.py:4: error: Incompatible types in assignment (expression has type "Dict[Never, Never]", variable has type "MappingProxyType[str, object]")
 
 [case testTypeVarTuple]
 # flags: --python-version=3.11

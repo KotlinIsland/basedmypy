@@ -127,7 +127,7 @@ from mypy.types import (
     UnpackType,
     UntypedType,
 )
-from mypy.util import bytes_to_human_readable_repr, unnamed_function
+from mypy.util import bytes_to_human_readable_repr, getattr, unnamed_function
 
 # pull this into a final variable to make mypyc be quiet about the
 # the default argument warning

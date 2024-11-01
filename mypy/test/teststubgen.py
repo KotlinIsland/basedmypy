@@ -45,6 +45,7 @@ from mypy.stubutil import (
 )
 from mypy.test.data import DataDrivenTestCase, DataSuite
 from mypy.test.helpers import assert_equal, assert_string_arrays_equal, local_sys_path_set
+from mypy.util import getattr
 
 
 class StubgenCmdLineSuite(unittest.TestCase):

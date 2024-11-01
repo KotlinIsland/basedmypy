@@ -11,7 +11,6 @@ import sys
 import time
 import tokenize
 from abc import ABCMeta, abstractmethod
-from operator import attrgetter
 from typing import Any, Callable, Dict, Final, Iterator, Tuple
 from typing_extensions import TypeAlias as _TypeAlias
 from urllib.request import pathname2url
@@ -22,6 +21,7 @@ from mypy.nodes import Expression, FuncDef, MypyFile
 from mypy.options import Options
 from mypy.traverser import TraverserVisitor
 from mypy.types import Type, TypeOfAny
+from mypy.util import attrgetter
 from mypy.version import __based_version__
 
 try:

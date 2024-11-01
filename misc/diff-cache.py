@@ -33,7 +33,7 @@ def merge_deps(all: dict[str, set[str]], new: dict[str, set[str]]) -> None:
 
 def load(cache: MetadataStore, s: str) -> Any:
     data = cache.read(s)
-    obj = json.loads(data)
+    obj: Any = json.loads(data)
     if s.endswith(".meta.json"):
         # For meta files, zero out the mtimes and sort the
         # dependencies to avoid spurious conflicts

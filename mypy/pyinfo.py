@@ -23,6 +23,7 @@ if __name__ == "__main__":
 import os
 import site
 import sysconfig
+from typing import cast
 
 
 def getsitepackages() -> list[str]:
@@ -42,7 +43,7 @@ def getsyspath() -> list[str]:
     # because those should come from typeshed.
     stdlib_zip = os.path.join(
         sys.base_exec_prefix,
-        getattr(sys, "platlibdir", "lib"),
+        cast(str, getattr(sys, "platlibdir", "lib")),
         f"python{sys.version_info.major}{sys.version_info.minor}.zip",
     )
     stdlib = sysconfig.get_path("stdlib")

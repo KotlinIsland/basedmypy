@@ -7,6 +7,8 @@ import weakref
 from collections.abc import Iterable
 from typing import Final, Iterator, Mapping
 
+from mypy.util import getattr
+
 method_descriptor_type: Final = type(object.__dir__)
 method_wrapper_type: Final = type(object().__ne__)
 wrapper_descriptor_type: Final = type(object.__ne__)
@@ -38,7 +40,7 @@ def isproperty(o: object, attr: str) -> bool:
 
 def get_edge_candidates(o: object) -> Iterator[tuple[object, object]]:
     # use getattr because mypyc expects dict, not mappingproxy
-    if "__getattribute__" in getattr(type(o), "__dict__"):  # noqa: B009
+    if "__getattribute__" in getattr(type(o), "__dict__"):
         return
     if type(o) not in COLLECTION_TYPE_BLACKLIST:
         for attr in dir(o):

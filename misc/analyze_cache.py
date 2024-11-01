@@ -48,10 +48,10 @@ def extract_classes(chunks: Iterable[CacheData]) -> Iterable[JsonDict]:
 
 def load_json(data_path: str, meta_path: str) -> CacheData:
     with open(data_path) as ds:
-        data_json = json.load(ds)
+        data_json: Any = json.load(ds)
 
     with open(meta_path) as ms:
-        meta_json = json.load(ms)
+        meta_json: Any = json.load(ms)
 
     data_size = os.path.getsize(data_path)
     meta_size = os.path.getsize(meta_path)

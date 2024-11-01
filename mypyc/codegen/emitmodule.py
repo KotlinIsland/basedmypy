@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Iterable, List, Optional, Tuple, TypeVar
+from typing import Any, Iterable, List, Optional, Tuple, TypeVar, cast
 
 from mypy.build import (
     BuildResult,
@@ -151,7 +151,7 @@ class MypycPlugin(Plugin):
             # deleted. No big deal, just fail to load the cache.
             return None
 
-        ir_data = json.loads(ir_json)
+        ir_data: Any = json.loads(ir_json)
 
         # Check that the IR cache matches the metadata cache
         if compute_hash(meta_json) != ir_data["meta_hash"]:
@@ -386,8 +386,11 @@ def load_scc_from_cache(
     Arguments and return are as compile_scc_to_ir.
     """
     cache_data = {
-        k.fullname: json.loads(
-            result.manager.metastore.read(get_state_ir_cache_name(result.graph[k.fullname]))
+        k.fullname: cast(
+            Any,
+            json.loads(
+                result.manager.metastore.read(get_state_ir_cache_name(result.graph[k.fullname]))
+            ),
         )["ir"]
         for k in scc
     }

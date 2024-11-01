@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+from typing import Any
 
 import mypy.options
 from mypy import build
@@ -38,7 +39,7 @@ class RefInfoSuite(DataSuite):
         ref_path = os.path.join(options.cache_dir, f"{major}.{minor}", "__main__.refs.json")
 
         with open(ref_path) as refs_file:
-            data = json.load(refs_file)
+            data: Any = json.load(refs_file)
 
         a = []
         for item in data:

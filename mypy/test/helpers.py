@@ -25,6 +25,7 @@ from mypy.main import process_options
 from mypy.options import Options
 from mypy.test.config import test_data_prefix, test_temp_dir
 from mypy.test.data import DataDrivenTestCase, DeleteFile, UpdateFile, fix_cobertura_filename
+from mypy.util import getattr
 
 skip = pytest.mark.skip
 

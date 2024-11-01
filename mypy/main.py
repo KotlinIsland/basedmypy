@@ -9,7 +9,7 @@ import sys
 import time
 from collections import defaultdict
 from gettext import gettext
-from typing import IO, Any, Final, NoReturn, Sequence, TextIO
+from typing import IO, Any, Final, NoReturn, Sequence, TextIO, cast
 
 import mypy.options
 from mypy import build, defaults, state, util
@@ -1359,7 +1359,7 @@ def process_options(
     if config_file and not os.path.exists(config_file):
         parser.error(f"Cannot find config file '{config_file}'")
 
-    mypy.options._based = dummy.__dict__["special-opts:strict"]
+    mypy.options._based = cast(bool, dummy.__dict__["special-opts:strict"])
     mypy.options._legacy = os.getenv("__MYPY_UNDER_TEST__") == "2"
     # for '__MYPY_UNDER_TEST__', 1 means test mode, 2 means legacy test mode
 

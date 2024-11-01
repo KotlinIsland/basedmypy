@@ -36,6 +36,7 @@ from mypy.stubutil import (
     infer_method_arg_types,
     infer_method_ret_type,
 )
+from mypy.util import getattr
 
 
 class ExternalSignatureGenerator(SignatureGenerator):
@@ -504,7 +505,7 @@ class InspectionStubGenerator(BaseStubGenerator):
         )
 
     def get_members(self, obj: object) -> list[tuple[str, Any]]:
-        obj_dict: Mapping[str, Any] = getattr(obj, "__dict__")  # noqa: B009
+        obj_dict: Mapping[str, Any] = getattr(obj, "__dict__")
         results = []
         for name in obj_dict:
             if self.is_skipped_attribute(name):
@@ -564,7 +565,7 @@ class InspectionStubGenerator(BaseStubGenerator):
         if class_info is None:
             return False
         elif self.is_c_module:
-            raw_lookup: Mapping[str, Any] = getattr(class_info.cls, "__dict__")  # noqa: B009
+            raw_lookup: Mapping[str, Any] = getattr(class_info.cls, "__dict__")
             raw_value = raw_lookup.get(name, obj)
             return isinstance(raw_value, staticmethod)
         else:
@@ -795,7 +796,7 @@ class InspectionStubGenerator(BaseStubGenerator):
         The result lines will be appended to 'output'. If necessary, any
         required names will be added to 'imports'.
         """
-        raw_lookup: Mapping[str, Any] = getattr(cls, "__dict__")  # noqa: B009
+        raw_lookup: Mapping[str, Any] = getattr(cls, "__dict__")
         items = self.get_members(cls)
         if self.resort_members:
             items = sorted(items, key=lambda x: method_name_sort_key(x[0]))

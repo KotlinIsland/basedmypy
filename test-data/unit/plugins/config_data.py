@@ -11,7 +11,7 @@ class ConfigDataPlugin(Plugin):
     def report_config_data(self, ctx: ReportConfigContext) -> Any:
         path = os.path.join("tmp/test.json")
         with open(path) as f:
-            data = json.load(f)
+            data: Any = json.load(f)
         return data.get(ctx.id)
 
 

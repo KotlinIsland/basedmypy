@@ -11,6 +11,8 @@ import sys
 from multiprocessing import Queue, get_context
 from types import ModuleType
 
+from mypy.util import getattr
+
 
 class ModuleProperties:
     # Note that all __init__ args must have default values

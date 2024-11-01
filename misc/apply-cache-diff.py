@@ -11,6 +11,7 @@ import argparse
 import json
 import os
 import sys
+from typing import Any
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -27,9 +28,9 @@ def make_cache(input_dir: str, sqlite: bool) -> MetadataStore:
 def apply_diff(cache_dir: str, diff_file: str, sqlite: bool = False) -> None:
     cache = make_cache(cache_dir, sqlite)
     with open(diff_file) as f:
-        diff = json.load(f)
+        diff: Any = json.load(f)
 
-    old_deps = json.loads(cache.read("@deps.meta.json"))
+    old_deps: Any = json.loads(cache.read("@deps.meta.json"))
 
     for file, data in diff.items():
         if data is None:
@@ -37,7 +38,7 @@ def apply_diff(cache_dir: str, diff_file: str, sqlite: bool = False) -> None:
         else:
             cache.write(file, data)
             if file.endswith(".meta.json") and "@deps" not in file:
-                meta = json.loads(data)
+                meta: Any = json.loads(data)
                 old_deps["snapshot"][meta["id"]] = meta["hash"]
 
     cache.write("@deps.meta.json", json.dumps(old_deps))

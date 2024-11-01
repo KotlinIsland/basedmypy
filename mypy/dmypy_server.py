@@ -34,7 +34,7 @@ from mypy.options import Options
 from mypy.server.update import FineGrainedBuildManager, refresh_suppressed_submodules
 from mypy.suggestions import SuggestionEngine, SuggestionFailure
 from mypy.typestate import reset_global_state
-from mypy.util import FancyFormatter, count_stats
+from mypy.util import FancyFormatter, count_stats, getattr
 from mypy.version import __based_version__
 
 MEM_PROFILE: Final = False  # If True, dump memory profile after initialization

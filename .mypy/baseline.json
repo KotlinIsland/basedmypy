@@ -75,7 +75,7 @@
         "code": "no-any-explicit",
         "column": 4,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 344,
+        "offset": 345,
         "src": "plugin_data: Any  # config data from plugins",
         "target": "mypy.build"
       },
@@ -520,11 +520,11 @@
         "target": "mypy.build.BuildManager.dump_stats"
       },
       {
-        "code": "no-any-expr",
-        "column": 19,
-        "message": "Expression has type \"Any\"",
+        "code": "no-any-explicit",
+        "column": 12,
+        "message": "Explicit \"Any\" is not allowed",
         "offset": 145,
-        "src": "deps = json.loads(self.metastore.read(self.fg_deps_meta[id][\"path\"]))",
+        "src": "deps: Any = json.loads(self.metastore.read(self.fg_deps_meta[id][\"path\"]))",
         "target": "mypy.build.BuildManager.load_fine_grained_deps"
       },
       {
@@ -689,25 +689,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 22,
-        "message": "Expression type contains \"Any\" (has type \"dict[Any, Any]\")",
-        "offset": 4,
-        "src": "return json.dumps({k: list(v) for k, v in x.items()}, separators=(\",\", \":\"))",
-        "target": "mypy.build.deps_to_json"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 26,
-        "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 0,
-        "src": "return json.dumps({k: list(v) for k, v in x.items()}, separators=(\",\", \":\"))",
-        "target": "mypy.build.deps_to_json"
-      },
-      {
-        "code": "no-any-expr",
         "column": 19,
         "message": "Expression type contains \"Any\" (has type \"CacheMeta | None\")",
-        "offset": 62,
+        "offset": 66,
         "src": "assert st.meta, \"Module must be either parsed or cached\"",
         "target": "mypy.build.write_deps_cache"
       },
@@ -720,11 +704,11 @@
         "target": "mypy.build.write_deps_cache"
       },
       {
-        "code": "no-any-expr",
-        "column": 15,
-        "message": "Expression has type \"Any\"",
+        "code": "no-any-explicit",
+        "column": 8,
+        "message": "Explicit \"Any\" is not allowed",
         "offset": 137,
-        "src": "data = json.load(file.open())",
+        "src": "data: Any = json.load(file.open())",
         "target": "mypy.build.load_baseline"
       },
       {
@@ -873,50 +857,50 @@
       },
       {
         "code": "no-any-explicit",
-        "column": 8,
+        "column": 33,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 12,
-        "src": "raw_quickstart: dict[str, Any] = {}",
+        "offset": 14,
+        "src": "raw_quickstart = cast(Dict[str, Any], json.load(f))",
         "target": "mypy.build.read_quickstart_file"
       },
       {
         "code": "no-any-expr",
-        "column": 12,
-        "message": "Expression type contains \"Any\" (has type \"(str, Any)\")",
-        "offset": 6,
-        "src": "for file, (x, y, z) in raw_quickstart.items():",
-        "target": "mypy.build.read_quickstart_file"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 12,
-        "message": "Expression has type \"Any\"",
-        "offset": 0,
-        "src": "for file, (x, y, z) in raw_quickstart.items():",
-        "target": "mypy.build.read_quickstart_file"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 35,
+        "column": 33,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
         "offset": 0,
-        "src": "for file, (x, y, z) in raw_quickstart.items():",
+        "src": "raw_quickstart = cast(Dict[str, Any], json.load(f))",
         "target": "mypy.build.read_quickstart_file"
       },
       {
         "code": "no-any-expr",
-        "column": 35,
-        "message": "Expression type contains \"Any\" (has type \"dict_items[str, Any]\")",
+        "column": 25,
+        "message": "Expression type contains \"Any\" (has type \"(str, Any)\")",
+        "offset": 2,
+        "src": "quickstart = {file: (x, y, z) for file, (x, y, z) in raw_quickstart.items()}",
+        "target": "mypy.build.read_quickstart_file"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 25,
+        "message": "Expression has type \"Any\"",
         "offset": 0,
-        "src": "for file, (x, y, z) in raw_quickstart.items():",
+        "src": "quickstart = {file: (x, y, z) for file, (x, y, z) in raw_quickstart.items()}",
         "target": "mypy.build.read_quickstart_file"
       },
       {
         "code": "no-any-expr",
-        "column": 35,
+        "column": 32,
         "message": "Expression type contains \"Any\" (has type \"(Any, Any, Any)\")",
-        "offset": 1,
-        "src": "quickstart[file] = (x, y, z)",
+        "offset": 0,
+        "src": "quickstart = {file: (x, y, z) for file, (x, y, z) in raw_quickstart.items()}",
+        "target": "mypy.build.read_quickstart_file"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 33,
+        "message": "Expression has type \"Any\"",
+        "offset": 0,
+        "src": "quickstart = {file: (x, y, z) for file, (x, y, z) in raw_quickstart.items()}",
         "target": "mypy.build.read_quickstart_file"
       },
       {
@@ -924,7 +908,7 @@
         "column": 36,
         "message": "Expression has type \"Any\"",
         "offset": 0,
-        "src": "quickstart[file] = (x, y, z)",
+        "src": "quickstart = {file: (x, y, z) for file, (x, y, z) in raw_quickstart.items()}",
         "target": "mypy.build.read_quickstart_file"
       },
       {
@@ -932,15 +916,23 @@
         "column": 39,
         "message": "Expression has type \"Any\"",
         "offset": 0,
-        "src": "quickstart[file] = (x, y, z)",
+        "src": "quickstart = {file: (x, y, z) for file, (x, y, z) in raw_quickstart.items()}",
         "target": "mypy.build.read_quickstart_file"
       },
       {
         "code": "no-any-expr",
-        "column": 42,
-        "message": "Expression has type \"Any\"",
+        "column": 65,
+        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
         "offset": 0,
-        "src": "quickstart[file] = (x, y, z)",
+        "src": "quickstart = {file: (x, y, z) for file, (x, y, z) in raw_quickstart.items()}",
+        "target": "mypy.build.read_quickstart_file"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 65,
+        "message": "Expression type contains \"Any\" (has type \"dict_items[str, Any]\")",
+        "offset": 0,
+        "src": "quickstart = {file: (x, y, z) for file, (x, y, z) in raw_quickstart.items()}",
         "target": "mypy.build.read_quickstart_file"
       },
       {
@@ -1104,26 +1096,10 @@
         "target": "mypy.build._load_json_file"
       },
       {
-        "code": "no-any-expr",
-        "column": 17,
-        "message": "Expression has type \"Any\"",
-        "offset": 16,
-        "src": "result = json.loads(data)",
-        "target": "mypy.build._load_json_file"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 26,
-        "message": "Expression has type \"Any\"",
-        "offset": 15,
-        "src": "assert isinstance(result, dict)",
-        "target": "mypy.build._load_json_file"
-      },
-      {
         "code": "no-any-explicit",
         "column": 0,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 92,
+        "offset": 123,
         "src": "def find_cache_meta(id: str, path: str, manager: BuildManager) -> CacheMeta | None:",
         "target": "mypy.build.find_cache_meta"
       },
@@ -1321,17 +1297,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 18,
-        "message": "Expression has type \"Any\"",
-        "offset": 13,
-        "src": "plugin_data = json.loads(",
-        "target": "mypy.build.find_cache_meta"
-      },
-      {
-        "code": "no-any-expr",
         "column": 19,
         "message": "Expression has type \"Any\"",
-        "offset": 1,
+        "offset": 14,
         "src": "json.dumps(manager.plugin.report_config_data(ReportConfigContext(id, path, is_check=True)))",
         "target": "mypy.build.find_cache_meta"
       },
@@ -1346,14 +1314,6 @@
       {
         "code": "no-any-expr",
         "column": 7,
-        "message": "Expression has type \"Any\"",
-        "offset": 0,
-        "src": "if m.plugin_data != plugin_data:",
-        "target": "mypy.build.find_cache_meta"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 24,
         "message": "Expression has type \"Any\"",
         "offset": 0,
         "src": "if m.plugin_data != plugin_data:",
@@ -2154,18 +2114,10 @@
         "target": "mypy.checker.TypeChecker.check_compatibility_super"
       },
       {
-        "code": "no-any-expr",
-        "column": 11,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
-        "offset": 254,
-        "src": "if getattr(lvalue, \"node\", None):",
-        "target": "mypy.checker.TypeChecker.is_assignable_slot"
-      },
-      {
         "code": "redundant-expr",
         "column": 27,
         "message": "Condition is always false",
-        "offset": 69,
+        "offset": 323,
         "src": "if iterable_type is not None and iterable_type != self.iterable_item_type(",
         "target": "mypy.checker.TypeChecker.check_assignment_to_multiple_lvalues"
       },
@@ -4037,25 +3989,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 21,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
-        "offset": 11,
-        "src": "dv = getattr(template, key, None)",
-        "target": "mypy.config_parser.parse_section"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 15,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
-        "offset": 1,
-        "src": "if dv is None:",
-        "target": "mypy.config_parser.parse_section"
-      },
-      {
-        "code": "no-any-expr",
         "column": 55,
         "message": "Expression type contains \"Any\" (has type \"Mapping[str, Any]\")",
-        "offset": 4,
+        "offset": 16,
         "src": "report_dirs[report_type] = str(section[key])",
         "target": "mypy.config_parser.parse_section"
       },
@@ -4084,26 +4020,10 @@
         "target": "mypy.config_parser.parse_section"
       },
       {
-        "code": "no-any-expr",
-        "column": 17,
-        "message": "Expression type contains \"Any\" (has type \"type[Any] | type[None]\")",
-        "offset": 5,
-        "src": "ct = type(dv)",
-        "target": "mypy.config_parser.parse_section"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 22,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
-        "offset": 0,
-        "src": "ct = type(dv)",
-        "target": "mypy.config_parser.parse_section"
-      },
-      {
         "code": "no-any-explicit",
         "column": 8,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 1,
+        "offset": 6,
         "src": "v: Any = None",
         "target": "mypy.config_parser.parse_section"
       },
@@ -5884,11 +5804,11 @@
         "target": "mypy.dmypy.client.check_status"
       },
       {
-        "code": "no-any-expr",
-        "column": 19,
-        "message": "Expression has type \"Any\"",
+        "code": "no-any-explicit",
+        "column": 12,
+        "message": "Explicit \"Any\" is not allowed",
         "offset": 15,
-        "src": "data = json.load(f)",
+        "src": "data: Any = json.load(f)",
         "target": "mypy.dmypy.client.read_status"
       },
       {
@@ -5919,17 +5839,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 26,
-        "message": "Expression type contains \"Any\" (has type \"dict[Any, Any]\")",
-        "offset": 12,
-        "src": "json.dump({\"pid\": os.getpid(), \"connection_name\": server.connection_name}, f)",
-        "target": "mypy.dmypy_server.Server.serve"
-      },
-      {
-        "code": "no-any-expr",
         "column": 27,
         "message": "Expression has type \"Any\"",
-        "offset": 4,
+        "offset": 16,
         "src": "data = receive(server)",
         "target": "mypy.dmypy_server.Server.serve"
       },
@@ -6416,41 +6328,41 @@
         "target": "mypy.dmypy_util.receive"
       },
       {
-        "code": "no-any-expr",
-        "column": 15,
-        "message": "Expression has type \"Any\"",
-        "offset": 10,
-        "src": "data = json.loads(bdata)",
-        "target": "mypy.dmypy_util.receive"
-      },
-      {
-        "code": "no-any-expr",
+        "code": "helpful-string",
         "column": 22,
-        "message": "Expression has type \"Any\"",
-        "offset": 3,
-        "src": "if not isinstance(data, dict):",
-        "target": "mypy.dmypy_util.receive"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 22,
-        "message": "Expression type contains \"Any\" (has type \"type[Any]\")",
-        "offset": 1,
+        "message": "The type \"type[list[dict[str, ...] | list[...] | float | int | bool | str | None]]\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 14,
         "src": "raise OSError(f\"Data received is not a dict ({type(data)})\")",
         "target": "mypy.dmypy_util.receive"
       },
       {
         "code": "helpful-string",
         "column": 22,
-        "message": "The type \"type[Any]\" doesn't define a __format__, __str__ or __repr__ method",
+        "message": "The type \"type[float]\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 0,
         "src": "raise OSError(f\"Data received is not a dict ({type(data)})\")",
         "target": "mypy.dmypy_util.receive"
       },
       {
-        "code": "no-any-expr",
-        "column": 59,
-        "message": "Expression has type \"Any\"",
+        "code": "helpful-string",
+        "column": 22,
+        "message": "The type \"type[int]\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 0,
+        "src": "raise OSError(f\"Data received is not a dict ({type(data)})\")",
+        "target": "mypy.dmypy_util.receive"
+      },
+      {
+        "code": "helpful-string",
+        "column": 22,
+        "message": "The type \"type[str]\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 0,
+        "src": "raise OSError(f\"Data received is not a dict ({type(data)})\")",
+        "target": "mypy.dmypy_util.receive"
+      },
+      {
+        "code": "helpful-string",
+        "column": 22,
+        "message": "The type \"type[None]\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 0,
         "src": "raise OSError(f\"Data received is not a dict ({type(data)})\")",
         "target": "mypy.dmypy_util.receive"
@@ -6905,14 +6817,6 @@
         "message": "Method \"report_error\" is not using @override but is overriding a method in class \"mypy.error_formatter.ErrorFormatter\"",
         "offset": 22,
         "src": "def report_error(self, error: \"MypyError\") -> str:",
-        "target": "mypy.error_formatter.JSONFormatter.report_error"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 12,
-        "message": "Expression type contains \"Any\" (has type \"dict[Any, Any]\")",
-        "offset": 3,
-        "src": "{",
         "target": "mypy.error_formatter.JSONFormatter.report_error"
       }
     ],
@@ -7946,7 +7850,7 @@
       {
         "code": "no-any-expr",
         "column": 22,
-        "message": "Expression type contains \"Any\" (has type \"Any | list[Any]\")",
+        "message": "Expression type contains \"Any\" (has type \"Any | list[arg]\")",
         "offset": 20,
         "src": "posonlyargs = getattr(args, \"posonlyargs\", cast(List[ast3.arg], []))",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -7954,7 +7858,7 @@
       {
         "code": "no-any-expr",
         "column": 20,
-        "message": "Expression type contains \"Any\" (has type \"Any | list[Any]\")",
+        "message": "Expression type contains \"Any\" (has type \"Any | list[arg]\")",
         "offset": 1,
         "src": "args_args = posonlyargs + args.args",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -7962,7 +7866,7 @@
       {
         "code": "no-any-expr",
         "column": 30,
-        "message": "Expression type contains \"Any\" (has type \"Any | list[Any]\")",
+        "message": "Expression type contains \"Any\" (has type \"Any | list[arg]\")",
         "offset": 2,
         "src": "num_no_defaults = len(args_args) - len(args_defaults)",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -7970,7 +7874,7 @@
       {
         "code": "no-any-expr",
         "column": 8,
-        "message": "Expression type contains \"Any\" (has type \"(int, Any)\")",
+        "message": "Expression type contains \"Any\" (has type \"(int, Any | arg)\")",
         "offset": 2,
         "src": "for i, a in enumerate(args_args[:num_no_defaults]):",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -7978,7 +7882,7 @@
       {
         "code": "no-any-expr",
         "column": 8,
-        "message": "Expression has type \"Any\"",
+        "message": "Expression type contains \"Any\" (has type \"Any | arg\")",
         "offset": 0,
         "src": "for i, a in enumerate(args_args[:num_no_defaults]):",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -7986,7 +7890,7 @@
       {
         "code": "no-any-expr",
         "column": 20,
-        "message": "Expression type contains \"Any\" (has type \"enumerate[Any]\")",
+        "message": "Expression type contains \"Any\" (has type \"enumerate[Any | arg]\")",
         "offset": 0,
         "src": "for i, a in enumerate(args_args[:num_no_defaults]):",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -7994,7 +7898,7 @@
       {
         "code": "no-any-expr",
         "column": 30,
-        "message": "Expression type contains \"Any\" (has type \"Any | list[Any]\")",
+        "message": "Expression type contains \"Any\" (has type \"Any | list[arg]\")",
         "offset": 0,
         "src": "for i, a in enumerate(args_args[:num_no_defaults]):",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -8002,7 +7906,7 @@
       {
         "code": "no-any-expr",
         "column": 31,
-        "message": "Expression type contains \"Any\" (has type \"Any | list[Any]\")",
+        "message": "Expression type contains \"Any\" (has type \"Any | list[arg]\")",
         "offset": 1,
         "src": "pos_only = i < len(posonlyargs)",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -8010,7 +7914,7 @@
       {
         "code": "no-any-expr",
         "column": 47,
-        "message": "Expression has type \"Any\"",
+        "message": "Expression type contains \"Any\" (has type \"Any | arg\")",
         "offset": 1,
         "src": "new_args.append(self.make_argument(a, None, ARG_POS, no_type_check, pos_only))",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -8018,7 +7922,7 @@
       {
         "code": "no-any-expr",
         "column": 25,
-        "message": "Expression has type \"Any\"",
+        "message": "Expression type contains \"Any\" (has type \"Any | arg\")",
         "offset": 1,
         "src": "names.append(a)",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -8026,7 +7930,7 @@
       {
         "code": "no-any-expr",
         "column": 8,
-        "message": "Expression type contains \"Any\" (has type \"(int, (Any, expr))\")",
+        "message": "Expression type contains \"Any\" (has type \"(int, (Any | arg, expr))\")",
         "offset": 3,
         "src": "for i, (a, d) in enumerate(zip(args_args[num_no_defaults:], args_defaults)):",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -8034,15 +7938,7 @@
       {
         "code": "no-any-expr",
         "column": 8,
-        "message": "Expression type contains \"Any\" (has type \"(Any, expr)\")",
-        "offset": 0,
-        "src": "for i, (a, d) in enumerate(zip(args_args[num_no_defaults:], args_defaults)):",
-        "target": "mypy.fastparse.ASTConverter.transform_args"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 8,
-        "message": "Expression has type \"Any\"",
+        "message": "Expression type contains \"Any\" (has type \"(Any | arg, expr)\")",
         "offset": 0,
         "src": "for i, (a, d) in enumerate(zip(args_args[num_no_defaults:], args_defaults)):",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -8050,7 +7946,7 @@
       {
         "code": "no-any-expr",
         "column": 25,
-        "message": "Expression type contains \"Any\" (has type \"enumerate[(Any, expr)]\")",
+        "message": "Expression type contains \"Any\" (has type \"enumerate[(Any | arg, expr)]\")",
         "offset": 0,
         "src": "for i, (a, d) in enumerate(zip(args_args[num_no_defaults:], args_defaults)):",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -8058,7 +7954,7 @@
       {
         "code": "no-any-expr",
         "column": 35,
-        "message": "Expression type contains \"Any\" (has type \"zip[(Any, expr)]\")",
+        "message": "Expression type contains \"Any\" (has type \"zip[(Any | arg, expr)]\")",
         "offset": 0,
         "src": "for i, (a, d) in enumerate(zip(args_args[num_no_defaults:], args_defaults)):",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -8066,7 +7962,7 @@
       {
         "code": "no-any-expr",
         "column": 39,
-        "message": "Expression type contains \"Any\" (has type \"Any | list[Any]\")",
+        "message": "Expression type contains \"Any\" (has type \"Any | list[arg]\")",
         "offset": 0,
         "src": "for i, (a, d) in enumerate(zip(args_args[num_no_defaults:], args_defaults)):",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -8074,7 +7970,7 @@
       {
         "code": "no-any-expr",
         "column": 49,
-        "message": "Expression type contains \"Any\" (has type \"Any | list[Any]\")",
+        "message": "Expression type contains \"Any\" (has type \"Any | list[arg]\")",
         "offset": 1,
         "src": "pos_only = num_no_defaults + i < len(posonlyargs)",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -8082,7 +7978,7 @@
       {
         "code": "no-any-expr",
         "column": 47,
-        "message": "Expression has type \"Any\"",
+        "message": "Expression type contains \"Any\" (has type \"Any | arg\")",
         "offset": 1,
         "src": "new_args.append(self.make_argument(a, d, ARG_OPT, no_type_check, pos_only))",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -8090,24 +7986,8 @@
       {
         "code": "no-any-expr",
         "column": 25,
-        "message": "Expression has type \"Any\"",
+        "message": "Expression type contains \"Any\" (has type \"Any | arg\")",
         "offset": 1,
-        "src": "names.append(a)",
-        "target": "mypy.fastparse.ASTConverter.transform_args"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 20,
-        "message": "Expression has type \"Any\"",
-        "offset": 11,
-        "src": "a, kd, ARG_NAMED if kd is None else ARG_NAMED_OPT, no_type_check",
-        "target": "mypy.fastparse.ASTConverter.transform_args"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 25,
-        "message": "Expression has type \"Any\"",
-        "offset": 3,
         "src": "names.append(a)",
         "target": "mypy.fastparse.ASTConverter.transform_args"
       },
@@ -8115,14 +7995,14 @@
         "code": "no-any-expr",
         "column": 62,
         "message": "Expression has type \"Any\"",
-        "offset": 34,
+        "offset": 48,
         "src": "argument = Argument(Var(arg.arg, arg_type), arg_type, self.visit(default), kind, pos_only)",
         "target": "mypy.fastparse.ASTConverter.make_argument"
       },
       {
         "code": "no-any-expr",
         "column": 12,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
+        "message": "Expression type contains \"Any\" (has type \"Any | int | None\")",
         "offset": 4,
         "src": "getattr(arg, \"end_lineno\", None),",
         "target": "mypy.fastparse.ASTConverter.make_argument"
@@ -8130,7 +8010,7 @@
       {
         "code": "no-any-expr",
         "column": 12,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
+        "message": "Expression type contains \"Any\" (has type \"Any | int | None\")",
         "offset": 1,
         "src": "getattr(arg, \"end_col_offset\", None),",
         "target": "mypy.fastparse.ASTConverter.make_argument"
@@ -8275,7 +8155,7 @@
         "code": "no-any-expr",
         "column": 26,
         "message": "Expression has type \"Any\"",
-        "offset": 11,
+        "offset": 14,
         "src": "if isinstance(p, ast_ParamSpec):  # type: ignore[misc]",
         "target": "mypy.fastparse.ASTConverter.translate_type_params"
       },
@@ -10251,11 +10131,43 @@
     "mypy/find_sources.py": [
       {
         "code": "no-any-expr",
-        "column": 5,
-        "message": "Expression type contains \"Any\" (has type overloaded function)",
-        "offset": 162,
-        "src": "@functools.lru_cache  # noqa: B019",
-        "target": "mypy.find_sources"
+        "column": 15,
+        "message": "Expression has type \"Any\"",
+        "offset": 160,
+        "src": "return self._crawl_up_helper(dir) or (\"\", dir)",
+        "target": "mypy.find_sources.SourceFinder.crawl_up_dir"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 15,
+        "message": "Expression type contains \"Any\" (has type \"Any | (str, str)\")",
+        "offset": 0,
+        "src": "return self._crawl_up_helper(dir) or (\"\", dir)",
+        "target": "mypy.find_sources.SourceFinder.crawl_up_dir"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 17,
+        "message": "Expression has type \"Any\"",
+        "offset": 42,
+        "src": "result = self._crawl_up_helper(parent)",
+        "target": "mypy.find_sources.SourceFinder._crawl_up_helper"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 11,
+        "message": "Expression has type \"Any\"",
+        "offset": 1,
+        "src": "if result is None:",
+        "target": "mypy.find_sources.SourceFinder._crawl_up_helper"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 31,
+        "message": "Expression has type \"Any\"",
+        "offset": 6,
+        "src": "mod_prefix, base_dir = result",
+        "target": "mypy.find_sources.SourceFinder._crawl_up_helper"
       }
     ],
     "mypy/fixup.py": [
@@ -11845,33 +11757,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 26,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 2,
-        "src": "mypy.options._based = dummy.__dict__[\"special-opts:strict\"]",
-        "target": "mypy.main.process_options"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 11,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 26,
-        "src": "if not dummy.__dict__[\"special-opts:strict\"]:",
-        "target": "mypy.main.process_options"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 11,
-        "message": "Expression has type \"Any\"",
-        "offset": 0,
-        "src": "if not dummy.__dict__[\"special-opts:strict\"]:",
-        "target": "mypy.main.process_options"
-      },
-      {
-        "code": "no-any-expr",
         "column": 49,
         "message": "Expression has type \"Any\"",
-        "offset": 18,
+        "offset": 46,
         "src": "parse_config_file(options, set_strict_flags, config_file, stdout, stderr)",
         "target": "mypy.main.process_options"
       },
@@ -12721,73 +12609,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 16,
-        "message": "Expression has type \"Any\"",
-        "offset": 2,
-        "src": "for x in obj.__dict__.values():",
-        "target": "mypy.memprofile.collect_memory_stats"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 25,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 0,
-        "src": "for x in obj.__dict__.values():",
-        "target": "mypy.memprofile.collect_memory_stats"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 25,
-        "message": "Expression type contains \"Any\" (has type \"dict_values[str, Any]\")",
-        "offset": 0,
-        "src": "for x in obj.__dict__.values():",
-        "target": "mypy.memprofile.collect_memory_stats"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 34,
-        "message": "Expression has type \"Any\"",
-        "offset": 1,
-        "src": "if isinstance(x, list):",
-        "target": "mypy.memprofile.collect_memory_stats"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 34,
-        "message": "Expression has type \"Any\"",
-        "offset": 3,
-        "src": "if isinstance(x, tuple):",
-        "target": "mypy.memprofile.collect_memory_stats"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 20,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
-        "offset": 5,
-        "src": "x = getattr(obj, k, None)",
-        "target": "mypy.memprofile.collect_memory_stats"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 30,
-        "message": "Expression has type \"Any\"",
-        "offset": 1,
-        "src": "if isinstance(x, list):",
-        "target": "mypy.memprofile.collect_memory_stats"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 30,
-        "message": "Expression has type \"Any\"",
-        "offset": 2,
-        "src": "if isinstance(x, tuple):",
-        "target": "mypy.memprofile.collect_memory_stats"
-      },
-      {
-        "code": "no-any-expr",
         "column": 4,
         "message": "Expression has type \"Any\"",
-        "offset": 5,
+        "offset": 19,
         "src": "for obj in objs:",
         "target": "mypy.memprofile.collect_memory_stats"
       },
@@ -13529,17 +13353,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"[_T] ((...) -> _T) -> _lru_cache_wrapper[_T]\")",
-        "offset": 603,
-        "src": "@functools.lru_cache(maxsize=None)",
-        "target": "mypy.modulefinder"
-      },
-      {
-        "code": "no-any-expr",
         "column": 38,
         "message": "Expression has type \"Any\"",
-        "offset": 19,
+        "offset": 622,
         "src": "sys_path, site_packages = ast.literal_eval(",
         "target": "mypy.modulefinder.get_search_dirs"
       },
@@ -13565,7 +13381,7 @@
         "code": "no-any-expr",
         "column": 7,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 35,
+        "offset": 37,
         "src": "if module.__dict__.get(\"__file__\") is None:",
         "target": "mypy.moduleinspect.is_c_module"
       },
@@ -15022,34 +14838,10 @@
         "target": "mypy.nodes.FakeInfo.__getattribute__"
       },
       {
-        "code": "no-any-expr",
-        "column": 19,
-        "message": "Expression has type \"Any\"",
-        "offset": 3,
-        "src": "return object.__getattribute__(self, attr)  # type: ignore[no-any-return]",
-        "target": "mypy.nodes.FakeInfo.__getattribute__"
-      },
-      {
-        "code": null,
-        "column": 19,
-        "message": "Error code \"no-any-expr\" not covered by \"type: ignore\" comment",
-        "offset": 0,
-        "src": "return object.__getattribute__(self, attr)  # type: ignore[no-any-return]",
-        "target": null
-      },
-      {
-        "code": "no-any-expr",
-        "column": 29,
-        "message": "Expression has type \"Any\"",
-        "offset": 1,
-        "src": "raise AssertionError(object.__getattribute__(self, \"msg\"))",
-        "target": "mypy.nodes.FakeInfo.__getattribute__"
-      },
-      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"name\" is not using @override but is overriding a method in class \"mypy.nodes.SymbolNode\"",
-        "offset": 186,
+        "offset": 190,
         "src": "def name(self) -> str:",
         "target": "mypy.nodes"
       },
@@ -15254,74 +15046,10 @@
         "target": "mypy.nodes.DataclassTransformSpec.deserialize"
       },
       {
-        "code": "no-any-expr",
-        "column": 38,
-        "message": "Expression has type \"Any\"",
-        "offset": 5,
-        "src": "return [name for name in names if getattr(node, name)]",
-        "target": "mypy.nodes.get_flags"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 25,
-        "message": "Expression type contains \"Any\" (has type \"(str, Any)\")",
-        "offset": 24,
-        "src": "deserialize_map: Final = {",
-        "target": "mypy.nodes"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 25,
-        "message": "Expression has type \"Any\"",
-        "offset": 0,
-        "src": "deserialize_map: Final = {",
-        "target": "mypy.nodes"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 20,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 2,
-        "src": "for key, obj in globals().items()",
-        "target": "mypy.nodes"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 20,
-        "message": "Expression type contains \"Any\" (has type \"dict_items[str, Any]\")",
-        "offset": 0,
-        "src": "for key, obj in globals().items()",
-        "target": "mypy.nodes"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 7,
-        "message": "Expression type contains \"Any\" (has type \"type[Any]\")",
-        "offset": 1,
-        "src": "if type(obj) is not FakeInfo",
-        "target": "mypy.nodes"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 12,
-        "message": "Expression has type \"Any\"",
-        "offset": 0,
-        "src": "if type(obj) is not FakeInfo",
-        "target": "mypy.nodes"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 19,
-        "message": "Expression has type \"Any\"",
-        "offset": 1,
-        "src": "and isinstance(obj, type)",
-        "target": "mypy.nodes"
-      },
-      {
         "code": "redundant-expr",
         "column": 13,
         "message": "Condition is always true",
-        "offset": 36,
+        "offset": 69,
         "src": "elif kind == ARG_STAR2:",
         "target": "mypy.nodes.check_arg_kinds"
       }
@@ -15800,14 +15528,6 @@
         "target": "mypy.plugin"
       },
       {
-        "code": "no-any-decorated",
-        "column": 4,
-        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-no-any-decorated for more info",
-        "offset": 0,
-        "src": "def add_symbol_table_node(self, name: str, stnode: SymbolTableNode) -> Any:",
-        "target": null
-      },
-      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"lookup_fully_qualified\" is not using @override but is overriding a method in class \"mypy.plugin.CommonPluginApi\"",
@@ -16122,26 +15842,10 @@
         "target": "mypy.plugins.attrs._parse_converter"
       },
       {
-        "code": "no-any-expr",
-        "column": 8,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
-        "offset": 194,
-        "src": "getattr(arg.variable.type, \"type_of_any\", None) == TypeOfAny.unannotated",
-        "target": "mypy.plugins.attrs._add_init"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 8,
-        "message": "Expression type contains \"Any\" (has type \"Any | bool\")",
-        "offset": 0,
-        "src": "getattr(arg.variable.type, \"type_of_any\", None) == TypeOfAny.unannotated",
-        "target": "mypy.plugins.attrs._add_init"
-      },
-      {
         "code": "helpful-string",
         "column": 21,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
-        "offset": 223,
+        "offset": 417,
         "src": "ctx.api.fail(f'\"{ctx.default_signature.name}\" has unexpected type annotation', ctx.context)",
         "target": "mypy.plugins.attrs.evolve_function_sig_callback"
       },
@@ -16378,26 +16082,6 @@
         "offset": 45,
         "src": "def get_function_hook(self, fullname: str) -> Callable[[FunctionContext], Type] | None:",
         "target": "mypy.plugins.proper_plugin.ProperTypePlugin.get_function_hook"
-      }
-    ],
-    "mypy/plugins/re.py": [
-      {
-        "code": "no-any-expr",
-        "column": 1,
-        "message": "Expression type contains \"Any\" (has type \"[_T] ((...) -> _T) -> _lru_cache_wrapper[_T]\")",
-        "offset": 332,
-        "src": "@lru_cache(None)",
-        "target": "mypy.plugins.re"
-      }
-    ],
-    "mypy/pyinfo.py": [
-      {
-        "code": "no-any-expr",
-        "column": 8,
-        "message": "Expression type contains \"Any\" (has type \"Any | str\")",
-        "offset": 45,
-        "src": "getattr(sys, \"platlibdir\", \"lib\"),",
-        "target": "mypy.pyinfo.getsyspath"
       }
     ],
     "mypy/reachability.py": [
@@ -16754,16 +16438,8 @@
       {
         "code": "no-any-expr",
         "column": 22,
-        "message": "Expression type contains \"Any\" (has type \"dict[Any, Any]\")",
-        "offset": 2,
-        "src": "json.dump({\"lines\": self.lines_covered}, f)",
-        "target": "mypy.report.LineCoverageReporter.on_finish"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 22,
         "message": "Expression has type \"Any (from unimported type)\"",
-        "offset": 32,
+        "offset": 34,
         "src": "self.schema = etree.XMLSchema(etree.parse(xsd_path))",
         "target": "mypy.report.MemoryXmlReporter.__init__"
       },
@@ -17764,18 +17440,10 @@
         "target": "mypy.semanal.SemanticAnalyzer.setup_alias_type_vars"
       },
       {
-        "code": "no-any-expr",
-        "column": 43,
-        "message": "Expression type contains \"Any\" (has type \"set[Any]\")",
-        "offset": 234,
-        "src": "if not set(all_tvars).issubset(set(declared_tvars)):",
-        "target": "mypy.semanal.SemanticAnalyzer.clean_up_bases_and_infer_type_variables"
-      },
-      {
         "code": "redundant-expr",
         "column": 15,
         "message": "Condition is always false",
-        "offset": 29,
+        "offset": 263,
         "src": "if last_tvar_name_with_default is not None and not tvar_def.has_default():",
         "target": "mypy.semanal.SemanticAnalyzer.clean_up_bases_and_infer_type_variables"
       },
@@ -17820,18 +17488,10 @@
         "target": "mypy.semanal.SemanticAnalyzer.visit_import_from"
       },
       {
-        "code": "no-any-expr",
-        "column": 67,
-        "message": "Expression type contains \"Any\" (has type \"set[Any]\")",
-        "offset": 171,
-        "src": "alternatives = set(module.names.keys()).difference({source_id})",
-        "target": "mypy.semanal.SemanticAnalyzer.report_missing_module_attribute"
-      },
-      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_import_all\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 78,
+        "offset": 249,
         "src": "def visit_import_all(self, i: ImportAll) -> None:",
         "target": "mypy.semanal.SemanticAnalyzer.visit_import_all"
       },
@@ -18268,18 +17928,10 @@
         "target": "mypy.semanal.SemanticAnalyzer.visit_call_expr"
       },
       {
-        "code": "no-any-expr",
-        "column": 23,
-        "message": "Expression type contains \"Any\" (has type \"Any | bool\")",
-        "offset": 20,
-        "src": "if getattr(n.node, \"is_inferred\", False) and isinstance(n.node, Var)",
-        "target": "mypy.semanal.SemanticAnalyzer.visit_call_expr"
-      },
-      {
         "code": "redundant-expr",
         "column": 19,
         "message": "Condition is always true",
-        "offset": 10,
+        "offset": 30,
         "src": "if self.locals is not None:",
         "target": "mypy.semanal.SemanticAnalyzer.visit_call_expr"
       },
@@ -20415,18 +20067,10 @@
     "mypy/server/objgraph.py": [
       {
         "code": "no-any-expr",
-        "column": 22,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
-        "offset": 36,
-        "src": "return isinstance(getattr(type(o), attr, None), property)",
-        "target": "mypy.server.objgraph.isproperty"
-      },
-      {
-        "code": "no-any-expr",
         "column": 29,
         "message": "Expression has type \"Any\"",
-        "offset": 5,
-        "src": "if \"__getattribute__\" in getattr(type(o), \"__dict__\"):  # noqa: B009",
+        "offset": 43,
+        "src": "if \"__getattribute__\" in getattr(type(o), \"__dict__\"):",
         "target": "mypy.server.objgraph.get_edge_candidates"
       },
       {
@@ -20966,42 +20610,10 @@
     ],
     "mypy/split_namespace.py": [
       {
-        "code": "no-any-expr",
-        "column": 8,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 18,
-        "src": "self.__dict__[\"_standard_namespace\"] = standard_namespace",
-        "target": "mypy.split_namespace.SplitNamespace.__init__"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 8,
-        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-no-any-expr for more info",
-        "offset": 0,
-        "src": "self.__dict__[\"_standard_namespace\"] = standard_namespace",
-        "target": null
-      },
-      {
-        "code": "no-any-expr",
-        "column": 8,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 1,
-        "src": "self.__dict__[\"_alt_namespace\"] = alt_namespace",
-        "target": "mypy.split_namespace.SplitNamespace.__init__"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 8,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 1,
-        "src": "self.__dict__[\"_alt_prefix\"] = alt_prefix",
-        "target": "mypy.split_namespace.SplitNamespace.__init__"
-      },
-      {
         "code": "no-any-explicit",
         "column": 4,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 2,
+        "offset": 22,
         "src": "def _get(self) -> tuple[Any, Any]:",
         "target": "mypy.split_namespace.SplitNamespace._get"
       },
@@ -21028,6 +20640,14 @@
         "offset": 0,
         "src": "return (self._standard_namespace, self._alt_namespace)",
         "target": "mypy.split_namespace.SplitNamespace._get"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 16,
+        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-no-any-expr for more info",
+        "offset": 0,
+        "src": "return (self._standard_namespace, self._alt_namespace)",
+        "target": null
       },
       {
         "code": "no-any-expr",
@@ -21135,17 +20755,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 19,
-        "message": "Expression has type \"Any\"",
-        "offset": 1,
-        "src": "return getattr(self._alt_namespace, name[len(self._alt_prefix) :])",
-        "target": "mypy.split_namespace.SplitNamespace.__getattr__"
-      },
-      {
-        "code": "no-any-expr",
         "column": 27,
         "message": "Expression has type \"Any\"",
-        "offset": 0,
+        "offset": 1,
         "src": "return getattr(self._alt_namespace, name[len(self._alt_prefix) :])",
         "target": "mypy.split_namespace.SplitNamespace.__getattr__"
       },
@@ -21159,17 +20771,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 19,
-        "message": "Expression has type \"Any\"",
-        "offset": 2,
-        "src": "return getattr(self._standard_namespace, name)",
-        "target": "mypy.split_namespace.SplitNamespace.__getattr__"
-      },
-      {
-        "code": "no-any-expr",
         "column": 27,
         "message": "Expression has type \"Any\"",
-        "offset": 0,
+        "offset": 2,
         "src": "return getattr(self._standard_namespace, name)",
         "target": "mypy.split_namespace.SplitNamespace.__getattr__"
       }
@@ -23707,7 +23311,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"get_function_sig\" is not using @override but is overriding a method in class \"mypy.stubutil.SignatureGenerator\"",
-        "offset": 66,
+        "offset": 67,
         "src": "def get_function_sig(",
         "target": "mypy.stubgenc.ExternalSignatureGenerator.get_function_sig"
       },
@@ -24034,7 +23638,7 @@
       {
         "code": "no-any-expr",
         "column": 15,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
+        "message": "Expression type contains \"Any\" (has type \"Any | str | None\")",
         "offset": 26,
         "src": "return getattr(obj, \"__module__\", None)",
         "target": "mypy.stubgenc.InspectionStubGenerator.get_obj_module"
@@ -24268,7 +23872,7 @@
         "column": 8,
         "message": "Explicit \"Any\" is not allowed",
         "offset": 1,
-        "src": "obj_dict: Mapping[str, Any] = getattr(obj, \"__dict__\")  # noqa: B009",
+        "src": "obj_dict: Mapping[str, Any] = getattr(obj, \"__dict__\")",
         "target": "mypy.stubgenc.InspectionStubGenerator.get_members"
       },
       {
@@ -24332,7 +23936,7 @@
         "column": 12,
         "message": "Explicit \"Any\" is not allowed",
         "offset": 38,
-        "src": "raw_lookup: Mapping[str, Any] = getattr(class_info.cls, \"__dict__\")  # noqa: B009",
+        "src": "raw_lookup: Mapping[str, Any] = getattr(class_info.cls, \"__dict__\")",
         "target": "mypy.stubgenc.InspectionStubGenerator.is_staticmethod"
       },
       {
@@ -24418,7 +24022,7 @@
       {
         "code": "no-any-expr",
         "column": 25,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
+        "message": "Expression has type \"Any\"",
         "offset": 0,
         "src": "docstring: Any = getattr(obj, \"__doc__\", None)",
         "target": "mypy.stubgenc.InspectionStubGenerator.generate_function_stub"
@@ -24465,17 +24069,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 34,
-        "message": "Expression type contains \"Any\" (has type \"MappingProxyType[str, Any]\")",
-        "offset": 31,
-        "src": "and \"__iter__\" not in ctx.class_info.cls.__dict__",
-        "target": "mypy.stubgenc.InspectionStubGenerator._fix_iter"
-      },
-      {
-        "code": "no-any-expr",
         "column": 20,
         "message": "Expression type contains \"Any\" (has type \"Any | None\")",
-        "offset": 32,
+        "offset": 63,
         "src": "docstring = getattr(raw_obj, \"__doc__\", None)",
         "target": "mypy.stubgenc.InspectionStubGenerator.generate_property_stub"
       },
@@ -24604,7 +24200,7 @@
         "column": 8,
         "message": "Explicit \"Any\" is not allowed",
         "offset": 26,
-        "src": "raw_lookup: Mapping[str, Any] = getattr(cls, \"__dict__\")  # noqa: B009",
+        "src": "raw_lookup: Mapping[str, Any] = getattr(cls, \"__dict__\")",
         "target": "mypy.stubgenc.InspectionStubGenerator.generate_class_stub"
       },
       {
@@ -24674,7 +24270,7 @@
       {
         "code": "no-any-expr",
         "column": 47,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
+        "message": "Expression type contains \"Any\" (has type \"Any | str | None\")",
         "offset": 5,
         "src": "class_info = ClassInfo(class_name, \"\", getattr(cls, \"__doc__\", None), cls)",
         "target": "mypy.stubgenc.InspectionStubGenerator.generate_class_stub"
@@ -25068,16 +24664,8 @@
       {
         "code": "no-any-expr",
         "column": 1,
-        "message": "Expression type contains \"Any\" (has type overloaded function)",
-        "offset": 32,
-        "src": "@functools.lru_cache",
-        "target": "mypy.stubtest"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 1,
         "message": "Expression type contains \"Any\" (has type \"_SingleDispatchCallable[Iterator[Error], def (stub: Node | Missing, runtime: Any | Missing, object_path: list[str]) -> Iterator[Error]]\")",
-        "offset": 18,
+        "offset": 50,
         "src": "@verify.register(nodes.MypyFile)",
         "target": "mypy.stubtest"
       },
@@ -25523,17 +25111,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 43,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
-        "offset": 3,
-        "src": "probably_class_method = isinstance(getattr(runtime, \"__self__\", None), type)",
-        "target": "mypy.stubtest._verify_static_class_methods"
-      },
-      {
-        "code": "no-any-expr",
         "column": 51,
         "message": "Expression type contains \"Any\" (has type \"BuiltinFunctionType[[*Untyped, **Untyped], Untyped]\")",
-        "offset": 0,
+        "offset": 3,
         "src": "probably_class_method = isinstance(getattr(runtime, \"__self__\", None), type)",
         "target": "mypy.stubtest._verify_static_class_methods"
       },
@@ -25803,25 +25383,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 65,
-        "message": "Expression type contains \"Any\" (has type \"set[Any]\")",
-        "offset": 204,
-        "src": "if runtime.varkw is None or not set(runtime.kwonly).issubset(set(stub.kwonly)):",
-        "target": "mypy.stubtest._verify_signature"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 44,
-        "message": "Expression type contains \"Any\" (has type \"set[str | Any]\")",
-        "offset": 32,
-        "src": "if not set(runtime.kwonly).issubset(set(stub.kwonly) | stub_pos_names):",
-        "target": "mypy.stubtest._verify_signature"
-      },
-      {
-        "code": "no-any-expr",
         "column": 12,
         "message": "Expression has type \"Any\"",
-        "offset": 10,
+        "offset": 246,
         "src": "and arg.default is not inspect.Parameter.empty",
         "target": "mypy.stubtest._is_private_parameter"
       },
@@ -27520,18 +27084,10 @@
         "target": "mypy.suggestions.SuggestionEngine.find_node_by_file_and_line"
       },
       {
-        "code": "no-any-expr",
-        "column": 26,
-        "message": "Expression type contains \"Any\" (has type \"list[Any]\")",
-        "offset": 88,
-        "src": "return json.dumps([obj], sort_keys=True)",
-        "target": "mypy.suggestions.SuggestionEngine.json_suggestion"
-      },
-      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_any\" is not using @override but is overriding a method in class \"mypy.types.TypeStrVisitor\"",
-        "offset": 98,
+        "offset": 186,
         "src": "def visit_any(self, t: AnyType) -> str:",
         "target": "mypy.suggestions.TypeFormatter.visit_any"
       },
@@ -27956,18 +27512,10 @@
     ],
     "mypy/test/helpers.py": [
       {
-        "code": "no-any-expr",
-        "column": 54,
-        "message": "Expression type contains \"Any\" (has type \"set[Any]\")",
-        "offset": 146,
-        "src": "actual_normalized = sorted(set(actual).difference({\"__main__\"}))",
-        "target": "mypy.test.helpers.assert_module_equivalence"
-      },
-      {
         "code": "no-any-explicit",
         "column": 0,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 129,
+        "offset": 276,
         "src": "def retry_on_error(func: Callable[[], Any], max_wait: float = 1.0) -> None:",
         "target": "mypy.test.helpers.retry_on_error"
       },
@@ -28069,16 +27617,16 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"run_case\" is not using @override but is overriding a method in class \"mypy.test.data.DataSuite\"",
-        "offset": 22,
+        "offset": 23,
         "src": "def run_case(self, testcase: DataDrivenTestCase) -> None:",
         "target": "mypy.test.test_ref_info.RefInfoSuite.run_case"
       },
       {
-        "code": "no-any-expr",
-        "column": 19,
-        "message": "Expression has type \"Any\"",
+        "code": "no-any-explicit",
+        "column": 12,
+        "message": "Explicit \"Any\" is not allowed",
         "offset": 19,
-        "src": "data = json.load(refs_file)",
+        "src": "data: Any = json.load(refs_file)",
         "target": "mypy.test.test_ref_info.RefInfoSuite.run_case"
       },
       {
@@ -28153,7 +27701,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"run_case\" is not using @override but is overriding a method in class \"mypy.test.data.DataSuite\"",
-        "offset": 64,
+        "offset": 65,
         "src": "def run_case(self, testcase: DataDrivenTestCase) -> None:",
         "target": "mypy.test.testcheck.TypeCheckSuite.run_case"
       },
@@ -28993,7 +28541,7 @@
         "code": "no-any-expr",
         "column": 5,
         "message": "Expression type contains \"Any\" (has type \"[_FT: (...) -> Any] (_FT) -> _FT\")",
-        "offset": 53,
+        "offset": 54,
         "src": "@unittest.skipIf(sys.platform == \"win32\", \"clean up fails on Windows\")",
         "target": "mypy.test.teststubgen"
       },
@@ -29039,17 +28587,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 20,
-        "message": "Expression type contains \"Any\" (has type \"set[Any]\")",
-        "offset": 16,
-        "src": "{\"mypy\", \"mypy.errors\", \"mypy.stubgen\", \"mypy.test\", \"mypy.test.helpers\"}",
-        "target": "mypy.test.teststubgen.StubgenCliParseSuite.test_walk_packages"
-      },
-      {
-        "code": "no-any-expr",
         "column": 5,
         "message": "Expression type contains \"Any\" (has type \"[_FT: (...) -> Any] (_FT) -> _FT\")",
-        "offset": 436,
+        "offset": 452,
         "src": "@unittest.skipIf(sys.platform == \"win32\", \"Tests building the paths common ancestor on *nix\")",
         "target": "mypy.test.teststubgen"
       },
@@ -29080,7 +28620,7 @@
       {
         "code": "no-any-expr",
         "column": 26,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
+        "message": "Expression type contains \"Any\" (has type \"Any | str | None\")",
         "offset": 190,
         "src": "docstring=getattr(TestClass, \"__doc__\", None),",
         "target": "mypy.test.teststubgen.StubgencSuite.test_non_c_generate_signature_with_kw_only_args"
@@ -29104,48 +28644,16 @@
       {
         "code": "no-any-expr",
         "column": 12,
-        "message": "Expression type contains \"Any\" (has type \"MappingProxyType[str, Any]\")",
-        "offset": 30,
-        "src": "TestClass.__dict__[\"attribute\"],",
-        "target": "mypy.test.teststubgen.StubgencSuite.test_generate_c_property_with_pybind11"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 12,
         "message": "Expression has type \"Any\"",
-        "offset": 0,
-        "src": "TestClass.__dict__[\"attribute\"],",
-        "target": "mypy.test.teststubgen.StubgencSuite.test_generate_c_property_with_pybind11"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 12,
-        "message": "Expression has type \"Any\"",
-        "offset": 1,
+        "offset": 31,
         "src": "TestClass.attribute,",
         "target": "mypy.test.teststubgen.StubgencSuite.test_generate_c_property_with_pybind11"
       },
       {
         "code": "no-any-expr",
-        "column": 12,
-        "message": "Expression type contains \"Any\" (has type \"MappingProxyType[str, Any]\")",
-        "offset": 29,
-        "src": "TestClass.__dict__[\"attribute\"],",
-        "target": "mypy.test.teststubgen.StubgencSuite.test_generate_c_property_with_rw_property"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 12,
-        "message": "Expression has type \"Any\"",
-        "offset": 0,
-        "src": "TestClass.__dict__[\"attribute\"],",
-        "target": "mypy.test.teststubgen.StubgencSuite.test_generate_c_property_with_rw_property"
-      },
-      {
-        "code": "no-any-expr",
         "column": 26,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
-        "offset": 173,
+        "message": "Expression type contains \"Any\" (has type \"Any | str | None\")",
+        "offset": 202,
         "src": "docstring=getattr(TestClass, \"__doc__\", None),",
         "target": "mypy.test.teststubgen.StubgencSuite.test_generate_c_type_with_overload_shiboken"
       }
@@ -35002,18 +34510,10 @@
         "target": "mypy.types.CallableType.__init__"
       },
       {
-        "code": "no-any-expr",
-        "column": 19,
-        "message": "Expression type contains \"Any\" (has type \"Any | None\")",
-        "offset": 8,
-        "src": "if getattr(definition, \"arguments\", None):",
-        "target": "mypy.types.CallableType.__init__"
-      },
-      {
         "code": "no-any-explicit",
         "column": 4,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 14,
+        "offset": 22,
         "src": "def copy_modified(",
         "target": "mypy.types.CallableType.copy_modified"
       },
@@ -36866,66 +36366,10 @@
         "target": "mypy.types.HasRecursiveType.visit_type_alias_type"
       },
       {
-        "code": "no-any-expr",
-        "column": 15,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 138,
-        "src": "names: Final = globals().copy()",
-        "target": "mypy.types"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 0,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 1,
-        "src": "names.pop(\"NOT_READY\", None)",
-        "target": "mypy.types"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 25,
-        "message": "Expression type contains \"Any\" (has type \"(str, Any)\")",
-        "offset": 1,
-        "src": "deserialize_map: Final = {",
-        "target": "mypy.types"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 25,
-        "message": "Expression has type \"Any\"",
-        "offset": 0,
-        "src": "deserialize_map: Final = {",
-        "target": "mypy.types"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 20,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 2,
-        "src": "for key, obj in names.items()",
-        "target": "mypy.types"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 20,
-        "message": "Expression type contains \"Any\" (has type \"dict_items[str, Any]\")",
-        "offset": 0,
-        "src": "for key, obj in names.items()",
-        "target": "mypy.types"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 18,
-        "message": "Expression has type \"Any\"",
-        "offset": 1,
-        "src": "if isinstance(obj, type) and issubclass(obj, Type) and obj is not Type",
-        "target": "mypy.types"
-      },
-      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_union_type\" is not using @override but is overriding a method in class \"mypy.expandtype.ExpandTypeVisitor\"",
-        "offset": 53,
+        "offset": 196,
         "src": "def visit_union_type(self, t: UnionType) -> Type:",
         "target": "mypy.types.InstantiateAliasVisitor.visit_union_type"
       }
@@ -37163,7 +36607,7 @@
         "code": "no-any-expr",
         "column": 18,
         "message": "Expression type contains \"Any\" (has type \"list[(str, Any)]\")",
-        "offset": 376,
+        "offset": 389,
         "src": "members = inspect.getmembers(",
         "target": "mypy.util.get_class_descriptors"
       },
@@ -37193,17 +36637,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 32,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 16,
-        "src": "new.__dict__ = dict(old.__dict__)",
-        "target": "mypy.util.replace_object_state"
-      },
-      {
-        "code": "no-any-expr",
         "column": 35,
         "message": "Expression has type \"Any\"",
-        "offset": 9,
+        "offset": 25,
         "src": "setattr(new, attr, getattr(old, attr))",
         "target": "mypy.util.replace_object_state"
       },
@@ -37222,6 +36658,62 @@
         "offset": 5,
         "src": "curses.setupterm(fd=fd)",
         "target": "mypy.util.FancyFormatter.initialize_unix_colors"
+      },
+      {
+        "code": "no-any-explicit",
+        "column": 0,
+        "message": "Explicit \"Any\" is not allowed",
+        "offset": 257,
+        "src": "def getattr(value: object, name: str) -> Any: ...",
+        "target": "mypy.util.getattr"
+      },
+      {
+        "code": "no-any-decorated",
+        "column": 0,
+        "message": "Type of decorated function contains type \"Any\" (\"def (value: object, name: str) -> Any\")",
+        "offset": 0,
+        "src": "def getattr(value: object, name: str) -> Any: ...",
+        "target": "mypy.util.getattr"
+      },
+      {
+        "code": "no-any-decorated",
+        "column": 0,
+        "message": "See https://kotlinisland.github.io/basedmypy/_refs.html#code-no-any-decorated for more info",
+        "offset": 0,
+        "src": "def getattr(value: object, name: str) -> Any: ...",
+        "target": null
+      },
+      {
+        "code": "no-any-explicit",
+        "column": 0,
+        "message": "Explicit \"Any\" is not allowed",
+        "offset": 2,
+        "src": "def getattr(value: object, name: str, default: T) -> Any | T: ...",
+        "target": "mypy.util.getattr"
+      },
+      {
+        "code": "no-any-decorated",
+        "column": 0,
+        "message": "Type of decorated function contains type \"Any\" (\"def [T] (value: object, name: str, default: T) -> Any | T\")",
+        "offset": 0,
+        "src": "def getattr(value: object, name: str, default: T) -> Any | T: ...",
+        "target": "mypy.util.getattr"
+      },
+      {
+        "code": "no-any-explicit",
+        "column": 0,
+        "message": "Explicit \"Any\" is not allowed",
+        "offset": 1,
+        "src": "def getattr(value, name, default: object = _default):",
+        "target": "mypy.util.getattr"
+      },
+      {
+        "code": "no-any-explicit",
+        "column": 0,
+        "message": "Explicit \"Any\" is not allowed",
+        "offset": 6,
+        "src": "def attrgetter(name: str) -> operator.attrgetter[Any]:",
+        "target": "mypy.util.attrgetter"
       }
     ],
     "mypy/visitor.py": [
@@ -40268,11 +39760,11 @@
         "target": "mypyc.codegen.emitmodule.MypycPlugin.report_config_data"
       },
       {
-        "code": "no-any-expr",
-        "column": 18,
-        "message": "Expression has type \"Any\"",
+        "code": "no-any-explicit",
+        "column": 8,
+        "message": "Explicit \"Any\" is not allowed",
         "offset": 27,
-        "src": "ir_data = json.loads(ir_json)",
+        "src": "ir_data: Any = json.loads(ir_json)",
         "target": "mypyc.codegen.emitmodule.MypycPlugin.report_config_data"
       },
       {
@@ -40332,18 +39824,26 @@
         "target": "mypyc.codegen.emitmodule.load_scc_from_cache"
       },
       {
+        "code": "no-any-explicit",
+        "column": 20,
+        "message": "Explicit \"Any\" is not allowed",
+        "offset": 1,
+        "src": "k.fullname: cast(",
+        "target": "mypyc.codegen.emitmodule.load_scc_from_cache"
+      },
+      {
         "code": "no-any-expr",
         "column": 20,
         "message": "Expression has type \"Any\"",
-        "offset": 1,
-        "src": "k.fullname: json.loads(",
+        "offset": 0,
+        "src": "k.fullname: cast(",
         "target": "mypyc.codegen.emitmodule.load_scc_from_cache"
       },
       {
         "code": "no-any-expr",
         "column": 34,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 5,
+        "offset": 8,
         "src": "modules = deserialize_modules(cache_data, ctx)",
         "target": "mypyc.codegen.emitmodule.load_scc_from_cache"
       }
@@ -45356,14 +44856,6 @@
       {
         "code": "no-any-expr",
         "column": 16,
-        "message": "Expression has type \"Any\"",
-        "offset": 0,
-        "src": "return {k: getattr(x, k) for k in x.__mypyc_attrs__ if hasattr(x, k)}",
-        "target": "mypyc.test.test_serialization.get_dict"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 19,
         "message": "Expression has type \"Any\"",
         "offset": 0,
         "src": "return {k: getattr(x, k) for k in x.__mypyc_attrs__ if hasattr(x, k)}",

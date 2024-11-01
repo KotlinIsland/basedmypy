@@ -4,14 +4,27 @@ from __future__ import annotations
 
 import hashlib
 import io
+import operator
 import os
 import pathlib
 import re
 import shutil
 import sys
 import time
+from builtins import getattr as builtins_getattr
 from importlib import resources as importlib_resources
-from typing import IO, Callable, Container, Final, Iterable, Sequence, Sized, TypeVar
+from typing import (
+    IO,
+    Any,
+    Callable,
+    Container,
+    Final,
+    Iterable,
+    Sequence,
+    Sized,
+    TypeVar,
+    overload,
+)
 from typing_extensions import Literal
 
 try:
@@ -906,3 +919,20 @@ def quote_docstring(docstr: str) -> str:
         return f"''{docstr_repr}''"
     else:
         return f'""{docstr_repr}""'
+
+
+_default = object()
+
+
+@overload
+def getattr(value: object, name: str) -> Any: ...
+@overload
+def getattr(value: object, name: str, default: T) -> Any | T: ...
+def getattr(value, name, default: object = _default):
+    if default is _default:
+        return builtins_getattr(value, name)
+    return builtins_getattr(value, name, default)
+
+
+def attrgetter(name: str) -> operator.attrgetter[Any]:
+    return operator.attrgetter(name)

@@ -13,7 +13,7 @@ from typing import Dict, Iterable, cast
 
 from mypy.nodes import FakeInfo, Node
 from mypy.types import Type
-from mypy.util import get_class_descriptors
+from mypy.util import get_class_descriptors, getattr
 
 
 def collect_memory_stats() -> tuple[dict[str, int], dict[str, int]]:

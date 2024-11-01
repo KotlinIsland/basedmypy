@@ -41,7 +41,7 @@ from mypy import nodes
 from mypy.config_parser import parse_config_file
 from mypy.evalexpr import UNKNOWN, evaluate_expression
 from mypy.options import Options
-from mypy.util import FancyFormatter, bytes_to_human_readable_repr, is_dunder, plural_s
+from mypy.util import FancyFormatter, bytes_to_human_readable_repr, getattr, is_dunder, plural_s
 
 
 class Missing:

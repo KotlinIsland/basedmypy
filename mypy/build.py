@@ -62,6 +62,7 @@ from mypy.util import (
     DecodeError,
     decode_python_encoding,
     get_mypy_comments,
+    getattr,
     hash_digest,
     is_stub_package_file,
     is_sub_path,
@@ -866,7 +867,7 @@ class BuildManager:
         t0 = time.time()
         if id in self.fg_deps_meta:
             # TODO: Assert deps file wasn't changed.
-            deps = json.loads(self.metastore.read(self.fg_deps_meta[id]["path"]))
+            deps: Any = json.loads(self.metastore.read(self.fg_deps_meta[id]["path"]))
         else:
             deps = {}
         val = {k: set(v) for k, v in deps.items()}
@@ -1120,7 +1121,7 @@ def load_baseline(options: Options, errors: Errors, stdout: TextIO) -> None:
             main.fail(msg, stderr, options)
         return
     try:
-        data = json.load(file.open())
+        data: Any = json.loads(file.read_text())
     except JSONDecodeError:
         msg = formatter.style(f"error: Invalid JSON in baseline file {file}", "red", bold=True)
         main.fail(msg, stderr, options)
@@ -1214,14 +1215,11 @@ def read_quickstart_file(
     if options.quickstart_file:
         # This is very "best effort". If the file is missing or malformed,
         # just ignore it.
-        raw_quickstart: dict[str, Any] = {}
         try:
             with open(options.quickstart_file) as f:
-                raw_quickstart = json.load(f)
+                raw_quickstart = cast(Dict[str, Any], json.load(f))
 
-            quickstart = {}
-            for file, (x, y, z) in raw_quickstart.items():
-                quickstart[file] = (x, y, z)
+            quickstart = {file: (x, y, z) for file, (x, y, z) in raw_quickstart.items()}
         except Exception as e:
             print(f"Warning: Failed to load quickstart file: {str(e)}\n", file=stdout)
     return quickstart
