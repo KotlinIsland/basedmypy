@@ -59,6 +59,7 @@ import mypy.expandtype  # ruff: isort: skip
 
 class TypesSuite(Suite):
     def setUp(self) -> None:
+        mypy.options._based = False
         self.x = UnboundType("X")  # Helpers
         self.y = UnboundType("Y")
         self.fx = TypeFixture()
