@@ -566,6 +566,22 @@ class TypeVarId:
         return self.raw_id == 0
 
 
+#
+class TypeVarConstraintWrapper(Type):  # TODO: add support with get_proper_type
+    __slots__ = ("type", "typevar")
+
+    type: Type
+    typevar: TypeVarType
+
+    def __init__(self, typ: Type, typevar: TypeVar):
+        super().__init__(typ.line, typ.column)
+        self.type = typ
+        self.typevar = typevar
+
+    def accept(self, visitor: TypeVisitor[T]) -> T:
+        return self.type.accept(visitor)
+
+
 class TypeVarLikeType(ProperType):
     __slots__ = ("name", "fullname", "id", "upper_bound", "default")
 
