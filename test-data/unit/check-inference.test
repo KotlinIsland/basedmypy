@@ -2523,8 +2523,8 @@ def make_tuple(elem: T) -> Tuple[T]:
 
 def main() -> None:
     ((a, b),) = make_tuple((1, 2))
-    reveal_type(a) # N: Revealed type is "builtins.int"
-    reveal_type(b) # N: Revealed type is "builtins.int"
+    reveal_type(a) # N: Revealed type is "Literal[1]?"
+    reveal_type(b) # N: Revealed type is "Literal[2]?"
 [builtins fixtures/tuple.pyi]
 [out]
 

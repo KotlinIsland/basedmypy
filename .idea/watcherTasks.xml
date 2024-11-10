@@ -41,5 +41,8 @@
       <option name="workingDir" value="$ProjectFileDir$" />
       <envs />
     </TaskOptions>
+    <enabled-global>
+      <option value="dmypy" />
+    </enabled-global>
   </component>
 </project>

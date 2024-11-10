@@ -575,14 +575,14 @@ reveal_type(d)      # N: Revealed type is "Any"
 [case testLiteralDisallowFloatsAndComplex]
 
 from typing_extensions import Literal
-a1: Literal[3.14]    # E: Parameter 1 of Literal[...] cannot be of type "float"
-b1: 3.14             # E: Invalid type: float literals cannot be used as a type
-c1: Literal[3j]      # E: Parameter 1 of Literal[...] cannot be of type "complex"
-d1: 3j               # E: Invalid type: complex literals cannot be used as a type
+a1: Literal[3.14]
+b1: 3.14
+c1: Literal[3j]
+d1: 3j
 
-a2t = Literal[3.14]  # E: Parameter 1 of Literal[...] cannot be of type "float"
+a2t = Literal[3.14]
 b2t = 3.14
-c2t = Literal[3j]    # E: Parameter 1 of Literal[...] cannot be of type "complex"
+c2t = Literal[3j]
 d2t = 3j
 
 a2: a2t
@@ -1001,14 +1001,14 @@ none2 = None
 none3: None = None
 
 reveal_type(int1)   # N: Revealed type is "Literal[1]"
-reveal_type(int2)   # N: Revealed type is "builtins.int"
-reveal_type(int3)   # N: Revealed type is "builtins.int"
+reveal_type(int2)   # N: Revealed type is "Literal[1]?"
+reveal_type(int3)   # N: Revealed type is "Literal[1]?"
 reveal_type(str1)   # N: Revealed type is "Literal['foo']"
-reveal_type(str2)   # N: Revealed type is "builtins.str"
-reveal_type(str3)   # N: Revealed type is "builtins.str"
+reveal_type(str2)   # N: Revealed type is "Literal['foo']?"
+reveal_type(str3)   # N: Revealed type is "Literal['foo']?"
 reveal_type(bool1)  # N: Revealed type is "Literal[True]"
-reveal_type(bool2)  # N: Revealed type is "builtins.bool"
-reveal_type(bool3)  # N: Revealed type is "builtins.bool"
+reveal_type(bool2)  # N: Revealed type is "Literal[True]?"
+reveal_type(bool3)  # N: Revealed type is "Literal[True]?"
 reveal_type(none1)  # N: Revealed type is "None"
 reveal_type(none2)  # N: Revealed type is "None"
 reveal_type(none3)  # N: Revealed type is "None"

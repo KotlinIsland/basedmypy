@@ -3514,18 +3514,32 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                     if not (isinstance(lvalue, NameExpr) and lvalue.is_special_form):
                         self.binder.assign_type(lvalue, rvalue_type, lvalue_type, False)
 
+                elif (
+                    not mypy.options._based
+                    and lvalue.node
+                    and lvalue.node.is_inferred
+                    and rvalue_type
+                ):
+                    # for literal values
+                    # Don't use type binder for definitions of special forms, like named tuples.
+                    if not (isinstance(lvalue, NameExpr) and lvalue.is_special_form):
+                        self.binder.assign_type(lvalue, rvalue_type, lvalue_type, False)
+
             elif index_lvalue:
                 self.check_indexed_assignment(index_lvalue, rvalue, lvalue)
 
             if inferred:
                 type_context = self.get_variable_type_context(inferred)
                 rvalue_type = self.expr_checker.accept(rvalue, type_context=type_context)
+                if not mypy.options._based and not isinstance(lvalue.node.type, PartialType):
+                    self.binder.assign_type(lvalue, rvalue_type, rvalue_type, False)
                 if not (
                     inferred.is_final
                     or (isinstance(lvalue, NameExpr) and lvalue.name == "__match_args__")
                 ):
                     rvalue_type = remove_instance_last_known_values(rvalue_type)
                 self.infer_variable_type(inferred, lvalue, rvalue_type, rvalue)
+
             self.check_assignment_to_slots(lvalue)
 
     # (type, operator) tuples for augmented assignments supported with partial types

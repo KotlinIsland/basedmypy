@@ -2,13 +2,20 @@
 
 from __future__ import annotations
 
+import builtins
+import contextlib
 import enum
+import importlib
+import io
 import itertools
 import time
 from collections import defaultdict
 from contextlib import contextmanager
+from types import GetSetDescriptorType
 from typing import Callable, ClassVar, Final, Iterable, Iterator, List, Optional, Sequence, cast
 from typing_extensions import TypeAlias as _TypeAlias, assert_never, overload
+
+from basedtyping import TypeFunctionError
 
 import mypy.checker
 import mypy.errorcodes as codes
@@ -23,6 +30,7 @@ from mypy.checkmember import (
 )
 from mypy.checkstrformat import StringFormatterChecker
 from mypy.erasetype import erase_type, remove_instance_last_known_values, replace_meta_vars
+from mypy.errorcodes import ErrorCode
 from mypy.errors import ErrorInfo, ErrorWatcher, report_internal_error
 from mypy.expandtype import (
     expand_type,
@@ -203,12 +211,14 @@ from mypy.types_utils import (
 from mypy.typestate import type_state
 from mypy.typevars import fill_typevars
 from mypy.util import split_module_names
+from mypy.valuetotype import type_to_value, value_to_type
 from mypy.visitor import ExpressionVisitor
 
 # Type of callback user for checking individual function arguments. See
 # check_args() below for details.
 ArgChecker: _TypeAlias = Callable[
-    [Type, Type, ArgKind, Type, int, int, CallableType, Optional[Type], Context, Context], None
+    [Type, Type, ArgKind, Type, int, int, CallableType, Optional[Type], Context, Context, bool],
+    None,
 ]
 
 # Maximum nesting level for math union in overloads, setting this to large values
@@ -1838,7 +1848,6 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             fresh_ret_type = freshen_all_functions_type_vars(callee.ret_type)
             freeze_all_type_vars(fresh_ret_type)
             callee = callee.copy_modified(ret_type=fresh_ret_type)
-
         if callee.is_generic():
             need_refresh = any(
                 isinstance(v, (ParamSpecType, TypeVarTupleType)) for v in callee.variables
@@ -1901,7 +1910,6 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         self.check_argument_types(
             arg_types, arg_kinds, args, callee, formal_to_actual, context, object_type=object_type
         )
-
         if (
             callee.is_type_obj()
             and (len(arg_types) == 1)
@@ -1912,6 +1920,38 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         if callable_node:
             # Store the inferred callable type.
             self.chk.store_type(callable_node, callee)
+
+        if callee.is_type_function:
+            with self.msg.filter_errors(filter_errors=True) as error_watcher:
+                if object_type:
+                    self.check_arg(
+                        caller_type=object_type,
+                        original_caller_type=object_type,
+                        caller_kind=ArgKind.ARG_POS,
+                        callee_type=callee.bound_args[0],
+                        n=0,
+                        m=0,
+                        callee=callee,
+                        object_type=object_type,
+                        context=context,
+                        outer_context=context,
+                        type_function=True,
+                    )
+
+                self.check_argument_types(
+                    arg_types,
+                    arg_kinds,
+                    args,
+                    callee,
+                    formal_to_actual,
+                    context,
+                    object_type=object_type,
+                    type_function=True,
+                )
+            if not error_watcher.has_new_errors() and "." in callable_name:
+                ret_type = self.call_type_function(callable_name, object_type, arg_types, context)
+                if ret_type:
+                    callee = callee.copy_modified(ret_type=ret_type)
 
         if callable_name and (
             (object_type is None and self.plugin.get_function_hook(callable_name))
@@ -1930,6 +1970,71 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             )
             callee = callee.copy_modified(ret_type=new_ret_type)
         return callee.ret_type, callee
+
+    def call_type_function(
+        self,
+        callable_name: str,
+        object_type: ProperType | None,
+        arg_types: list[ProperType],
+        context: Context,
+    ) -> Type | None:
+        container_name, fn_name = callable_name.rsplit(".", maxsplit=1)
+        resolved = None
+        for part in container_name.split("."):
+            if resolved:
+                m = resolved.names.get(part)
+            else:
+                m = self.chk.modules.get(part)
+            if m:
+                resolved = m
+        is_method = not isinstance(resolved, MypyFile)
+        if is_method:
+            container = resolved.node
+            module_name = container.module_name
+        else:
+            container = resolved
+            module_name = container.fullname
+
+        all_sigs = []
+        object_type = object_type and [object_type] or []
+        for arg in object_type + arg_types:
+            if isinstance(arg, UnionType):
+                if not all_sigs:
+                    all_sigs = [[x] for x in arg.items]
+                else:
+                    from itertools import product
+
+                    all_sigs = product(all_sigs, arg.items)
+        all_sigs = all_sigs or [object_type + arg_types]
+        all_rets = []
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            mod = importlib.import_module(module_name)
+            container = getattr(mod, container.name) if is_method else mod
+            fn = getattr(container, fn_name)
+        for sig in all_sigs:
+            if isinstance(fn, (GetSetDescriptorType, property)):
+                fn = fn.__get__
+            args = [type_to_value(arg, self.chk) for arg in sig]
+            try:
+                return_value = fn(*args)
+            except RecursionError:
+                self.chk.fail(
+                    "maximum recursion depth exceeded while evaluating type function",
+                    context=context,
+                )
+            except TypeFunctionError as type_function_error:
+                code = type_function_error.code and ErrorCode(type_function_error.code, "", "")
+                self.chk.fail(type_function_error.message, code=code, context=context)
+            except Exception as exception:
+                self.chk.fail(
+                    f"Invocation raises {type(exception).__name__}: {exception}",
+                    context,
+                    code=errorcodes.CALL_RAISES,
+                )
+            else:
+                all_rets.append(value_to_type(return_value, chk=self.chk))
+
+        return make_simplified_union(all_rets)
 
     def can_return_none(self, type: TypeInfo, attr_name: str) -> bool:
         """Is the given attribute a method with a None-compatible return type?
@@ -2167,6 +2272,13 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         Return a derived callable type that has the arguments applied.
         """
         if self.chk.in_checked_function():
+            if isinstance(callee_type.ret_type, TypeVarType):
+                # if the return type is constant, infer as literal
+                rvalue_type = [
+                    remove_instance_last_known_values(arg) if isinstance(arg, Instance) else arg
+                    for arg in args
+                ]
+
             # Disable type errors during type inference. There may be errors
             # due to partial available context information at this time, but
             # these errors can be safely ignored as the arguments will be
@@ -2569,6 +2681,8 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         context: Context,
         check_arg: ArgChecker | None = None,
         object_type: Type | None = None,
+        *,
+        type_function=False,
     ) -> None:
         """Check argument types against a callable type.
 
@@ -2698,6 +2812,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                     object_type,
                     args[actual],
                     context,
+                    type_function,
                 )
 
     def check_arg(
@@ -2712,12 +2827,16 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         object_type: Type | None,
         context: Context,
         outer_context: Context,
+        type_function=False,
     ) -> None:
         """Check the type of a single argument in a call."""
         caller_type = get_proper_type(caller_type)
         original_caller_type = get_proper_type(original_caller_type)
         callee_type = get_proper_type(callee_type)
-
+        if type_function:
+            # TODO: make this work at all
+            if not isinstance(caller_type, Instance) or not caller_type.last_known_value:
+                caller_type = self.named_type("builtins.object")
         if isinstance(caller_type, DeletedType):
             self.msg.deleted_as_rvalue(caller_type, context)
         # Only non-abstract non-protocol class can be given where Type[...] is expected...
@@ -3332,6 +3451,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             object_type: Type | None,
             context: Context,
             outer_context: Context,
+            type_function: bool,
         ) -> None:
             if not arg_approximate_similarity(caller_type, callee_type):
                 # No match -- exit early since none of the remaining work can change
@@ -6443,6 +6563,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                     known_type, restriction, prohibit_none_typevar_overlap=True
                 ):
                     return None
+
                 return narrow_declared_type(known_type, restriction)
         return known_type
 

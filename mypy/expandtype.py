@@ -238,7 +238,7 @@ class ExpandTypeVisitor(TrivialSyntheticTypeTranslator):
         if t.id.is_self():
             t = t.copy_modified(upper_bound=t.upper_bound.accept(self))
         repl = self.variables.get(t.id, t)
-        if isinstance(repl, ProperType) and isinstance(repl, Instance):
+        if not mypy.options._based and isinstance(repl, ProperType) and isinstance(repl, Instance):
             # TODO: do we really need to do this?
             # If I try to remove this special-casing ~40 tests fail on reveal_type().
             return repl.copy_modified(last_known_value=None)

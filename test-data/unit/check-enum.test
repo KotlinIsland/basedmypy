@@ -508,7 +508,7 @@ class A:
 a = A()
 reveal_type(a.x)
 [out]
-main:7: note: Revealed type is "__main__.A.E@4"
+main:7: note: Revealed type is "Literal[__main__.A.E@4.a]?"
 
 [case testFunctionalEnumInClassBody]
 from enum import Enum
@@ -1305,6 +1305,9 @@ class Foo(Enum):
     B = 2
 
 a = Foo.A
+reveal_type(a.value)    # N: Revealed type is "Literal[1]?"
+reveal_type(a._value_)  # N: Revealed type is "Literal[1]?"
+a: Foo
 reveal_type(a.value)    # N: Revealed type is "Union[Literal[1]?, Literal[2]?]"
 reveal_type(a._value_)  # N: Revealed type is "Union[Literal[1]?, Literal[2]?]"
 
