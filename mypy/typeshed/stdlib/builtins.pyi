@@ -72,7 +72,7 @@ from typing_extensions import (  # noqa: Y023
     TypeVarTuple,
     deprecated,
 )
-
+from basedtyping import type_function
 if sys.version_info >= (3, 9):
     from types import GenericAlias
 
@@ -439,70 +439,121 @@ class str(Sequence[str]):
     def __new__(cls, object: object = ...) -> Self: ...
     @overload
     def __new__(cls, object: ReadableBuffer, encoding: str = ..., errors: str = ...) -> Self: ...
+    @type_function
     def capitalize(self) -> str: ...  # type: ignore[misc]
+    @type_function
     def casefold(self) -> str: ...  # type: ignore[misc]
+    @type_function
     def center(self, width: SupportsIndex, fillchar: str = " ", /) -> str: ...  # type: ignore[misc]
+    @type_function
     def count(self, sub: str, start: SupportsIndex | None = ..., end: SupportsIndex | None = ..., /) -> int: ...  # type: ignore[override]
+    @type_function
     def encode(self, encoding: str = "utf-8", errors: str = "strict") -> bytes: ...
+    @type_function
     def endswith(
         self, suffix: str | tuple[str, ...], start: SupportsIndex | None = ..., end: SupportsIndex | None = ..., /
     ) -> bool: ...
+    @type_function
     def expandtabs(self, tabsize: SupportsIndex = 8) -> str: ...  # type: ignore[misc]
+    @type_function
     def find(self, sub: str, start: SupportsIndex | None = ..., end: SupportsIndex | None = ..., /) -> int: ...
+    @type_function
     def format(self, *args: object, **kwargs: object) -> str: ...
+    @type_function
     def format_map(self, mapping: _FormatMapMapping, /) -> str: ...
+    @type_function
     def index(self, sub: str, start: SupportsIndex | None = ..., end: SupportsIndex | None = ..., /) -> int: ...  # type: ignore[override]
+    @type_function
     def isalnum(self) -> bool: ...
+    @type_function
     def isalpha(self) -> bool: ...
+    @type_function
     def isascii(self) -> bool: ...
+    @type_function
     def isdecimal(self) -> bool: ...
+    @type_function
     def isdigit(self) -> bool: ...
+    @type_function
     def isidentifier(self) -> bool: ...
+    @type_function
     def islower(self) -> bool: ...
+    @type_function
     def isnumeric(self) -> bool: ...
+    @type_function
     def isprintable(self) -> bool: ...
+    @type_function
     def isspace(self) -> bool: ...
+    @type_function
     def istitle(self) -> bool: ...
+    @type_function
     def isupper(self) -> bool: ...
+    @type_function
     def join(self, iterable: Iterable[str], /) -> str: ...  # type: ignore[misc]
+    @type_function
     def ljust(self, width: SupportsIndex, fillchar: str = " ", /) -> str: ...  # type: ignore[misc]
+    @type_function
     def lower(self) -> str: ...  # type: ignore[misc]
+    @type_function
     def lstrip(self, chars: str | None = None, /) -> str: ...  # type: ignore[misc]
+    @type_function
     def partition(self, sep: str, /) -> tuple[str, str, str]: ...  # type: ignore[misc]
     if sys.version_info >= (3, 13):
+        @type_function
         def replace(self, old: str, new: str, /, count: SupportsIndex = -1) -> str: ...  # type: ignore[misc]
     else:
+        @type_function
         def replace(self, old: str, new: str, count: SupportsIndex = -1, /) -> str: ...  # type: ignore[misc]
     if sys.version_info >= (3, 9):
+        @type_function
         def removeprefix(self, prefix: str, /) -> str: ...  # type: ignore[misc]
+        @type_function
         def removesuffix(self, suffix: str, /) -> str: ...  # type: ignore[misc]
 
+    @type_function
     def rfind(self, sub: str, start: SupportsIndex | None = ..., end: SupportsIndex | None = ..., /) -> int: ...
+    @type_function
     def rindex(self, sub: str, start: SupportsIndex | None = ..., end: SupportsIndex | None = ..., /) -> int: ...
+    @type_function
     def rjust(self, width: SupportsIndex, fillchar: str = " ", /) -> str: ...  # type: ignore[misc]
+    @type_function
     def rpartition(self, sep: str, /) -> tuple[str, str, str]: ...  # type: ignore[misc]
+    @type_function
     def rsplit(self, sep: str | None = None, maxsplit: SupportsIndex = -1) -> list[str]: ...  # type: ignore[misc]
+    @type_function
     def rstrip(self, chars: str | None = None, /) -> str: ...  # type: ignore[misc]
+    @type_function
     def split(self, sep: str | None = None, maxsplit: SupportsIndex = -1) -> list[str]: ...  # type: ignore[misc]
+    @type_function
     def splitlines(self, keepends: bool = False) -> list[str]: ...  # type: ignore[misc]
+    @type_function
     def startswith(
         self, prefix: str | tuple[str, ...], start: SupportsIndex | None = ..., end: SupportsIndex | None = ..., /
     ) -> bool: ...
+    @type_function
     def strip(self, chars: str | None = None, /) -> str: ...  # type: ignore[misc]
+    @type_function
     def swapcase(self) -> str: ...  # type: ignore[misc]
+    @type_function
     def title(self) -> str: ...  # type: ignore[misc]
+    @type_function
     def translate(self, table: _TranslateTable, /) -> str: ...
+    @type_function
     def upper(self) -> str: ...  # type: ignore[misc]
+    @type_function
     def zfill(self, width: SupportsIndex, /) -> str: ...  # type: ignore[misc]
     @staticmethod
     @overload
+    @type_function
     def maketrans(x: dict[int, _T] | dict[str, _T] | dict[str | int, _T], /) -> dict[int, _T]: ...
     @staticmethod
     @overload
+    @type_function
     def maketrans(x: str, y: str, /) -> dict[int, int]: ...
     @staticmethod
     @overload
+    @type_function
     def maketrans(x: str, y: str, z: str, /) -> dict[int, int | None]: ...
+    @type_function
     def __add__(self, value: str, /) -> str: ...  # type: ignore[misc]
     # Incompatible with Sequence.__contains__
     def __contains__(self, key: str, /) -> bool: ...  # type: ignore[override]

@@ -787,6 +787,7 @@ class FuncDef(FuncItem, SymbolNode, Statement):
         # Present only when a function is decorated with @typing.datasclass_transform or similar
         "dataclass_transform_spec",
         "docstring",
+        "is_type_function",
     )
 
     __match_args__ = ("name", "arguments", "type", "body")
@@ -816,6 +817,7 @@ class FuncDef(FuncItem, SymbolNode, Statement):
         self.is_mypy_only = False
         self.dataclass_transform_spec: DataclassTransformSpec | None = None
         self.docstring: str | None = None
+        self.is_type_function = False
 
     @property
     def name(self) -> str:
@@ -846,6 +848,7 @@ class FuncDef(FuncItem, SymbolNode, Statement):
                 if self.dataclass_transform_spec is None
                 else self.dataclass_transform_spec.serialize()
             ),
+            "is_type_function": self.is_type_function,
         }
 
     @classmethod
@@ -873,6 +876,7 @@ class FuncDef(FuncItem, SymbolNode, Statement):
             if data["dataclass_transform_spec"] is not None
             else None
         )
+        ret.is_type_function = data["is_type_function"]
         # Leave these uninitialized so that future uses will trigger an error
         del ret.arguments
         del ret.max_pos

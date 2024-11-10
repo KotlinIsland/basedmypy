@@ -3507,12 +3507,18 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                     if not (isinstance(lvalue, NameExpr) and lvalue.is_special_form):
                         self.binder.assign_type(lvalue, rvalue_type, lvalue_type, False)
 
+                elif lvalue.node.is_inferred and rvalue_type:
+                    # Don't use type binder for definitions of special forms, like named tuples.
+                    if not (isinstance(lvalue, NameExpr) and lvalue.is_special_form):
+                        self.binder.assign_type(lvalue, rvalue_type, lvalue_type, False)
+
             elif index_lvalue:
                 self.check_indexed_assignment(index_lvalue, rvalue, lvalue)
 
             if inferred:
                 type_context = self.get_variable_type_context(inferred)
                 rvalue_type = self.expr_checker.accept(rvalue, type_context=type_context)
+                self.binder.assign_type(lvalue, rvalue_type, rvalue_type, False)
                 if not (
                     inferred.is_final
                     or (isinstance(lvalue, NameExpr) and lvalue.name == "__match_args__")

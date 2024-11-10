@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import contextlib
+import importlib
+import io
 import enum
 import itertools
 import time
@@ -1912,6 +1915,60 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         if callable_node:
             # Store the inferred callable type.
             self.chk.store_type(callable_node, callee)
+
+        if callable_name:
+            container_name, fn_name = callable_name.rsplit(".", maxsplit=1)
+            resolved = None
+            for part in container_name.split("."):
+                if resolved:
+                    m = resolved.names.get(part)
+                else:
+                    m = self.chk.modules.get(part)
+                if m:
+                    resolved = m
+            is_method = not isinstance(resolved, MypyFile)
+            if is_method:
+                container = resolved.node
+                module_name = container.module_name
+            else:
+                container = resolved
+                module_name = container.fullname
+
+            fn_node = container.names[fn_name].node
+            if isinstance(fn_node, Decorator):
+                fn_node = fn_node.func
+            if fn_node.is_type_function:
+                all_sigs = []
+                for arg in (object_type and [object_type] or []) + arg_types:
+                    if isinstance(arg, UnionType):
+                        if not all_sigs:
+                            all_sigs = [[x] for x in arg.items]
+                        else:
+                            from itertools import product
+                            all_sigs = product(all_sigs, arg.items)
+                all_sigs = all_sigs or [(object_type and [object_type] or []) + arg_types]
+                all_rets = []
+                for sig in all_sigs:
+                    arg_values = []
+                    for arg in sig:
+                        if isinstance(arg, Instance):
+                            arg = arg.last_known_value
+                        if not isinstance(arg, LiteralType):
+                            continue
+                        arg_values.append(arg.value)
+                    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(
+                        io.StringIO()
+                    ):
+                        mod = importlib.import_module(module_name)
+                    container = getattr(mod, container.name) if is_method else mod
+                    fn = getattr(container, fn_name)
+                    ret_type = fn(*arg_values)
+                    type_ret_type = ret_type.__class__
+                    all_rets.append(LiteralType(
+                        ret_type,
+                        self.named_type(f"{type_ret_type.__module__}.{type_ret_type.__name__}"),
+                    ))
+                callee = callee.copy_modified(ret_type=make_simplified_union(all_rets))
 
         if callable_name and (
             (object_type is None and self.plugin.get_function_hook(callable_name))
@@ -6432,6 +6489,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                     known_type, restriction, prohibit_none_typevar_overlap=True
                 ):
                     return None
+
                 return narrow_declared_type(known_type, restriction)
         return known_type
 
