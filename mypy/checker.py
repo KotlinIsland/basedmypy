@@ -3507,7 +3507,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                     if not (isinstance(lvalue, NameExpr) and lvalue.is_special_form):
                         self.binder.assign_type(lvalue, rvalue_type, lvalue_type, False)
 
-                elif lvalue.node.is_inferred and rvalue_type:
+                elif lvalue.node and lvalue.node.is_inferred and rvalue_type:
                     # Don't use type binder for definitions of special forms, like named tuples.
                     if not (isinstance(lvalue, NameExpr) and lvalue.is_special_form):
                         self.binder.assign_type(lvalue, rvalue_type, lvalue_type, False)

@@ -848,7 +848,6 @@ class FuncDef(FuncItem, SymbolNode, Statement):
                 if self.dataclass_transform_spec is None
                 else self.dataclass_transform_spec.serialize()
             ),
-            "is_type_function": self.is_type_function,
         }
 
     @classmethod
@@ -876,7 +875,6 @@ class FuncDef(FuncItem, SymbolNode, Statement):
             if data["dataclass_transform_spec"] is not None
             else None
         )
-        ret.is_type_function = data["is_type_function"]
         # Leave these uninitialized so that future uses will trigger an error
         del ret.arguments
         del ret.max_pos

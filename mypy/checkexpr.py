@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
+import builtins
 import contextlib
+import enum
 import importlib
 import io
-import enum
 import itertools
 import time
 from collections import defaultdict
 from contextlib import contextmanager
+from types import GetSetDescriptorType
 from typing import Callable, ClassVar, Final, Iterable, Iterator, List, Optional, Sequence, cast
 from typing_extensions import TypeAlias as _TypeAlias, assert_never, overload
 
@@ -26,6 +28,7 @@ from mypy.checkmember import (
 )
 from mypy.checkstrformat import StringFormatterChecker
 from mypy.erasetype import erase_type, remove_instance_last_known_values, replace_meta_vars
+from mypy.errorcodes import ErrorCode
 from mypy.errors import ErrorInfo, ErrorWatcher, report_internal_error
 from mypy.expandtype import (
     expand_type,
@@ -206,6 +209,7 @@ from mypy.types_utils import (
 from mypy.typestate import type_state
 from mypy.typevars import fill_typevars
 from mypy.util import split_module_names
+from mypy.valuetotype import type_to_value, value_to_type
 from mypy.visitor import ExpressionVisitor
 
 # Type of callback user for checking individual function arguments. See
@@ -1890,21 +1894,22 @@ class ExpressionChecker(ExpressionVisitor[Type]):
 
         arg_types = self.infer_arg_types_in_context(callee, args, arg_kinds, formal_to_actual)
 
-        self.check_argument_count(
-            callee,
-            arg_types,
-            arg_kinds,
-            arg_names,
-            formal_to_actual,
-            context,
-            object_type,
-            callable_name,
-        )
+        with self.msg.filter_errors(filter_errors=False) as error_watcher:
+            self.check_argument_count(
+                callee,
+                arg_types,
+                arg_kinds,
+                arg_names,
+                formal_to_actual,
+                context,
+                object_type,
+                callable_name,
+            )
 
-        self.check_argument_types(
-            arg_types, arg_kinds, args, callee, formal_to_actual, context, object_type=object_type
-        )
-
+            self.check_argument_types(
+                arg_types, arg_kinds, args, callee, formal_to_actual, context, object_type=object_type
+            )
+        do_type_function = not error_watcher.has_new_errors()
         if (
             callee.is_type_obj()
             and (len(arg_types) == 1)
@@ -1916,7 +1921,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             # Store the inferred callable type.
             self.chk.store_type(callable_node, callee)
 
-        if callable_name:
+        if do_type_function and callee.is_type_function:
             container_name, fn_name = callable_name.rsplit(".", maxsplit=1)
             resolved = None
             for part in container_name.split("."):
@@ -1934,40 +1939,38 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                 container = resolved
                 module_name = container.fullname
 
-            fn_node = container.names[fn_name].node
-            if isinstance(fn_node, Decorator):
-                fn_node = fn_node.func
-            if fn_node.is_type_function:
-                all_sigs = []
-                for arg in (object_type and [object_type] or []) + arg_types:
-                    if isinstance(arg, UnionType):
-                        if not all_sigs:
-                            all_sigs = [[x] for x in arg.items]
-                        else:
-                            from itertools import product
-                            all_sigs = product(all_sigs, arg.items)
-                all_sigs = all_sigs or [(object_type and [object_type] or []) + arg_types]
-                all_rets = []
-                for sig in all_sigs:
-                    arg_values = []
-                    for arg in sig:
-                        if isinstance(arg, Instance):
-                            arg = arg.last_known_value
-                        if not isinstance(arg, LiteralType):
-                            continue
-                        arg_values.append(arg.value)
-                    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(
-                        io.StringIO()
-                    ):
-                        mod = importlib.import_module(module_name)
+            all_sigs = []
+            for arg in (object_type and [object_type] or []) + arg_types:
+                if isinstance(arg, UnionType):
+                    if not all_sigs:
+                        all_sigs = [[x] for x in arg.items]
+                    else:
+                        from itertools import product
+
+                        all_sigs = product(all_sigs, arg.items)
+            all_sigs = all_sigs or [(object_type and [object_type] or []) + arg_types]
+            all_rets = []
+            for sig in all_sigs:
+                with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(
+                    io.StringIO()
+                ):
+                    mod = importlib.import_module(module_name)
                     container = getattr(mod, container.name) if is_method else mod
                     fn = getattr(container, fn_name)
-                    ret_type = fn(*arg_values)
-                    type_ret_type = ret_type.__class__
-                    all_rets.append(LiteralType(
-                        ret_type,
-                        self.named_type(f"{type_ret_type.__module__}.{type_ret_type.__name__}"),
-                    ))
+                if isinstance(fn, (GetSetDescriptorType, property)):
+                    fn = fn.__get__
+                args = [type_to_value(arg, self.chk) for arg in sig]
+                try:
+                    return_value = fn(*args)
+                except RecursionError:
+                    self.chk.fail("maximum recursion depth exceeded while evaluating type function", context=context)
+                except TypeError as type_error:
+                    code = ErrorCode(type_error.args[1], "", "") if len(type_error.args) > 1 else None
+                    self.chk.fail(type_error.args[0], code=code, context=context)
+                    all_rets.append(UninhabitedType())
+                else:
+                    all_rets.append(value_to_type(return_value, chk=self.chk))
+            if all_rets:
                 callee = callee.copy_modified(ret_type=make_simplified_union(all_rets))
 
         if callable_name and (

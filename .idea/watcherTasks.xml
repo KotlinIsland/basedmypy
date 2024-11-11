@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ProjectTasksOptions">
-    <TaskOptions isEnabled="true">
+    <TaskOptions isEnabled="false">
       <option name="arguments" value="$FilePath$" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
@@ -41,5 +41,34 @@
       <option name="workingDir" value="$ProjectFileDir$" />
       <envs />
     </TaskOptions>
+    <TaskOptions isEnabled="false">
+      <option name="arguments" value="$FileRelativePath$ -- --ide --show-absolute-path" />
+      <option name="checkSyntaxErrors" value="true" />
+      <option name="description" />
+      <option name="exitCodeBehavior" value="NEVER" />
+      <option name="fileExtension" value="py" />
+      <option name="immediateSync" value="false" />
+      <option name="name" value="mypy" />
+      <option name="output" value="" />
+      <option name="outputFilters">
+        <array>
+          <FilterInfo>
+            <option name="description" value="" />
+            <option name="name" value="" />
+            <option name="regExp" value="$FILE_PATH$:$LINE$:$COLUMN$:.*? $MESSAGE$" />
+          </FilterInfo>
+        </array>
+      </option>
+      <option name="outputFromStdout" value="false" />
+      <option name="program" value="$PyInterpreterDirectory$/dmypy" />
+      <option name="runOnExternalChanges" value="false" />
+      <option name="scopeName" value="All Places" />
+      <option name="trackOnlyRoot" value="false" />
+      <option name="workingDir" value="$ProjectFileDir$" />
+      <envs />
+    </TaskOptions>
+    <enabled-global>
+      <option value="dmypy" />
+    </enabled-global>
   </component>
 </project>
