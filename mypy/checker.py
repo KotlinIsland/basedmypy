@@ -1497,10 +1497,15 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                                     # the consistency check will be performed at call sites.
                                     msg = None
                                 elif typ.arg_names[i] in {"self", "cls"}:
-                                    msg = message_registry.ERASED_SELF_TYPE_NOT_SUPERTYPE.format(
-                                        erased.str_with_options(self.options),
-                                        ref_type.str_with_options(self.options),
-                                    )
+                                    if mypy.options._based:
+                                        msg = None
+                                    else:
+                                        msg = (
+                                            message_registry.ERASED_SELF_TYPE_NOT_SUPERTYPE.format(
+                                                erased.str_with_options(self.options),
+                                                ref_type.str_with_options(self.options),
+                                            )
+                                        )
                                 else:
                                     msg = message_registry.MISSING_OR_INVALID_SELF_TYPE
                                 if msg:

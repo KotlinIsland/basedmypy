@@ -235,3 +235,13 @@ class B(A):
 \[[tool.mypy.overrides]]
 module="other"
 work_not_properly_function_names=true
+
+
+[case testErasedSelfType]
+
+class A:
+    def f(self: B):
+        reveal_type(self) # N: Revealed type is "__main__.B"
+class B(A): ...
+A().f()  # E: Invalid self argument "A" to attribute function "f" with type "def (self: B) -> None"  [misc]
+B().f()  # no error
