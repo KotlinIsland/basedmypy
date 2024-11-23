@@ -5,7 +5,6 @@ import sys
 import types
 from _collections_abc import dict_items, dict_keys, dict_values
 from _typeshed import (
-    AnyStr_co,
     ConvertibleToFloat,
     ConvertibleToInt,
     FileDescriptorOrPath,
@@ -40,6 +39,7 @@ from typing import (  # noqa: Y022
     _NamedCallable,
     IO,
     Any,
+    AnyStr,
     BinaryIO,
     ClassVar,
     Generic,
@@ -1194,8 +1194,8 @@ def chr(i: int, /) -> str: ...
 
 # We define this here instead of using os.PathLike to avoid import cycle issues.
 # See https://github.com/python/typeshed/pull/991#issuecomment-288160993
-class _PathLike(Protocol[AnyStr_co]):
-    def __fspath__(self) -> AnyStr_co: ...
+class _PathLike(Protocol[AnyStr]):
+    def __fspath__(self) -> AnyStr: ...
 
 if sys.version_info >= (3, 10):
     @_as_builtin

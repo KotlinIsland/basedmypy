@@ -1,6 +1,5 @@
 import sys
 from _typeshed import (
-    AnyStr_co,
     BytesPath,
     FileDescriptor,
     FileDescriptorLike,
@@ -413,9 +412,9 @@ In the future, this property will contain the last metadata change time."""
     # See https://github.com/python/typeshed/pull/6560#issuecomment-991253327
 
 @runtime_checkable
-class PathLike(Protocol[AnyStr_co]):
+class PathLike(Protocol[AnyStr]):
     @abstractmethod
-    def __fspath__(self) -> AnyStr_co: ...
+    def __fspath__(self) -> AnyStr: ...
 
 @overload
 def listdir(path: StrPath | None = None) -> list[str]: ...
