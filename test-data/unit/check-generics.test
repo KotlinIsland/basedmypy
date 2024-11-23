@@ -891,7 +891,8 @@ fun1(1) # E: Argument 1 to "fun1" has incompatible type "int"; expected "List[Tu
 fun1([(1, 'x')]) # E: Cannot infer type argument 1 of "fun1"
 
 reveal_type(fun2([(1, 1)], 1)) # N: Revealed type is "builtins.list[Tuple[builtins.int, builtins.int]]"
-fun2([('x', 'x')], 'x') # E: Value of type variable "T" of "fun2" cannot be "str"
+fun2([('x', 'x')], 'x') # E: Value of type variable "T" of "fun2" cannot be "str" \
+                        # N: "T" of "fun2" is a constrained type variable, it is not generic
 
 [builtins fixtures/list.pyi]
 
@@ -1120,7 +1121,9 @@ y = None # type: SameA[str] # Another error here
 [builtins fixtures/list.pyi]
 [out]
 main:9:8: error: Value of type variable "T" of "A" cannot be "str"
+main:9:8: note: "T" of "A" is a constrained type variable, it is not generic
 main:13:1: error: Value of type variable "T" of "SameA" cannot be "str"
+main:13:1: note: "T" of "SameA" is a constrained type variable, it is not generic
 
 [case testGenericTypeAliasesIgnoredPotentialAlias]
 class A: ...

@@ -659,6 +659,7 @@ _case_name_pattern = re.compile(
     r"(-(?P<platform>posix|windows))?"
     r"(?P<skip>-skip)?"
     r"(?P<xfail>-xfail)?"
+    r"(?P<version>-3.\d+)?"
 )
 
 
@@ -689,6 +690,11 @@ def split_test_cases(
                     name, parent.name, line_no
                 )
             )
+        version = m.group("version")
+        if version:
+            if sys.version_info < (3, int(version.split(".")[1])):
+                continue
+            name += version
         yield DataDrivenTestCase.from_parent(  # type: ignore[unused-ignore, no-untyped-call]
             parent=parent,
             suite=suite,

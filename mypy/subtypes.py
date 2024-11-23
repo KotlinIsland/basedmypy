@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-from typing import Any, Callable, Final, Iterator, List, TypeVar, cast
+from typing import Callable, Final, Iterator, List, TypeVar, cast
 from typing_extensions import TypeAlias as _TypeAlias
 
 import mypy.applytype
@@ -1965,7 +1965,7 @@ def unify_generic_callable(
     non_none_inferred_vars = cast(List[Type], inferred_vars)
     had_errors = False
 
-    def report(*args: Any) -> None:
+    def report(*_, **__) -> None:
         nonlocal had_errors
         had_errors = True
 

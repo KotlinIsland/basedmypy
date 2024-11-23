@@ -714,7 +714,8 @@ class D(C[XY], Generic[XY]): pass
 class X: pass
 class Y: pass
 
-x: D[int]  # E: Value of type variable "XY" of "D" cannot be "int"
+x: D[int]  # E: Value of type variable "XY" of "D" cannot be "int" \
+           # N: "XY" of "D" is a constrained type variable, it is not generic
 y: D[Y]
 
 [case testNewAnalyzerTypeVarForwardReference2]
@@ -730,7 +731,8 @@ class D(C[XY]): pass
 class X: pass
 class Y: pass
 
-x: D[int]  # E: Value of type variable "XY" of "D" cannot be "int"
+x: D[int]  # E: Value of type variable "XY" of "D" cannot be "int" \
+           # N: "XY" of "D" is a constrained type variable, it is not generic
 y: D[Y]
 
 [case testNewAnalyzerTypeVarForwardReferenceValuesDeferred]
@@ -747,7 +749,8 @@ class X(Defer): pass
 class Y(Defer): pass
 class Defer: ...
 
-x: D[int]  # E: Value of type variable "XY" of "D" cannot be "int"
+x: D[int]  # E: Value of type variable "XY" of "D" cannot be "int" \
+           # N: "XY" of "D" is a constrained type variable, it is not generic
 y: D[Y]
 [builtins fixtures/list.pyi]
 
@@ -1626,7 +1629,8 @@ class C(Generic[T]): pass
 
 class D(B): pass
 
-x: C[D] # E: Value of type variable "T" of "C" cannot be "D"
+x: C[D] # E: Value of type variable "T" of "C" cannot be "D" \
+        # N: "T" of "C" is a constrained type variable, it is not generic
 y: C[E]
 z: C[str]
 

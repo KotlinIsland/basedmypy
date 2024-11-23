@@ -134,6 +134,30 @@ So you are able to have functions with polymorphic generic parameters:
     reveal_type(foo(["based"], "mypy"))  # N: Revealed type is "list[str]"
     reveal_type(foo({1, 2}, 3))  # N: Revealed type is "set[int]"
 
+
+``TypeVar`` usages work properly
+--------------------------------
+
+mypy allows various invalid usages of ``TypeVar``, which are corrected in basedmypy.
+
+it's invalid to provide variance to a constrained ``TypeVar`` because they aren't generic, they
+represent a set of choices that the ``TypeVar`` can be replaced with:
+
+.. code-block:: python
+
+    E = TypeVar("E", int, str, covariant=True)  # mypy doesn't report the error here
+
+    G = TypeVar("G", int, str)
+    class P(Protocol[G]):  # mypy reports an invalid error here
+        def f() -> E: ...
+
+    class A[T: (object, str)]: ...
+    a = A[int]()  # mypy doesn't report the error here
+
+    class B[T: int]: ...
+    type C = B[object]  # mypy doesn't report the error here
+
+
 Reinvented type guards
 ----------------------
 

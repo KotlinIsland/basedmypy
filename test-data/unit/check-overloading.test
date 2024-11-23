@@ -1361,10 +1361,12 @@ def g(x: int, *a: AnyStr) -> None: pass
 
 g('foo')
 g('foo', 'bar')
-g('foo', b'bar') # E: Value of type variable "AnyStr" of "g" cannot be "Sequence[object]"
+g('foo', b'bar') # E: Value of type variable "AnyStr" of "g" cannot be "Sequence[object]" \
+                 # N: "AnyStr" of "g" is a constrained type variable, it is not generic
 g(1)
 g(1, 'foo')
-g(1, 'foo', b'bar') # E: Value of type variable "AnyStr" of "g" cannot be "Sequence[object]"
+g(1, 'foo', b'bar') # E: Value of type variable "AnyStr" of "g" cannot be "Sequence[object]" \
+                    # N: "AnyStr" of "g" is a constrained type variable, it is not generic
 [builtins fixtures/primitives.pyi]
 
 [case testOverloadOverlapWithTypeVarsWithValuesOrdering]
@@ -5404,7 +5406,7 @@ def f_d(arg: str) -> None: ...
 @dec_d  # E: "int" not callable
 def f_d(arg): ...
 
-Bad1 = TypeVar('Good')  # type: ignore
+Bad1 = TypeVar(Bad1)  # type: ignore
 
 def dec_e(f: Bad1) -> Bad1: ...  # type: ignore
 
@@ -5412,7 +5414,7 @@ def dec_e(f: Bad1) -> Bad1: ...  # type: ignore
 def f_e(arg: int) -> None: ...
 @overload
 def f_e(arg: str) -> None: ...
-@dec_e  # E: Bad1? not callable
+@dec_e
 def f_e(arg): ...
 
 class Bad2:

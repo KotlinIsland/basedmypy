@@ -5124,6 +5124,17 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                     min_arg_count, len(type_vars), len(args), ctx
                 )
                 return AnyType(TypeOfAny.from_error)
+            for arg, type_var in zip(args, type_vars):
+                arg_type = get_proper_type(arg)
+                if isinstance(arg_type, AnyType):
+                    continue
+                if not isinstance(type_var, TypeVarType) or not type_var.values:
+                    continue
+                if not any(is_same_type(constraint, arg_type) for constraint in type_var.values):
+                    # TODO: can we make the context the arg
+                    self.msg.incompatible_typevar_value(
+                        tp, arg, type_var.name, ctx, constrained=True
+                    )
             return self.apply_generic_arguments(tp, self.split_for_callable(tp, args, ctx), ctx)
         if isinstance(tp, Overloaded):
             for it in tp.items:

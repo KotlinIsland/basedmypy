@@ -4708,7 +4708,7 @@ class SemanticAnalyzer(
             call.analyzed.values = values
             call.analyzed.default = default
         if any(has_placeholder(v) for v in values):
-            self.process_placeholder(None, "TypeVar values", s, force_progress=updated)
+            self.process_placeholder(None, "TypeVar constraints", s, force_progress=updated)
         elif has_placeholder(upper_bound):
             self.process_placeholder(None, "TypeVar upper bound", s, force_progress=updated)
         elif has_placeholder(default):
@@ -4787,7 +4787,7 @@ class SemanticAnalyzer(
                     return None
             elif param_name == "bound":
                 if has_values:
-                    self.fail("TypeVar cannot have both values and an upper bound", context)
+                    self.fail("TypeVar cannot have both constraints and an upper bound", context)
                     return None
                 tv_arg = self.get_typevarlike_argument(
                     "TypeVar", param_name, param_value, context, allow_unbound_tvars=True
@@ -4813,6 +4813,10 @@ class SemanticAnalyzer(
                 )
                 return None
 
+        if (covariant or contravariant) and has_values:
+            self.fail(
+                "TypeVar with constraints cannot have variance", context, code=codes.VALID_TYPE
+            )
         if covariant and contravariant:
             self.fail("TypeVar cannot be both covariant and contravariant", context)
             return None
@@ -4889,8 +4893,7 @@ class SemanticAnalyzer(
             self.fail("Cannot declare the type of a TypeVar or similar construct", s)
             return None
 
-        if not self.check_typevarlike_name(call, lvalue.name, s):
-            return None
+        self.check_typevarlike_name(call, lvalue.name, s)
         return lvalue.name
 
     def process_paramspec_declaration(self, s: AssignmentStmt) -> bool:
@@ -5650,6 +5653,7 @@ class SemanticAnalyzer(
 
             current_node = existing.node if existing else alias_node
             assert isinstance(current_node, TypeAlias)
+            s.type = current_node.target
             self.disable_invalid_recursive_aliases(s, current_node, s.value)
             s.name.accept(self)
         finally:

@@ -4970,6 +4970,7 @@ class D(Generic[T]):
 [out]
 ==
 a.py:3: error: Value of type variable "T" of "D" cannot be "A"
+a.py:3: note: "T" of "D" is a constrained type variable, it is not generic
 
 [case testTypeVarValuesMethod1]
 import a
@@ -5092,7 +5093,10 @@ U = TypeVar('U', int, str)
 [out]
 ==
 main:3: error: Value of type variable "submod.T" of "D" cannot be "S"
+main:3: note: "submod.T" of "D" is a constrained type variable, it is not generic
 main:3: error: Value of type variable "submod.U" of "D" cannot be "I"
+main:3: note: "submod.U" of "D" is a constrained type variable, it is not generic
+
 
 [case testTypeVarBoundRuntime]
 from mod import I, S, D
@@ -5140,6 +5144,7 @@ def g(x: T) -> T:
 [out]
 ==
 a.py:2: error: Value of type variable "T" of function cannot be "int"
+a.py:2: note: "T" of function is a constrained type variable, it is not generic
 
 [case testGenericFineCallableNamed]
 import a
@@ -5189,6 +5194,7 @@ def g() -> Callable[[T], T]:
 [out]
 ==
 a.py:2: error: Value of type variable "T" of function cannot be "int"
+a.py:2: note: "T" of function is a constrained type variable, it is not generic
 
 [case testGenericFineCallableAddedBound]
 import a

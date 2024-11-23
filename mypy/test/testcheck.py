@@ -137,7 +137,9 @@ class TypeCheckSuite(DataSuite):
         options = parse_options(original_program_text, testcase, incremental_step, based=based)
         options.use_builtins_fixtures = True
         options.show_traceback = True
-
+        version_match = re.search(r"-3\.(\d+)$", testcase.name)
+        if version_match:
+            options.python_version = 3, int(version_match.group(1))
         # Enable some options automatically based on test file name.
         if "columns" in testcase.file:
             options.show_column_numbers = True

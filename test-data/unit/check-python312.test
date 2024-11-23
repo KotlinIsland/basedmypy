@@ -847,13 +847,15 @@ def f[T: (int, str)](x: T) -> T:
 
 reveal_type(f(1))  # N: Revealed type is "builtins.int"
 reveal_type(f('x'))  # N: Revealed type is "builtins.str"
-f(None)  # E: Value of type variable "T" of "f" cannot be "None"
+f(None)  # E: Value of type variable "T" of "f" cannot be "None" \
+         # N: "T" of "f" is a constrained type variable, it is not generic
 
 class C[T: (object, None)]: pass
 
 a: C[object]
 b: C[None]
-c: C[int]  # E: Value of type variable "T" of "C" cannot be "int"
+c: C[int]  # E: Value of type variable "T" of "C" cannot be "int" \
+           # N: "T" of "C" is a constrained type variable, it is not generic
 
 [case testPEP695ValueRestrictionForwardReference]
 class C[T: (int, D)]:
@@ -865,7 +867,8 @@ class C[T: (int, D)]:
         self.x: T = x
 
 reveal_type(C(1).x)  # N: Revealed type is "builtins.int"
-C(None)  # E: Value of type variable "T" of "C" cannot be "None"
+C(None)  # E: Value of type variable "T" of "C" cannot be "None" \
+         # N: "T" of "C" is a constrained type variable, it is not generic
 
 class D: pass
 
@@ -962,6 +965,7 @@ tmp/a.py:2: note: Revealed type is "builtins.int"
 tmp/a.py:3: note: Revealed type is "Union[builtins.int, builtins.str]"
 tmp/a.py:4: error: Value of type variable "T" of "g" cannot be "str"
 tmp/a.py:5: error: Value of type variable "S" of "g" cannot be "int"
+tmp/a.py:5: note: "S" of "g" is a constrained type variable, it is not generic
 
 [case testPEP695IncrementalClass]
 import a
@@ -993,6 +997,7 @@ class D[T: int, S: (str, None)]:
 [out2]
 tmp/a.py:3: note: Revealed type is "b.C[builtins.int]"
 tmp/a.py:12: error: Value of type variable "S" of "D" cannot be "SS"
+tmp/a.py:12: note: "S" of "D" is a constrained type variable, it is not generic
 tmp/a.py:13: error: Type argument "object" of "D" must be a subtype of "int"
 
 [case testPEP695IncrementalParamSpecAndTypeVarTuple]
@@ -1459,18 +1464,22 @@ reveal_type(b1)  # N: Revealed type is "builtins.list[Any]"
 b2: A2[Any]
 b3: A2[int]
 b4: A2[C]
-b5: A2[D]  # E: Value of type variable "T" of "A2" cannot be "D"
-b6: A2[object]  # E: Value of type variable "T" of "A2" cannot be "object"
+b5: A2[D]  # E: Value of type variable "T" of "A2" cannot be "D" \
+           # N: "T" of "A2" is a constrained type variable, it is not generic
+b6: A2[object]  # E: Value of type variable "T" of "A2" cannot be "object" \
+                # N: "T" of "A2" is a constrained type variable, it is not generic
 
 list[A2[int]]()
-list[A2[None]]()  # E: Invalid type argument value for "A2"
+list[A2[None]]()  # E: Invalid type argument value for "A2" \
+                  # N: "T" of "A2" is a constrained type variable, it is not generic
 
 class N(int): pass
 
 type A3[T: C, S: (int, str)] = T | S
 c1: A3[C, int]
 c2: A3[D, str]
-c3: A3[C, N]  # E: Value of type variable "S" of "A3" cannot be "N"
+c3: A3[C, N]  # E: Value of type variable "S" of "A3" cannot be "N" \
+              # N: "S" of "A3" is a constrained type variable, it is not generic
 c4: A3[int, str]  # E: Type argument "int" of "A3" must be a subtype of "C"
 [builtins fixtures/type.pyi]
 [typing fixtures/typing-full.pyi]
@@ -1614,7 +1623,8 @@ class M[T: (int, str)](NamedTuple):
 
 c: M[int]
 d: M[str]
-e: M[bool]  # E: Value of type variable "T" of "M" cannot be "bool"
+e: M[bool]  # E: Value of type variable "T" of "M" cannot be "bool" \
+            # N: "T" of "M" is a constrained type variable, it is not generic
 
 [builtins fixtures/tuple.pyi]
 

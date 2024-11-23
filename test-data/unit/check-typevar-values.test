@@ -7,7 +7,8 @@ T = TypeVar('T', int, str)
 def f(x: T) -> None: pass
 f(1)
 f('x')
-f(object()) # E: Value of type variable "T" of "f" cannot be "object"
+f(object()) # E: Value of type variable "T" of "f" cannot be "object" \
+            # N: "T" of "f" is a constrained type variable, it is not generic
 
 [case testCallGenericFunctionWithTypeVarValueRestrictionUsingContext]
 from typing import TypeVar, List
@@ -250,7 +251,8 @@ X = TypeVar('X', int, str)
 class A(Generic[X]): pass
 a: A[int]
 b: A[str]
-d: A[object]  # E: Value of type variable "X" of "A" cannot be "object"
+d: A[object]  # E: Value of type variable "X" of "A" cannot be "object" \
+              # N: "X" of "A" is a constrained type variable, it is not generic
 c: A[Any]
 
 [case testConstructGenericTypeWithTypevarValuesAndTypeInference]
@@ -261,7 +263,8 @@ class A(Generic[X]):
 A(1)
 A('x')
 A(cast(Any, object()))
-A(object()) # E: Value of type variable "X" of "A" cannot be "object"
+A(object()) # E: Value of type variable "X" of "A" cannot be "object" \
+            # N: "X" of "A" is a constrained type variable, it is not generic
 
 [case testGenericTypeWithTypevarValuesAndTypevarArgument]
 from typing import TypeVar, Generic
@@ -279,6 +282,7 @@ def h(x: Z) -> None:
     a: D[Z]
 [out]
 main:11: error: Invalid type argument value for "D"
+main:11: note: "X" of "D" is a constrained type variable, it is not generic
 main:13: error: Type variable "Z" not valid as type argument value for "D"
 
 [case testGenericTypeWithTypevarValuesAndSubtypePromotion]
@@ -414,8 +418,10 @@ Y = TypeVar('Y', int, str)
 class C(Generic[X, Y]): pass
 a: C[A, int]
 b: C[B, str]
-c: C[int, int]  # E: Value of type variable "X" of "C" cannot be "int"
-d: C[A, A]      # E: Value of type variable "Y" of "C" cannot be "A"
+c: C[int, int]  # E: Value of type variable "X" of "C" cannot be "int" \
+                # N: "X" of "C" is a constrained type variable, it is not generic
+d: C[A, A]      # E: Value of type variable "Y" of "C" cannot be "A" \
+                # N: "Y" of "C" is a constrained type variable, it is not generic
 
 [case testCallGenericFunctionUsingMultipleTypevarsWithValues]
 from typing import TypeVar
@@ -426,8 +432,10 @@ Y = TypeVar('Y', int, str)
 def f(x: X, y: Y) -> None: pass
 f(A(), '')
 f(B(), 1)
-f(A(), A())  # E: Value of type variable "Y" of "f" cannot be "A"
-f(1, 1)  # E: Value of type variable "X" of "f" cannot be "int"
+f(A(), A())  # E: Value of type variable "Y" of "f" cannot be "A" \
+             # N: "Y" of "f" is a constrained type variable, it is not generic
+f(1, 1)  # E: Value of type variable "X" of "f" cannot be "int" \
+         # N: "X" of "f" is a constrained type variable, it is not generic
 
 [case testGenericFunctionWithNormalAndRestrictedTypevar]
 from typing import TypeVar, Generic
@@ -444,6 +452,7 @@ def f(x: X, y: Y, z: int) -> None:
     y.foo # Error
 [out]
 main:8: error: Value of type variable "Y" of "C" cannot be "X"
+main:8: note: "Y" of "C" is a constrained type variable, it is not generic
 main:10: error: Incompatible types in assignment (expression has type "X", variable has type "int")
 main:11: error: Incompatible types in assignment (expression has type "str", variable has type "int")
 main:12: error: "int" has no attribute "foo"

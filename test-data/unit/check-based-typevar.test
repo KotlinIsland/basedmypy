@@ -1,0 +1,49 @@
+[case testConstrainedTypeVarWithVariance]
+from typing import Protocol, TypeVar
+
+T1 = TypeVar("T1", int, str)
+T2 = TypeVar("T2", int, str, covariant=True)  # E: TypeVar with constraints cannot have variance  [valid-type]
+T3 = TypeVar("T3", int, str, contravariant=True)  # E: TypeVar with constraints cannot have variance  [valid-type]
+T4 = TypeVar("T4", int, str, infer_variance=True)  # E: Unexpected argument to "TypeVar()": "infer_variance"  [misc] \
+                                                   # E: "int" not callable  [operator]  # stupid fake stubs moment
+
+class A(Protocol[T1]):
+    """inferred as covariant, but it's constrained so it's valid"""
+    def f(self) -> T1:
+        pass
+
+
+[case testTypeVarWrongNameStillWorks]
+from typing import TypeVar
+
+T = TypeVar("NotT")  # E: String argument 1 "NotT" to TypeVar(...) does not match variable name "T"  [misc]
+
+def f(t: T): ...
+
+
+[case testConstrainedTypeVarTypeApplication]
+from typing import TypeVar, Generic
+
+T = TypeVar("T", "int | str", str)
+
+class A(Generic[T]): ...
+
+A[int]()  # E: Value of type variable "T" of "A" cannot be "int"  [type-var]  \
+          # N: "T" of "A" is a constrained type variable, it is not generic
+
+
+[case testConstrainedTypeAliasExtra-3.12]
+class A[T: (int, str)]: ...
+
+type BoolA[T: bool] = A[T]  # E: Type variable "T" not valid as type argument value for "A"  [type-var]
+
+
+[case testConstraintAllowAny]
+from typing import TypeVar, Generic, Any
+from typing_extensions import TypeAlias
+
+T = TypeVar("T", int, str)
+class A(Generic[T]): ...
+
+a = A[Any]()  # E: Expression type contains "Any" (has type "A[Any]")  [no-any-expr]
+[builtins fixtures/tuple.pyi]

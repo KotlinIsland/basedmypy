@@ -986,16 +986,18 @@ T = TypeVar("T", int, str)
 S = TypeVar("S", int, bytes)
 
 class C(Generic[T]): ...
-class D(C[S]): ...  # E: Invalid type argument value for "C"
+class D(C[S]): ...  # E: Invalid type argument value for "C" \
+                    # N: "T" of "C" is a constrained type variable, it is not generic
 
 U = TypeVar("U")
 A = List[C[U]]
-x: A[bytes]  # E: Value of type variable "T" of "C" cannot be "bytes"
+x: A[bytes]  # E: Value of type variable "T" of "C" cannot be "bytes" \
+             # N: "T" of "C" is a constrained type variable, it is not generic
 
 V = TypeVar("V", bound=int)
 class E(Generic[V]): ...
 B = List[E[U]]
-y: B[str]  # E: Type argument "str" of "E" must be a subtype of "int"
+y: B[str]  # E: Type argument "str" of "E" must be a subtype of "int" \
 
 [case testValidTypeAliasValuesMoreRestrictive]
 from typing import TypeVar, Generic, List
@@ -1008,7 +1010,8 @@ class C(Generic[T]): ...
 
 A = List[C[S]]
 x: A[int]
-x_bad: A[bytes]  # E: Value of type variable "S" of "A" cannot be "bytes"
+x_bad: A[bytes]  # E: Value of type variable "S" of "A" cannot be "bytes" \
+                 # N: "S" of "A" is a constrained type variable, it is not generic
 
 B = List[C[U]]
 y: B[int]

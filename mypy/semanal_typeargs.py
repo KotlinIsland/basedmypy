@@ -15,7 +15,7 @@ from mypy.errors import Errors
 from mypy.message_registry import INVALID_PARAM_SPEC_LOCATION, INVALID_PARAM_SPEC_LOCATION_NOTE
 from mypy.messages import format_type
 from mypy.mixedtraverser import MixedTraverserVisitor
-from mypy.nodes import Block, ClassDef, Context, FakeInfo, FuncItem, MypyFile
+from mypy.nodes import Block, ClassDef, Context, FakeInfo, FuncItem, MypyFile, TypeAliasStmt
 from mypy.options import Options
 from mypy.scope import Scope
 from mypy.subtypes import is_same_type, is_subtype
@@ -103,6 +103,10 @@ class TypeArgumentAnalyzer(MixedTraverserVisitor):
             # the expansion, most likely it will result in the same kind of error.
             get_proper_type(t).accept(self)
 
+    def visit_type_alias_stmt(self, s: TypeAliasStmt):
+        if s.type:
+            s.type.accept(self)
+
     def visit_tuple_type(self, t: TupleType) -> None:
         t.items = flatten_nested_tuples(t.items)
         # We could also normalize Tuple[*tuple[X, ...]] -> tuple[X, ...] like in
@@ -182,7 +186,7 @@ class TypeArgumentAnalyzer(MixedTraverserVisitor):
                             is_error = True
                             self.fail(
                                 message_registry.INVALID_TYPEVAR_AS_TYPEARG.format(arg.name, name),
-                                ctx,
+                                ctx,  # TODO: can we use arg as the context
                                 code=codes.TYPE_VAR,
                             )
                             continue
@@ -261,25 +265,30 @@ class TypeArgumentAnalyzer(MixedTraverserVisitor):
             ):
                 is_error = True
                 if len(actuals) > 1 or not isinstance(actual, Instance):
-                    self.fail(
-                        message_registry.INVALID_TYPEVAR_ARG_VALUE.format(name),
-                        context,
-                        code=codes.TYPE_VAR,
-                    )
+                    message = message_registry.INVALID_TYPEVAR_ARG_VALUE.format(name)
                 else:
-                    class_name = f'"{name}"'
-                    actual_type_name = f'"{actual.type.name}"'
-                    self.fail(
-                        message_registry.INCOMPATIBLE_TYPEVAR_VALUE.format(
-                            arg_name, class_name, actual_type_name
-                        ),
-                        context,
-                        code=codes.TYPE_VAR,
+                    message = message_registry.INCOMPATIBLE_TYPEVAR_VALUE.format(
+                        arg_name, f'"{name}"', f'"{actual.type.name}"'
                     )
+                self.fail(
+                    message,
+                    context,  # TODO: can the context be on the arg
+                    code=codes.TYPE_VAR,
+                    notes=[
+                        f'"{arg_name}" of "{name}" is a constrained type variable, it is not generic'
+                    ],
+                )
         return is_error
 
-    def fail(self, msg: str, context: Context, *, code: ErrorCode | None = None) -> None:
-        self.errors.report(context.line, context.column, msg, code=code)
+    def fail(
+        self,
+        msg: str,
+        context: Context,
+        *,
+        code: ErrorCode | None = None,
+        notes: list[str] | None = None,
+    ) -> None:
+        self.errors.report(context.line, context.column, msg, code=code, notes=notes)
 
     def note(self, msg: str, context: Context, *, code: ErrorCode | None = None) -> None:
         self.errors.report(context.line, context.column, msg, severity="note", code=code)

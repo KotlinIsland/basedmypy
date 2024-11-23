@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Iterable, Sequence, cast
+from typing import Iterable, Protocol, Sequence, cast
 
 import mypy.subtypes
 from mypy.erasetype import erase_typevars
@@ -31,11 +31,17 @@ from mypy.types import (
 )
 
 
+class ReportIncompatibleTypevarValue(Protocol):
+    def __call__(
+        self, a: CallableType, b: Type, c: str, d: Context, /, *, constrained: bool = False
+    ): ...
+
+
 def get_target_type(
     tvar: TypeVarLikeType,
     type: Type,
     callable: CallableType,
-    report_incompatible_typevar_value: Callable[[CallableType, Type, str, Context], None],
+    report_incompatible_typevar_value: ReportIncompatibleTypevarValue,
     context: Context,
     skip_unsatisfied: bool,
 ) -> Type | None:
@@ -69,7 +75,8 @@ def get_target_type(
             return best
         if skip_unsatisfied:
             return None
-        report_incompatible_typevar_value(callable, type, tvar.name, context)
+        # TODO: can we use `type` as the context here?
+        report_incompatible_typevar_value(callable, type, tvar.name, context, constrained=True)
     else:
         upper_bound = tvar.upper_bound
         if tvar.name == "Self":
@@ -87,7 +94,7 @@ def get_target_type(
 def apply_generic_arguments(
     callable: CallableType,
     orig_types: Sequence[Type | None],
-    report_incompatible_typevar_value: Callable[[CallableType, Type, str, Context], None],
+    report_incompatible_typevar_value: ReportIncompatibleTypevarValue,
     context: Context,
     skip_unsatisfied: bool = False,
 ) -> CallableType:

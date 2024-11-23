@@ -1655,14 +1655,28 @@ class MessageBuilder:
         self.fail(f'Property "{name}" defined in "{type.name}" is read-only', context)
 
     def incompatible_typevar_value(
-        self, callee: CallableType, typ: Type, typevar_name: str, context: Context
+        self,
+        callee: CallableType,
+        typ: Type,
+        typevar_name: str,
+        context: Context,
+        *,
+        constrained=False,
     ) -> None:
+        name = callable_name(callee)
         self.fail(
             message_registry.INCOMPATIBLE_TYPEVAR_VALUE.format(
-                typevar_name, callable_name(callee) or "function", format_type(typ, self.options)
+                typevar_name, name or "function", format_type(typ, self.options)
             ),
             context,
             code=codes.TYPE_VAR,
+            notes=(
+                [
+                    f'"{typevar_name}" of {name or "function"} is a constrained type variable, it is not generic'
+                ]
+                if constrained
+                else None
+            ),
         )
 
     def dangerous_comparison(self, left: Type, right: Type, kind: str, ctx: Context) -> None:

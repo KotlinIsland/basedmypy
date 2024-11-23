@@ -1694,6 +1694,7 @@ def func3(x: TLiteral) -> TLiteral:
                   # E: Incompatible return value type (got "str", expected "Literal['foo']")
 def func4(x: TNormal) -> TNormal:
     y = func1(x)  # E: Value of type variable "TLiteral" of "func1" cannot be "int" \
+                  # N: "TLiteral" of "func1" is a constrained type variable, it is not generic \
                   # E: Value of type variable "TLiteral" of "func1" cannot be "str"
     return y
 
@@ -1710,18 +1711,24 @@ reveal_type(func1)          # N: Revealed type is "def [TLiteral in (Literal[3],
 reveal_type(func1(3))       # N: Revealed type is "Literal[3]"
 reveal_type(func1(i1))      # N: Revealed type is "Literal[3]"
 reveal_type(func1(4))       # E: Value of type variable "TLiteral" of "func1" cannot be "Literal[4]" \
+                            # N: "TLiteral" of "func1" is a constrained type variable, it is not generic \
                             # N: Revealed type is "Literal[4]"
 reveal_type(func1(i2))      # E: Value of type variable "TLiteral" of "func1" cannot be "Literal[4]" \
+                            # N: "TLiteral" of "func1" is a constrained type variable, it is not generic \
                             # N: Revealed type is "Literal[4]"
 reveal_type(func1(i))       # E: Value of type variable "TLiteral" of "func1" cannot be "int" \
+                            # N: "TLiteral" of "func1" is a constrained type variable, it is not generic \
                             # N: Revealed type is "builtins.int"
 reveal_type(func1("foo"))   # N: Revealed type is "Literal['foo']"
 reveal_type(func1(s1))      # N: Revealed type is "Literal['foo']"
 reveal_type(func1("bar"))   # E: Value of type variable "TLiteral" of "func1" cannot be "Literal['bar']" \
+                            # N: "TLiteral" of "func1" is a constrained type variable, it is not generic \
                             # N: Revealed type is "Literal['bar']"
 reveal_type(func1(s2))      # E: Value of type variable "TLiteral" of "func1" cannot be "Literal['bar']" \
+                            # N: "TLiteral" of "func1" is a constrained type variable, it is not generic \
                             # N: Revealed type is "Literal['bar']"
 reveal_type(func1(s))       # E: Value of type variable "TLiteral" of "func1" cannot be "str" \
+                            # N: "TLiteral" of "func1" is a constrained type variable, it is not generic \
                             # N: Revealed type is "builtins.str"
 
 reveal_type(func2(3))       # N: Revealed type is "builtins.int"

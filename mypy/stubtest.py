@@ -705,7 +705,7 @@ def _verify_arg_default_value(
                 ):
                     yield (
                         f'runtime argument "{runtime_arg.name}" '
-                        f"has a default value of {runtime_arg.default!r}, "
+                        f"has a default value of {typing.cast(object, runtime_arg.default)!r}, "
                         f"which is different from stub argument default {stub_default!r}"
                     )
     else:

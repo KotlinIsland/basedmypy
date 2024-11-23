@@ -2895,6 +2895,8 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             if not isinstance(tvar, TypeVarType):
                 # Variance of TypeVarTuple and ParamSpec is underspecified by PEPs.
                 continue
+            if tvar.values:
+                continue
             up_args: list[Type] = [
                 object_type if i == j else AnyType(TypeOfAny.special_form)
                 for j, _ in enumerate(tvars)

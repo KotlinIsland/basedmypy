@@ -210,7 +210,8 @@ strA: str & A
 def f(x: AnyStr & A, *a: AnyStr): pass
 f(strA)
 f(strA, 'bar')
-f(strA, b'bar') # E: Value of type variable "AnyStr" of "f" cannot be "str | bytes"  [type-var]
+f(strA, b'bar')  # E: Value of type variable "AnyStr" of "f" cannot be "str | bytes"  [type-var] \
+                 # N: "AnyStr" of "f" is a constrained type variable, it is not generic
 [builtins fixtures/tuple.pyi]
 
 -- what's going on here?

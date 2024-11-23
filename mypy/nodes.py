@@ -1663,7 +1663,7 @@ class MatchStmt(Statement):
 
 
 class TypeAliasStmt(Statement):
-    __slots__ = ("name", "type_args", "value", "invalid_recursive_alias")
+    __slots__ = ("name", "type_args", "value", "invalid_recursive_alias", "type")
 
     __match_args__ = ("name", "type_args", "value")
 
@@ -1678,6 +1678,7 @@ class TypeAliasStmt(Statement):
         self.type_args = type_args
         self.value = value
         self.invalid_recursive_alias = False
+        self.type: mypy.types.Type | None = None
 
     def accept(self, visitor: StatementVisitor[T]) -> T:
         return visitor.visit_type_alias_stmt(self)

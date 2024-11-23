@@ -15,7 +15,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_callable_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeTranslator\"",
-        "offset": 242,
+        "offset": 249,
         "src": "def visit_callable_type(self, t: CallableType) -> Type:",
         "target": "mypy.applytype.PolyTranslator.visit_callable_type"
       },
@@ -497,7 +497,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 11,
+        "column": 13,
         "message": "Expression type contains \"Any\" (has type \"Any | str\")",
         "offset": 1,
         "src": "return f\"{ver}:{digest}\"",
@@ -513,7 +513,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 22,
+        "column": 38,
         "message": "The string for \"object\" isn't helpful in a user-facing or semantic string",
         "offset": 102,
         "src": "print(f\"{key + ':':24}{value}\")",
@@ -708,7 +708,7 @@
         "column": 8,
         "message": "Explicit \"Any\" is not allowed",
         "offset": 137,
-        "src": "data: Any = json.load(file.open())",
+        "src": "data: Any = json.loads(file.read_text())",
         "target": "mypy.build.load_baseline"
       },
       {
@@ -1081,7 +1081,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 28,
+        "column": 74,
         "message": "Expression has type \"Any\"",
         "offset": 1,
         "src": "manager.log(f\"Invalid or missing fine-grained deps cache: {meta['path']}\")",
@@ -1761,9 +1761,17 @@
       },
       {
         "code": "helpful-string",
-        "column": 28,
+        "column": 70,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 21,
+        "src": "manager.log(f\"Deferring module to fine-grained update {path} ({id})\")",
+        "target": "mypy.build.State.__init__"
+      },
+      {
+        "code": "helpful-string",
+        "column": 78,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 0,
         "src": "manager.log(f\"Deferring module to fine-grained update {path} ({id})\")",
         "target": "mypy.build.State.__init__"
       },
@@ -1897,7 +1905,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 26,
+        "column": 32,
         "message": "Expression has type \"Any\"",
         "offset": 1,
         "src": "manager.trace(f\"    {pth}\")",
@@ -2037,7 +2045,7 @@
         "code": "redundant-expr",
         "column": 11,
         "message": "Condition is always false",
-        "offset": 294,
+        "offset": 296,
         "src": "if isinstance(sym.node, FuncBase):",
         "target": "mypy.checker.TypeChecker.determine_type_of_member"
       },
@@ -2613,7 +2621,7 @@
     "mypy/checkexpr.py": [
       {
         "code": "helpful-string",
-        "column": 33,
+        "column": 61,
         "message": "The type \"type[mypy.nodes.RefExpr]\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 283,
         "src": "raise AssertionError(f\"Unknown RefExpr subclass: {type(expr)}\")",
@@ -2717,7 +2725,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 19,
+        "column": 46,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 625,
         "src": "name = f\"{context.callee.name} of {object_type}\"",
@@ -2919,7 +2927,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_list_expr\" is not using @override but is overriding a method in class \"mypy.visitor.ExpressionVisitor\"",
-        "offset": 219,
+        "offset": 228,
         "src": "def visit_list_expr(self, e: ListExpr) -> Type:",
         "target": "mypy.checkexpr.ExpressionChecker.visit_list_expr"
       },
@@ -3549,7 +3557,7 @@
       },
       {
         "code": "possibly-undefined",
-        "column": 17,
+        "column": 19,
         "message": "Name \"file_read\" may be undefined",
         "offset": 1,
         "src": "prefix = f\"{file_read}: [mypy]: \"",
@@ -3861,17 +3869,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 28,
-        "message": "Expression has type \"Any\"",
-        "offset": 3,
-        "src": "\"toml config file contains \"",
-        "target": "mypy.config_parser.destructure_overrides"
-      },
-      {
-        "code": "no-any-expr",
         "column": 20,
         "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
-        "offset": 4,
+        "offset": 7,
         "src": "result[old_config_name][new_key] = new_value",
         "target": "mypy.config_parser.destructure_overrides"
       },
@@ -3973,7 +3973,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 16,
+        "column": 55,
         "message": "Expression has type \"Any\"",
         "offset": 3,
         "src": "f\"{prefix}Unrecognized option: {key} = {section[key]}\"",
@@ -4005,7 +4005,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 26,
+        "column": 65,
         "message": "Expression has type \"Any\"",
         "offset": 21,
         "src": "print(f\"{prefix}Unrecognized option: {key} = {section[key]}\", file=stderr)",
@@ -4765,7 +4765,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 14,
+        "column": 28,
         "message": "Expression has type \"Any\"",
         "offset": 1,
         "src": "print(f\"Restarting: {response['restart']}\")",
@@ -6329,7 +6329,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 22,
+        "column": 53,
         "message": "The type \"type[list[dict[str, ...] | list[...] | float | int | bool | str | None]]\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 14,
         "src": "raise OSError(f\"Data received is not a dict ({type(data)})\")",
@@ -6337,7 +6337,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 22,
+        "column": 53,
         "message": "The type \"type[float]\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 0,
         "src": "raise OSError(f\"Data received is not a dict ({type(data)})\")",
@@ -6345,7 +6345,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 22,
+        "column": 53,
         "message": "The type \"type[int]\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 0,
         "src": "raise OSError(f\"Data received is not a dict ({type(data)})\")",
@@ -6353,7 +6353,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 22,
+        "column": 53,
         "message": "The type \"type[str]\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 0,
         "src": "raise OSError(f\"Data received is not a dict ({type(data)})\")",
@@ -6361,7 +6361,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 22,
+        "column": 53,
         "message": "The type \"type[None]\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 0,
         "src": "raise OSError(f\"Data received is not a dict ({type(data)})\")",
@@ -10128,48 +10128,6 @@
         "target": "mypy.fastparse.FindYield.visit_yield_from_expr"
       }
     ],
-    "mypy/find_sources.py": [
-      {
-        "code": "no-any-expr",
-        "column": 15,
-        "message": "Expression has type \"Any\"",
-        "offset": 160,
-        "src": "return self._crawl_up_helper(dir) or (\"\", dir)",
-        "target": "mypy.find_sources.SourceFinder.crawl_up_dir"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 15,
-        "message": "Expression type contains \"Any\" (has type \"Any | (str, str)\")",
-        "offset": 0,
-        "src": "return self._crawl_up_helper(dir) or (\"\", dir)",
-        "target": "mypy.find_sources.SourceFinder.crawl_up_dir"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 17,
-        "message": "Expression has type \"Any\"",
-        "offset": 42,
-        "src": "result = self._crawl_up_helper(parent)",
-        "target": "mypy.find_sources.SourceFinder._crawl_up_helper"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 11,
-        "message": "Expression has type \"Any\"",
-        "offset": 1,
-        "src": "if result is None:",
-        "target": "mypy.find_sources.SourceFinder._crawl_up_helper"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 31,
-        "message": "Expression has type \"Any\"",
-        "offset": 6,
-        "src": "mod_prefix, base_dir = result",
-        "target": "mypy.find_sources.SourceFinder._crawl_up_helper"
-      }
-    ],
     "mypy/fixup.py": [
       {
         "code": "truthy-bool",
@@ -10781,9 +10739,17 @@
     "mypy/inspections.py": [
       {
         "code": "helpful-string",
-        "column": 11,
+        "column": 43,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 57,
+        "src": "return f\"{expr.line}:{expr.column + 1}:{expr.end_line}:{expr.end_column}\"",
+        "target": "mypy.inspections.expr_span"
+      },
+      {
+        "code": "helpful-string",
+        "column": 59,
+        "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
+        "offset": 0,
         "src": "return f\"{expr.line}:{expr.column + 1}:{expr.end_line}:{expr.end_column}\"",
         "target": "mypy.inspections.expr_span"
       },
@@ -10805,7 +10771,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 15,
+        "column": 17,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 187,
         "src": "return f\"{module.path}:{node.line}:{node.column + 1}:{node.name}\"",
@@ -11749,7 +11715,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 21,
+        "column": 48,
         "message": "Expression has type \"Any\"",
         "offset": 1,
         "src": "parser.error(f\"Cannot find config file '{config_file}'\")",
@@ -12005,7 +11971,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 9,
+        "column": 18,
         "message": "Expression has type \"Any\"",
         "offset": 0,
         "src": "[f\"module:{el}\" for el in special_opts.modules]",
@@ -12029,7 +11995,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 11,
+        "column": 21,
         "message": "Expression has type \"Any\"",
         "offset": 0,
         "src": "+ [f\"package:{el}\" for el in special_opts.packages]",
@@ -12053,7 +12019,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 11,
+        "column": 18,
         "message": "Expression has type \"Any\"",
         "offset": 0,
         "src": "+ [f\"file:{el}\" for el in special_opts.files]",
@@ -12117,7 +12083,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 21,
+        "column": 37,
         "message": "Expression has type \"Any\"",
         "offset": 1,
         "src": "fail(f\"Package name '{p}' cannot have a slash in it.\", stderr, options)",
@@ -12133,7 +12099,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 21,
+        "column": 43,
         "message": "Expression has type \"Any\"",
         "offset": 2,
         "src": "fail(f\"Can't find package '{p}'\", stderr, options)",
@@ -12213,7 +12179,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 25,
+        "column": 56,
         "message": "Expression has type \"Any\"",
         "offset": 1,
         "src": "parser.error(f\"Duplicate --cache-map source {source})\")",
@@ -12237,7 +12203,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 25,
+        "column": 54,
         "message": "Expression has type \"Any\"",
         "offset": 1,
         "src": "parser.error(f\"Invalid --cache-map source {source} (triple[0] must be *.py[i])\")",
@@ -12327,9 +12293,17 @@
     "mypy/meet.py": [
       {
         "code": "helpful-string",
-        "column": 38,
+        "column": 40,
         "message": "The type \"type[mypy.types.ProperType]\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 619,
+        "src": "assert type(left) != type(right), f\"{type(left)} vs {type(right)}\"",
+        "target": "mypy.meet.is_overlapping_types"
+      },
+      {
+        "code": "helpful-string",
+        "column": 56,
+        "message": "The type \"type[mypy.types.ProperType]\" doesn't define a __format__, __str__ or __repr__ method",
+        "offset": 0,
         "src": "assert type(left) != type(right), f\"{type(left)} vs {type(right)}\"",
         "target": "mypy.meet.is_overlapping_types"
       },
@@ -12709,7 +12683,7 @@
         "code": "no-any-explicit",
         "column": 4,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 573,
+        "offset": 574,
         "src": "def unsupported_operand_types(",
         "target": "mypy.messages.MessageBuilder.unsupported_operand_types"
       },
@@ -12747,7 +12721,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 20,
+        "column": 46,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 350,
         "src": "f'This is likely because \"{original_caller_type.name}\" has named arguments: '",
@@ -12819,9 +12793,9 @@
       },
       {
         "code": "helpful-string",
-        "column": 26,
+        "column": 37,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
-        "offset": 515,
+        "offset": 529,
         "src": "self.note(f\"    {k}: {v.accept(visitor) if v is not None else None}\", context)",
         "target": "mypy.messages.MessageBuilder.reveal_locals"
       },
@@ -12883,7 +12857,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 35,
+        "column": 37,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 164,
         "src": "arg_strings.append(f\"{arg_name}: {format(arg_type)}\")",
@@ -12891,7 +12865,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 35,
+        "column": 37,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 3,
         "src": "arg_strings.append(f\"{arg_name}: {format(arg_type)}\")",
@@ -12899,7 +12873,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 35,
+        "column": 37,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 6,
         "src": "arg_strings.append(f\"{arg_name}: {format(arg_type)}=...\")",
@@ -12907,7 +12881,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 35,
+        "column": 37,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 3,
         "src": "arg_strings.append(f\"{arg_name}: {format(arg_type)} = ...\")",
@@ -14177,7 +14151,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"accept\" is not using @override but is overriding a method in class \"mypy.nodes.Statement\"",
-        "offset": 21,
+        "offset": 22,
         "src": "def accept(self, visitor: StatementVisitor[T]) -> T:",
         "target": "mypy.nodes.TypeAliasStmt.accept"
       },
@@ -15843,7 +15817,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 21,
+        "column": 24,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 417,
         "src": "ctx.api.fail(f'\"{ctx.default_signature.name}\" has unexpected type annotation', ctx.context)",
@@ -15851,7 +15825,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 13,
+        "column": 15,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 21,
         "src": "name=f\"{ctx.default_signature.name} of {inst_type_str}\",",
@@ -15941,7 +15915,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 21,
+        "column": 24,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 128,
         "src": "ctx.api.fail(f'\"{ctx.default_signature.name}\" has unexpected type annotation', ctx.context)",
@@ -15949,7 +15923,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 13,
+        "column": 15,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 21,
         "src": "name=f\"{ctx.default_signature.name} of {inst_type_str}\",",
@@ -17369,7 +17343,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 36,
+        "column": 39,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 62,
         "src": "overlapped = \", \".join([f'\"{name}\"' for name in overlap])",
@@ -17433,7 +17407,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 26,
+        "column": 59,
         "message": "The type \"type[mypy.types.ProperType]\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 39,
         "src": "assert False, f\"Unexpected special alias type: {type(target)}\"",
@@ -17585,7 +17559,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 20,
+        "column": 71,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 862,
         "src": "f'{message_registry.TYPEVAR_UNEXPECTED_ARGUMENT}: \"{param_name}\"', context",
@@ -17595,15 +17569,15 @@
         "code": "truthy-bool",
         "column": 15,
         "message": "\"call\" has type \"CallExpr\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 71,
+        "offset": 75,
         "src": "if not call:",
         "target": "mypy.semanal.SemanticAnalyzer.extract_typevarlike_name"
       },
       {
         "code": "helpful-string",
-        "column": 26,
+        "column": 57,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
-        "offset": 134,
+        "offset": 133,
         "src": "self.fail(f'Unexpected keyword argument \"{param_name}\" for \"TypeVarTuple\"', s)",
         "target": "mypy.semanal.SemanticAnalyzer.process_typevartuple_declaration"
       },
@@ -17827,7 +17801,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_name_expr\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 116,
+        "offset": 117,
         "src": "def visit_name_expr(self, expr: NameExpr) -> None:",
         "target": "mypy.semanal.SemanticAnalyzer.visit_name_expr"
       },
@@ -18531,7 +18505,7 @@
     "mypy/semanal_enum.py": [
       {
         "code": "helpful-string",
-        "column": 40,
+        "column": 71,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 167,
         "src": "self.fail_enum_call_arg(f'Unexpected keyword argument \"{arg_name}\"', call)",
@@ -18765,7 +18739,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 36,
+        "column": 57,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 8,
         "src": "assert t.alias is not None, f\"Unfixed type alias {t.type_ref}\"",
@@ -18774,8 +18748,16 @@
       {
         "code": "explicit-override",
         "column": 4,
-        "message": "Method \"visit_tuple_type\" is not using @override but is overriding a method in class \"mypy.typetraverser.TypeTraverserVisitor\"",
+        "message": "Method \"visit_type_alias_stmt\" is not using @override but is overriding a method in class \"mypy.traverser.TraverserVisitor\"",
         "offset": 14,
+        "src": "def visit_type_alias_stmt(self, s: TypeAliasStmt):",
+        "target": "mypy.semanal_typeargs.TypeArgumentAnalyzer.visit_type_alias_stmt"
+      },
+      {
+        "code": "explicit-override",
+        "column": 4,
+        "message": "Method \"visit_tuple_type\" is not using @override but is overriding a method in class \"mypy.typetraverser.TypeTraverserVisitor\"",
+        "offset": 4,
         "src": "def visit_tuple_type(self, t: TupleType) -> None:",
         "target": "mypy.semanal_typeargs.TypeArgumentAnalyzer.visit_tuple_type"
       },
@@ -18807,7 +18789,7 @@
     "mypy/semanal_typeddict.py": [
       {
         "code": "helpful-string",
-        "column": 16,
+        "column": 47,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 507,
         "src": "f'Unexpected keyword argument \"{call.arg_names[2]}\" for \"TypedDict\"', call",
@@ -20041,7 +20023,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 26,
+        "column": 29,
         "message": "The string for \"object\" isn't helpful in a user-facing or semantic string",
         "offset": 44,
         "src": "result += f\".{attr}({t}:{obj.name})\"",
@@ -20049,7 +20031,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 26,
+        "column": 29,
         "message": "The string for \"object\" isn't helpful in a user-facing or semantic string",
         "offset": 4,
         "src": "result += f\".{attr}\"",
@@ -20057,7 +20039,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 26,
+        "column": 29,
         "message": "The string for \"object\" isn't helpful in a user-facing or semantic string",
         "offset": 2,
         "src": "result += f\".{attr}({t})\"",
@@ -21023,7 +21005,7 @@
     "mypy/strconv.py": [
       {
         "code": "helpful-string",
-        "column": 19,
+        "column": 22,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 52,
         "src": "return f\"<{self.get_id(o)}>\"",
@@ -21031,7 +21013,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 19,
+        "column": 22,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 14,
         "src": "tag += f\"<{self.get_id(obj)}>\"",
@@ -21935,7 +21917,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 22,
+        "column": 27,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 5,
         "src": "pretty += f\" = {o.node.final_value}\"",
@@ -21943,7 +21925,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 17,
+        "column": 21,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 22,
         "src": "n += f\" [{fullname}{id}]\"",
@@ -22447,7 +22429,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 15,
+        "column": 56,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 1,
         "src": "return f\"NamedTupleExpr:{o.line}({o.info.name}, {self.stringify_type(o.info.tuple_type) if o.info.tuple_type is not None else None})\"",
@@ -22803,7 +22785,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 28,
+        "column": 30,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 13,
         "src": "args.append(f\"{name}={arg.accept(self)}\")",
@@ -24181,7 +24163,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 23,
+        "column": 39,
         "message": "Expression type contains \"Any\" (has type \"Any | str\")",
         "offset": 4,
         "src": "typename = f\"{module_name}.{typename}\"",
@@ -24615,7 +24597,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 16,
+        "column": 68,
         "message": "The type \"<Deleted 'e'>\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 4,
         "src": "f\"encountered unexpected error, {type(e).__name__}: {e}\",",
@@ -24846,17 +24828,17 @@
         "target": "mypy.stubtest._verify_metaclass"
       },
       {
-        "code": "no-any-expr",
+        "code": "helpful-string",
         "column": 29,
-        "message": "Expression type contains \"Any\" (has type \"type[type[Any]]\")",
+        "message": "The type \"type[type[Any]]\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 2,
         "src": "runtime_desc=f\"{runtime_metaclass}\",",
         "target": "mypy.stubtest._verify_metaclass"
       },
       {
-        "code": "helpful-string",
-        "column": 29,
-        "message": "The type \"type[type[Any]]\" doesn't define a __format__, __str__ or __repr__ method",
+        "code": "no-any-expr",
+        "column": 31,
+        "message": "Expression type contains \"Any\" (has type \"type[type[Any]]\")",
         "offset": 0,
         "src": "runtime_desc=f\"{runtime_metaclass}\",",
         "target": "mypy.stubtest._verify_metaclass"
@@ -25254,18 +25236,10 @@
         "target": "mypy.stubtest._verify_arg_default_value"
       },
       {
-        "code": "no-any-expr",
-        "column": 24,
-        "message": "Expression has type \"Any\"",
-        "offset": 4,
-        "src": "f'runtime argument \"{runtime_arg.name}\" '",
-        "target": "mypy.stubtest._verify_arg_default_value"
-      },
-      {
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"__str__\" is not using @override but is overriding a method in class \"builtins.object\"",
-        "offset": 28,
+        "offset": 32,
         "src": "def __str__(self) -> str:",
         "target": "mypy.stubtest.Signature.__str__"
       },
@@ -25719,7 +25693,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 29,
+        "column": 66,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 13,
         "src": "object_path, f\"variable differs from runtime type {runtime_type}\", stub, runtime",
@@ -26777,7 +26751,7 @@
     "mypy/stubutil.py": [
       {
         "code": "helpful-string",
-        "column": 10,
+        "column": 45,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 149,
         "src": "print(f\"{mod}: Failed to import, skipping{message}\")",
@@ -27008,22 +26982,6 @@
         "offset": 30,
         "src": "def visit_type_alias_type(self, left: TypeAliasType) -> bool:",
         "target": "mypy.subtypes.SubtypeVisitor.visit_type_alias_type"
-      },
-      {
-        "code": "no-any-explicit",
-        "column": 4,
-        "message": "Explicit \"Any\" is not allowed",
-        "offset": 793,
-        "src": "def report(*args: Any) -> None:",
-        "target": "mypy.subtypes.unify_generic_callable"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 38,
-        "message": "Expression type contains \"Any\" (has type \"def (*args: Any) -> None\")",
-        "offset": 9,
-        "src": "type, non_none_inferred_vars, report, context=target",
-        "target": "mypy.subtypes.unify_generic_callable"
       }
     ],
     "mypy/suggestions.py": [
@@ -27271,7 +27229,7 @@
       },
       {
         "code": "possibly-undefined",
-        "column": 34,
+        "column": 52,
         "message": "Name \"severity\" may be undefined",
         "offset": 87,
         "src": "output.append(f\"{fnam}:{i + 1}: {severity}: {message}\")",
@@ -27279,7 +27237,7 @@
       },
       {
         "code": "possibly-undefined",
-        "column": 34,
+        "column": 58,
         "message": "Name \"severity\" may be undefined",
         "offset": 2,
         "src": "output.append(f\"{fnam}:{i + 1}:{col}: {severity}: {message}\")",
@@ -27409,7 +27367,7 @@
         "code": "no-any-expr",
         "column": 14,
         "message": "Expression has type \"Any (from unimported type)\"",
-        "offset": 42,
+        "offset": 48,
         "src": "yield DataDrivenTestCase.from_parent(  # type: ignore[unused-ignore, no-untyped-call]",
         "target": "mypy.test.data.split_test_cases"
       },
@@ -27647,7 +27605,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 21,
+        "column": 23,
         "message": "Expression has type \"Any\"",
         "offset": 1,
         "src": "a.append(f\"{item['line']}:{item['column']}:{item['target']}\")",
@@ -27663,7 +27621,23 @@
       },
       {
         "code": "no-any-expr",
+        "column": 38,
+        "message": "Expression has type \"Any\"",
+        "offset": 0,
+        "src": "a.append(f\"{item['line']}:{item['column']}:{item['target']}\")",
+        "target": "mypy.test.test_ref_info.RefInfoSuite.run_case"
+      },
+      {
+        "code": "no-any-expr",
         "column": 39,
+        "message": "Expression has type \"Any\"",
+        "offset": 0,
+        "src": "a.append(f\"{item['line']}:{item['column']}:{item['target']}\")",
+        "target": "mypy.test.test_ref_info.RefInfoSuite.run_case"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 55,
         "message": "Expression has type \"Any\"",
         "offset": 0,
         "src": "a.append(f\"{item['line']}:{item['column']}:{item['target']}\")",
@@ -27717,7 +27691,7 @@
         "code": "no-any-expr",
         "column": 11,
         "message": "Expression type contains \"Any\" (has type \"False | Untyped\")",
-        "offset": 142,
+        "offset": 144,
         "src": "if output != a and testcase.config.getoption(\"--update-data\", False):",
         "target": "mypy.test.testcheck.TypeCheckSuite.run_case_once"
       },
@@ -27837,7 +27811,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 23,
+        "column": 41,
         "message": "Expression type contains \"Any\" (has type \"int | Any\")",
         "offset": 1,
         "src": "out.append(f\"== Return code: {result}\")",
@@ -29455,7 +29429,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"setUp\" is not using @override but is overriding a method in class \"unittest.case.TestCase\"",
-        "offset": 183,
+        "offset": 184,
         "src": "def setUp(self) -> None:",
         "target": "mypy.test.testtypes.TypeOpsSuite.setUp"
       },
@@ -29527,7 +29501,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 24,
+        "column": 30,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 43,
         "src": "file_path = f\"tmp/{test_item.arg}\"",
@@ -32077,7 +32051,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_unbound_type\" is not using @override but is overriding a method in class \"mypy.type_visitor.TypeVisitor\"",
-        "offset": 300,
+        "offset": 301,
         "src": "def visit_unbound_type(self, t: UnboundType, defining_literal: bool = False) -> Type:",
         "target": "mypy.typeanal.TypeAnalyser.visit_unbound_type"
       },
@@ -32307,7 +32281,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 30,
+        "column": 62,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 21,
         "src": "self.fail(f'Invalid argument constructor \"{found.fullname}\"', arg)",
@@ -32355,7 +32329,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 36,
+        "column": 57,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 1,
         "src": "assert t.alias is not None, f\"Unfixed type alias {t.type_ref}\"",
@@ -35951,7 +35925,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 22,
+        "column": 68,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 3,
         "src": "assert False, f\"Internal error: unresolved placeholder type {self.fullname}\"",
@@ -35983,7 +35957,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 19,
+        "column": 21,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 3,
         "src": "return f\"{t.constructor}({typ})\"",
@@ -35991,7 +35965,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 19,
+        "column": 21,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 2,
         "src": "return f\"{t.constructor}({typ}, {t.name})\"",
@@ -36247,7 +36221,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 15,
+        "column": 30,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 1,
         "src": "return f\"<placeholder {t.fullname}>\"",
@@ -36377,7 +36351,7 @@
     "mypy/types_utils.py": [
       {
         "code": "helpful-string",
-        "column": 29,
+        "column": 50,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 64,
         "src": "assert target.alias, f\"Unfixed type alias {target.type_ref}\"",
@@ -38677,7 +38651,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 15,
+        "column": 32,
         "message": "The type \"mypyc.ir.ops.Op\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 1,
         "src": "return f\"FnError(source={self.source}, desc={self.desc})\"",
@@ -38685,7 +38659,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 15,
+        "column": 32,
         "message": "The type \"mypyc.ir.ops.BasicBlock\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 0,
         "src": "return f\"FnError(source={self.source}, desc={self.desc})\"",
@@ -38749,7 +38723,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 30,
+        "column": 72,
         "message": "The type \"type[object]\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 9,
         "src": "self.fail(op, f\"Invalid type for item of tuple literal: {type(x)})\")",
@@ -38757,7 +38731,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 30,
+        "column": 76,
         "message": "The type \"type[object]\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 11,
         "src": "self.fail(op, f\"Invalid type for item of frozenset literal: {type(x)})\")",
@@ -39405,7 +39379,7 @@
     "mypyc/codegen/emitclass.py": [
       {
         "code": "helpful-string",
-        "column": 41,
+        "column": 44,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 253,
         "src": "fields[f\"tp_{table_name}\"] = f\"&{table_struct_name}\"",
@@ -39511,7 +39485,7 @@
       },
       {
         "code": "possibly-undefined",
-        "column": 39,
+        "column": 41,
         "message": "Name \"dest\" may be undefined",
         "offset": 33,
         "src": "self.emitter.emit_line(f\"{dest} = 1;\")",
@@ -39959,7 +39933,7 @@
     "mypyc/crash.py": [
       {
         "code": "helpful-string",
-        "column": 10,
+        "column": 56,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 30,
         "src": "print(f\"{module_path}:{line}: {type(err).__name__}: {err}\")",
@@ -40903,7 +40877,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 29,
+        "column": 50,
         "message": "The type \"mypyc.ir.ops.ControlOp\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 13,
         "src": "raise AssertionError(f\"Invalid set_target({self}, {i})\")",
@@ -42549,7 +42523,7 @@
       },
       {
         "code": "helpful-string",
-        "column": 22,
+        "column": 46,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
         "offset": 294,
         "src": "error_msg=f'value for final name \"{error_name}\" was not set',",
@@ -42737,7 +42711,7 @@
     "mypyc/irbuild/env_class.py": [
       {
         "code": "helpful-string",
-        "column": 44,
+        "column": 46,
         "message": "The type \"mypyc.ir.ops.Value\" doesn't define a __format__, __str__ or __repr__ method",
         "offset": 129,
         "src": "assert isinstance(env.type, RInstance), f\"{env} must be of type RInstance\"",
@@ -44999,7 +44973,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 32,
+        "column": 51,
         "message": "Expression type contains \"Any\" (has type \"tuple[Any, ...]\")",
         "offset": 0,
         "src": "assert type(x) is type(y), (f\"Type mismatch at {trail}\", type(x), type(y))",
@@ -45063,7 +45037,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 41,
+        "column": 60,
         "message": "Expression type contains \"Any\" (has type \"tuple[Any, ...]\")",
         "offset": 0,
         "src": "assert x.fullname == y.fullname, f\"Name mismatch at {trail}\"",
@@ -45087,7 +45061,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 47,
+        "column": 66,
         "message": "Expression type contains \"Any\" (has type \"tuple[Any, ...]\")",
         "offset": 0,
         "src": "assert len(x.keys()) == len(y.keys()), f\"Keys mismatch at {trail}\"",
@@ -45183,7 +45157,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 37,
+        "column": 56,
         "message": "Expression type contains \"Any\" (has type \"tuple[Any, ...]\")",
         "offset": 0,
         "src": "assert x.keys() == y.keys(), f\"Keys mismatch at {trail}\"",
@@ -45295,7 +45269,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 35,
+        "column": 55,
         "message": "Expression type contains \"Any\" (has type \"tuple[Any, ...]\")",
         "offset": 0,
         "src": "assert is_same_type(x, y), f\"RType mismatch at {trail}\"",
@@ -45319,7 +45293,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 40,
+        "column": 64,
         "message": "Expression type contains \"Any\" (has type \"tuple[Any, ...]\")",
         "offset": 0,
         "src": "assert is_same_signature(x, y), f\"Signature mismatch at {trail}\"",
@@ -45343,7 +45317,7 @@
       },
       {
         "code": "no-any-expr",
-        "column": 23,
+        "column": 43,
         "message": "Expression type contains \"Any\" (has type \"tuple[Any, ...]\")",
         "offset": 0,
         "src": "assert x == y, f\"Value mismatch at {trail}\"",

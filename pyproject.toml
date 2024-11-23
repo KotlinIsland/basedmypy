@@ -27,7 +27,7 @@ lint = "ruff check mypy mypyc misc"
 _typecheck = "mypy --config-file mypy_self_check.ini -p mypy -p mypyc"
 typecheck = "@_typecheck --baseline-file="
 typecheck-strict = "@_typecheck --config-file mypy_self_check_strict.ini"
-write-baseline = "@typecheck-strict --write-baseline"
+write-baseline = "@typecheck-strict --platform linux --write-baseline"
 check = ["@format", "@lint", "@typecheck"]
 test = ["pytest -n0 -k"]
 

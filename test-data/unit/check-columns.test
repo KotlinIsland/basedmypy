@@ -302,7 +302,6 @@ if 1 == '': # E:4: Non-overlapping equality check (left operand type: "Literal[1
 [builtins fixtures/bool.pyi]
 
 [case testColumnValueOfTypeVariableCannotBe]
-
 from typing import TypeVar, Generic
 
 T = TypeVar('T', int, str)
@@ -310,8 +309,10 @@ T = TypeVar('T', int, str)
 class C(Generic[T]):
     pass
 
-def f(c: C[object]) -> None: pass # E:10: Value of type variable "T" of "C" cannot be "object"
-(C[object]()) # E:2: Value of type variable "T" of "C" cannot be "object"
+def f(c: C[object]) -> None: pass # E:10: Value of type variable "T" of "C" cannot be "object" \
+                                  # N:10: "T" of "C" is a constrained type variable, it is not generic
+(C[object]()) # E:2: Value of type variable "T" of "C" cannot be "object" \
+              # N:2: "T" of "C" is a constrained type variable, it is not generic \
 
 [case testColumnSyntaxErrorInTypeAnnotation]
 if int():
