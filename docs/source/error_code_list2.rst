@@ -1,12 +1,13 @@
-.. _error-codes-optional:
+.. _error-codes-strict:
 
-Error codes for optional checks
-===============================
+Error codes for strict checks
+=============================
 
-This section documents various errors codes that mypy generates only
-if you enable certain options. See :ref:`error-codes` for general
-documentation about error codes and their configuration.
-:ref:`error-code-list` documents error codes that are enabled by default.
+This section documents various errors codes that basedmypy generates
+by default, but will be disabled when :confval:`strict` is false (`no_strict`).
+See :ref:`error-codes` for general documentation about error codes
+and their configuration. :ref:`error-code-list` documents error codes
+that are enabled regardless of :confval:`strict`.
 
 .. note::
 

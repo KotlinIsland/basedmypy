@@ -1,12 +1,15 @@
 .. _error-code-list:
 
-Error codes enabled by default
-==============================
+Error codes part 1
+==================
 
-This section documents various errors codes that mypy can generate
-with default options. See :ref:`error-codes` for general documentation
-about error codes. :ref:`error-codes-optional` documents additional
-error codes that you can enable.
+This section documents various errors codes that basedmypy will
+generate with default options or when :confval:`strict` if off (`no_strict`).
+See :ref:`error-codes` for general documentation
+about error codes. :ref:`error-codes-strict` documents additional
+error codes that are enabled with :confval:`strict` (the default).
+:ref:`error-codes-based` documents error codes that are unique
+to basedmypy.
 
 .. _code-attr-defined:
 

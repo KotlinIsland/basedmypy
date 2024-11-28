@@ -11,9 +11,9 @@ after each error message. Error codes serve two purposes:
    potentially more serious errors.
 
 2. The error code can be used to find documentation about the error.
-   The next two topics (:ref:`error-code-list` and
-   :ref:`error-codes-optional`) document the various error codes
-   mypy can report.
+   The next three topics (:ref:`error-code-list`,
+   :ref:`error-codes-strict` and :ref:`error-codes-based`) document the
+   various error codes basedmypy can report.
 
 Most error codes are shared between multiple related error messages.
 Error codes may change in future mypy releases.

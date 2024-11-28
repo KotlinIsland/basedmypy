@@ -246,7 +246,7 @@ annotations for, in order to prevent new code from being added without annotatio
 
 And if you want, it doesn't stop at ``--strict``. Mypy has additional checks
 that are not part of ``--strict`` that can be useful. See the complete
-:ref:`command-line` reference and :ref:`error-codes-optional`.
+:ref:`command-line` reference and :ref:`error-codes-strict`.
 
 Speed up mypy runs
 ------------------
