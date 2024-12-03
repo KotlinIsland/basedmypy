@@ -44,7 +44,6 @@ Any = object()
 class _SpecialForm:
     def __getitem__(self, typeargs: Any) -> object: ...
 
-Callable: _SpecialForm = ...
 Generic: _SpecialForm = ...
 Protocol: _SpecialForm = ...
 Union: _SpecialForm = ...
@@ -63,9 +62,9 @@ _V = TypeVar("_V")
 _S = TypeVar("_S", contravariant=True)
 _R = TypeVar("_R", covariant=True)
 
-class _Callable:
+class Callable:
     def __call__(self): ...
-class _NamedCallable(_Callable):
+class _NamedCallable(Callable):
     __name__: str
     __qualname__: str
 

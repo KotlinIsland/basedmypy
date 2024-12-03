@@ -1685,11 +1685,11 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                 callee, args, arg_kinds, arg_names, context, object_type
             )
         elif isinstance(callee, Instance):
-            if callee.type.fullname == "typing._Callable":
+            if callee.type.fullname == "typing.Callable":
                 # YEAH!!!
                 # this is only the case when union joins are disabled
                 self.chk.fail("Cannot call function of unknown type", context, code=codes.OPERATOR)
-                return AnyType(0), AnyType(0)
+                return AnyType(1), AnyType(1)
             call_function = analyze_member_access(
                 "__call__",
                 callee,

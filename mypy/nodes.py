@@ -133,6 +133,7 @@ type_aliases: Final = {
     "typing.DefaultDict": "collections.defaultdict",
     "typing.Deque": "collections.deque",
     "typing.OrderedDict": "collections.OrderedDict",
+    "typing.Callable": "collections.abc.Callable",
     # HACK: a lie in lieu of actual support for PEP 675
     "typing.LiteralString": "builtins.str",
 }
@@ -158,6 +159,16 @@ reverse_builtin_aliases: Final = {
 
 _nongen_builtins: Final = {"builtins.tuple": "typing.Tuple", "builtins.enumerate": ""}
 _nongen_builtins.update((name, alias) for alias, name in type_aliases.items())
+
+_fake_generics = {
+    "_collections_abc.dict_keys": "",
+    "_collections_abc.dict_values": "",
+    "_collections_abc.dict_items": "",
+    "_operator.attrgetter": "",
+    "_operator.itemgetter": "",
+}
+
+
 # Drop OrderedDict from this for backward compatibility
 del _nongen_builtins["collections.OrderedDict"]
 # HACK: consequence of hackily treating LiteralString as an alias for str
@@ -166,7 +177,8 @@ del _nongen_builtins["builtins.str"]
 
 def get_nongen_builtins(python_version: tuple[int, int]) -> dict[str, str]:
     # After 3.9 with pep585 generic builtins are allowed
-    return _nongen_builtins if python_version < (3, 9) else {}
+    result = _nongen_builtins if python_version < (3, 9) else {}
+    return {**result, **_fake_generics}
 
 
 RUNTIME_PROTOCOL_DECOS: Final = (

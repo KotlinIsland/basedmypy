@@ -631,11 +631,10 @@ class SemanticAnalyzer(
             else:
                 self.recurse_into_functions = True
                 self.accept(node)
-
-        # For cringe reasons, we import the fake 'typing._Callable' as soon at it is loaded
+        # For cringe reasons, we import 'typing.Callable' as soon at it is loaded
         from mypy import typeanal
 
-        if node.fullname == "typing" and not typeanal.CALLABLE_TYPE:
+        if node.fullname == "typing" and not typeanal.CALLABLE_TYPE and not self.deferred:
             typeanal.CALLABLE_TYPE = self.named_type(typeanal.CALLABLE_NAME)
         del self.patches
 
@@ -2622,6 +2621,8 @@ class SemanticAnalyzer(
                     self.fail(msg, base_expr, code=codes.NO_SUBCLASS_ANY)
                 info.fallback_to_any = True
             elif isinstance(base, TypedDictType):
+                base_types.append(base.fallback)
+            elif isinstance(base, CallableType) and base.is_callable:
                 base_types.append(base.fallback)
             else:
                 msg = "Invalid base class"

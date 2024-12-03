@@ -2238,13 +2238,11 @@ class State:
             self.manager.modules[self.id] = self.tree
             self.manager.add_stats(fresh_trees=1)
         if self.id == "typing":
-            # For cringe reasons, we extract _Callable as soon as it's loaded
+            # For cringe reasons, we extract Callable as soon as it's loaded
             from mypy import typeanal
             from mypy.types import Instance
 
-            typeanal.CALLABLE_TYPE = Instance(
-                cast(TypeInfo, self.tree.names["_Callable"].node), []
-            )
+            typeanal.CALLABLE_TYPE = Instance(cast(TypeInfo, self.tree.names["Callable"].node), [])
 
     def fix_cross_refs(self) -> None:
         assert self.tree is not None, "Internal error: method must be called on parsed file only"

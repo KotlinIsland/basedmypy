@@ -199,21 +199,16 @@ class _SpecialForm:
 
 Union: _SpecialForm
 Generic: _SpecialForm
-# Protocol is only present in 3.8 and later, but mypy needs it unconditionally
 Protocol: _SpecialForm
-Callable: _SpecialForm
 
-# Internal mypy fallback type for callables (does not exist at runtime)
-@type_check_only
-class _Callable:
-    """Fake representation of _collections_abc.Callable"""
-
+@runtime_checkable
+class Callable(Protocol[_P, _T_co]):
     @abstractmethod
-    def __call__(self, *args: Any, **kwargs: Any) -> Any: ...
+    def __call__(self, *args: _P.args, **kwargs: _P.kwargs) -> _T_co: ...
 
 # Internal mypy fallback type for named callables (does not exist at runtime)
 @type_check_only
-class _NamedCallable(_Callable, metaclass=ABCMeta):
+class _NamedCallable(Callable, metaclass=ABCMeta):
     """Fake protocol for the different representations of functions that have names"""
 
     __name__: str

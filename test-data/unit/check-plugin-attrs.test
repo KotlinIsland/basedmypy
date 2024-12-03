@@ -1878,7 +1878,7 @@ class D:
 [out]
 tmp/b.py:8: error: Value of type "int" is not indexable
 tmp/a.py:7: error: Name "Lst" is not defined
-tmp/a.py:10: error: Value of type "int" is not indexable
+tmp/a.py:10: error: The type "Type[Callable]" is not generic and not indexable
 
 [case testAttrsGenericInheritanceSpecialCase1]
 import attr

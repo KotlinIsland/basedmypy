@@ -8,15 +8,14 @@ Optional = 0
 Self = 0
 Tuple = 0
 ClassVar = 0
-Callable = 0
 
 T = TypeVar('T')
 T_co = TypeVar('T_co', covariant=True)
 KT = TypeVar('KT')
 
-class _Callable:
+class Callable:
     def __call__(self): pass
-class _NamedCallable(_Callable):
+class _NamedCallable(Callable):
     __name__: str
     __qualname__: str
 class Iterable(Generic[T_co]): pass

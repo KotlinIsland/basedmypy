@@ -82,8 +82,8 @@ A = Callable[[], float]
 if int():
     A = Callable[[], int] \
       # E: Cannot assign multiple types to name "A" without an explicit "Type[...]" annotation \
-      # E: Value of type "int" is not indexable
-      # the second error is because of `Callable = 0` in lib-stub/typing.pyi
+      # E: The type "Type[Callable]" is not generic and not indexable
+      # the second error is because of `class Callable:` in lib-stub/typing.pyi
 [builtins fixtures/list.pyi]
 [out]
 

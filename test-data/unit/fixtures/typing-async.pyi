@@ -17,7 +17,6 @@ TypeVar = 0
 Generic = 0
 Protocol = 0
 Tuple = 0
-Callable = 0
 NamedTuple = 0
 Type = 0
 ClassVar = 0
@@ -36,9 +35,9 @@ S = TypeVar('S')
 # Note: definitions below are different from typeshed, variances are declared
 # to silence the protocol variance checks. Maybe it is better to use type: ignore?
 
-class _Callable:
+class Callable:
     def __call__(self): pass
-class _NamedCallable(_Callable):
+class _NamedCallable(Callable):
     __name__: str
     __qualname__: str
 class Container(Protocol[T_co]):

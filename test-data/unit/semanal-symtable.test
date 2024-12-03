@@ -91,6 +91,6 @@ def g() -> None:
 [out]
 __main__:
   SymbolTable(
-    Callable : Gdef/Var (typing.Callable) : builtins.int
+    Callable : Gdef/TypeInfo (typing.Callable)
     dec : Gdef/FuncDef (__main__.dec) : def (f: def ()) -> def ()
     g : Gdef/Decorator (__main__.g) : def ())

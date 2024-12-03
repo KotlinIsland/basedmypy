@@ -562,10 +562,13 @@ MypyFile:1(
 from typing import Any, Callable
 class A(None): pass
 class B(Any): pass
-class C(Callable[[], int]): pass
+a: Callable[[], int]
+class C(a): pass
 [out]
 main:3: error: Invalid base class "None"
-main:5: error: Invalid base class "Callable"
+main:6: error: Variable "__main__.a" is not valid as a type
+main:6: note: See https://kotlinisland.github.io/basedmypy/common_issues.html#variables-vs-type-aliases
+main:6: error: Invalid base class "a"
 
 [case testTupleAsBaseClass]
 

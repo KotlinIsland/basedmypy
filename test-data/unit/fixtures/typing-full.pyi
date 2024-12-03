@@ -49,9 +49,9 @@ U = TypeVar('U')
 V = TypeVar('V')
 S = TypeVar('S')
 
-class _Callable:
+class Callable:
     def __call__(self): pass
-class _NamedCallable(_Callable):
+class _NamedCallable(Callable):
     __name__: str
     __qualname__: str
 def final(x: T) -> T: ...

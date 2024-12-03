@@ -19,7 +19,6 @@ TypeVar = 0
 Generic = 0
 Protocol = 0
 Tuple = 0
-Callable = 0
 NamedTuple = 0
 Final = 0
 Literal = 0
@@ -36,9 +35,9 @@ V = TypeVar('V')
 # Note: definitions below are different from typeshed, variances are declared
 # to silence the protocol variance checks. Maybe it is better to use type: ignore?
 
-class _Callable:
+class Callable:
     def __call__(self): pass
-class _NamedCallable(_Callable):
+class _NamedCallable(Callable):
     __name__: str
     __qualname__: str
 class Sized(Protocol):

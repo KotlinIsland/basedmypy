@@ -149,7 +149,7 @@ GENERIC_STUB_NOT_AT_RUNTIME_TYPES: Final = {
     "asyncio.futures.Future",
 }
 
-CALLABLE_NAME = "typing._Callable"
+CALLABLE_NAME = "typing.Callable"
 CALLABLE_TYPE: Instance | None = None
 """Very hacky way to globally access this special cased type"""
 
@@ -1199,7 +1199,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                     else (
                         # Ah yes, we pretend that static methods are `Callable`, not `FunctionType`
                         #  so that you can subtype it with a `classmethod`, because that makes sense!
-                        self.named_type("typing._Callable")
+                        self.named_type("typing.Callable")
                         if use_callable
                         else self.named_type(t.fallback.type.msg)
                     )

@@ -1251,7 +1251,7 @@ class AnyType(ProperType):
                 return "from a limitation"
             elif type_of_any == TypeOfAny.suggestion_engine:
                 return "from a suggestion"
-            assert False, "unreachable"
+            assert False, f"unreachable: {type_of_any}"
 
         description = self.__class__.__name__.split("Type")[0]
         type_of = describe_type_of_any()
@@ -1799,7 +1799,7 @@ class FunctionLike(ProperType):
 
     @property
     def is_callable(self) -> bool:
-        return self.fallback.type.fullname in {"typing._Callable", "collections.abc.Callable"}
+        return self.fallback.type.fullname in {"typing.Callable", "collections.abc.Callable"}
 
     @property
     def is_function(self) -> bool:

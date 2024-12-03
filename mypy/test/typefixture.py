@@ -97,7 +97,7 @@ class TypeFixture:
         self.type_typei = self.make_type_info("builtins.type")  # class type
         self.bool_type_info = self.make_type_info("builtins.bool")
         self.str_type_info = self.make_type_info("builtins.str")
-        self.functioni = self.make_type_info("typing._Callable")  # function TODO
+        self.functioni = self.make_type_info("typing.Callable")  # function TODO
         self.defi = self.make_type_info("types.FunctionType")
         self.named_callablei = self.make_type_info("typing._NamedCallable")
         self.ai = self.make_type_info("A", mro=[self.oi])  # class A

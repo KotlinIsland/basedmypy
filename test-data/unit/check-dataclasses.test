@@ -611,7 +611,7 @@ class Two:
 
 c = Two()
 x = c.S
-reveal_type(x)  # N: Revealed type is "def () -> typing._Callable"
+reveal_type(x)  # N: Revealed type is "def () -> typing.Callable"
 [builtins fixtures/dataclasses.pyi]
 [typing fixtures/typing-medium.pyi]
 

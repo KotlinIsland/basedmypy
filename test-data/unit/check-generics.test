@@ -1064,7 +1064,7 @@ CA = Callable[[T], int]
 TA = Tuple[T, int]
 UA = Union[T, int]
 
-cs = CA + 1 # E: Unsupported left operand type for + ("Type[_Callable]")
+cs = CA + 1 # E: Unsupported left operand type for + ("Type[Callable]")
 reveal_type(cs) # N: Revealed type is "Any"
 
 ts = TA() # E: "<typing special form>" not callable

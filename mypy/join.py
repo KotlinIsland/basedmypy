@@ -792,14 +792,14 @@ def join_similar_callables(t: CallableType, s: CallableType) -> CallableType:
     # TODO in combine_similar_callables also applies here (names and kinds; user metaclasses)
     # The fallback type can be either 'function', 'type', or some user-provided metaclass.
     # The result should always use 'function' as a fallback if either operands are using it.
-    #  Based: typing._Callable is the fallback for Callable, but there is also types.FunctionType
-    # There is an issue where `function` doesn't extend typing._Callable
+    #  Based: typing.Callable is the fallback for Callable, but there is also types.FunctionType
+    # There is an issue where `function` doesn't extend typing.Callable
     #  Additionally, this only happens when union joins are disabled (unbased mode)
     if t.fallback_name == s.fallback_name:
         fallback = t.fallback
-    elif t.fallback_name == "typing._Callable":
+    elif t.fallback_name == "typing.Callable":
         fallback = t.fallback
-    elif s.fallback_name == "typing._Callable":
+    elif s.fallback_name == "typing.Callable":
         fallback = s.fallback
     else:
         joined = join_types(t.fallback, s.fallback)
@@ -860,7 +860,7 @@ def combine_similar_callables(t: CallableType, s: CallableType) -> CallableType:
     # TODO what should happen if one fallback is 'type' and the other is a user-provided metaclass?
     # The fallback type can be either 'function', 'type', or some user-provided metaclass.
     # The result should always use 'function' as a fallback if either operands are using it.
-    if t.fallback_name in {"builtins.function", "typing._Callable"}:
+    if t.fallback_name in {"builtins.function", "typing.Callable"}:
         fallback = t.fallback
     else:
         fallback = s.fallback

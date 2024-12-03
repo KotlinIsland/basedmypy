@@ -1598,7 +1598,7 @@ def report_internal_error(
     # Print "INTERNAL ERROR" message.
     print(
         f"{prefix}error: INTERNAL ERROR --",
-        "Please try using mypy master on GitHub:\n"
+        "Please try using basedmypy master on GitHub:\n"
         "https://kotlinisland.github.io/basedmypy/common_issues.html"
         "#using-a-development-mypy-build",
         file=stderr,
