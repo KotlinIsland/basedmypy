@@ -12,6 +12,7 @@ from mypy.messages import MessageBuilder, format_type
 from mypy.nodes import (
     ARG_POS,
     MDEF,
+    ArgKind,
     Argument,
     AssignmentStmt,
     Block,
@@ -134,7 +135,19 @@ class NewTypeAnalyzer:
             call.analyzed.info = newtype_class_info
         else:
             call.analyzed.info.bases = newtype_class_info.bases
-        self.api.add_symbol(var_name, call.analyzed.info, s)
+        typ = CallableType(
+            arg_types=[old_type],
+            arg_kinds=[ArgKind.ARG_POS],
+            arg_names=[None],
+            ret_type=Instance(call.analyzed.info, []),
+            # it's a function or an instance of `NewType` depending on the version
+            fallback=self.api.named_type("typing.Callable"),
+            name=name,
+            special_sig="NewType",
+        )
+        fn = FuncDef(name, [Argument(Var("x"), NoneType(), None, ARG_POS)], Block([]), typ=typ)
+        fn._fullname = self.api.qualified_name(name)
+        self.api.add_symbol(var_name, fn, s)
         if self.api.is_func_scope():
             self.api.add_symbol_skip_local(name, call.analyzed.info)
         newtype_class_info.line = s.line
@@ -241,29 +254,8 @@ class NewTypeAnalyzer:
         info.bases = [base_type]  # Update in case there were nested placeholders.
         info.is_newtype = True
 
-        # Add __init__ method
-        args = [
-            Argument(Var("self"), NoneType(), None, ARG_POS),
-            self.make_argument("item", old_type),
-        ]
-        signature = CallableType(
-            arg_types=[Instance(info, []), old_type],
-            arg_kinds=[arg.kind for arg in args],
-            arg_names=["self", "item"],
-            ret_type=NoneType(),
-            fallback=self.api.named_type("builtins.function"),
-            name=name,
-        )
-        init_func = FuncDef("__init__", args, Block([]), typ=signature)
-        init_func.info = info
-        init_func._fullname = info.fullname + ".__init__"
         if not existing_info:
             updated = True
-        else:
-            previous_sym = info.names["__init__"].node
-            assert isinstance(previous_sym, FuncDef)
-            updated = old_type != previous_sym.arguments[1].variable.type
-        info.names["__init__"] = SymbolTableNode(MDEF, init_func)
 
         if has_placeholder(old_type):
             self.api.process_placeholder(None, "NewType base", info, force_progress=updated)

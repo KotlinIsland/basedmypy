@@ -991,6 +991,9 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 return result
             return result.accept(self)
 
+        if isinstance(sym.node, FuncDef) and sym.node.type.special_sig == "NewType":
+            return sym.type.ret_type
+
         # None of the above options worked. We parse the args (if there are any)
         # to make sure there are no remaining semanal-only types, then give up.
         t = t.copy_modified(args=self.anal_array(t.args))
