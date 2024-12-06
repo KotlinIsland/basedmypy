@@ -15,9 +15,8 @@ Baseline successfully written to a/b
 
 
 -- TODO merge this with the first one?
-[case testWriteBaseline2]
+[case testWriteBaseline2-skip_path_normalization]
 # cmd: mypy --write-baseline --baseline-file a/b pkg
-# dont-normalize-output:
 [file pkg/a.py]
 a
 [outfile a/b]
@@ -59,9 +58,8 @@ Baseline successfully written to .mypy/baseline.json
 -- TODO merge this with the first one?
 
 
-[case testRewriteBaseline2]
+[case testRewriteBaseline2-skip_path_normalization]
 # cmd: mypy --write-baseline --error-summary pkg
-# dont-normalize-output:
 [file pkg/a.py]
 1 + ""
 "" + 1
@@ -173,9 +171,8 @@ Success: no issues found in 1 source file
 == Return code: 0
 
 
-[case testAutoBaselineDoesntMessageWhenSame]
+[case testAutoBaselineDoesntMessageWhenSame-skip_path_normalization]
 # cmd: mypy pkg
-# dont-normalize-output:
 [file pkg/a.py]
 a
 [file .mypy/baseline.json]
@@ -434,9 +431,8 @@ Success: no issues found in 1 source file
 == Return code: 0
 
 
-[case testBaselineWithPrettyAndDuplicatesOutFile]
+[case testBaselineWithPrettyAndDuplicatesOutFile-skip_path_normalization]
 # cmd: mypy --error-summary --pretty --show-error-context pkg
-# dont-normalize-output:
 [file pkg/main.py]
 def foo(a=b):
     pass
@@ -605,6 +601,8 @@ a
 
 [case testBaselineCache]
 # cmd: mypy --python-version 3.13 _program.py
+# preload-cache:
+# this is a pragma to preload the cache - to test that when it's run from a warm cache it still works
 a
 [file .mypy/baseline.json]
 {
@@ -621,9 +619,7 @@ a
         ]
     },
     "format": "1.7",
-    "targets": [
-        "file:_program.py"
-    ]
+    "targets": ["file:_program.py"]
 }
 [outfile-re .mypy_cache/3.13/_program.data.json]
 .+

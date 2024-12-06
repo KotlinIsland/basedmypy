@@ -137,10 +137,14 @@ def main(
             new_errors = n_errors
             n_files = len(res.manager.errors.all_errors)
             total = []
+            n_errors = 0
             # This is stupid, but it's just to remove the dupes from the unfiltered errors
-            for errors in res.manager.errors.all_errors.values():
-                temp = res.manager.errors.render_messages(errors)
-                total.extend(res.manager.errors.remove_duplicates(temp))
+            for file, errors in res.manager.errors.all_errors.items():
+                if errors != "fresh":
+                    temp = res.manager.errors.render_messages(errors)
+                    total.extend(res.manager.errors.remove_duplicates(temp))
+                else:
+                    n_errors += len(res.manager.errors.original_baseline[file])
             n_errors = len([error for error in total if error[5] == "error"])
         else:
             new_errors = -1

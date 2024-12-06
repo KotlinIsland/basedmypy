@@ -3,6 +3,8 @@
 ## [Unreleased]
 ### Added
 - `collections.User*` should have `__repr__`
+### Fixed
+- cache modules that only have baseline errors
 
 ## [2.8.1]
 ### Fixes

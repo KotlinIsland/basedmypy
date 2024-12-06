@@ -350,7 +350,7 @@ class Errors:
     # baseline metadata
     baseline_targets: list[str]
     # All detected errors before baseline filter
-    all_errors: dict[str, list[ErrorInfo]]
+    all_errors: dict[str, list[ErrorInfo] | Literal["fresh"]]
 
     def __init__(
         self,
@@ -371,8 +371,6 @@ class Errors:
         self.error_info_map = {}
         self.all_errors = {}
         self.original_baseline = {}
-        # TODO: should the baseline reload when your using the daemon?
-        # self.baseline = {}
         self.baseline_errors: list[ErrorTuple] = []
         self.baseline_targets = []
         self.flushed_files = set()
@@ -1009,28 +1007,34 @@ class Errors:
         return a
 
     def filter_baseline_pre(self, path: str):
+        """remove baselined errors from `error_info_map` and put them into `all_errors`"""
         if path not in self.error_info_map:
             return
         source_lines = self.read_source and self.read_source(path)
 
         error_info = self.error_info_map[path]
+        error_info = [info for info in error_info if not info.hidden]
         error_info = self.sort_messages(error_info)
-        if not self.filter_baseline(error_info, path, source_lines):
+        filtered = self.filter_baseline(error_info, path, source_lines)
+        if filtered:
+            self.error_info_map[path] = filtered
+        else:
             del self.error_info_map[path]
 
-    def file_messages(self, path: str, formatter: ErrorFormatter | None = None) -> list[str]:
+    def file_messages(
+        self, path: str, formatter: ErrorFormatter | None = None, *, do_baseline=False
+    ) -> list[str]:
         """Return a string list of new error messages from a given file.
 
         Use a form suitable for displaying to the user.
         """
+
+        if do_baseline:
+            self.filter_baseline_pre(path)
         if path not in self.error_info_map:
             return []
         source_lines = self.read_source and self.read_source(path)
-
         error_info = self.error_info_map[path]
-        error_info = [info for info in error_info if not info.hidden]
-        error_info = self.sort_messages(error_info)
-        error_info = self.filter_baseline(error_info, path, source_lines)
         error_tuples = self.render_messages(error_info, source_lines, self.simplify_path(path))
         error_tuples = self.remove_duplicates(error_tuples)
         self.filtered_baseline = self.filtered_baseline or bool(error_tuples)
@@ -1069,9 +1073,9 @@ class Errors:
         they first generated an error.
         """
         msgs = []
-        for path in self.error_info_map.keys():
+        for path in self.error_info_map.copy().keys():  # baseline filter will mutate it
             if path not in self.flushed_files:
-                msgs.extend(self.file_messages(path))
+                msgs.extend(self.file_messages(path, do_baseline=True))
         return msgs
 
     def targets(self) -> set[str]:
@@ -1430,22 +1434,25 @@ class Errors:
             return unduplicated_result
 
         result = {
-            self.common_path(file): [
-                {
-                    "code": error.code.code if error.code else None,
-                    "column": error.column,
-                    "line": error.line,
-                    "message": error.message,
-                    "target": error.target,
-                    "src": self.read_source
-                    and error.file == file
-                    and cast(List[str], self.read_source(file))[error.line - 1].strip(),
-                }
-                for error in remove_duplicates(errors)
-                # don't store reveal errors
-                if error.code != codes.REVEAL
-            ]
+            self.common_path(file): (
+                [
+                    {
+                        "code": error.code.code if error.code else None,
+                        "column": error.column,
+                        "line": error.line,
+                        "message": error.message,
+                        "target": error.target,
+                        "src": self.read_source
+                        and error.file == file
+                        and cast(List[str], self.read_source(file))[error.line - 1].strip(),
+                    }
+                    for error in remove_duplicates(errors)
+                    # don't store reveal errors
+                    if error.code != codes.REVEAL
+                ]
+            )
             for file, errors in self.all_errors.items()
+            if errors != "fresh"
         }
         for file in result.values():
             previous = 0
@@ -1453,7 +1460,14 @@ class Errors:
                 error["offset"] = cast(int, error["line"]) - previous
                 previous = cast(int, error["line"])
                 del error["line"]
-        return cast(Dict[str, List[StoredBaselineError]], result)
+        final_result: dict[str, list[StoredBaselineError]] = cast(
+            Dict[str, List[StoredBaselineError]], result
+        )
+        for file_name, errors in self.all_errors.items():
+            if errors == "fresh":
+                key = self.common_path(file_name)
+                final_result[key] = self.original_baseline[key]
+        return final_result
 
     def filter_baseline(
         self, errors: list[ErrorInfo], path: str, source_lines: list[str] | None

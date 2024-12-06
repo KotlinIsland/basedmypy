@@ -83,7 +83,7 @@
         "code": "no-any-explicit",
         "column": 0,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 14,
+        "offset": 15,
         "src": "def cache_meta_from_dict(meta: dict[str, Any], data_json: str) -> CacheMeta:",
         "target": "mypy.build.cache_meta_from_dict"
       },
@@ -461,6 +461,22 @@
         "message": "Expression has type \"Any\"",
         "offset": 0,
         "src": "meta.get(\"plugin_data\", None),",
+        "target": "mypy.build.cache_meta_from_dict"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 8,
+        "message": "Expression type contains \"Any\" (has type \"dict[str, Any]\")",
+        "offset": 1,
+        "src": "meta.get(\"baseline_hash\", None),",
+        "target": "mypy.build.cache_meta_from_dict"
+      },
+      {
+        "code": "no-any-expr",
+        "column": 8,
+        "message": "Expression has type \"Any\"",
+        "offset": 0,
+        "src": "meta.get(\"baseline_hash\", None),",
         "target": "mypy.build.cache_meta_from_dict"
       },
       {
@@ -1345,9 +1361,17 @@
       },
       {
         "code": "no-any-expr",
+        "column": 24,
+        "message": "Expression type contains \"Any\" (has type \"CacheMeta\")",
+        "offset": 17,
+        "src": "if baseline_hash != m.baseline_hash:",
+        "target": "mypy.build.find_cache_meta"
+      },
+      {
+        "code": "no-any-expr",
         "column": 11,
         "message": "Expression type contains \"Any\" (has type \"CacheMeta\")",
-        "offset": 5,
+        "offset": 7,
         "src": "return m",
         "target": "mypy.build.find_cache_meta"
       },
@@ -1595,15 +1619,15 @@
         "code": "no-any-expr",
         "column": 18,
         "message": "Expression has type \"Any\"",
-        "offset": 55,
+        "offset": 56,
         "src": "plugin_data = manager.plugin.report_config_data(ReportConfigContext(id, path, is_check=False))",
         "target": "mypy.build.write_cache"
       },
       {
         "code": "no-any-expr",
         "column": 11,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, str | int | list[str] | Mapping[str, object] | list[int] | Any]\")",
-        "offset": 51,
+        "message": "Expression type contains \"Any\" (has type \"dict[str, str | int | list[str] | Mapping[str, object] | list[int] | Any | None]\")",
+        "offset": 64,
         "src": "meta = {",
         "target": "mypy.build.write_cache"
       },
@@ -1626,8 +1650,8 @@
       {
         "code": "no-any-expr",
         "column": 26,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, str | int | list[str] | Mapping[str, object] | list[int] | Any]\")",
-        "offset": 4,
+        "message": "Expression type contains \"Any\" (has type \"dict[str, str | int | list[str] | Mapping[str, object] | list[int] | Any | None]\")",
+        "offset": 5,
         "src": "meta_str = json_dumps(meta, manager.options.debug_cache)",
         "target": "mypy.build.write_cache"
       },
@@ -1650,7 +1674,7 @@
       {
         "code": "no-any-expr",
         "column": 48,
-        "message": "Expression type contains \"Any\" (has type \"dict[str, str | int | list[str] | Mapping[str, object] | list[int] | Any]\")",
+        "message": "Expression type contains \"Any\" (has type \"dict[str, str | int | list[str] | Mapping[str, object] | list[int] | Any | None]\")",
         "offset": 0,
         "src": "return interface_hash, cache_meta_from_dict(meta, data_json)",
         "target": "mypy.build.write_cache"
@@ -1875,7 +1899,7 @@
         "code": "no-any-expr",
         "column": 15,
         "message": "Expression type contains \"Any\" (has type \"CacheMeta | None\")",
-        "offset": 79,
+        "offset": 80,
         "src": "if self.meta:",
         "target": "mypy.build.State.generate_unused_ignore_notes"
       },
@@ -2887,7 +2911,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_type_alias_expr\" is not using @override but is overriding a method in class \"mypy.visitor.ExpressionVisitor\"",
-        "offset": 46,
+        "offset": 47,
         "src": "def visit_type_alias_expr(self, alias: TypeAliasExpr) -> Type:",
         "target": "mypy.checkexpr.ExpressionChecker.visit_type_alias_expr"
       },
@@ -6811,7 +6835,7 @@
         "code": "truthy-bool",
         "column": 11,
         "message": "Member \"options\" has type \"Options\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 518,
+        "offset": 516,
         "src": "if self.options:",
         "target": "mypy.errors.Errors.is_error_code_enabled"
       },
@@ -6835,7 +6859,7 @@
         "code": "redundant-expr",
         "column": 19,
         "message": "Condition is always false",
-        "offset": 371,
+        "offset": 375,
         "src": "if e.type is None:",
         "target": "mypy.errors.Errors.render_messages"
       },
@@ -10735,7 +10759,7 @@
         "code": "redundant-expr",
         "column": 18,
         "message": "Condition is always true",
-        "offset": 105,
+        "offset": 104,
         "src": "while True:",
         "target": "mypy.ipc.IPCBase.read"
       }
@@ -11341,7 +11365,7 @@
         "code": "helpful-string",
         "column": 12,
         "message": "The string for \"None\" isn't helpful in a user-facing or semantic string",
-        "offset": 235,
+        "offset": 239,
         "src": "\"Warning: unused section(s) in {}: {}\".format(",
         "target": "mypy.main.run_build"
       },
@@ -36453,7 +36477,7 @@
         "code": "no-any-expr",
         "column": 18,
         "message": "Expression type contains \"Any\" (has type \"list[(str, Any)]\")",
-        "offset": 365,
+        "offset": 364,
         "src": "members = inspect.getmembers(",
         "target": "mypy.util.get_class_descriptors"
       },
