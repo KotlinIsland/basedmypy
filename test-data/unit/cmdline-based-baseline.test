@@ -605,6 +605,8 @@ a
 
 [case testBaselineCache]
 # cmd: mypy --python-version 3.13 _program.py
+# preload-cache:
+# preload the cache to test that when it's run from a warm cache it still works
 a
 [file .mypy/baseline.json]
 {
@@ -621,9 +623,7 @@ a
         ]
     },
     "format": "1.7",
-    "targets": [
-        "file:_program.py"
-    ]
+    "targets": ["file:_program.py"]
 }
 [outfile-re .mypy_cache/3.13/_program.data.json]
 .+
