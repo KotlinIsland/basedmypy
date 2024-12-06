@@ -62,6 +62,7 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
             file.write(f"{s}\n")
     args = parse_args(testcase.input[0])
     custom_cwd = parse_cwd(testcase.input[1]) if len(testcase.input) > 1 else None
+    preload_cache = "# preload-cache:" in testcase.input
     if "# dont-normalize-output:" in testcase.input:
         testcase.normalize_output = False
     args.append("--show-traceback")
@@ -97,6 +98,10 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
         env["PYTHONPATH"] += os.pathsep + extra_path
     cwd = os.path.join(test_temp_dir, custom_cwd or "")
     args = [arg.replace("$CWD", os.path.abspath(cwd)) for arg in args]
+    if preload_cache:
+        subprocess.Popen(
+            fixed + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd, env=env
+        ).communicate()
     process = subprocess.Popen(
         fixed + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd, env=env
     )
