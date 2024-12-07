@@ -343,6 +343,7 @@ class CacheMeta(NamedTuple):
     version_id: str  # mypy version for cache invalidation
     ignore_all: bool  # if errors were ignored
     plugin_data: Any  # config data from plugins
+    baseline_hash: str | None  # hash representing the baselined errors of this module
 
 
 # NOTE: dependencies + suppressed == all reachable imports;
@@ -381,6 +382,7 @@ def cache_meta_from_dict(meta: dict[str, Any], data_json: str) -> CacheMeta:
         meta.get("version_id", sentinel),
         meta.get("ignore_all", True),
         meta.get("plugin_data", None),
+        meta.get("baseline_hash", None),
     )
 
 
@@ -1104,7 +1106,7 @@ def save_baseline(manager: BuildManager):
         manager.stdout.write(f"Baseline successfully updated at {file}\n")
 
 
-def load_baseline(options: Options, errors: Errors, stdout: TextIO) -> None:
+def load_baseline(options: Options, errors: Errors, stdout: TextIO):
     if not options.baseline_file:
         return
 
@@ -1484,6 +1486,25 @@ def find_cache_meta(id: str, path: str, manager: BuildManager) -> CacheMeta | No
         manager.log(f"Metadata abandoned for {id}: plugin configuration differs")
         return None
 
+    baseline_hash = None
+    baseline_errors = manager.errors.baseline.get(path)
+    if baseline_errors:
+        errors = [
+            {
+                "code": error["code"],
+                "column": error["column"],
+                "line": error["line"],
+                "message": error["message"],
+            }
+            for error in baseline_errors
+        ]
+        baseline_hash = hash_digest(json.dumps(errors).encode())
+    if baseline_hash != m.baseline_hash:
+        manager.log(f"Metadata abandoned for {id}: baseline is different")
+        return None
+    if baseline_errors:
+        manager.errors.all_errors[path] = "fresh"
+
     manager.add_stats(fresh_metas=1)
     return m
 
@@ -1650,6 +1671,7 @@ def write_cache(
     source_hash: str,
     ignore_all: bool,
     manager: BuildManager,
+    baseline_errors: list[ErrorInfo],
 ) -> tuple[str, CacheMeta | None]:
     """Write cache files for a module.
 
@@ -1735,6 +1757,19 @@ def write_cache(
         manager.log(f"Error in os.stat({data_json!r}), skipping cache write")
         return interface_hash, None
 
+    baseline_hash = None
+    if baseline_errors:
+        errors = [
+            {
+                "code": error.code and error.code.code,
+                "column": error.column,
+                "line": error.line,
+                "message": error.message,
+            }
+            for error in baseline_errors
+        ]
+        baseline_hash = hash_digest(json.dumps(errors).encode())
+
     mtime = 0 if bazel else int(st.st_mtime)
     size = st.st_size
     # Note that the options we store in the cache are the options as
@@ -1760,6 +1795,7 @@ def write_cache(
         "version_id": manager.version_id,
         "ignore_all": ignore_all,
         "plugin_data": plugin_data,
+        "baseline_hash": baseline_hash,
     }
 
     # Write meta cache file
@@ -2608,7 +2644,7 @@ class State:
 
         return valid_refs
 
-    def write_cache(self) -> None:
+    def write_cache(self, baseline_errors: list[ErrorInfo]) -> None:
         assert self.tree is not None, "Internal error: method must be called on parsed file only"
         # We don't support writing cache files in fine-grained incremental mode.
         if (
@@ -2647,6 +2683,7 @@ class State:
             self.source_hash,
             self.ignore_all,
             self.manager,
+            baseline_errors,
         )
         if new_interface_hash == self.interface_hash:
             self.manager.log(f"Cached module {self.id} has same interface")
@@ -3593,7 +3630,7 @@ def process_stale_scc(graph: Graph, scc: list[str], manager: BuildManager) -> No
         graph[id].generate_unused_ignore_notes()
         graph[id].generate_ignore_without_code_notes()
     for id in stale:
-        manager.errors.filter_baseline_pre(graph[id].xpath)
+        baseline_errors = manager.errors.filter_baseline_pre(graph[id].xpath)
     if any(manager.errors.is_errors_for_file(graph[id].xpath) for id in stale):
         for id in stale:
             graph[id].transitive_error = True
@@ -3603,7 +3640,7 @@ def process_stale_scc(graph: Graph, scc: list[str], manager: BuildManager) -> No
                 graph[id].xpath, formatter=manager.error_formatter
             )
             manager.flush_errors(manager.errors.simplify_path(graph[id].xpath), errors, False)
-        graph[id].write_cache()
+        graph[id].write_cache(baseline_errors)
         graph[id].mark_as_rechecked()
 
 
