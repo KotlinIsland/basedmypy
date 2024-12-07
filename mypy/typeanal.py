@@ -1404,7 +1404,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
 
         if self.report_invalid_types:
             msg = None
-            if t.base_type_name in ("builtins.int", "builtins.bool"):
+            if t.base_type_name in ("builtins.int", "builtins.bool") or mypy.options._based and t.base_type_name in ("builtins.float", "builtins.complex"):
                 if not self.options.bare_literals:
                     # The only time it makes sense to use an int or bool is inside of
                     # a literal type.
@@ -1425,7 +1425,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 self.fail(msg, t, code=codes.VALID_TYPE)
                 if t.note is not None:
                     self.note(t.note, t, code=codes.VALID_TYPE)
-        if t.base_type_name in ("builtins.int", "builtins.bool"):
+        if t.base_type_name in ("builtins.int", "builtins.bool", "builtins.float", "builtins.complex"):
             v = t.literal_value
             assert v is not None
             result = LiteralType(

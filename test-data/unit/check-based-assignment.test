@@ -1,0 +1,9 @@
+[case narrowToLiteral]
+a = "a"
+reveal_type(a)  # Revealed type is "'a'" (narrowed from "str")
+a = "b"
+reveal_type(a)  # Revealed type is "'b'" (narrowed from "str")
+b = a
+reveal_type(b)  # Revealed type is "'b'" (narrowed from "str")
+b = "c"
+reveal_type(b)  # Revealed type is "'c'" (narrowed from "str")
