@@ -633,6 +633,7 @@ class TypeVarType(TypeVarLikeType):
         column: int = -1,
         scopename: str | None = None,
     ) -> None:
+        print(f"{fullname} {id}")
         super().__init__(name, fullname, id, upper_bound, default, line, column)
         assert values is not None, "No restrictions must be represented by empty list"
         self.values = values

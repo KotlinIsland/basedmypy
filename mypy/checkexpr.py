@@ -1852,7 +1852,9 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             need_refresh = any(
                 isinstance(v, (ParamSpecType, TypeVarTupleType)) for v in callee.variables
             )
+            # IT"S HERE!
             callee = freshen_function_type_vars(callee)
+            # IT"S HERE!
             callee = self.infer_function_type_arguments_using_context(callee, context)
             if need_refresh:
                 # Argument kinds etc. may have changed due to
