@@ -3514,12 +3514,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                     if not (isinstance(lvalue, NameExpr) and lvalue.is_special_form):
                         self.binder.assign_type(lvalue, rvalue_type, lvalue_type, False)
 
-                elif (
-                    not mypy.options._based
-                    and lvalue.node
-                    and lvalue.node.is_inferred
-                    and rvalue_type
-                ):
+                elif lvalue.node and lvalue.node.is_inferred and rvalue_type:
                     # for literal values
                     # Don't use type binder for definitions of special forms, like named tuples.
                     if not (isinstance(lvalue, NameExpr) and lvalue.is_special_form):
@@ -3531,14 +3526,16 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             if inferred:
                 type_context = self.get_variable_type_context(inferred)
                 rvalue_type = self.expr_checker.accept(rvalue, type_context=type_context)
-                if not mypy.options._based and not isinstance(lvalue.node.type, PartialType):
-                    self.binder.assign_type(lvalue, rvalue_type, rvalue_type, False)
+                original_rvalue_type = rvalue_type
                 if not (
                     inferred.is_final
                     or (isinstance(lvalue, NameExpr) and lvalue.name == "__match_args__")
                 ):
                     rvalue_type = remove_instance_last_known_values(rvalue_type)
-                self.infer_variable_type(inferred, lvalue, rvalue_type, rvalue)
+                if self.infer_variable_type(inferred, lvalue, rvalue_type, rvalue):
+                    self.binder.assign_type(
+                        lvalue, original_rvalue_type, original_rvalue_type, False
+                    )
 
             self.check_assignment_to_slots(lvalue)
 
@@ -4491,12 +4488,13 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
 
     def infer_variable_type(
         self, name: Var, lvalue: Lvalue, init_type: Type, context: Context
-    ) -> None:
+    ) -> bool:
         """Infer the type of initialized variables from initializer type."""
+        valid = True
         if isinstance(init_type, DeletedType):
             self.msg.deleted_as_rvalue(init_type, context)
         elif (
-            not is_valid_inferred_type(init_type, is_lvalue_final=name.is_final)
+            not (valid := is_valid_inferred_type(init_type, is_lvalue_final=name.is_final))
             and not self.no_partial_types
         ):
             # We cannot use the type of the initialization expression for full type
@@ -4523,6 +4521,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             init_type = strip_type(init_type)
 
             self.set_inferred_type(name, lvalue, init_type)
+        return valid
 
     def infer_partial_type(self, name: Var, lvalue: Lvalue, init_type: Type) -> bool:
         init_type = get_proper_type(init_type)

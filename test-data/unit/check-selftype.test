@@ -1121,7 +1121,7 @@ S = TypeVar('S')
 class C(Generic[T]):
     def limited(self: C[str], arg: S) -> S: ...
 
-reveal_type(C[str]().limited(0))  # N: Revealed type is "builtins.int"
+reveal_type(C[str]().limited(0))  # N: Revealed type is "Literal[0]?"
 
 [case testSelfTypeMultipleTypeVars]
 from typing import Generic, TypeVar, Tuple
@@ -1647,8 +1647,8 @@ class D(C[int]): ...
 
 c: C[int]
 d: D
-reveal_type(c.meth("test"))  # N: Revealed type is "Tuple[__main__.C[builtins.int], builtins.str, builtins.int]"
-reveal_type(d.meth("test"))  # N: Revealed type is "Tuple[__main__.D, builtins.str, builtins.int]"
+reveal_type(c.meth("test"))  # N: Revealed type is "Tuple[__main__.C[builtins.int], Literal['test']?, builtins.int]"
+reveal_type(d.meth("test"))  # N: Revealed type is "Tuple[__main__.D, Literal['test']?, builtins.int]"
 [builtins fixtures/tuple.pyi]
 
 [case testTypingSelfRecursiveInit]
@@ -1799,7 +1799,7 @@ class C:
     def foo(self, x: S) -> Tuple[Self, S]: ...
 
 reveal_type(C.foo)  # N: Revealed type is "def [Self <: __main__.C, S] (self: Self`1, x: S`2) -> Tuple[Self`1, S`2]"
-reveal_type(C().foo(42))  # N: Revealed type is "Tuple[__main__.C, builtins.int]"
+reveal_type(C().foo(42))  # N: Revealed type is "Tuple[__main__.C, Literal[42]?]"
 [builtins fixtures/tuple.pyi]
 
 [case testTypingSelfTypeVarClashAttr]
@@ -1813,7 +1813,7 @@ class C:
     foo: Callable[[S, Self], Tuple[Self, S]]
 
 reveal_type(C().foo)  # N: Revealed type is "def [S] (S`1, __main__.C) -> Tuple[__main__.C, S`1]"
-reveal_type(C().foo(42, C()))  # N: Revealed type is "Tuple[__main__.C, builtins.int]"
+reveal_type(C().foo(42, C()))  # N: Revealed type is "Tuple[__main__.C, Literal[42]?]"
 class This: ...
 [builtins fixtures/tuple.pyi]
 
@@ -2083,7 +2083,7 @@ class Partial2:
 p: Partial
 reveal_type(p())  # N: Revealed type is "Never"
 p2: Partial2
-reveal_type(p2(42))  # N: Revealed type is "builtins.int"
+reveal_type(p2(42))  # N: Revealed type is "Literal[42]?"
 
 [case testAccessingSelfClassVarInClassMethod]
 from typing import Self, ClassVar, Type, TypeVar

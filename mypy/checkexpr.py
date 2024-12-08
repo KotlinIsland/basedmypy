@@ -3677,10 +3677,14 @@ class ExpressionChecker(ExpressionVisitor[Type]):
 
     def visit_float_expr(self, e: FloatExpr) -> Type:
         """Type check a float literal (trivial)."""
+        if mypy.options._based:
+            return self.infer_literal_expr_type(e.value, "builtins.float")
         return self.named_type("builtins.float")
 
     def visit_complex_expr(self, e: ComplexExpr) -> Type:
         """Type check a complex literal."""
+        if mypy.options._based:
+            return self.infer_literal_expr_type(e.value, "builtins.complex")
         return self.named_type("builtins.complex")
 
     def visit_ellipsis(self, e: EllipsisExpr) -> Type:

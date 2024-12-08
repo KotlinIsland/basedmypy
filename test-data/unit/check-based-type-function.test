@@ -20,6 +20,8 @@ class int:
     def m(self, other: "int") -> "int":
         return self + 1
 
+class dict: ...
+
 
 [case typeFunctionReportError]
 from basedtyping import type_function, TypeFunctionError
@@ -36,6 +38,7 @@ def main():
     F(False)
     reveal_type(F(True))  # E: this is an error  [the-code] \
                           # N: Revealed type is "Never"
+[builtins fixtures/exception.pyi]
 
 
 [case typeFunctionReportRaises]
@@ -50,3 +53,4 @@ def main():
     F(False)
     reveal_type(F(True))  # E: Invocation raises TypeError: this is an error  [call-raises] \
                           # N: Revealed type is "Never"
+[builtins fixtures/exception.pyi]

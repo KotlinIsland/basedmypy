@@ -898,8 +898,8 @@ plugins=<ROOT>/test-data/unit/plugins/descriptor.py
 
 def dynamic_signature(arg1: str) -> str: ...
 a: int = 1
-reveal_type(dynamic_signature(a))  # N: Revealed type is "builtins.int"
-b: bytes = b'foo'
+reveal_type(dynamic_signature(a))  # N: Revealed type is "Literal[1]?"
+b: bytes
 reveal_type(dynamic_signature(b))  # N: Revealed type is "builtins.bytes"
 [file mypy.ini]
 \[mypy]

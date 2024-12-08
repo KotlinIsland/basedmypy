@@ -97,7 +97,7 @@ a = 1  # E: Incompatible types in assignment (expression has type "int", variabl
 [case testNarrowedFrom]
 a: object
 a = 1
-reveal_type(a)  # N: Revealed type is "int" (narrowed from "object")
+reveal_type(a)  # N: Revealed type is "1" (narrowed from "object")
 
 
 [case testNarrowedFromClass]

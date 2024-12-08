@@ -961,8 +961,8 @@ def g[T: int, S: (str, None)](x: T, y: S) -> T | S:
     return x
 
 [out2]
-tmp/a.py:2: note: Revealed type is "builtins.int"
-tmp/a.py:3: note: Revealed type is "Union[builtins.int, builtins.str]"
+tmp/a.py:2: note: Revealed type is "Literal[1]?"
+tmp/a.py:3: note: Revealed type is "Union[Literal[1]?, builtins.str]"
 tmp/a.py:4: error: Value of type variable "T" of "g" cannot be "str"
 tmp/a.py:5: error: Value of type variable "S" of "g" cannot be "int"
 tmp/a.py:5: note: "S" of "g" is a constrained type variable, it is not generic
@@ -1063,23 +1063,23 @@ class C:
         reveal_type(y)  # N: Revealed type is "T`-1"
         return cast(T, y)
 
-reveal_type(C().m(1))  # N: Revealed type is "builtins.int"
+reveal_type(C().m(1))  # N: Revealed type is "Literal[1]?"
 
 [case testPEP695ScopingBasics]
 T = 1
 
 def f[T](x: T) -> T:
     T = 'a'
-    reveal_type(T)  # N: Revealed type is "builtins.str"
+    reveal_type(T)  # N: Revealed type is "Literal['a']?"
     return x
 
-reveal_type(T)  # N: Revealed type is "builtins.int"
+reveal_type(T)  # N: Revealed type is "Literal[1]?"
 
 class C[T]:
     T = 1.2
     reveal_type(T)  # N: Revealed type is "builtins.float"
 
-reveal_type(T)  # N: Revealed type is "builtins.int"
+reveal_type(T)  # N: Revealed type is "Literal[1]?"
 
 [case testPEP695ClassScoping]
 class C:
@@ -1094,7 +1094,7 @@ C().m(1, C.D())  # E: Value of type variable "T" of "m" of "C" cannot be "int"
 [case testPEP695NestedGenericFunction]
 def f[T](x: T) -> T:
     reveal_type(f(x))  # N: Revealed type is "T`-1"
-    reveal_type(f(1))  # N: Revealed type is "builtins.int"
+    reveal_type(f(1))  # N: Revealed type is "Literal[1]?"
 
     def ff(x: T) -> T:
         y: T = x
@@ -1105,12 +1105,12 @@ def f[T](x: T) -> T:
     def g[S](a: S) -> S:
         ff(a)  # E: Argument 1 to "ff" has incompatible type "S"; expected "T"
         return a
-    reveal_type(g(1))  # N: Revealed type is "builtins.int"
+    reveal_type(g(1))  # N: Revealed type is "Literal[1]?"
     reveal_type(g(x))  # N: Revealed type is "T`-1"
 
     def h[S](a: S) -> S:
         return a
-    reveal_type(h(1))  # N: Revealed type is "builtins.int"
+    reveal_type(h(1))  # N: Revealed type is "Literal[1]?"
     reveal_type(h(x))  # N: Revealed type is "T`-1"
     return x
 
@@ -1377,8 +1377,8 @@ class C:
 class D(C):
     pass
 
-reveal_type(C.m(1))  # N: Revealed type is "Tuple[__main__.C, builtins.int]"
-reveal_type(D.m(1))  # N: Revealed type is "Tuple[__main__.D, builtins.int]"
+reveal_type(C.m(1))  # N: Revealed type is "Tuple[__main__.C, Literal[1]?]"
+reveal_type(D.m(1))  # N: Revealed type is "Tuple[__main__.D, Literal[1]?]"
 
 class E[T]:
     def m(self) -> Self:
@@ -1391,9 +1391,9 @@ class F[T](E[T]):
     pass
 
 reveal_type(E[int]().m())  # N: Revealed type is "__main__.E[builtins.int]"
-reveal_type(E[int]().mm(b'x'))  # N: Revealed type is "Tuple[__main__.E[builtins.int], builtins.bytes]"
+reveal_type(E[int]().mm(b'x'))  # N: Revealed type is "Tuple[__main__.E[builtins.int], Literal[b'x']?]"
 reveal_type(F[str]().m())  # N: Revealed type is "__main__.F[builtins.str]"
-reveal_type(F[str]().mm(b'x'))  # N: Revealed type is "Tuple[__main__.F[builtins.str], builtins.bytes]"
+reveal_type(F[str]().mm(b'x'))  # N: Revealed type is "Tuple[__main__.F[builtins.str], Literal[b'x']?]"
 [builtins fixtures/tuple.pyi]
 
 [case testPEP695CallAlias]
@@ -1542,7 +1542,7 @@ type C = int  # E: Name "C" already defined on line 1
 
 A = 0
 type A = str  # E: Name "A" already defined on line 4
-reveal_type(A)  # N: Revealed type is "builtins.int"
+reveal_type(A)  # N: Revealed type is "Literal[0]?"
 
 [case testPEP695RedefineAsTypeAlias2]
 from m import D

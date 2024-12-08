@@ -246,8 +246,8 @@ reveal_type(p2("a"))  # N: Revealed type is "builtins.str"
 def bar(a: T, b: U) -> U: ...
 
 p3 = functools.partial(bar, 1)
-reveal_type(p3(2))  # N: Revealed type is "builtins.int"
-reveal_type(p3("a"))  # N: Revealed type is "builtins.str"
+reveal_type(p3(2))  # N: Revealed type is "Literal[2]?"
+reveal_type(p3("a"))  # N: Revealed type is "Literal['a']?"
 [builtins fixtures/dict.pyi]
 
 [case testFunctoolsPartialCallable]

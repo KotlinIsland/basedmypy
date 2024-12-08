@@ -42,6 +42,7 @@
       <envs />
     </TaskOptions>
     <enabled-global>
+      <option value="mypy" />
       <option value="dmypy" />
     </enabled-global>
   </component>

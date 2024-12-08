@@ -119,7 +119,7 @@ reveal_type(z2)  # N: Revealed type is "Union[Literal[0], builtins.str, None]"
 
 [case testLambdaReturningNone]
 f = lambda: None
-x = f()  # E: Function does not return a value (it only ever returns None)
+x = f()  # E: <lambda> does not return a value (it only ever returns None)
 reveal_type(x)  # N: Revealed type is "None"
 
 [case testNoneArgumentType]
@@ -609,8 +609,8 @@ reveal_type(u(None, C()))  # N: Revealed type is "Union[__main__.C, None]"
 reveal_type(u(a, None))  # N: Revealed type is "Union[None, Any]"
 reveal_type(u(None, a))  # N: Revealed type is "Union[Any, None]"
 
-reveal_type(u(1, None))  # N: Revealed type is "Union[None, builtins.int]"
-reveal_type(u(None, 1))  # N: Revealed type is "Union[builtins.int, None]"
+reveal_type(u(1, None))  # N: Revealed type is "Union[None, Literal[1]?]"
+reveal_type(u(None, 1))  # N: Revealed type is "Union[Literal[1]?, None]"
 
 [case testOptionalAndAnyBaseClass]
 from typing import Any, Optional
@@ -738,7 +738,7 @@ def g(x: Optional[int]) -> int:
     if x is None:
         reveal_type(x)  # N: Revealed type is "None"
         x = 1
-        reveal_type(x)  # N: Revealed type is "builtins.int"
+        reveal_type(x)  # N: Revealed type is "Literal[1]?"
         # Since we've assigned to x, the special case None behavior shouldn't happen
         x = f()
         reveal_type(x)  # N: Revealed type is "Union[builtins.int, None]"
@@ -794,11 +794,11 @@ from typing import Any, Optional
 def f1(b: bool) -> Optional[int]:
     if b:
         z = 10
-        reveal_type(z)  # N: Revealed type is "builtins.int"
+        reveal_type(z)  # N: Revealed type is "Literal[10]?"
     else:
         z = None
         reveal_type(z)  # N: Revealed type is "None"
-    reveal_type(z)  # N: Revealed type is "Union[builtins.int, None]"
+    reveal_type(z)  # N: Revealed type is "Union[Literal[10]?, None]"
     return z
 
 def f2(b: bool) -> int:
@@ -914,7 +914,7 @@ def f16(z: Any) -> None:
             break
     else:
         y = None
-    reveal_type(y)  # N: Revealed type is "Union[builtins.int, None]"
+    reveal_type(y)  # N: Revealed type is "Union[Literal[50]?, None]"
 
 def f17(b: bool, c: bool, d: bool) -> None:
     if b:
@@ -933,7 +933,7 @@ def f18(b: bool, c: bool, d: bool) -> None:
             z = 5
         else:
             z = None
-    reveal_type(z)  # N: Revealed type is "Union[builtins.int, None]"
+    reveal_type(z)  # N: Revealed type is "Union[Literal[5]?, None]"
 
 def f19(b: bool, c: bool, d: bool) -> None:
     if b:
@@ -942,7 +942,7 @@ def f19(b: bool, c: bool, d: bool) -> None:
         z = None
         if c:
             z = 6
-    reveal_type(z)  # N: Revealed type is "Union[builtins.int, None]"
+    reveal_type(z)  # N: Revealed type is "Union[Literal[6]?, None]"
 
 def f20(b: bool) -> None:
     if b:
@@ -1020,13 +1020,13 @@ from typing import Any, Optional
 def f1(b: bool) -> Optional[int]:
     if b:
         z = 10
-        reveal_type(z)  # N: Revealed type is "builtins.int"
+        reveal_type(z)  # N: Revealed type is "Literal[10]?"
     else:
         # Force the node to get deferred between the two assignments
         Defer().defer
         z = None
         reveal_type(z)  # N: Revealed type is "None"
-    reveal_type(z)  # N: Revealed type is "Union[builtins.int, None]"
+    reveal_type(z)  # N: Revealed type is "Union[Literal[10]?, None]"
     return z
 
 class Defer:

@@ -311,8 +311,8 @@ class ConditionalTypeBinder:
     ) -> None:
         # We should erase last known value in binder, because if we are using it,
         # it means that the target is not final, and therefore can't hold a literal.
-        if not mypy.options._based:
-            type = remove_instance_last_known_values(type)
+        # HUUHHH?????
+        # type = remove_instance_last_known_values(type)
 
         if self.type_assignments is not None:
             # We are in a multiassign from union, defer the actual binding,
