@@ -42,7 +42,8 @@ skip-magic-trailing-comma = true
 force-exclude = '''
 ^/mypy/typeshed|
 ^/mypyc/test-data|
-^/test-data
+^/test-data|
+^/pw$
 '''
 
 [tool.ruff]
