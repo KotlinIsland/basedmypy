@@ -129,3 +129,8 @@ class D:
 data: D
 f"{data}"
 [builtins fixtures/primitives.pyi]
+
+
+[case testHelpfulStringAllowNone]
+# flags: --helpful-string-allow-none
+f"{None}"
