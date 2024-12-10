@@ -661,7 +661,7 @@ def _verify_arg_default_value(
     stub_arg: nodes.Argument, runtime_arg: inspect.Parameter
 ) -> Iterator[str]:
     """Checks whether argument default values are compatible."""
-    if runtime_arg.default != inspect.Parameter.empty:
+    if runtime_arg.default is not inspect.Parameter.empty:
         if stub_arg.kind.is_required():
             yield (
                 f'runtime argument "{runtime_arg.name}" '
@@ -749,7 +749,7 @@ class Signature(Generic[T]):
 
         def has_default(arg: Any) -> bool:
             if isinstance(arg, inspect.Parameter):
-                return bool(arg.default != inspect.Parameter.empty)
+                return bool(arg.default is not inspect.Parameter.empty)
             if isinstance(arg, nodes.Argument):
                 return arg.kind.is_optional()
             raise AssertionError
@@ -1618,7 +1618,7 @@ def get_mypy_type_of_runtime_value(runtime: Any) -> mypy.types.Type | None:
                 arg_names.append(
                     None if arg.kind == inspect.Parameter.POSITIONAL_ONLY else arg.name
                 )
-                has_default = arg.default == inspect.Parameter.empty
+                has_default = arg.default is inspect.Parameter.empty
                 if arg.kind == inspect.Parameter.POSITIONAL_ONLY:
                     arg_kinds.append(nodes.ARG_POS if has_default else nodes.ARG_OPT)
                 elif arg.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD:
