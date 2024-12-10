@@ -2411,6 +2411,23 @@ assert annotations
             error="func2",
         )
 
+    @collect_cases
+    def test_no_param_defaults_bool_eval(self) -> Iterator[Case]:
+        yield Case(
+            stub="""
+            class Censored:
+                def __bool__(self) -> bool: ...
+            def snowflaky(sensitive_do_not_touch: Censored = ...) -> None: ...
+            """,
+            runtime="""
+            class Censored:
+                def __bool__(self) -> bool:  # never try this at home, kids
+                    raise ValueError
+            def snowflaky(sensitive_do_not_touch: Censored = Censored()) -> None: ...
+            """,
+            error=None,
+        )
+
 
 def remove_color_code(s: str) -> str:
     return re.sub("\\x1b.*?m", "", s)  # this works!

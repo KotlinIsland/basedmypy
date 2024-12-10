@@ -1867,7 +1867,7 @@
         "code": "no-any-expr",
         "column": 40,
         "message": "Expression type contains \"Any\" (has type \"(str, CacheMeta | None)\")",
-        "offset": 412,
+        "offset": 410,
         "src": "new_interface_hash, self.meta = write_cache(",
         "target": "mypy.build.State.write_cache"
       },
@@ -2029,7 +2029,7 @@
         "code": "redundant-expr",
         "column": 31,
         "message": "Condition is always true",
-        "offset": 499,
+        "offset": 504,
         "src": "if new_frame is None:",
         "target": "mypy.checker.TypeChecker.check_func_def"
       },
@@ -2927,7 +2927,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_list_expr\" is not using @override but is overriding a method in class \"mypy.visitor.ExpressionVisitor\"",
-        "offset": 228,
+        "offset": 230,
         "src": "def visit_list_expr(self, e: ListExpr) -> Type:",
         "target": "mypy.checkexpr.ExpressionChecker.visit_list_expr"
       },
@@ -13543,7 +13543,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"__str__\" is not using @override but is overriding a method in class \"builtins.object\"",
-        "offset": 102,
+        "offset": 114,
         "src": "def __str__(self) -> str:",
         "target": "mypy.nodes.Node.__str__"
       },
@@ -17329,7 +17329,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_func_def\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 358,
+        "offset": 357,
         "src": "def visit_func_def(self, defn: FuncDef) -> None:",
         "target": "mypy.semanal.SemanticAnalyzer.visit_func_def"
       },
@@ -17465,7 +17465,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_import\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 428,
+        "offset": 430,
         "src": "def visit_import(self, i: Import) -> None:",
         "target": "mypy.semanal.SemanticAnalyzer.visit_import"
       },
@@ -25160,7 +25160,7 @@
         "column": 7,
         "message": "Expression has type \"Any\"",
         "offset": 45,
-        "src": "if runtime_arg.default != inspect.Parameter.empty:",
+        "src": "if runtime_arg.default is not inspect.Parameter.empty:",
         "target": "mypy.stubtest._verify_arg_default_value"
       },
       {
@@ -25328,7 +25328,7 @@
         "column": 28,
         "message": "Expression has type \"Any\"",
         "offset": 1,
-        "src": "return bool(arg.default != inspect.Parameter.empty)",
+        "src": "return bool(arg.default is not inspect.Parameter.empty)",
         "target": "mypy.stubtest.Signature.__str__"
       },
       {
@@ -26656,38 +26656,14 @@
         "column": 30,
         "message": "Expression has type \"Any\"",
         "offset": 18,
-        "src": "has_default = arg.default == inspect.Parameter.empty",
-        "target": "mypy.stubtest.get_mypy_type_of_runtime_value"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 54,
-        "message": "Expression has type \"Any\"",
-        "offset": 2,
-        "src": "arg_kinds.append(nodes.ARG_POS if has_default else nodes.ARG_OPT)",
-        "target": "mypy.stubtest.get_mypy_type_of_runtime_value"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 54,
-        "message": "Expression has type \"Any\"",
-        "offset": 2,
-        "src": "arg_kinds.append(nodes.ARG_POS if has_default else nodes.ARG_OPT)",
-        "target": "mypy.stubtest.get_mypy_type_of_runtime_value"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 56,
-        "message": "Expression has type \"Any\"",
-        "offset": 2,
-        "src": "arg_kinds.append(nodes.ARG_NAMED if has_default else nodes.ARG_NAMED_OPT)",
+        "src": "has_default = arg.default is inspect.Parameter.empty",
         "target": "mypy.stubtest.get_mypy_type_of_runtime_value"
       },
       {
         "code": "redundant-expr",
         "column": 21,
         "message": "Condition is always true",
-        "offset": 3,
+        "offset": 9,
         "src": "elif arg.kind == inspect.Parameter.VAR_KEYWORD:",
         "target": "mypy.stubtest.get_mypy_type_of_runtime_value"
       },
@@ -28653,7 +28629,7 @@
         "code": "no-any-explicit",
         "column": 0,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 206,
+        "offset": 205,
         "src": "def collect_cases(fn: Callable[..., Iterator[Case]]) -> FunctionType[..., None]:",
         "target": "mypy.test.teststubtest.collect_cases"
       },
@@ -29378,10 +29354,26 @@
         "target": "mypy.test.teststubtest"
       },
       {
+        "code": "no-any-expr",
+        "column": 5,
+        "message": "Expression type contains \"Any\" (has type \"def (fn: (...) -> Iterator[Case]) -> def (...) -> None\")",
+        "offset": 65,
+        "src": "@collect_cases",
+        "target": "mypy.test.teststubtest"
+      },
+      {
+        "code": "no-any-decorated",
+        "column": 4,
+        "message": "Type of decorated function contains type \"Any\" (\"def (...) -> None\")",
+        "offset": 1,
+        "src": "def test_no_param_defaults_bool_eval(self) -> Iterator[Case]:",
+        "target": "mypy.test.teststubtest"
+      },
+      {
         "code": "no-any-explicit",
         "column": 8,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 225,
+        "offset": 176,
         "src": "def f(a: int, b: int, *, c: int, d: int = 0, **kwargs: Any) -> None:",
         "target": "mypy.test.teststubtest.StubtestMiscUnit.test_signature"
       },
