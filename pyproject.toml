@@ -18,8 +18,11 @@ build-backend = "setuptools.build_meta"
 
 
 [tool.pyprojectx]
-main = ["uv"]
 scripts_dir = "misc"
+
+[tool.pyprojectx.main]
+dir = ".venv"
+requirements = ["uv", "-r test-requirements.txt", "-e ."]
 
 [tool.pyprojectx.aliases]
 format = "black mypy mypyc misc"
@@ -29,7 +32,7 @@ typecheck = "@_typecheck --baseline-file="
 typecheck-strict = "@_typecheck --config-file mypy_self_check_strict.ini"
 write-baseline = "@typecheck-strict --platform linux --write-baseline"
 check = ["@format", "@lint", "@typecheck"]
-test = ["pytest -n0 -k"]
+test = "pytest -n0 -k"
 
 
 [tool.black]
