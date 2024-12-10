@@ -3,6 +3,8 @@
 ## [Unreleased]
 ### Added
 - `collections.User*` should have `__repr__`
+### Fixes
+- `stubtest`: the `__bool__` method of function parameter defaults will no longer be unnecessarily evaluated
 
 ## [2.8.0]
 ### Added
