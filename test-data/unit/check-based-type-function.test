@@ -1,0 +1,49 @@
+[case typeFunctionAsFunction]
+from basedtyping import type_function
+@type_function
+def f(s: str) -> str:
+    return "a"
+
+reveal_type(f("b"))  # Revealed type is "'b'"
+
+
+[case typeFunctionMethod]
+# errrrm
+
+
+[case typeFunctionAsTypeImplicitArg]
+from basedtyping import type_function
+
+@type_function
+def NotNone(o: object) -> object:
+    if isinstance(o, None):
+        raise TypeError("can't be `None`")
+    return o
+
+def f(a: NotNone):
+    print(a)
+
+f(1)  # E: ok
+f(None)   # E: erm
+a: object
+f(a)  # E: erm
+
+
+[case typeFunctionReportError]
+from basedtyping import type_function
+
+@type_function
+def NotNone(o: object) -> object:
+    if isinstance(o, None):
+        raise TypeError("can't be `None`")
+    return o
+
+def f(a: NotNone):
+    print(a)
+
+f(1)  # E: ok
+f(None)   # E: erm
+a: object
+f(a)  # E: erm
+
+
