@@ -113,11 +113,11 @@ READ_ONLY_PROPERTY_OVERRIDES_READ_WRITE: Final = ErrorMessage(
 )
 FORMAT_REQUIRES_MAPPING: Final = "Format requires a mapping"
 RETURN_TYPE_CANNOT_BE_CONTRAVARIANT: Final = ErrorMessage(
-    "This usage of this contravariant type variable is unsafe as a return type.",
+    "This usage of this contravariant type variable is unsafe as a return type",
     codes.UNSAFE_VARIANCE,
 )
 FUNCTION_PARAMETER_CANNOT_BE_COVARIANT: Final = ErrorMessage(
-    "This usage of this covariant type variable is unsafe as an input parameter.",
+    "This usage of this covariant type variable is unsafe as an input parameter",
     codes.UNSAFE_VARIANCE,
 )
 UNSAFE_VARIANCE_NOTE = ErrorMessage(

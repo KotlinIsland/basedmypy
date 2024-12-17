@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from typing import Final, Iterable, Mapping, Sequence, TypeVar, cast, overload
+from contextlib import contextmanager
+from typing import Final, Iterable, Mapping, Sequence, TypeVar, cast, overload, Generator
 
-from mypy.nodes import ARG_STAR, FakeInfo, Var
+from mypy.nodes import ARG_STAR, CONTRAVARIANT, COVARIANT, FakeInfo, Var
 from mypy.state import state
 from mypy.types import (
     ANY_STRATEGY,
@@ -53,37 +54,55 @@ import mypy.type_visitor  # ruff: isort: skip
 
 
 @overload
-def expand_type(typ: CallableType, env: Mapping[TypeVarId, Type]) -> CallableType: ...
+def expand_type(typ: CallableType, env: Mapping[TypeVarId, Type],
+                *,
+                variance: int | None  = ...,
+                use_variances: Mapping[TypeVarId, int | None] | None = ...) -> CallableType: ...
 
 
 @overload
-def expand_type(typ: ProperType, env: Mapping[TypeVarId, Type]) -> ProperType: ...
+def expand_type(typ: ProperType, env: Mapping[TypeVarId, Type],
+                *,
+                variance: int | None  = ...,
+                use_variances: Mapping[TypeVarId, int | None] | None = ...) -> ProperType: ...
 
 
 @overload
-def expand_type(typ: Type, env: Mapping[TypeVarId, Type]) -> Type: ...
+def expand_type(typ: Type, env: Mapping[TypeVarId, Type],
+                *,
+                variance: int | None  = ...,
+                use_variances: Mapping[TypeVarId, int | None] | None = ...
+                ) -> Type: ...
 
 
-def expand_type(typ: Type, env: Mapping[TypeVarId, Type]) -> Type:
+def expand_type(
+    typ: Type,
+    env: Mapping[TypeVarId, Type],
+    *,
+    variance = None,
+    use_variances = None,
+) -> Type:
     """Substitute any type variable references in a type given by a type
     environment.
     """
-    return typ.accept(ExpandTypeVisitor(env))
+    return typ.accept(ExpandTypeVisitor(env, use_variances=use_variances, variance=variance))
 
 
 @overload
-def expand_type_by_instance(typ: CallableType, instance: Instance) -> CallableType: ...
+def expand_type_by_instance(typ: CallableType, instance: Instance, *, use_variance: int | None=...) -> CallableType: ...
 
 
 @overload
-def expand_type_by_instance(typ: ProperType, instance: Instance) -> ProperType: ...
+def expand_type_by_instance(typ: ProperType, instance: Instance, *, use_variance: int | None=...) -> ProperType: ...
 
 
 @overload
-def expand_type_by_instance(typ: Type, instance: Instance) -> Type: ...
+def expand_type_by_instance(typ: Type, instance: Instance, *, use_variance: int | None=...) -> Type: ...
 
 
-def expand_type_by_instance(typ: Type, instance: Instance) -> Type:
+def expand_type_by_instance(
+    typ: Type, instance: Instance, use_variance = None
+) -> Type:
     """Substitute type variables in type using values from an Instance.
     Type variables are considered to be bound by the class declaration."""
     if not instance.args and not instance.type.has_type_var_tuple_type:
@@ -108,12 +127,13 @@ def expand_type_by_instance(typ: Type, instance: Instance) -> Type:
         else:
             tvars = tuple(instance.type.defn.type_vars)
             instance_args = instance.args
-
-        for binder, arg in zip(tvars, instance_args):
+        use_variances = {}
+        for binder, arg, variance in zip(tvars, instance_args, instance.variances):
             assert isinstance(binder, TypeVarLikeType)
             variables[binder.id] = arg
+            use_variances[binder.id] = variance
 
-        return expand_type(typ, variables)
+        return expand_type(typ, variables, use_variances=use_variances, variance=use_variance)
 
 
 F = TypeVar("F", bound=FunctionLike)
@@ -181,10 +201,33 @@ class ExpandTypeVisitor(TrivialSyntheticTypeTranslator):
 
     variables: Mapping[TypeVarId, Type]  # TypeVar id -> TypeVar value
 
-    def __init__(self, variables: Mapping[TypeVarId, Type]) -> None:
+    def __init__(
+        self,
+        variables: Mapping[TypeVarId, Type],
+        *,
+        variance: int | None = None,
+        use_variances: Mapping[TypeVarId, int | None] | None = None,
+    ) -> None:
         super().__init__()
         self.variables = variables
         self.recursive_tvar_guard: dict[TypeVarId, Type | None] = {}
+        self.variance = variance
+        self.use_variances = use_variances
+        self.using_variance: int | None = None
+
+    @contextmanager
+    def in_variance(self) -> Generator[None]:
+        using_variance = self.using_variance
+        self.using_variance = CONTRAVARIANT
+        yield
+        self.using_variance = using_variance
+
+    @contextmanager
+    def out_variance(self) -> Generator[None]:
+        using_variance = self.using_variance
+        self.using_variance = COVARIANT
+        yield
+        self.using_variance = using_variance
 
     def visit_unbound_type(self, t: UnboundType) -> Type:
         return t
@@ -238,6 +281,18 @@ class ExpandTypeVisitor(TrivialSyntheticTypeTranslator):
         if t.id.is_self():
             t = t.copy_modified(upper_bound=t.upper_bound.accept(self))
         repl = self.variables.get(t.id, t)
+        use_site_variance = None if self.use_variances is None else self.use_variances.get(t.id)
+        positional_variance = self.using_variance or self.variance
+        if (
+            positional_variance is not None
+            and use_site_variance is not None
+            and positional_variance != use_site_variance
+        ):
+            repl = (
+                t.upper_bound.accept(self)
+                if positional_variance == COVARIANT
+                else UninhabitedType()
+            )
         if isinstance(repl, ProperType) and isinstance(repl, Instance):
             # TODO: do we really need to do this?
             # If I try to remove this special-casing ~40 tests fail on reveal_type().
@@ -414,10 +469,13 @@ class ExpandTypeVisitor(TrivialSyntheticTypeTranslator):
             needs_normalization = True
             arg_types = self.interpolate_args_for_unpack(t, var_arg.typ)
         else:
-            arg_types = self.expand_types(t.arg_types)
+            with self.in_variance():
+                arg_types = self.expand_types(t.arg_types)
+        with self.out_variance():
+            ret_type = t.ret_type.accept(self)
         expanded = t.copy_modified(
             arg_types=arg_types,
-            ret_type=t.ret_type.accept(self),
+            ret_type=ret_type,
             type_guard=t.type_guard and cast(TypeGuardType, t.type_guard.accept(self)),
             type_is=(t.type_is.accept(self) if t.type_is is not None else None),
         )
