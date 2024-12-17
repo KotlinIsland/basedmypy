@@ -1,0 +1,32 @@
+[case testInferReturnType]
+def m():
+    a: int = f()
+    b = f()
+    reveal_type(b)  # N: Revealed type is "int"
+    e: str = f()  # E: Incompatible types in assignment (expression has type "int", variable has type "str")  [assignment]
+
+def f():
+    return 1
+
+c: int = f()
+d: str = f()  # E: Incompatible types in assignment (expression has type "int", variable has type "str")  [assignment]
+
+reveal_type(f)  # N: Revealed type is "def () -> 1"
+
+
+[case testInferGenerator]
+from typing import Generator
+class A: ...
+class B: ...
+def f():
+    yield 1
+    a: A = yield 2
+    b: B = yield 3
+    return 4
+
+reveal_type(f)  # N: Revealed type is "def () -> typing.Generator[1 | 2 | 3, __main__.A & __main__.B, 4]"
+
+def f2():
+    yield
+
+reveal_type(f2)  # N: Revealed type is "def () -> typing.Generator[None, None, None]"

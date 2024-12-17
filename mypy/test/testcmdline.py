@@ -68,6 +68,7 @@ def test_python_cmdline(testcase: DataDrivenTestCase, step: int) -> None:
     if not based:
         args.append("--no-strict")
         args.append("--no-default-return")
+        args.append("--no-infer-function-types")
     if "--pretty" not in args:
         args.append("--no-pretty")
     args.append("--no-color-output")

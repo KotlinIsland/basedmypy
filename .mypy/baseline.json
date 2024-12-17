@@ -1989,7 +1989,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"type_context\" is not using @override but is overriding a method in class \"mypy.plugin.CheckerPluginInterface\"",
-        "offset": 456,
+        "offset": 464,
         "src": "def type_context(self) -> list[Type | None]:",
         "target": "mypy.checker"
       },
@@ -1997,7 +1997,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_overloaded_func_def\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 191,
+        "offset": 197,
         "src": "def visit_overloaded_func_def(self, defn: OverloadedFuncDef, do_items=True) -> None:",
         "target": "mypy.checker.TypeChecker.visit_overloaded_func_def"
       },
@@ -2029,7 +2029,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_class_def\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 1113,
+        "offset": 1142,
         "src": "def visit_class_def(self, defn: ClassDef) -> None:",
         "target": "mypy.checker.TypeChecker.visit_class_def"
       },
@@ -2093,7 +2093,7 @@
         "code": "truthy-bool",
         "column": 23,
         "message": "\"signature\" has type \"Type\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 169,
+        "offset": 172,
         "src": "if signature:",
         "target": "mypy.checker.TypeChecker.check_assignment"
       },
@@ -2245,7 +2245,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_if_stmt\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 111,
+        "offset": 121,
         "src": "def visit_if_stmt(self, s: IfStmt) -> None:",
         "target": "mypy.checker.TypeChecker.visit_if_stmt"
       },
@@ -2639,7 +2639,7 @@
         "code": "truthy-bool",
         "column": 34,
         "message": "\"item_name_expr\" has type \"Expression\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 424,
+        "offset": 430,
         "src": "key_context = item_name_expr or item_arg",
         "target": "mypy.checkexpr.ExpressionChecker.validate_typeddict_kwargs"
       },
@@ -3055,7 +3055,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_await_expr\" is not using @override but is overriding a method in class \"mypy.visitor.ExpressionVisitor\"",
-        "offset": 21,
+        "offset": 30,
         "src": "def visit_await_expr(self, e: AwaitExpr, allow_none_return: bool = False) -> Type:",
         "target": "mypy.checkexpr.ExpressionChecker.visit_await_expr"
       },
@@ -6859,7 +6859,7 @@
         "code": "redundant-expr",
         "column": 19,
         "message": "Condition is always false",
-        "offset": 375,
+        "offset": 377,
         "src": "if e.type is None:",
         "target": "mypy.errors.Errors.render_messages"
       },
@@ -7922,7 +7922,7 @@
       {
         "code": "no-any-expr",
         "column": 8,
-        "message": "Expression type contains \"Any\" (has type \"(int, (arg | Any, expr))\")",
+        "message": "Expression type contains \"Any\" (has type \"(int, (Any | arg, expr))\")",
         "offset": 3,
         "src": "for i, (a, d) in enumerate(zip(args_args[num_no_defaults:], args_defaults)):",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -7930,7 +7930,7 @@
       {
         "code": "no-any-expr",
         "column": 8,
-        "message": "Expression type contains \"Any\" (has type \"(arg | Any, expr)\")",
+        "message": "Expression type contains \"Any\" (has type \"(Any | arg, expr)\")",
         "offset": 0,
         "src": "for i, (a, d) in enumerate(zip(args_args[num_no_defaults:], args_defaults)):",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -7938,7 +7938,7 @@
       {
         "code": "no-any-expr",
         "column": 25,
-        "message": "Expression type contains \"Any\" (has type \"enumerate[(arg | Any, expr)]\")",
+        "message": "Expression type contains \"Any\" (has type \"enumerate[(Any | arg, expr)]\")",
         "offset": 0,
         "src": "for i, (a, d) in enumerate(zip(args_args[num_no_defaults:], args_defaults)):",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -7946,7 +7946,7 @@
       {
         "code": "no-any-expr",
         "column": 35,
-        "message": "Expression type contains \"Any\" (has type \"zip[(arg | Any, expr)]\")",
+        "message": "Expression type contains \"Any\" (has type \"zip[(Any | arg, expr)]\")",
         "offset": 0,
         "src": "for i, (a, d) in enumerate(zip(args_args[num_no_defaults:], args_defaults)):",
         "target": "mypy.fastparse.ASTConverter.transform_args"
@@ -10759,7 +10759,7 @@
         "code": "redundant-expr",
         "column": 18,
         "message": "Condition is always true",
-        "offset": 104,
+        "offset": 70,
         "src": "while True:",
         "target": "mypy.ipc.IPCBase.read"
       }
@@ -33631,7 +33631,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"describe\" is not using @override but is overriding a method in class \"mypy.types.AnyType\"",
-        "offset": 59,
+        "offset": 61,
         "src": "def describe(self) -> str:",
         "target": "mypy.types.UntypedType.describe"
       },
@@ -36514,26 +36514,10 @@
         "target": "mypy.util.replace_object_state"
       },
       {
-        "code": "no-any-expr",
-        "column": 21,
-        "message": "Expression type contains \"Any\" (has type \"int | Any\")",
-        "offset": 281,
-        "src": "fd = sys.stdout.fileno()",
-        "target": "mypy.util.FancyFormatter.initialize_unix_colors"
-      },
-      {
-        "code": "no-any-expr",
-        "column": 36,
-        "message": "Expression type contains \"Any\" (has type \"int | Any\")",
-        "offset": 5,
-        "src": "curses.setupterm(fd=fd)",
-        "target": "mypy.util.FancyFormatter.initialize_unix_colors"
-      },
-      {
         "code": "no-any-explicit",
         "column": 0,
         "message": "Explicit \"Any\" is not allowed",
-        "offset": 269,
+        "offset": 555,
         "src": "def getattr(value: object, name: str) -> Any: ...",
         "target": "mypy.util.getattr"
       },
