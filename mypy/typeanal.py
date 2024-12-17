@@ -30,6 +30,9 @@ from mypy.nodes import (
     ARG_POS,
     ARG_STAR,
     ARG_STAR2,
+    CONTRAVARIANT,
+    COVARIANT,
+    INVARIANT,
     MISSING_FALLBACK,
     SYMBOL_FUNCBASE_TYPES,
     ArgKind,
@@ -112,6 +115,7 @@ from mypy.types import (
     UnionType,
     UnpackType,
     UntypedType,
+    VarianceModifier,
     callable_with_ellipsis,
     find_unpack_in_list,
     flatten_nested_tuples,
@@ -247,6 +251,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         allowed_alias_tvars: list[TypeVarLikeType] | None = None,
         allow_type_any: bool = False,
         alias_type_params_names: list[str] | None = None,
+        is_type_var_bound=False,
     ) -> None:
         self.api = api
         self.fail_func = api.fail
@@ -294,6 +299,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         self.allow_type_any = allow_type_any
         self.allow_type_var_tuple = False
         self.allow_unpack = allow_unpack
+        self.is_type_var_bound = is_type_var_bound
 
     def lookup_qualified(
         self, name: str, ctx: Context, suppress_errors: bool = False
@@ -534,6 +540,37 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             elif node.fullname in ("typing_extensions.Concatenate", "typing.Concatenate"):
                 # We check the return type further up the stack for valid use locations
                 return self.apply_concatenate_operator(t)
+            elif node.fullname in ("basedtyping.In", "basedtyping.Out", "basedtyping.InOut"):
+                if node.fullname == "basedtyping.In":
+                    variance = CONTRAVARIANT
+                elif node.fullname == "basedtyping.Out":
+                    variance = COVARIANT
+                elif node.fullname == "basedtyping.InOut":
+                    variance = INVARIANT
+                else:
+                    raise ValueError(node.fullname)
+                if not self.nesting_level and not self.is_type_var_bound:
+                    self.fail("Top level use-site variance is invalid", t, code=codes.VALID_TYPE)
+                    return AnyType(TypeOfAny.from_error)
+                if self.nesting_level and variance is INVARIANT:
+                    self.fail("Use-site invariance is not supported", t, code=codes.VALID_TYPE)
+                    return AnyType(TypeOfAny.from_error)
+                if not t.args and (not self.is_type_var_bound or self.nesting_level):
+                    self.fail(
+                        "Use-site variance modifiers must take a single argument",
+                        t,
+                        code=codes.VALID_TYPE,
+                    )
+                    return AnyType(TypeOfAny.from_error)
+                if t.args:
+                    if len(t.args) > 1:
+                        self.fail(
+                            "Use-site variance modifiers must only take a single argument",
+                            t,
+                            code=codes.VALID_TYPE,
+                        )
+                    return VarianceModifier(variance, self.anal_type(t.args[0]))
+                return VarianceModifier(variance, None)
             else:
                 return self.analyze_unbound_type_without_type_info(t, sym, defining_literal)
         else:  # sym is None
@@ -1124,6 +1161,9 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
 
     def visit_type_alias_type(self, t: TypeAliasType) -> Type:
         # TODO: should we do something here?
+        return t
+
+    def visit_variance_modifier(self, t: VarianceModifier) -> Type:
         return t
 
     def visit_type_var(self, t: TypeVarType) -> Type:
