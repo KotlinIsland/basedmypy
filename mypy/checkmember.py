@@ -17,6 +17,8 @@ from mypy.nodes import (
     ARG_POS,
     ARG_STAR,
     ARG_STAR2,
+    CONTRAVARIANT,
+    COVARIANT,
     SYMBOL_FUNCBASE_TYPES,
     Context,
     Decorator,
@@ -801,7 +803,9 @@ def analyze_var(
             mx.msg.cant_assign_to_classvar(name, mx.context)
         t = freshen_all_functions_type_vars(typ)
         t = expand_self_type_if_needed(t, mx, var, original_itype)
-        t = expand_type_by_instance(t, itype)
+        t = expand_type_by_instance(
+            t, itype, use_variance=CONTRAVARIANT if mx.is_lvalue else COVARIANT
+        )
         freeze_all_type_vars(t)
         result = t
         typ = get_proper_type(typ)

@@ -588,12 +588,16 @@ class SubtypeVisitor(TypeVisitor[bool]):
                             return True
                     if len(left_args) != len(right_args):
                         return False
-                    type_params = zip(left_args, right_args, right.type.defn.type_vars)
+                    type_params = zip(
+                        left_args, right_args, right.type.defn.type_vars, right.variances
+                    )
                 else:
-                    type_params = zip(t.args, right.args, right.type.defn.type_vars)
+                    type_params = zip(
+                        t.args, right.args, right.type.defn.type_vars, right.variances
+                    )
                 if not self.subtype_context.ignore_type_params:
                     tried_infer = False
-                    for lefta, righta, tvar in type_params:
+                    for lefta, righta, tvar, use_variance in type_params:
                         if isinstance(tvar, TypeVarType):
                             if tvar.variance == VARIANCE_NOT_READY and not tried_infer:
                                 infer_class_variances(right.type)
@@ -604,7 +608,7 @@ class SubtypeVisitor(TypeVisitor[bool]):
                             ):
                                 variance = COVARIANT
                             else:
-                                variance = tvar.variance
+                                variance = use_variance or tvar.variance
                             if not check_type_parameter(
                                 lefta, righta, variance, self.proper_subtype, self.subtype_context
                             ):

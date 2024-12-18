@@ -1032,6 +1032,19 @@ class UnboundType(ProperType):
         )
 
 
+class VarianceModifier(Type):
+    __slots__ = ("variance", "value")
+
+    def __init__(self, variance: int, value: Type | None, line: int = -1, column: int = -1):
+        super().__init__(line, column)
+        self.variance = variance
+        self.value = value
+
+    def accept(self, visitor: TypeVisitor[T]) -> T:
+        assert self.value
+        return self.value.accept(visitor)
+
+
 class CallableArgument(ProperType):
     """Represents a Arg(type, 'name') inside a Callable's type list.
 
@@ -1573,6 +1586,7 @@ class Instance(ProperType):
     __slots__ = (
         "type",
         "args",
+        "_variances",
         "invalid",
         "type_ref",
         "last_known_value",
@@ -1593,7 +1607,18 @@ class Instance(ProperType):
     ) -> None:
         super().__init__(line, column)
         self.type = typ
-        self.args = tuple(args)
+        temp_args = []
+        temp_variances: list[int | None] = []
+        for arg in args:
+            if isinstance(arg, VarianceModifier):  # type: ignore[misc] # `VarianceModifier` isn't a `ProperType`
+                assert arg.value, "None passed for required parameter"
+                temp_args.append(arg.value)
+                temp_variances.append(arg.variance)
+            else:
+                temp_args.append(arg)
+                temp_variances.append(None)
+        self.args = tuple(temp_args)
+        self._variances = tuple(temp_variances)
         self.type_ref: str | None = None
 
         # True if recovered after incorrect number of type arguments error
@@ -1651,6 +1676,12 @@ class Instance(ProperType):
         # have different attributes per instance of types.ModuleType.
         self.extra_attrs = extra_attrs
         self.metadata: dict[str, object] = {}
+
+    @property
+    def variances(self) -> tuple[int | None, ...]:
+        if len(self._variances) < len(self.args):
+            self._variances += (None,) * (len(self.args) - len(self._variances))
+        return self._variances
 
     def accept(self, visitor: TypeVisitor[T]) -> T:
         return visitor.visit_instance(self)

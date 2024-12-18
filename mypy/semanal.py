@@ -297,6 +297,7 @@ from mypy.types import (
     UnionType,
     UnpackType,
     UntypedType,
+    VarianceModifier,
     get_proper_type,
     get_proper_types,
     is_named_instance,
@@ -1880,8 +1881,16 @@ class SemanticAnalyzer(
         self, type_param: TypeParam, context: Context
     ) -> TypeVarLikeExpr | None:
         fullname = self.qualified_name(type_param.name)
+        variance = VARIANCE_NOT_READY
         if type_param.upper_bound:
-            upper_bound = self.anal_type(type_param.upper_bound, allow_placeholder=True)
+            variance_or_bound = self.anal_type(
+                type_param.upper_bound, allow_placeholder=True, is_class_bound=isinstance(context, ClassDef)
+            )
+            if isinstance(variance_or_bound, VarianceModifier):  # type: ignore[misc] # `VarianceModifier` isn't a proper type
+                variance = variance_or_bound.variance
+                upper_bound = variance_or_bound.value
+            else:
+                upper_bound = variance_or_bound
             # TODO: we should validate the upper bound is valid for a given kind.
             if upper_bound is None:
                 # This and below copies special-casing for old-style type variables, that
@@ -1912,7 +1921,7 @@ class SemanticAnalyzer(
                 values=values,
                 upper_bound=upper_bound,
                 default=default,
-                variance=VARIANCE_NOT_READY,
+                variance=variance,
                 is_new_style=True,
                 line=context.line,
             )
@@ -7368,6 +7377,7 @@ class SemanticAnalyzer(
         report_invalid_types: bool = True,
         prohibit_self_type: str | None = None,
         allow_type_any: bool = False,
+        is_class_bound=False,
     ) -> TypeAnalyser:
         if tvar_scope is None:
             tvar_scope = self.tvar_scope
@@ -7386,6 +7396,7 @@ class SemanticAnalyzer(
             allow_unpack=allow_unpack,
             prohibit_self_type=prohibit_self_type,
             allow_type_any=allow_type_any,
+            is_class_bound=is_class_bound,
         )
         tpan.in_dynamic_func = bool(self.function_stack and self.function_stack[-1].is_dynamic())
         tpan.global_scope = not self.type and not self.function_stack
@@ -7411,6 +7422,7 @@ class SemanticAnalyzer(
         prohibit_self_type: str | None = None,
         allow_type_any: bool = False,
         runtime: bool | None = None,
+        is_class_bound=False,
     ) -> Type | None:
         """Semantically analyze a type.
 
@@ -7446,6 +7458,7 @@ class SemanticAnalyzer(
             report_invalid_types=report_invalid_types,
             prohibit_self_type=prohibit_self_type,
             allow_type_any=allow_type_any,
+            is_class_bound=is_class_bound,
         )
         if not a.api.is_stub_file and runtime:
             a.always_allow_new_syntax = False
