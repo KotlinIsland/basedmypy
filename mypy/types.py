@@ -462,6 +462,32 @@ class TypeGuardedType(Type):
     def __repr__(self) -> str:
         return f"TypeGuard({self.type_guard})"
 
+class _WrappedType(Type):
+
+    item: Type
+    def serialize(self) -> JsonDict:
+        data: JsonDict = {
+            ".class": type(self).__name__,
+            "item": self.item.serialize(),
+        }
+        return data
+
+    @classmethod
+    def deserialize(cls, data: JsonDict) -> Self:
+        assert data[".class"] == cls.__name__
+        return cls(item=deserialize_type(data["item"]))
+
+
+class AbstractType(_WrappedType):
+    def __init__(self, item: Type):
+        super().__init__(line=item.line, column=item.column)
+        self.item = item
+
+    def __repr__(self) -> str:
+        return f"Abstract[{self.item}]"
+
+    def accept(self, visitor: TypeVisitor[T]) -> T:
+        return self.item.accept(visitor)
 
 class RequiredType(Type):
     """Required[T] or NotRequired[T]. Only usable at top-level of a TypedDict definition."""
@@ -481,7 +507,7 @@ class RequiredType(Type):
         return self.item.accept(visitor)
 
 
-class ReadOnlyType(Type):
+class ReadOnlyType(_WrappedType):
     """ReadOnly[T] Only usable at top-level of a TypedDict definition."""
 
     def __init__(self, item: Type) -> None:

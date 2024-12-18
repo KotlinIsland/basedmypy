@@ -7,3 +7,5 @@
 Untyped = 0
 Intersection = 1
 FunctionType = 2
+Abstract = 3
+abstract = 4

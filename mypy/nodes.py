@@ -1012,6 +1012,7 @@ class Var(SymbolNode):
         "is_settable_property",
         "is_classvar",
         "is_abstract_var",
+        "is_read_only",
         "is_final",
         "final_unset_in_class",
         "final_set_in_init",
@@ -1047,6 +1048,7 @@ class Var(SymbolNode):
         self.is_settable_property = False
         self.is_classvar = False
         self.is_abstract_var = False
+        self.is_read_only = False
         # Set to true when this variable refers to a module we were unable to
         # parse for some reason (eg a silenced module)
         self.is_suppressed_import = False
@@ -1321,6 +1323,7 @@ class AssignmentStmt(Statement):
         "new_syntax",
         "is_alias_def",
         "is_final_def",
+        "is_read_only_def",
         "invalid_recursive_alias",
     )
 
@@ -1363,6 +1366,7 @@ class AssignmentStmt(Statement):
         self.new_syntax = new_syntax
         self.is_alias_def = False
         self.is_final_def = False
+        self.is_read_only_def = False
         self.invalid_recursive_alias = False
 
     def accept(self, visitor: StatementVisitor[T]) -> T:
