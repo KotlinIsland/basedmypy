@@ -18,6 +18,7 @@ from mypy.subtypes import (
     is_protocol_implementation,
     is_subtype,
 )
+from mypy.typeops import make_simplified_union
 from mypy.types import (
     AnyType,
     CallableType,
@@ -232,7 +233,7 @@ def join_simple(declaration: Type | None, s: Type, t: Type) -> ProperType:
     if declaration is None or is_subtype(value, declaration):
         return value
 
-    return declaration
+    return value
 
 
 def trivial_join(s: Type, t: Type) -> Type:

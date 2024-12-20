@@ -671,9 +671,9 @@ int_pow.py:5: note: Revealed type is "builtins.int"
 int_pow.py:6: note: Revealed type is "Literal[1]"
 int_pow.py:7: note: Revealed type is "builtins.float"
 int_pow.py:8: note: Revealed type is "builtins.float"
-int_pow.py:9: note: Revealed type is "Any"
+int_pow.py:9: note: Revealed type is "builtins.int"
 int_pow.py:10: note: Revealed type is "builtins.int"
-int_pow.py:11: note: Revealed type is "Any"
+int_pow.py:11: note: Revealed type is "Literal[1]"
 == Return code: 0
 
 [case testDisallowAnyGenericsBuiltinCollectionsPre39]
@@ -1155,8 +1155,8 @@ test_between(1	+	1)
 tabs.py:2: error: Incompatible return value type (got "None", expected "str")
             return None
                    ^~~~
-tabs.py:4: error: Argument 1 to "test_between" has incompatible type "int";
-expected "str"
+tabs.py:4: error: Argument 1 to "test_between" has incompatible type
+"Literal[2]"; expected "str"
     test_between(1  +       1)
                  ^~~~~~~~~~~~
 

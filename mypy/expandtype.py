@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 from typing import Final, Iterable, Mapping, Sequence, TypeVar, cast, overload
 
 from mypy.nodes import ARG_STAR, FakeInfo, Var
@@ -185,6 +186,16 @@ class ExpandTypeVisitor(TrivialSyntheticTypeTranslator):
         super().__init__()
         self.variables = variables
         self.recursive_tvar_guard: dict[TypeVarId, Type | None] = {}
+        self._erase_literals = False
+
+    @contextmanager
+    def erase_literals(self):
+        _erase_literals = self._erase_literals
+        self._erase_literals = True
+        try:
+            yield
+        finally:
+            self._erase_literals = _erase_literals
 
     def visit_unbound_type(self, t: UnboundType) -> Type:
         return t
@@ -211,7 +222,8 @@ class ExpandTypeVisitor(TrivialSyntheticTypeTranslator):
         return t
 
     def visit_instance(self, t: Instance) -> Type:
-        args = self.expand_types_with_unpack(list(t.args))
+        with self.erase_literals():
+            args = self.expand_types_with_unpack(list(t.args))
 
         if isinstance(t.type, FakeInfo):
             # The type checker expands function definitions and bodies
@@ -238,7 +250,7 @@ class ExpandTypeVisitor(TrivialSyntheticTypeTranslator):
         if t.id.is_self():
             t = t.copy_modified(upper_bound=t.upper_bound.accept(self))
         repl = self.variables.get(t.id, t)
-        if isinstance(repl, ProperType) and isinstance(repl, Instance):
+        if self._erase_literals and isinstance(repl, ProperType) and isinstance(repl, Instance):
             # TODO: do we really need to do this?
             # If I try to remove this special-casing ~40 tests fail on reveal_type().
             return repl.copy_modified(last_known_value=None)
@@ -410,17 +422,18 @@ class ExpandTypeVisitor(TrivialSyntheticTypeTranslator):
 
         var_arg = t.var_arg()
         needs_normalization = False
-        if var_arg is not None and isinstance(var_arg.typ, UnpackType):
-            needs_normalization = True
-            arg_types = self.interpolate_args_for_unpack(t, var_arg.typ)
-        else:
-            arg_types = self.expand_types(t.arg_types)
-        expanded = t.copy_modified(
-            arg_types=arg_types,
-            ret_type=t.ret_type.accept(self),
-            type_guard=t.type_guard and cast(TypeGuardType, t.type_guard.accept(self)),
-            type_is=(t.type_is.accept(self) if t.type_is is not None else None),
-        )
+        with self.erase_literals():
+            if var_arg is not None and isinstance(var_arg.typ, UnpackType):
+                needs_normalization = True
+                arg_types = self.interpolate_args_for_unpack(t, var_arg.typ)
+            else:
+                arg_types = self.expand_types(t.arg_types)
+            expanded = t.copy_modified(
+                arg_types=arg_types,
+                ret_type=t.ret_type.accept(self),
+                type_guard=t.type_guard and cast(TypeGuardType, t.type_guard.accept(self)),
+                type_is=(t.type_is.accept(self) if t.type_is is not None else None),
+            )
         if needs_normalization:
             return expanded.with_normalized_var_args()
         return expanded

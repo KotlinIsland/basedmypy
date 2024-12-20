@@ -1574,7 +1574,7 @@ f = g
 if g():
     def f(): pass
 f()
-f(1) # E: Too many arguments
+f(1) # E: Too many arguments for "g"
 
 [case testRedefineFunctionDefinedAsVariableInitializedToNone]
 def g(): pass

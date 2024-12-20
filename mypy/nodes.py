@@ -799,6 +799,7 @@ class FuncDef(FuncItem, SymbolNode, Statement):
         # Present only when a function is decorated with @typing.datasclass_transform or similar
         "dataclass_transform_spec",
         "docstring",
+        "is_type_function",
     )
 
     __match_args__ = ("name", "arguments", "type", "body")
@@ -828,6 +829,7 @@ class FuncDef(FuncItem, SymbolNode, Statement):
         self.is_mypy_only = False
         self.dataclass_transform_spec: DataclassTransformSpec | None = None
         self.docstring: str | None = None
+        self.is_type_function = False
 
     @property
     def name(self) -> str:
