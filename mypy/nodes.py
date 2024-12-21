@@ -247,7 +247,7 @@ Lvalue: _TypeAlias = Expression
 
 
 @trait
-class SymbolNode(Node):
+class SymbolNode(Node):  # type: ignore[abstract]
     """Nodes that can be stored in a symbol table."""
 
     __slots__ = ()
@@ -505,7 +505,7 @@ class ImportAll(ImportBase):
 FUNCBASE_FLAGS: Final = ["is_property", "is_class", "is_static", "is_final", "is_type_check_only"]
 
 
-class FuncBase(Node):
+class FuncBase(Node):  # type: ignore[abstract]
     """Abstract base class for function-like nodes.
 
     N.B: Although this has SymbolNode subclasses (FuncDef,
@@ -706,7 +706,7 @@ FUNCITEM_FLAGS: Final = FUNCBASE_FLAGS + [
 ]
 
 
-class FuncItem(FuncBase):
+class FuncItem(FuncBase):  # type: ignore[abstract]
     """Base class for nodes usable as overloaded function items."""
 
     __slots__ = (
@@ -1323,7 +1323,6 @@ class AssignmentStmt(Statement):
         "new_syntax",
         "is_alias_def",
         "is_final_def",
-        "is_read_only_def",
         "invalid_recursive_alias",
     )
 
@@ -1366,7 +1365,6 @@ class AssignmentStmt(Statement):
         self.new_syntax = new_syntax
         self.is_alias_def = False
         self.is_final_def = False
-        self.is_read_only_def = False
         self.invalid_recursive_alias = False
 
     def accept(self, visitor: StatementVisitor[T]) -> T:
@@ -2550,7 +2548,7 @@ CONTRAVARIANT: Final = 2
 VARIANCE_NOT_READY: Final = 3  # Variance hasn't been inferred (using Python 3.12 syntax)
 
 
-class TypeVarLikeExpr(SymbolNode, Expression):
+class TypeVarLikeExpr(SymbolNode, Expression):  # type: ignore[abstract]
     """Base class for TypeVarExpr, ParamSpecExpr and TypeVarTupleExpr.
 
     Note that they are constructed by the semantic analyzer.

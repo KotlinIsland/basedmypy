@@ -154,7 +154,7 @@ from mypy.types import (
 
 
 @trait
-class TypeAnalyzerPluginInterface:
+class TypeAnalyzerPluginInterface:  # type: ignore[abstract]
     """Interface for accessing semantic analyzer functionality in plugins.
 
     Methods docstrings contain only basic info. Look for corresponding implementation
@@ -198,7 +198,7 @@ class AnalyzeTypeContext(NamedTuple):
 
 
 @mypyc_attr(allow_interpreted_subclasses=True)
-class CommonPluginApi:
+class CommonPluginApi:  # type: ignore[abstract]
     """
     A common plugin API (shared between semantic analysis and type checking phases)
     that all plugin hooks get independently of the context.
@@ -220,7 +220,7 @@ class CommonPluginApi:
 
 
 @trait
-class CheckerPluginInterface:
+class CheckerPluginInterface:  # type: ignore[abstract]
     """Interface for accessing type checker functionality in plugins.
 
     Methods docstrings contain only basic info. Look for corresponding implementation
@@ -257,7 +257,7 @@ class CheckerPluginInterface:
 
 
 @trait
-class SemanticAnalyzerPluginInterface:
+class SemanticAnalyzerPluginInterface:  # type: ignore[abstract]
     """Interface for accessing semantic analyzer functionality in plugins.
 
     Methods docstrings contain only basic info. Look for corresponding implementation

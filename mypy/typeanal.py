@@ -115,7 +115,7 @@ from mypy.types import (
     find_unpack_in_list,
     flatten_nested_tuples,
     get_proper_type,
-    has_type_vars, AbstractType,
+    has_type_vars,
 )
 from mypy.types_utils import is_bad_type_type_item
 from mypy.typevars import fill_typevars
@@ -733,9 +733,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         elif fullname == "basedtyping.Abstract":
             if not t.args:
                 self.fail(
-                    "Abstract[...] must have exactly one type argument",
-                    t,
-                    code=codes.VALID_TYPE,
+                    "Abstract[...] must have exactly one type argument", t, code=codes.VALID_TYPE
                 )
                 return AnyType(TypeOfAny.from_error)
             return self.anal_type(t.args[0])
@@ -781,7 +779,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 return AnyType(TypeOfAny.from_error)
             if len(t.args) != 1:
                 self.fail(
-                    '"ReadOnly[...]" must have exactly one type argument', t, code=codes.VALID_TYPE
+                    '"ReadOnly[]" must have exactly one type argument', t, code=codes.VALID_TYPE
                 )
                 return AnyType(TypeOfAny.from_error)
             return ReadOnlyType(self.anal_type(t.args[0], allow_typed_dict_special_forms=True))

@@ -462,32 +462,6 @@ class TypeGuardedType(Type):
     def __repr__(self) -> str:
         return f"TypeGuard({self.type_guard})"
 
-class _WrappedType(Type):
-
-    item: Type
-    def serialize(self) -> JsonDict:
-        data: JsonDict = {
-            ".class": type(self).__name__,
-            "item": self.item.serialize(),
-        }
-        return data
-
-    @classmethod
-    def deserialize(cls, data: JsonDict) -> Self:
-        assert data[".class"] == cls.__name__
-        return cls(item=deserialize_type(data["item"]))
-
-
-class AbstractType(_WrappedType):
-    def __init__(self, item: Type):
-        super().__init__(line=item.line, column=item.column)
-        self.item = item
-
-    def __repr__(self) -> str:
-        return f"Abstract[{self.item}]"
-
-    def accept(self, visitor: TypeVisitor[T]) -> T:
-        return self.item.accept(visitor)
 
 class RequiredType(Type):
     """Required[T] or NotRequired[T]. Only usable at top-level of a TypedDict definition."""
@@ -507,7 +481,7 @@ class RequiredType(Type):
         return self.item.accept(visitor)
 
 
-class ReadOnlyType(_WrappedType):
+class ReadOnlyType(Type):
     """ReadOnly[T] Only usable at top-level of a TypedDict definition."""
 
     def __init__(self, item: Type) -> None:
@@ -1777,7 +1751,7 @@ class Instance(ProperType):
         ]
 
 
-class FunctionLike(ProperType):
+class FunctionLike(ProperType):  # type: ignore[abstract]
     """Abstract base class for function types."""
 
     __slots__ = ("fallback",)
@@ -3975,7 +3949,7 @@ class TypeStrVisitor(SyntheticTypeVisitor[str]):
         return " | ".join(res)
 
 
-class TrivialSyntheticTypeTranslator(TypeTranslator, SyntheticTypeVisitor[Type]):
+class TrivialSyntheticTypeTranslator(TypeTranslator, SyntheticTypeVisitor[Type]):  # type: ignore[abstract]
     """A base class for type translators that need to be run during semantic analysis."""
 
     def visit_placeholder_type(self, t: PlaceholderType) -> Type:

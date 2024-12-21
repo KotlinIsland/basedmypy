@@ -1,0 +1,26 @@
+[case testBaseAbstract]
+from basedtyping import abstract
+
+@abstract
+class A:
+    @abstract
+    def f(self): ...
+
+class B:  # E: Class __main__.B has abstract attribute "f"  [abstract] \
+          # N: If it is meant to be abstract, decorate the class with `basedtyping.abstract`, or add `abc.ABC` as a base class, or `abc.ABCMeta` as the metaclass
+    @abstract
+    def f(self): ...
+
+class C(A):  # E: Class __main__.C has abstract attribute "f"  [abstract] \
+             # N: If it is meant to be abstract, decorate the class with `basedtyping.abstract`, or add `abc.ABC` as a base class, or `abc.ABCMeta` as the metaclass
+    ...
+
+
+[case testAbstractProtocolMessage]
+from typing import Protocol
+
+class A(Protocol):
+    a: int
+class B(A): ...  # E: Class __main__.B has abstract attribute "a"  [abstract] \
+                 # N: If it is meant to be a protocol, add `typing.Protocol` as a base class \
+                 # N: If it is meant to be abstract, decorate the class with `basedtyping.abstract`, or add `abc.ABC` as a base class, or `abc.ABCMeta` as the metaclass

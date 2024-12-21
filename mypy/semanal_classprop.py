@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from typing import Final
 
+import mypy.options
 from mypy import errorcodes
 from mypy.errors import Errors
 from mypy.nodes import (
@@ -97,24 +98,36 @@ def calculate_class_abstract_status(typ: TypeInfo, is_stub_file: bool, errors: E
     # easy to accidentally leave a concrete class abstract by forgetting to
     # implement some methods.
     typ.abstract_attributes = sorted(abstract)
-    if typ.declared_metaclass and typ.declared_metaclass.type.has_base("abc.ABCMeta"):
-        return
-    if any(base.type.fullname == "abc.ABC" for base in typ.bases):
-        return
-    if typ.is_protocol:
-        return
-    if was_abstract:
-        return
-    if abstract:
+    if mypy.options._based or is_stub_file:
+        if typ.declared_metaclass and typ.declared_metaclass.type.has_base("abc.ABCMeta"):
+            return
+        if any(base.type.fullname == "abc.ABC" for base in typ.bases):
+            return
+        if typ.is_protocol:
+            return
+        if was_abstract:
+            return
+        derives_protocol = any(base.type.is_protocol for base in typ.bases)
+        if abstract and (not abstract_in_this_class or mypy.options._based):
 
-        def report(message: str, severity: str) -> None:
-            errors.report(typ.line, typ.column, message, severity=severity, code=errorcodes.ABSTRACT if severity == "error" else None)
+            def report(message: str, severity: str) -> None:
+                errors.report(
+                    typ.line, typ.column, message, severity=severity, code=errorcodes.ABSTRACT
+                )
 
-        attrs = ", ".join(f'"{attr}"' for attr, _ in sorted(abstract))
-        report(f"Class {typ.fullname} has abstract attribute{plural_s(abstract)} {attrs}", "error")
-        report(
-            "If it is meant to be abstract, decorate the class with `basedtyping.abstract`, or add `abc.ABC` as a base class, or `abc.ABCMeta` as the metaclass", "note"
-        )
+            attrs = ", ".join(f'"{attr}"' for attr, _ in sorted(abstract))
+            report(
+                f"Class {typ.fullname} has abstract attribute{plural_s(abstract)} {attrs}", "error"
+            )
+            if derives_protocol:
+                report(
+                    "If it is meant to be a protocol, add `typing.Protocol` as a base class",
+                    "note",
+                )
+            report(
+                "If it is meant to be abstract, decorate the class with `basedtyping.abstract`, or add `abc.ABC` as a base class, or `abc.ABCMeta` as the metaclass",
+                "note",
+            )
     if typ.is_final and abstract:
         attrs = ", ".join(f'"{attr}"' for attr, _ in sorted(abstract))
         errors.report(

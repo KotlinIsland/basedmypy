@@ -302,7 +302,7 @@ from mypy.types import (
     is_named_instance,
     is_unannotated_any,
     remove_dups,
-    type_vars_as_args, AbstractType, ReadOnlyType,
+    type_vars_as_args,
 )
 from mypy.types_utils import is_invalid_recursive_alias, store_argument_type
 from mypy.typevars import fill_typevars, fill_typevars_with_any
@@ -1742,7 +1742,7 @@ class SemanticAnalyzer(
         could_be_decorated_property = False
         for i, d in enumerate(dec.decorators):
             # A bunch of decorators are special cased here.
-            if refers_to_fullname(d, ("abc.abstractmethod","basedtyping.abstract")):
+            if refers_to_fullname(d, ("abc.abstractmethod", "basedtyping.abstract")):
                 removed.append(i)
                 dec.func.abstract_status = IS_ABSTRACT
                 self.check_decorated_function_is_method("abstractmethod", dec)
@@ -1767,7 +1767,7 @@ class SemanticAnalyzer(
                 d,
                 (
                     "builtins.property",
-                    "abc.abstractproperty"
+                    "abc.abstractproperty",
                     "basedtyping.abstract",
                     "functools.cached_property",
                     "enum.property",
@@ -2241,7 +2241,7 @@ class SemanticAnalyzer(
         """
         if refers_to_fullname(decorator, FINAL_DECORATOR_NAMES):
             info.is_final = True
-        if refers_to_fullname(decorator, "basedtyping.abstract"):
+        elif refers_to_fullname(decorator, "basedtyping.abstract"):
             info.is_abstract = True
         elif refers_to_fullname(decorator, TYPE_CHECK_ONLY_NAMES):
             info.is_type_check_only = True
@@ -3303,21 +3303,12 @@ class SemanticAnalyzer(
 
         # OK, this is a regular assignment, perform the necessary analysis steps.
         s.is_final_def = self.unwrap_final(s)
-        s.is_read_only_def = self.unwrap_read_only(s)
         self.analyze_lvalues(s)
         self.check_final_implicit_def(s)
         self.store_final_status(s)
-        self.store_read_only_status(s)
-        s_type = t = s.type
-        # hackily cycle through all the types until we run out of things with args
-        while t:
-            self.check_abstract(s)
-            self.check_classvar(s)
-            if not isinstance(t, UnboundType) or not t.args:
-                break
-            t = t.args[0]
-            s.type = t
-        s.type = s_type
+        # this is a bit lazy, but gets the job done
+        while self.check_abstract(s) or self.check_classvar(s) or self.check_read_only(s):
+            pass
         self.process_type_annotation(s)
         self.apply_dynamic_class_hook(s)
         if not s.type:
@@ -3739,42 +3730,6 @@ class SemanticAnalyzer(
                 self.msg.final_without_value(s)
         return True
 
-    def unwrap_read_only(self, s: AssignmentStmt) -> bool:
-        """Strip ReadOnly[...] if present in an assignment.
-
-        This is done to invoke type inference during type checking phase for this
-        assignment. Also, ReadOnly[...] doesn't affect the type in any way -- it is rather an
-        access qualifier for given `Var`.
-
-        Also perform various consistency checks.
-
-        Returns True if ReadOnly[...] was present.
-        """
-        if not s.unanalyzed_type or not self.is_read_only_type(s.unanalyzed_type):
-            return False
-        assert isinstance(s.unanalyzed_type, UnboundType)
-        if len(s.unanalyzed_type.args) > 1:
-            self.fail("ReadOnly[...] takes at most one type argument", s.unanalyzed_type)
-        if not s.unanalyzed_type.args:
-            s.type = None
-            if isinstance(s.rvalue, TempNode) and s.rvalue.no_rhs:
-                self.fail("Type in ReadOnly[...] can only be omitted if there is an initializer", s)
-        else:
-            s.type = s.unanalyzed_type.args[0]
-
-        if len(s.lvalues) != 1 or not isinstance(s.lvalues[0], RefExpr):
-            self.fail("Invalid read only declaration", s)
-            return False
-        lval = s.lvalues[0]
-        assert isinstance(lval, RefExpr)
-        # Reset inferred status if it was set due to simple literal rvalue on previous iteration.
-        # TODO: this is a best-effort quick fix, we should avoid the need to manually sync this,
-        # see https://github.com/python/mypy/issues/6458.
-        if lval.is_new_def:
-            lval.is_inferred_def = s.type is None
-
-        return True
-
     def check_final_implicit_def(self, s: AssignmentStmt) -> None:
         """Do basic checks for final declaration on self in __init__.
 
@@ -3855,21 +3810,6 @@ class SemanticAnalyzer(
                             cur_node.node.final_set_in_init = True
                             s.is_final_def = True
 
-    def store_read_only_status(self, s: AssignmentStmt) -> None:
-        """If this is a locally valid read only declaration, set the corresponding flag on `Var`."""
-        if not s.is_read_only_def:
-            return
-        if len(s.lvalues) == 1 and isinstance(s.lvalues[0], RefExpr):
-            node = s.lvalues[0].node
-            if isinstance(node, Var):
-                node.is_read_only = True
-                if s.type:
-                    node.final_value = constant_fold_expr(s.rvalue, self.cur_mod_id)
-                if self.is_class_scope() and (
-                    isinstance(s.rvalue, TempNode) and s.rvalue.no_rhs
-                ):
-                    node.final_unset_in_class = True
-
     def flatten_lvalues(self, lvalues: list[Expression]) -> list[Expression]:
         res: list[Expression] = []
         for lv in lvalues:
@@ -3903,13 +3843,6 @@ class SemanticAnalyzer(
             ):
                 if isinstance(lvalue.node, Var):
                     lvalue.node.is_abstract_var = True
-            if (
-                self.type
-                and isinstance(analyzed, ReadOnlyType)
-                and isinstance(lvalue, NameExpr)
-            ):
-                if isinstance(lvalue.node, Var):
-                    lvalue.node.is_read_only = True
         else:
             if (
                 self.type
@@ -5163,13 +5096,13 @@ class SemanticAnalyzer(
                 result.append(AnyType(TypeOfAny.from_error))
         return result
 
-    def check_classvar(self, s: AssignmentStmt) -> None:
+    def check_classvar(self, s: AssignmentStmt) -> bool:
         """Check if assignment defines a class variable."""
         lvalue = s.lvalues[0]
         if len(s.lvalues) != 1 or not isinstance(lvalue, RefExpr):
-            return
+            return False
         if not s.type or not self.is_classvar(s.type):
-            return
+            return False
         if self.is_class_scope() and isinstance(lvalue, NameExpr):
             node = lvalue.node
             if isinstance(node, Var):
@@ -5194,14 +5127,19 @@ class SemanticAnalyzer(
             # In case of member access, report error only when assigning to self
             # Other kinds of member assignments should be already reported
             self.fail_invalid_classvar(lvalue)
+        if s.type.args:
+            s.type = s.type.args[0]
+        else:
+            s.type = None
+        return True
 
-    def check_abstract(self, s: AssignmentStmt) -> None:
+    def check_abstract(self, s: AssignmentStmt) -> bool:
         """Check if assignment defines an abstract variable."""
         lvalue = s.lvalues[0]
         if len(s.lvalues) != 1 or not isinstance(lvalue, RefExpr):
-            return
+            return False
         if not s.type or not self.is_abstract(s.type):
-            return
+            return False
         if self.is_class_scope() and isinstance(lvalue, NameExpr):
             node = lvalue.node
             if isinstance(node, Var):
@@ -5210,9 +5148,30 @@ class SemanticAnalyzer(
         elif not isinstance(lvalue, MemberExpr) or self.is_self_member_ref(lvalue):
             # In case of member access, report error only when assigning to self
             # Other kinds of member assignments should be already reported
-            self.fail_invalid_classvar(lvalue)
+            self.fail_invalid_abstract(lvalue)
+        s.type = s.type.args[0]
+        return True
 
-    def is_classvar(self, typ: Type) -> bool:
+    def check_read_only(self, s: AssignmentStmt) -> bool:
+        """Check if assignment defines a read only variable."""
+        lvalue = s.lvalues[0]
+        if len(s.lvalues) != 1 or not isinstance(lvalue, RefExpr):
+            return False
+        if not s.type or not self.is_read_only_type(s.type):
+            return False
+        node = lvalue.node
+        if isinstance(node, Var):
+            node.is_read_only = True
+        s.is_final_def = True
+        if not mypy.options._based:
+            return False
+        if s.type.args:
+            s.type = s.type.args[0]
+        else:
+            s.type = None
+        return True
+
+    def is_classvar(self, typ: Type) -> typ is UnboundType if True else False:
         if not isinstance(typ, UnboundType):
             return False
         sym = self.lookup_qualified(typ.name, typ)
@@ -5220,7 +5179,7 @@ class SemanticAnalyzer(
             return False
         return sym.node.fullname == "typing.ClassVar"
 
-    def is_abstract(self, typ: Type) -> bool:
+    def is_abstract(self, typ: Type) -> typ is UnboundType if True else False:
         if not isinstance(typ, UnboundType):
             return False
         sym = self.lookup_qualified(typ.name, typ)
@@ -5228,7 +5187,7 @@ class SemanticAnalyzer(
             return False
         return sym.node.fullname == "basedtyping.Abstract"
 
-    def is_final_type(self, typ: Type | None) -> bool:
+    def is_final_type(self, typ: Type | None) -> typ is UnboundType if True else False:
         if not isinstance(typ, UnboundType):
             return False
         sym = self.lookup_qualified(typ.name, typ)
@@ -5236,7 +5195,7 @@ class SemanticAnalyzer(
             return False
         return sym.node.fullname in FINAL_TYPE_NAMES
 
-    def is_read_only_type(self, typ: Type | None) -> bool:
+    def is_read_only_type(self, typ: Type | None) -> typ is UnboundType if True else False:
         if not isinstance(typ, UnboundType):
             return False
         sym = self.lookup_qualified(typ.name, typ)
@@ -5246,6 +5205,9 @@ class SemanticAnalyzer(
 
     def fail_invalid_classvar(self, context: Context) -> None:
         self.fail(message_registry.CLASS_VAR_OUTSIDE_OF_CLASS, context)
+
+    def fail_invalid_abstract(self, context: Context) -> None:
+        self.fail(message_registry.ABSTRACT_OUTSIDE_OF_CLASS, context)
 
     def process_module_assignment(
         self, lvals: list[Lvalue], rval: Expression, ctx: AssignmentStmt

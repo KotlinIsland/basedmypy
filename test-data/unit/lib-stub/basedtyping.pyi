@@ -4,8 +4,10 @@
 # DO NOT ADD TO THIS FILE UNLESS YOU HAVE A GOOD REASON! Additional definitions
 # will slow down tests.
 
+from helper import T
+
 Untyped = 0
-Intersection = 1
-FunctionType = 2
-Abstract = 3
-abstract = 4
+Intersection = 0
+FunctionType = 0
+Abstract = 0
+def abstract(fn: T) -> T: ...
