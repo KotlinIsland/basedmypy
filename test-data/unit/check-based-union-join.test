@@ -44,11 +44,11 @@ from typing import Protocol
 class Base(Protocol):
     a: int
 class A(Base):
-    pass
+    a = 1
 class B(Base):
-    pass
+    a = 1
 class C(Base):
-    pass
+    a = 1
 
 reveal_type([A, B, C])  # N: Revealed type is "list[() -> __main__.A | () -> __main__.B | () -> __main__.C]"
 

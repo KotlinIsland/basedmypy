@@ -2048,7 +2048,7 @@ warn_no_return = True
 [case testIncrementalClassVar]
 from typing import ClassVar
 class A:
-    x = None  # type: ClassVar
+    x = None  # type: ClassVar[object]
 A().x = 0
 [out1]
 main:4: error: Cannot assign to class variable "x" via instance

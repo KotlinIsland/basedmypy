@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 
 
-class RType:
+class RType:  # type: ignore[abstract]
     """Abstract base class for runtime types (erased, only concrete; no generics)."""
 
     name: str
@@ -105,7 +105,7 @@ def deserialize_type(data: JsonDict | str, ctx: DeserMaps) -> RType:
     raise NotImplementedError("unexpected .class {}".format(data[".class"]))
 
 
-class RTypeVisitor(Generic[T]):
+class RTypeVisitor(Generic[T]):  # type: ignore[abstract]
     """Generic visitor over RTypes (uses the visitor design pattern)."""
 
     @abstractmethod
