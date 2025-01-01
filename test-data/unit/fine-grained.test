@@ -10170,7 +10170,7 @@ class C(B): ...
 [out]
 ==
 ==
-main.py:2: note: Revealed type is "builtins.int"
+main.py:2: note: Revealed type is "Literal[42]?"
 
 [case testBoundGenericMethodParamSpecFine]
 import main

@@ -1062,6 +1062,7 @@ class SemanticAnalyzer(
                         info = self.type
                         if info.self_type is not None:
                             result.variables = [info.self_type] + list(result.variables)
+                result.is_type_function = defn.is_type_function
                 defn.type = result
                 self.add_type_alias_deps(analyzer.aliases_used)
                 self.check_function_signature(defn)
@@ -1883,6 +1884,9 @@ class SemanticAnalyzer(
                 dec.func.dataclass_transform_spec = self.parse_dataclass_transform_spec(d)
             elif (deprecated := self.get_deprecated(d)) is not None:
                 dec.func.deprecated = f"function {dec.fullname} is deprecated: {deprecated}"
+            elif refers_to_fullname(d, "basedtyping.type_function"):
+                removed.append(i)
+                dec.func.is_type_function = True
             elif not dec.var.is_property:
                 # We have seen a "non-trivial" decorator before seeing @property, if
                 # we will see a @property later, give an error, as we don't support this.

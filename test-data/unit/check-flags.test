@@ -1671,8 +1671,8 @@ strict = false
 [case testStrictAndStrictEquality]
 -- maybe a little useless because theres no strict but w/e
 # flags: --strict-equality
-x = 0
-y = ''
+x: int
+y: str
 if x == y:  # E: Non-overlapping equality check (left operand type: "int", right operand type: "str")
     int()
 [builtins fixtures/ops.pyi]
@@ -2212,7 +2212,7 @@ bad_return_type('no args taken!')
 def f(x):
     pass
 
-y = 1
+y: int
 f(reveal_type(y)) # E: Call to untyped function "f" in typed context \
                   # N: Revealed type is "builtins.int"
 

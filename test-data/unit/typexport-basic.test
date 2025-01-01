@@ -188,8 +188,8 @@ a or a
 not a
 [builtins fixtures/bool.pyi]
 [out]
-OpExpr(4) : builtins.int
-OpExpr(5) : builtins.int
+OpExpr(4) : Union[Literal[0], Literal[1]?]
+OpExpr(5) : Union[Literal[1]?, Literal[0]]
 UnaryExpr(6) : builtins.bool
 
 [case testBooleanOpsOnBools]

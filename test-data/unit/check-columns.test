@@ -282,7 +282,7 @@ if int():
 [case testColumnRedundantCast]
 # flags: --warn-redundant-casts
 from typing import cast
-y = 1
+y: int
 x = cast(int, y) # E:5: Redundant cast to "int"
 
 [case testColumnTypeSignatureHasTooFewArguments]

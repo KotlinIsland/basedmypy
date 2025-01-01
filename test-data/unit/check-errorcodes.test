@@ -1133,7 +1133,7 @@ def unsafe_func(x: object) -> Union[int, str]:
 
 [case testUnimportedRevealType]
 # flags: --enable-error-code=unimported-reveal
-x = 1
+x: int
 reveal_type(x)
 [out]
 main:3: error: Name "reveal_type" is not defined  [unimported-reveal]
@@ -1143,7 +1143,7 @@ main:3: note: Revealed type is "builtins.int"
 
 [case testUnimportedRevealTypePy311]
 # flags: --enable-error-code=unimported-reveal --python-version=3.11
-x = 1
+x: int
 reveal_type(x)
 [out]
 main:3: error: Name "reveal_type" is not defined  [unimported-reveal]
@@ -1166,14 +1166,14 @@ main:4: note: 'reveal_type' always outputs 'Any' in unchecked functions
 [case testUnimportedRevealTypeImportedTypingExtensions]
 # flags: --enable-error-code=unimported-reveal
 from typing_extensions import reveal_type
-x = 1
+x: int
 reveal_type(x)  # N: Revealed type is "builtins.int"
 [builtins fixtures/isinstancelist.pyi]
 
 [case testUnimportedRevealTypeImportedTyping311]
 # flags: --enable-error-code=unimported-reveal --python-version=3.11
 from typing import reveal_type
-x = 1
+x: int
 reveal_type(x)  # N: Revealed type is "builtins.int"
 [builtins fixtures/isinstancelist.pyi]
 [typing fixtures/typing-full.pyi]

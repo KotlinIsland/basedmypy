@@ -1990,7 +1990,7 @@ x = 42
 [case testModuleAliasToQualifiedImport]
 import package.module
 alias = package.module
-reveal_type(alias.whatever('/'))  # N: Revealed type is "builtins.str"
+reveal_type(alias.whatever('/'))  # N: Revealed type is "Literal['/']?"
 [file package/__init__.py]
 
 [file package/module.py]
@@ -2003,7 +2003,7 @@ def whatever(x: T) -> T: pass
 import mod
 import othermod
 alias = mod.submod
-reveal_type(alias.whatever('/'))  # N: Revealed type is "builtins.str"
+reveal_type(alias.whatever('/'))  # N: Revealed type is "Literal['/']?"
 if int():
     alias = othermod  # E: Cannot assign multiple modules to name "alias" without explicit "types.ModuleType" annotation
 [file mod.py]

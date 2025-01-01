@@ -317,7 +317,7 @@ a: A
 b: B
 x: Tuple[A, B, C]
 y: Tuple[A, C, E]
-n = 0
+n: int
 
 if int():
     a = t1[1] # E: Incompatible types in assignment (expression has type "B", variable has type "A")
@@ -1424,8 +1424,8 @@ f(0)  # E: Argument 1 to "f" has incompatible type "int"; expected "Tuple[()]"
 
 [case testNonliteralTupleIndex]
 t = (0, "")
-x = 0
-y = ""
+x: int
+y: str
 reveal_type(t[x])  # N: Revealed type is "Union[builtins.int, builtins.str]"
 t[y]  # E: No overload variant of "__getitem__" of "tuple" matches argument type "str" \
       # N: Possible overload variants: \
@@ -1436,7 +1436,7 @@ t[y]  # E: No overload variant of "__getitem__" of "tuple" matches argument type
 
 [case testNonliteralTupleSlice]
 t = (0, "")
-x = 0
+x: int
 y = ""
 reveal_type(t[x:])  # N: Revealed type is "builtins.tuple[Union[builtins.int, builtins.str], ...]"
 t[y:]  # E: Slice index must be an integer, SupportsIndex or None

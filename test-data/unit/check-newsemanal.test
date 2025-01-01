@@ -284,7 +284,7 @@ import a
 MYPY = False
 if MYPY:
     from b import x as y
-x = 0
+x: int
 
 def y(): pass # E: Name "y" already defined on line 4
 reveal_type(y) # N: Revealed type is "builtins.int"
@@ -311,7 +311,7 @@ import a
 
 [file a.py]
 from b import x as y
-x = 0
+x: int
 
 def y(): pass # E: Name "y" already defined on line 2
 reveal_type(y) # N: Revealed type is "builtins.int"

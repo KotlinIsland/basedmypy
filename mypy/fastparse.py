@@ -2129,7 +2129,8 @@ class TypeConverter:
             # Other kinds of numbers (floats, complex) are not valid parameters for
             # RawExpressionType so we just pass in 'None' for now. We'll report the
             # appropriate error at a later stage.
-            numeric_value = None
+            # based: they are valid
+            numeric_value = value
             type_name = f"builtins.{type(value).__name__}"
         return RawExpressionType(
             numeric_value, type_name, line=self.line, column=getattr(n, "col_offset", -1)
