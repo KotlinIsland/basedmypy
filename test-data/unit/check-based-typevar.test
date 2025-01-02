@@ -51,3 +51,43 @@ class A(Generic[T]): ...
 
 a = A[Any]()  # E: Expression type contains "Any" (has type "A[Any]")  [no-any-expr]
 [builtins fixtures/tuple.pyi]
+
+
+[case testInferLiteralGeneric]
+from helper import T
+from typing import List
+
+def f0(t: T) -> T:
+    return t
+
+
+reveal_type(f0(17))  # N: Revealed type is "17"
+
+
+def f1(t: T) -> (List[T],):
+    return ([t],)
+
+
+reveal_type(f1(17))  # N: Revealed type is "(list[int],)"
+
+
+def f2(t: T) -> (T,):
+    return (t,)
+
+
+reveal_type(f2(17))  # N: Revealed type is "(17,)"
+
+
+def f3(t: T) -> List[T]:
+    return [t]
+
+
+reveal_type(f3(17))  # N: Revealed type is "list[int]"
+
+
+def f4(t: T) -> (T, List[T]):
+    return t, [t]
+
+# maybe this should be: (int, list[int])
+reveal_type(f4(17))  # N: Revealed type is "(17, list[int])"
+[builtins fixtures/tuple.pyi]

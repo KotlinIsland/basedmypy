@@ -724,6 +724,8 @@ def _remove_redundant_intersection_items(items: list[Type], keep_erased: bool) -
             if inner_i in removed:
                 continue
             proper_inner = get_proper_type(items[inner_i])
+            # hacky: we check this one first, because it's more likely that the value on the left
+            # has a last known value/metadata/extra args
             if is_proper_subtype(
                 proper_outer, proper_inner, keep_erased_types=keep_erased, ignore_promotions=True
             ):

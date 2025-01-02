@@ -197,9 +197,12 @@ def narrow_declared_type(declared: Type, narrowed: Type) -> Type:
             # Special case: 'int' can't be narrowed down to a native int type such as
             # i64, since they have different runtime representations.
             return original_declared
+        if isinstance(narrowed, Instance) and narrowed.last_known_value:
+            return narrowed
         return meet_types(original_declared, original_narrowed)
     elif isinstance(declared, (TupleType, TypeType, LiteralType)):
-        return meet_types(original_declared, original_narrowed)
+        # this way around to preserve the last know of the items in the tuple
+        return meet_types(original_narrowed, original_declared, intersect=True)
     elif isinstance(declared, TypedDictType) and isinstance(narrowed, Instance):
         # Special case useful for selecting TypedDicts from unions using isinstance(x, dict).
         if narrowed.type.fullname == "builtins.dict" and all(

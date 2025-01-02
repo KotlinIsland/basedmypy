@@ -75,7 +75,7 @@ JsonDict: _TypeAlias = Dict[str, Any]
 #
 # Note: Float values are only used internally. They are not accepted within
 # Literal[...].
-LiteralValue: _TypeAlias = Union[int, str, bool, float]
+LiteralValue: _TypeAlias = Union[int, str, bool, float, complex]
 
 
 # If we only import type_visitor in the middle of the file, mypy
@@ -3137,14 +3137,18 @@ class LiteralType(ProperType):
     def serialize(self) -> JsonDict | str:
         return {
             ".class": "LiteralType",
-            "value": self.value,
+            "value": self.value if not isinstance(self.value, complex) else str(self.value),
             "fallback": self.fallback.serialize(),
         }
 
     @classmethod
     def deserialize(cls, data: JsonDict) -> LiteralType:
         assert data[".class"] == "LiteralType"
-        return LiteralType(value=data["value"], fallback=Instance.deserialize(data["fallback"]))
+        fallback = Instance.deserialize(data["fallback"])
+        value = data["value"]
+        if fallback.type_ref == "builtins.complex":
+            value = complex(value)
+        return LiteralType(value=value, fallback=fallback)
 
     def is_singleton_type(self) -> bool:
         return self.is_enum_literal() or isinstance(self.value, bool)

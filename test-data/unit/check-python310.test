@@ -1200,7 +1200,7 @@ match m:
 
 reveal_type(a)  # N: Revealed type is "builtins.bool"
 a = 3
-reveal_type(a)  # N: Revealed type is "builtins.int"
+reveal_type(a)  # N: Revealed type is "Literal[3]?"
 
 [case testMatchCapturePatternPreexistingIncompatible]
 a: str
@@ -1291,7 +1291,7 @@ m: str
 
 match m:
     case a if a := "test":
-        reveal_type(a)  # N: Revealed type is "builtins.str"
+        reveal_type(a)  # N: Revealed type is "Literal['test']?"
 
 [case testMatchNarrowingPatternGuard]
 m: object
@@ -1513,7 +1513,7 @@ def f(m: Medal) -> None:
         case _:
             assert_never(m)
 
-    reveal_type(always_assigned)  # N: Revealed type is "builtins.int"
+    reveal_type(always_assigned)  # N: Revealed type is "Literal[1]?"
 [builtins fixtures/bool.pyi]
 
 [case testMatchLiteralPatternEnumNegativeNarrowing]

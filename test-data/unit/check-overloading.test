@@ -4989,6 +4989,13 @@ def attr(default: T = ..., blah: int = ...) -> T: ...
 @overload
 def attr(default: Any = ...) -> int: ...
 [out]
+main:4: note: Revealed type is "Literal[1]?"
+main:5: note: Revealed type is "builtins.int"
+main:7: note: Revealed type is "Any"
+main:8: error: No overload variant of "attr" matches argument types "str", "int"
+main:8: note: Possible overload variants:
+main:8: note:     def [T: int] attr(default: T = ..., blah: int = ...) -> T
+main:8: note:     def attr(default: Any = ...) -> int
 
 [case testAnyIsOKAsFallbackInOverloads]
 import stub

@@ -456,14 +456,14 @@ NameExpr:4: target.A<0>
 IntExpr:5: Literal[1]?<1>
 MemberExpr:5: builtins.int<1>
 NameExpr:5: target.A<0>
-MemberExpr:6: builtins.int<1>
+MemberExpr:6: Literal[1]?<1>
 NameExpr:6: target.A<0>
 ==>
 ## target
 IntExpr:3: Literal[1]?<1>
 MemberExpr:3: builtins.int<1>
 NameExpr:3: target.A<0>
-MemberExpr:4: builtins.int<1>
+MemberExpr:4: Literal[1]?<1>
 NameExpr:4: target.A<0>
 CallExpr:5: target.A<0>
 MemberExpr:5: target.A<0>

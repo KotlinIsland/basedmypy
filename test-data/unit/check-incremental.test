@@ -1176,7 +1176,7 @@ reveal_type(foo)
 [rechecked m, n]
 [stale]
 [out1]
-tmp/n.py:2: note: Revealed type is "builtins.str"
+tmp/n.py:2: note: Revealed type is "Literal['hello']?"
 tmp/m.py:3: error: Argument 1 to "accept_int" has incompatible type "str"; expected "int"
 [out2]
 tmp/n.py:2: note: Revealed type is "builtins.float"

@@ -1,0 +1,36 @@
+[case testInferLiteralGeneric]
+from helper import T
+def f(t: T) -> T: ...
+
+reveal_type(f(1))  # N: Revealed type is "1"
+
+
+[case testDontInferLiteralGenericAssignment]
+from helper import T
+def f(t: T) -> T: ...
+
+a = f(1)
+reveal_type(a)  # N: Revealed type is "1" (narrowed from "int")
+
+
+[case testDontInferLiteralGenericClass]
+from helper import T
+from typing import Generic
+
+class A(Generic[T]):
+    def __init__(self, t: T): ...
+
+def f(t: T) -> A[T]: ...
+
+reveal_type(f(1))  # N: Revealed type is "__main__.A[int]"
+a = f(1)
+reveal_type(a)  # N: Revealed type is "__main__.A[int]"
+
+
+[case testNarrowTuple]
+from helper import T
+def f(t: T) -> (T,):
+    return (t,)
+a = f(1)
+reveal_type(a)  # N: Revealed type is "(1,)" (narrowed from "(int,)")
+[builtins fixtures/tuple.pyi]

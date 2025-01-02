@@ -466,7 +466,7 @@ int_pow.py:7: note: Revealed type is "builtins.float"
 int_pow.py:8: note: Revealed type is "builtins.float"
 int_pow.py:9: note: Revealed type is "Any"
 int_pow.py:10: note: Revealed type is "builtins.int"
-int_pow.py:11: note: Revealed type is "Any"
+int_pow.py:11: note: Revealed type is "builtins.int"
 == Return code: 0
 
 [case testDisallowAnyGenericsBuiltinCollectionsPre39]

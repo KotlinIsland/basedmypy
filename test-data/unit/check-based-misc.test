@@ -25,7 +25,7 @@ main:3:5:3:31: error: Unused "type: ignore" comment  [unused-ignore]
 
 [case testNarrowOnInitialAssignment]
 a: object = 1
-reveal_type(a)  # N: Revealed type is "int" (narrowed from "object")
+reveal_type(a)  # N: Revealed type is "1" (narrowed from "object")
 
 
 [case testNarrowWithAny]
@@ -35,7 +35,7 @@ from typing import Any, Union
 a: Union[int, Any]
 if bool():
     a = 1
-    reveal_type(a)  # N: Revealed type is "int" (narrowed from "int | Any")
+    reveal_type(a)  # N: Revealed type is "1" (narrowed from "int | Any")
 b: Any = 1
 reveal_type(b)  # N: Revealed type is "Any"
 c: Any
@@ -199,7 +199,7 @@ a = False
 b: object
 if a:
     b = 1
-reveal_type(b)  # N: Revealed type is "int" (narrowed from "object")
+reveal_type(b)  # N: Revealed type is "1" (narrowed from "object")
 
 
 [case testRedundantExprOnWhileTrue]

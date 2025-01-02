@@ -232,7 +232,7 @@ def join_simple(declaration: Type | None, s: Type, t: Type) -> ProperType:
     if declaration is None or is_subtype(value, declaration):
         return value
 
-    return declaration
+    return value
 
 
 def trivial_join(s: Type, t: Type) -> Type:

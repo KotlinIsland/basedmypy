@@ -815,8 +815,10 @@ x + 1
 
 while bool():
       x + 1    # E: Unsupported operand types for + ("str" and "int") \
-               # N: Left operand is of type "Union[int, str]"
+               # N: Left operand is of type "Union[int & str, int, str]"
       x = 'a'
+
+
 [builtins fixtures/isinstancelist.pyi]
 
 [case testModifyLoop2]
@@ -837,7 +839,9 @@ for i in [1]:
       x = 'a'
 
 x + 1    # E: Unsupported operand types for + ("str" and "int") \
-         # N: Left operand is of type "Union[int, str]"
+         # N: Left operand is of type "Union[int, int & str, str]"
+
+
 [builtins fixtures/isinstancelist.pyi]
 
 [case testModifyLoop3]
@@ -856,7 +860,7 @@ while bool():
 else:
     x + 1
 x + 1      # E: Unsupported operand types for + ("str" and "int") \
-           # N: Left operand is of type "Union[int, str]"
+           # N: Left operand is of type "Union[int & str, int, str]"
 x = 1
 for y in [1]:
     x + 1
@@ -865,7 +869,9 @@ for y in [1]:
 else:
     x + 1
 x + 1      # E: Unsupported operand types for + ("str" and "int") \
-           # N: Left operand is of type "Union[int, str]"
+           # N: Left operand is of type "Union[int & str, int, str]"
+
+
 [builtins fixtures/isinstancelist.pyi]
 
 [case testModifyLoopWhile4]
@@ -889,15 +895,17 @@ x + 'a'
 x = 1
 while bool():
     x + 1 # E: Unsupported operand types for + ("str" and "int") \
-          # N: Left operand is of type "Union[int, str]"
+          # N: Left operand is of type "Union[int, int & str, str]"
     if bool():
         x = 'a'
         continue
 else:
     x + 1 # E: Unsupported operand types for + ("str" and "int") \
-          # N: Left operand is of type "Union[int, str]"
+          # N: Left operand is of type "Union[int, int & str, str]"
     x = 'a'
 x + 'a'
+
+
 [builtins fixtures/isinstancelist.pyi]
 
 [case testModifyLoopFor4]
@@ -921,15 +929,17 @@ x + 'a'
 x = 1
 for y in [1]:
     x + 1 # E: Unsupported operand types for + ("str" and "int") \
-          # N: Left operand is of type "Union[int, str]"
+          # N: Left operand is of type "Union[int, int & str, str]"
     if bool():
         x = 'a'
         continue
 else:
     x + 1 # E: Unsupported operand types for + ("str" and "int") \
-          # N: Left operand is of type "Union[int, str]"
+          # N: Left operand is of type "Union[int, int & str, str]"
     x = 'a'
 x + 'a'
+
+
 [builtins fixtures/isinstancelist.pyi]
 
 [case testModifyNestedLoop]
@@ -950,7 +960,7 @@ for y in [1]:
 else:
     x + 1
 x + 1 # E: Unsupported operand types for + ("str" and "int") \
-      # N: Left operand is of type "Union[int, str]"
+      # N: Left operand is of type "Union[int & str, int, str]"
 x = 1
 while bool():
     while bool():
@@ -961,7 +971,9 @@ while bool():
 else:
     x + 1
 x + 1 # E: Unsupported operand types for + ("str" and "int") \
-      # N: Left operand is of type "Union[int, str]"
+      # N: Left operand is of type "Union[int & str, int, str]"
+
+
 [builtins fixtures/isinstancelist.pyi]
 
 [case testModifyLoopLong]
@@ -1019,8 +1031,8 @@ while isinstance(x, int):
         continue
     x = 'a'
 else:
-    reveal_type(x)  # N: Revealed type is "builtins.str"
-reveal_type(x)  # N: Revealed type is "builtins.str"
+    reveal_type(x)  # N: Revealed type is "Literal['a']?"
+reveal_type(x)  # N: Revealed type is "Literal['a']?"
 [builtins fixtures/isinstance.pyi]
 
 [case testWhileExitCondition2]
@@ -1031,8 +1043,8 @@ while isinstance(x, int):
         break
     x = 'a'
 else:
-    reveal_type(x)  # N: Revealed type is "builtins.str"
-reveal_type(x)  # N: Revealed type is "Union[builtins.int, builtins.str]"
+    reveal_type(x)  # N: Revealed type is "Literal['a']?"
+reveal_type(x)  # N: Revealed type is "Union[builtins.int, Literal['a']?]"
 [builtins fixtures/isinstance.pyi]
 
 [case testWhileLinkedList]
@@ -1887,10 +1899,10 @@ isinstance() # E: Missing positional arguments "x", "t" in call to "isinstance"
 x: object
 if isinstance(): # E: Missing positional arguments "x", "t" in call to "isinstance"
     x = 1
-    reveal_type(x) # N: Revealed type is "builtins.int"
+    reveal_type(x) # N: Revealed type is "Literal[1]?"
 if isinstance(x): # E: Missing positional argument "t" in call to "isinstance"
     x = 1
-    reveal_type(x) # N: Revealed type is "builtins.int"
+    reveal_type(x) # N: Revealed type is "Literal[1]?"
 [builtins fixtures/isinstancelist.pyi]
 
 [case testIsSubclassTooFewArgs]
@@ -1907,12 +1919,13 @@ if issubclass(y): # E: Missing positional argument "t" in call to "issubclass"
 
 [case testIsInstanceTooManyArgs]
 isinstance(1, 1, 1) # E: Too many arguments for "isinstance" \
-         # E: Argument 2 to "isinstance" has incompatible type "int"; expected "Union[type, Tuple[Any, ...]]"
+                    # E: Argument 2 to "isinstance" has incompatible type "int"; expected "Union[type, Tuple[Any, ...]]"
 x: object
 if isinstance(x, str, 1): # E: Too many arguments for "isinstance"
     reveal_type(x) # N: Revealed type is "builtins.object"
     x = 1
-    reveal_type(x) # N: Revealed type is "builtins.int"
+    reveal_type(x) # N: Revealed type is "Literal[1]?"
+
 [builtins fixtures/isinstancelist.pyi]
 
 [case testIsinstanceNarrowAny]
@@ -2803,6 +2816,8 @@ x: A
 if hasattr(x, "x"):
     if isinstance(x, B):
         reveal_type(x.x)  # N: Revealed type is "Any"
+        # this is due to a limitation in `_remove_redundant_intersection_items`
+        # reveal_type(x.x)
 
 if hasattr(x, "x") and hasattr(x, "y"):
     reveal_type(x.x)  # N: Revealed type is "Any"
@@ -2816,6 +2831,7 @@ if hasattr(x, "x"):
 if hasattr(x, "x") or hasattr(x, "y"):
     x.x  # E: "A" has no attribute "x"
     x.y  # E: "A" has no attribute "y"
+
 [builtins fixtures/isinstance.pyi]
 
 [case testHasAttrPreciseType]

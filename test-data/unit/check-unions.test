@@ -287,16 +287,16 @@ reveal_type(u(C(), None))  # N: Revealed type is "__main__.C"
 reveal_type(u(None, C()))  # N: Revealed type is "__main__.C"
 
 # Normal instance type and None, simplify
-reveal_type(u(1, None))  # N: Revealed type is "builtins.int"
-reveal_type(u(None, 1))  # N: Revealed type is "builtins.int"
+reveal_type(u(1, None))  # N: Revealed type is "Literal[1]?"
+reveal_type(u(None, 1))  # N: Revealed type is "Literal[1]?"
 
 # Normal instance type and base-class-Any, no simplification
-reveal_type(u(C(), 1))  # N: Revealed type is "Union[builtins.int, __main__.C]"
-reveal_type(u(1, C()))  # N: Revealed type is "Union[__main__.C, builtins.int]"
+reveal_type(u(C(), 1))  # N: Revealed type is "Union[Literal[1]?, __main__.C]"
+reveal_type(u(1, C()))  # N: Revealed type is "Union[__main__.C, Literal[1]?]"
 
 # Normal instance type and Any, no simplification
-reveal_type(u(1, a))  # N: Revealed type is "Union[Any, builtins.int]"
-reveal_type(u(a, 1))  # N: Revealed type is "Union[builtins.int, Any]"
+reveal_type(u(1, a))  # N: Revealed type is "Union[Any, Literal[1]?]"
+reveal_type(u(a, 1))  # N: Revealed type is "Union[Literal[1]?, Any]"
 
 # Any and base-class-Any, no simplification
 reveal_type(u(C(), a))  # N: Revealed type is "Union[Any, __main__.C]"
@@ -307,8 +307,8 @@ reveal_type(u(1, object()))  # N: Revealed type is "builtins.object"
 reveal_type(u(object(), 1))  # N: Revealed type is "builtins.object"
 
 # Two normal instance types, no simplification
-reveal_type(u(1, ''))  # N: Revealed type is "Union[builtins.str, builtins.int]"
-reveal_type(u('', 1))  # N: Revealed type is "Union[builtins.int, builtins.str]"
+reveal_type(u(1, ''))  # N: Revealed type is "Union[Literal['']?, Literal[1]?]"
+reveal_type(u('', 1))  # N: Revealed type is "Union[Literal[1]?, Literal['']?]"
 
 [case testUnionSimplificationWithDuplicateItems]
 from typing import Any, TypeVar, Union
@@ -322,11 +322,11 @@ def u(x: T, y: S, z: R) -> Union[R, S, T]: pass
 
 a: Any
 
-reveal_type(u(1, 1, 1))  # N: Revealed type is "builtins.int"
+reveal_type(u(1, 1, 1))  # N: Revealed type is "Literal[1]?"
 reveal_type(u(C(), C(), None))  # N: Revealed type is "Union[None, __main__.C]"
-reveal_type(u(a, a, 1))  # N: Revealed type is "Union[builtins.int, Any]"
+reveal_type(u(a, a, 1))  # N: Revealed type is "Union[Literal[1]?, Any]"
 reveal_type(u(a, C(), a))  # N: Revealed type is "Union[Any, __main__.C]"
-reveal_type(u('', 1, 1))  # N: Revealed type is "Union[builtins.int, builtins.str]"
+reveal_type(u('', 1, 1))  # N: Revealed type is "Union[Literal[1]?, Literal['']?]"
 
 [case testUnionAndBinaryOperation]
 from typing import Union
@@ -360,10 +360,10 @@ T = TypeVar('T')
 S = TypeVar('S')
 def u(x: T, y: S) -> Union[T, S]: pass
 
-reveal_type(u(1, 2.3))  # N: Revealed type is "Union[builtins.int, builtins.float]"
-reveal_type(u(2.3, 1))  # N: Revealed type is "Union[builtins.float, builtins.int]"
-reveal_type(u(False, 2.2)) # N: Revealed type is "Union[builtins.bool, builtins.float]"
-reveal_type(u(2.2, False)) # N: Revealed type is "Union[builtins.float, builtins.bool]"
+reveal_type(u(1, 2.3))  # N: Revealed type is "Union[Literal[1]?, builtins.float]"
+reveal_type(u(2.3, 1))  # N: Revealed type is "Union[builtins.float, Literal[1]?]"
+reveal_type(u(False, 2.2)) # N: Revealed type is "Union[Literal[False]?, builtins.float]"
+reveal_type(u(2.2, False)) # N: Revealed type is "Union[builtins.float, Literal[False]?]"
 [builtins fixtures/primitives.pyi]
 
 [case testSimplifyingUnionWithTypeTypes1]
@@ -384,14 +384,14 @@ reveal_type(u(t_a, t_a)) # N: Revealed type is "Type[Any]"
 reveal_type(u(type, type)) # N: Revealed type is "def (x: builtins.object) -> builtins.type"
 
 # One type, other non-type
-reveal_type(u(t_s, 1)) # N: Revealed type is "Union[builtins.int, Type[builtins.str]]"
-reveal_type(u(1, t_s)) # N: Revealed type is "Union[Type[builtins.str], builtins.int]"
-reveal_type(u(type, 1)) # N: Revealed type is "Union[builtins.int, def (x: builtins.object) -> builtins.type]"
-reveal_type(u(1, type)) # N: Revealed type is "Union[def (x: builtins.object) -> builtins.type, builtins.int]"
-reveal_type(u(t_a, 1)) # N: Revealed type is "Union[builtins.int, Type[Any]]"
-reveal_type(u(1, t_a)) # N: Revealed type is "Union[Type[Any], builtins.int]"
-reveal_type(u(t_o, 1)) # N: Revealed type is "Union[builtins.int, Type[builtins.object]]"
-reveal_type(u(1, t_o)) # N: Revealed type is "Union[Type[builtins.object], builtins.int]"
+reveal_type(u(t_s, 1)) # N: Revealed type is "Union[Literal[1]?, Type[builtins.str]]"
+reveal_type(u(1, t_s)) # N: Revealed type is "Union[Type[builtins.str], Literal[1]?]"
+reveal_type(u(type, 1)) # N: Revealed type is "Union[Literal[1]?, def (x: builtins.object) -> builtins.type]"
+reveal_type(u(1, type)) # N: Revealed type is "Union[def (x: builtins.object) -> builtins.type, Literal[1]?]"
+reveal_type(u(t_a, 1)) # N: Revealed type is "Union[Literal[1]?, Type[Any]]"
+reveal_type(u(1, t_a)) # N: Revealed type is "Union[Type[Any], Literal[1]?]"
+reveal_type(u(t_o, 1)) # N: Revealed type is "Union[Literal[1]?, Type[builtins.object]]"
+reveal_type(u(1, t_o)) # N: Revealed type is "Union[Type[builtins.object], Literal[1]?]"
 
 [case testSimplifyingUnionWithTypeTypes2]
 from typing import TypeVar, Union, Type, Any
@@ -573,8 +573,8 @@ def pack_two(x: T, y: S) -> Union[Tuple[T, T], Tuple[S, S]]:
     pass
 
 (x, y) = pack_two(1, 'a')
-reveal_type(x)  # N: Revealed type is "Union[builtins.int, builtins.str]"
-reveal_type(y)  # N: Revealed type is "Union[builtins.int, builtins.str]"
+reveal_type(x)  # N: Revealed type is "Union[Literal[1]?, builtins.int & Literal['a']?, Literal['a']?]"
+reveal_type(y)  # N: Revealed type is "Union[Literal[1]?, builtins.int & Literal['a']?, Literal['a']?]"
 [builtins fixtures/tuple.pyi]
 
 [case testUnionMultiassignAny]
@@ -613,7 +613,7 @@ reveal_type(obj)  # N: Revealed type is "Union[__main__.B, __main__.C]"
 reveal_type(new)  # N: Revealed type is "Union[__main__.B, __main__.C]"
 
 obj = 1
-reveal_type(obj)  # N: Revealed type is "builtins.int"
+reveal_type(obj)  # N: Revealed type is "Literal[1]?"
 [builtins fixtures/list.pyi]
 
 [case testUnionMultiassignAlreadyDeclared]

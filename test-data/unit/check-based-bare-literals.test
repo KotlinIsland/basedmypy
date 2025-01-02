@@ -18,12 +18,20 @@ reveal_type(c)  # N: Revealed type is "False"
 c2: False | str
 reveal_type(c2)  # N: Revealed type is "False | str"
 
-d: 1.1  # E: Invalid type: float literals cannot be used as a type  [valid-type]
-d2: 1.1 | str  # E: Invalid type: float literals cannot be used as a type  [valid-type]
-
-e: 1j  # E: Invalid type: complex literals cannot be used as a type  [valid-type]
-e2: 1j | str  # E: Invalid type: complex literals cannot be used as a type  [valid-type]
+d: 1.1
+reveal_type(d)  # N: Revealed type is "1.1"
+d2: 1.1 | str
+reveal_type(d2)  # N: Revealed type is "1.1 | str"
 [builtins fixtures/tuple.pyi]
+
+
+[case testBareLiteralLiteralsComplex]
+from __future__ import annotations
+e: 1j
+reveal_type(e)  # N: Revealed type is "1j"
+e2: 1j | str
+reveal_type(e2)  # N: Revealed type is "1j | str"
+[builtins fixtures/dict.pyi]
 
 
 [case testNoBareLiteralLiterals]
@@ -38,11 +46,12 @@ b2: True | str  # E: "True" is a bare literal and shouldn't be used in a type op
 c1: False
 c2: False | str  # E: "False" is a bare literal and shouldn't be used in a type operation without "__future__.annotations"  [valid-type]
 
-d1: 1.1  # E: Invalid type: float literals cannot be used as a type  [valid-type]
-d2: 1.1 | str  # E: Invalid type: float literals cannot be used as a type  [valid-type]
+d1: 1.1
+d2: 1.1 | str  # E: "1.1" is a bare literal and shouldn't be used in a type operation without "__future__.annotations"  [valid-type]
 
-e1: 1j  # E: Invalid type: complex literals cannot be used as a type  [valid-type]
-e2: 1j | str  # E: Invalid type: complex literals cannot be used as a type  [valid-type]
+e1: 1j
+e2: 1j | str  # E: "1j" is a bare literal and shouldn't be used in a type operation without "__future__.annotations"  [valid-type]
+[builtins fixtures/complex.pyi]
 
 
 [case testBareLiteralEnum]
@@ -109,3 +118,8 @@ import a
 from typing import TypeVar
 T = TypeVar("T", 1, 2)
 a: 1 | 2
+
+
+[case testBareLiteralComplex-writescache]
+a: 1j
+[builtins fixtures/complex.pyi]

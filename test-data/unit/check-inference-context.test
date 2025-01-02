@@ -920,7 +920,7 @@ from typing import TypeVar, Union, List
 T = TypeVar('T')
 
 def f(x: Union[T, List[int]]) -> Union[T, List[int]]: pass
-reveal_type(f(1)) # N: Revealed type is "Union[builtins.int, builtins.list[builtins.int]]"
+reveal_type(f(1)) # N: Revealed type is "Union[Literal[1]?, builtins.list[builtins.int]]"
 reveal_type(f([])) # N: Revealed type is "builtins.list[builtins.int]"
 reveal_type(f(None)) # N: Revealed type is "Union[None, builtins.list[builtins.int]]"
 [builtins fixtures/list.pyi]
@@ -931,7 +931,7 @@ from typing import TypeVar, Union, List
 T = TypeVar('T')
 
 def f(x: Union[T, List[int]]) -> Union[T, List[int]]: pass
-reveal_type(f(1)) # N: Revealed type is "Union[builtins.int, builtins.list[builtins.int]]"
+reveal_type(f(1)) # N: Revealed type is "Union[Literal[1]?, builtins.list[builtins.int]]"
 reveal_type(f([])) # N: Revealed type is "builtins.list[builtins.int]"
 reveal_type(f(None)) # N: Revealed type is "Union[None, builtins.list[builtins.int]]"
 [builtins fixtures/list.pyi]
@@ -946,7 +946,7 @@ class C(Generic[T]):
     def f(self, x: Union[T, S]) -> Union[T, S]: pass
 
 c = C[List[int]]()
-reveal_type(c.f('')) # N: Revealed type is "Union[builtins.list[builtins.int], builtins.str]"
+reveal_type(c.f('')) # N: Revealed type is "Union[builtins.list[builtins.int], Literal['']?]"
 reveal_type(c.f([1])) # N: Revealed type is "builtins.list[builtins.int]"
 reveal_type(c.f([])) # N: Revealed type is "builtins.list[builtins.int]"
 reveal_type(c.f(None)) # N: Revealed type is "Union[builtins.list[builtins.int], None]"

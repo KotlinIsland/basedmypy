@@ -210,7 +210,8 @@ from mypy.visitor import ExpressionVisitor
 # Type of callback user for checking individual function arguments. See
 # check_args() below for details.
 ArgChecker: _TypeAlias = Callable[
-    [Type, Type, ArgKind, Type, int, int, CallableType, Optional[Type], Context, Context], None
+    [Type, Type, ArgKind, Type, int, int, CallableType, Optional[Type], Context, Context, bool],
+    None,
 ]
 
 # Maximum nesting level for math union in overloads, setting this to large values
@@ -2175,6 +2176,13 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         Return a derived callable type that has the arguments applied.
         """
         if self.chk.in_checked_function():
+            if isinstance(callee_type.ret_type, TypeVarType):
+                # if the return type is constant, infer as literal
+                rvalue_type = [
+                    remove_instance_last_known_values(arg) if isinstance(arg, Instance) else arg
+                    for arg in args
+                ]
+
             # Disable type errors during type inference. There may be errors
             # due to partial available context information at this time, but
             # these errors can be safely ignored as the arguments will be
@@ -2581,6 +2589,8 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         context: Context,
         check_arg: ArgChecker | None = None,
         object_type: Type | None = None,
+        *,
+        type_function=False,
     ) -> None:
         """Check argument types against a callable type.
 
@@ -2712,6 +2722,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                     object_type,
                     args[actual],
                     context,
+                    type_function,
                 )
 
     def check_arg(
@@ -2726,12 +2737,16 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         object_type: Type | None,
         context: Context,
         outer_context: Context,
+        type_function=False,
     ) -> None:
         """Check the type of a single argument in a call."""
         caller_type = get_proper_type(caller_type)
         original_caller_type = get_proper_type(original_caller_type)
         callee_type = get_proper_type(callee_type)
-
+        if type_function:
+            # TODO: make this work at all
+            if not isinstance(caller_type, Instance) or not caller_type.last_known_value:
+                caller_type = self.named_type("builtins.object")
         if isinstance(caller_type, DeletedType):
             self.msg.deleted_as_rvalue(caller_type, context)
         # Only non-abstract non-protocol class can be given where Type[...] is expected...
@@ -3348,6 +3363,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             object_type: Type | None,
             context: Context,
             outer_context: Context,
+            type_function: bool,
         ) -> None:
             if not arg_approximate_similarity(caller_type, callee_type):
                 # No match -- exit early since none of the remaining work can change
@@ -3580,10 +3596,14 @@ class ExpressionChecker(ExpressionVisitor[Type]):
 
     def visit_float_expr(self, e: FloatExpr) -> Type:
         """Type check a float literal (trivial)."""
+        if mypy.options._based:
+            return self.infer_literal_expr_type(e.value, "builtins.float")
         return self.named_type("builtins.float")
 
     def visit_complex_expr(self, e: ComplexExpr) -> Type:
         """Type check a complex literal."""
+        if mypy.options._based:
+            return self.infer_literal_expr_type(e.value, "builtins.complex")
         return self.named_type("builtins.complex")
 
     def visit_ellipsis(self, e: EllipsisExpr) -> Type:

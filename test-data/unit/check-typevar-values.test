@@ -368,7 +368,7 @@ X = TypeVar('X', int, str)
 class C(Generic[X]):
     def f(self, x: X) -> None:
         self.x = 1
-        reveal_type(self.x) # N: Revealed type is "builtins.int"
+        reveal_type(self.x) # N: Revealed type is "Literal[1]?"
 ci: C[int]
 cs: C[str]
 reveal_type(ci.x) # N: Revealed type is "builtins.int"

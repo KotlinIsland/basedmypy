@@ -1,6 +1,10 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Added
+- `float` and `complex` literals
+- narrow types to literal values
+- infer literal in generics
 
 ## [2.9.0]
 ### Added

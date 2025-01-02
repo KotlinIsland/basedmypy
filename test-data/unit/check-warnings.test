@@ -6,7 +6,7 @@
 [case testRedundantCast]
 # flags: --warn-redundant-casts
 from typing import cast
-a = 1
+a: int
 b = cast(str, a)
 c = cast(int, a)
 [out]

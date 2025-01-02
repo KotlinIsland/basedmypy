@@ -1598,9 +1598,9 @@ def foo(arg: Tuple[int, Unpack[Ts], str]) -> None:
     reveal_type(y1)  # N: Revealed type is "builtins.list[builtins.object]"
     reveal_type(z1)  # N: Revealed type is "builtins.str"
     x2, *y2, z2 = 1, *arg, 2
-    reveal_type(x2)  # N: Revealed type is "builtins.int"
+    reveal_type(x2)  # N: Revealed type is "Literal[1]?"
     reveal_type(y2)  # N: Revealed type is "builtins.list[builtins.object]"
-    reveal_type(z2)  # N: Revealed type is "builtins.int"
+    reveal_type(z2)  # N: Revealed type is "Literal[2]?"
     x3, *y3 = *arg, 42
     reveal_type(x3)  # N: Revealed type is "builtins.int"
     reveal_type(y3)  # N: Revealed type is "builtins.list[builtins.object]"
@@ -1608,11 +1608,11 @@ def foo(arg: Tuple[int, Unpack[Ts], str]) -> None:
     reveal_type(y4)  # N: Revealed type is "builtins.list[builtins.object]"
     reveal_type(z4)  # N: Revealed type is "builtins.str"
     x5, xx5, *y5, z5, zz5 = 1, *arg, 2
-    reveal_type(x5)  # N: Revealed type is "builtins.int"
+    reveal_type(x5)  # N: Revealed type is "Literal[1]?"
     reveal_type(xx5)  # N: Revealed type is "builtins.int"
     reveal_type(y5)  # N: Revealed type is "builtins.list[builtins.object]"
     reveal_type(z5)  # N: Revealed type is "builtins.str"
-    reveal_type(zz5)  # N: Revealed type is "builtins.int"
+    reveal_type(zz5)  # N: Revealed type is "Literal[2]?"
 [builtins fixtures/tuple.pyi]
 
 [case testRepackingVariadicTuplesHomogeneous]
@@ -1625,9 +1625,9 @@ def foo(arg: Tuple[int, Unpack[Tuple[float, ...]], str]) -> None:
     reveal_type(y1)  # N: Revealed type is "builtins.list[builtins.float]"
     reveal_type(z1)  # N: Revealed type is "builtins.str"
     x2, *y2, z2 = 1, *arg, 2
-    reveal_type(x2)  # N: Revealed type is "builtins.int"
+    reveal_type(x2)  # N: Revealed type is "Literal[1]?"
     reveal_type(y2)  # N: Revealed type is "builtins.list[builtins.object]"
-    reveal_type(z2)  # N: Revealed type is "builtins.int"
+    reveal_type(z2)  # N: Revealed type is "Literal[2]?"
     x3, *y3 = *arg, 42
     reveal_type(x3)  # N: Revealed type is "builtins.int"
     reveal_type(y3)  # N: Revealed type is "builtins.list[builtins.object]"
@@ -1635,11 +1635,11 @@ def foo(arg: Tuple[int, Unpack[Tuple[float, ...]], str]) -> None:
     reveal_type(y4)  # N: Revealed type is "builtins.list[builtins.float]"
     reveal_type(z4)  # N: Revealed type is "builtins.str"
     x5, xx5, *y5, z5, zz5 = 1, *arg, 2
-    reveal_type(x5)  # N: Revealed type is "builtins.int"
+    reveal_type(x5)  # N: Revealed type is "Literal[1]?"
     reveal_type(xx5)  # N: Revealed type is "builtins.int"
     reveal_type(y5)  # N: Revealed type is "builtins.list[builtins.float]"
     reveal_type(z5)  # N: Revealed type is "builtins.str"
-    reveal_type(zz5)  # N: Revealed type is "builtins.int"
+    reveal_type(zz5)  # N: Revealed type is "Literal[2]?"
 [builtins fixtures/tuple.pyi]
 
 [case testPackingVariadicTuplesTypeVar]
@@ -2461,7 +2461,7 @@ Ts = TypeVarTuple("Ts")
 @cm
 def test(x: T, *args: Unpack[Ts]) -> Tuple[T, Unpack[Ts]]: ...
 
-reveal_type(test)  # N: Revealed type is "def [T, Ts] (builtins.list[T`2], *args: Unpack[Ts`-2]) -> __main__.CM[Tuple[T`2, Unpack[Ts`-2]]]"
+reveal_type(test)  # N: Revealed type is "def [T, Ts] (builtins.list[T`3], *args: Unpack[Ts`-2]) -> __main__.CM[Tuple[T`3, Unpack[Ts`-2]]]"
 [builtins fixtures/tuple.pyi]
 
 [case testMixingTypeVarTupleAndParamSpec]

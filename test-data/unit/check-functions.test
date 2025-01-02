@@ -1575,7 +1575,7 @@ f = g
 if g():
     def f(): pass
 f()
-f(1) # E: Too many arguments
+f(1) # E: Too many arguments for "g"
 
 [case testRedefineFunctionDefinedAsVariableInitializedToNone]
 def g(): pass
@@ -2403,7 +2403,7 @@ def g(__x: T) -> T: pass
 f = g
 reveal_type(f)  # N: Revealed type is "def [T] (T`-1) -> T`-1"
 i = f(3)
-reveal_type(i)  # N: Revealed type is "builtins.int"
+reveal_type(i)  # N: Revealed type is "Literal[3]?"
 
 [case testFunctionReturningGenericFunction]
 from typing import Callable, TypeVar
@@ -2414,7 +2414,7 @@ reveal_type(deco)  # N: Revealed type is "def () -> def [T] (T`-1) -> T`-1"
 f = deco()
 reveal_type(f)  # N: Revealed type is "def [T] (T`1) -> T`1"
 i = f(3)
-reveal_type(i)  # N: Revealed type is "builtins.int"
+reveal_type(i)  # N: Revealed type is "Literal[3]?"
 
 [case testFunctionReturningGenericFunctionPartialBinding]
 from typing import Callable, TypeVar
@@ -2427,7 +2427,7 @@ reveal_type(deco)  # N: Revealed type is "def [U] (x: U`-1) -> def [T] (T`-2, U`
 f = deco("foo")
 reveal_type(f)  # N: Revealed type is "def [T] (T`1, builtins.str) -> T`1"
 i = f(3, "eggs")
-reveal_type(i)  # N: Revealed type is "builtins.int"
+reveal_type(i)  # N: Revealed type is "Literal[3]?"
 
 [case testFunctionReturningGenericFunctionTwoLevelBinding]
 from typing import Callable, TypeVar
@@ -2438,9 +2438,9 @@ def deco() -> Callable[[T], Callable[[T, R], R]]: pass
 f = deco()
 reveal_type(f)  # N: Revealed type is "def [T] (T`2) -> def [R] (T`2, R`1) -> R`1"
 g = f(3)
-reveal_type(g)  # N: Revealed type is "def [R] (builtins.int, R`3) -> R`3"
+reveal_type(g)  # N: Revealed type is "def [R] (builtins.int, R`5) -> R`5"
 s = g(4, "foo")
-reveal_type(s)  # N: Revealed type is "builtins.str"
+reveal_type(s)  # N: Revealed type is "Literal['foo']?"
 
 [case testGenericFunctionReturnAsDecorator]
 from typing import Callable, TypeVar
@@ -2584,7 +2584,7 @@ main:1: error: Unsupported operand types for + ("int" and "str")
 f = lambda: 5
 reveal_type(f)
 [out]
-main:2: note: Revealed type is "def () -> builtins.int"
+main:2: note: Revealed type is "def () -> Literal[5]?"
 
 [case testRevealLocalsFunction]
 a = 1.0

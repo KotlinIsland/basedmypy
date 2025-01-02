@@ -694,8 +694,14 @@ class TypeOpsSuite(Suite):
             [fx.b, IntersectionType([fx.c, IntersectionType([fx.d])])],
             IntersectionType([fx.b, fx.c, fx.d]),
         )
+        self.assert_simplified_intersection([fx.bool_type, fx.lit_true], fx.lit_true)
+
+        # special case: it's not currently symmetric when there are last known values
+        narrowed = fx.bool_type.copy_modified(last_known_value=fx.lit_true)
+        assert_equal(make_simplified_intersection([narrowed, fx.bool_type]), narrowed)
 
     def assert_simplified_intersection(self, original: list[Type], intersection: Type) -> None:
+        __tracebackhide__ = True
         assert_equal(make_simplified_intersection(original), intersection)
         assert_equal(make_simplified_intersection(list(reversed(original))), intersection)
 

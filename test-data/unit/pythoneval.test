@@ -249,7 +249,7 @@ _program.py:4: error: "TextIOWrapper[_WrappedBuffer]" has no attribute "foobar"
 reveal_type(open('x'))
 reveal_type(open('x', 'r'))
 reveal_type(open('x', 'rb'))
-mode = 'rb'
+mode = str()
 reveal_type(open('x', mode))
 [out]
 _program.py:1: note: Revealed type is "_io.TextIOWrapper[_io._WrappedBuffer]"
@@ -260,7 +260,7 @@ _program.py:5: note: Revealed type is "typing.IO[Any]"
 [case testOpenReturnTypeInferenceSpecialCases]
 reveal_type(open(mode='rb', file='x'))
 reveal_type(open(file='x', mode='rb'))
-mode = 'rb'
+mode = str()
 reveal_type(open(mode=mode, file='r'))
 [out]
 _testOpenReturnTypeInferenceSpecialCases.py:1: note: Revealed type is "_io.BufferedReader"
@@ -273,7 +273,7 @@ p = Path("x")
 reveal_type(p.open())
 reveal_type(p.open('r'))
 reveal_type(p.open('rb'))
-mode = 'rb'
+mode = str()
 reveal_type(p.open(mode))
 [out]
 _program.py:3: note: Revealed type is "_io.TextIOWrapper[_io._WrappedBuffer]"
@@ -286,7 +286,7 @@ from pathlib import Path
 p = Path("x")
 reveal_type(p.open(mode='r', errors='replace'))
 reveal_type(p.open(errors='replace', mode='r'))
-mode = 'r'
+mode = str()
 reveal_type(p.open(mode=mode, errors='replace'))
 [out]
 _program.py:3: note: Revealed type is "_io.TextIOWrapper[_io._WrappedBuffer]"
@@ -1166,8 +1166,8 @@ for a, b in x.items():
     reveal_type(a)
     reveal_type(b)
 [out]
-_testNoCrashOnGenericUnionUnpacking.py:6: note: Revealed type is "builtins.str"
-_testNoCrashOnGenericUnionUnpacking.py:7: note: Revealed type is "builtins.str"
+_testNoCrashOnGenericUnionUnpacking.py:6: note: Revealed type is "Union[builtins.str, Literal[1]?]"
+_testNoCrashOnGenericUnionUnpacking.py:7: note: Revealed type is "Union[builtins.str, Literal[2]?]"
 _testNoCrashOnGenericUnionUnpacking.py:10: note: Revealed type is "Union[builtins.str, builtins.int]"
 _testNoCrashOnGenericUnionUnpacking.py:11: note: Revealed type is "Union[builtins.str, builtins.int]"
 _testNoCrashOnGenericUnionUnpacking.py:17: note: Revealed type is "Union[builtins.int, builtins.str]"

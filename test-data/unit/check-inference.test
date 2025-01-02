@@ -138,7 +138,7 @@ def f() -> None:
 import typing
 def f() -> None:
     a = g
-    a(B()) # E: Argument 1 has incompatible type "B"; expected "A"
+    a(B()) # E: Argument 1 to "g" has incompatible type "B"; expected "A"
     a(A())
 
 def g(a: 'A') -> None: pass
@@ -151,7 +151,7 @@ class B: pass
 import typing
 def f() -> None:
     a = A
-    a(A()) # E: Too many arguments
+    a(A()) # E: Too many arguments for "A"
     a()
     t = a # type: type
 
@@ -343,7 +343,7 @@ for var2 in [g, h, i, j, k, l]:
     reveal_type(var2)  # N: Revealed type is "Union[builtins.int, builtins.str]"
 
 for var3 in [m, n, o, p, q, r]:
-    reveal_type(var3)  # N: Revealed type is "Union[builtins.int, Any]"
+    reveal_type(var3)  # N: Revealed type is "builtins.int"
 
 T = TypeVar("T", bound=Type[Foo])
 
@@ -1254,19 +1254,19 @@ for a in ("hourly", "daily"):
     reveal_type(x[a])  # N: Revealed type is "builtins.int"
     reveal_type(a.upper())  # N: Revealed type is "builtins.str"
     c = a
-    reveal_type(c)  # N: Revealed type is "builtins.str"
+    reveal_type(c)  # N: Revealed type is "Union[Literal['hourly']?, Literal['daily']?]"
     a = "monthly"
-    reveal_type(a)  # N: Revealed type is "builtins.str"
+    reveal_type(a)  # N: Revealed type is "Literal['monthly']?"
     a = "yearly"
-    reveal_type(a)  # N: Revealed type is "builtins.str"
+    reveal_type(a)  # N: Revealed type is "Literal['yearly']?"
     a = 1  # E: Incompatible types in assignment (expression has type "int", variable has type "str")
-    reveal_type(a)  # N: Revealed type is "builtins.str"
+    reveal_type(a)  # N: Revealed type is "Literal['yearly']?"
     d = a
-    reveal_type(d)  # N: Revealed type is "builtins.str"
+    reveal_type(d)  # N: Revealed type is "Literal['yearly']?"
 
 b: str
 for b in ("hourly", "daily"):
-    reveal_type(b)  # N: Revealed type is "builtins.str"
+    reveal_type(b)  # N: Revealed type is "Union[Literal['hourly']?, Literal['daily']?]"
     reveal_type(b.upper())  # N: Revealed type is "builtins.str"
 [builtins fixtures/for.pyi]
 
@@ -2538,7 +2538,7 @@ def f(x: T) -> Tuple[T, T]:
     ...
 x = None
 (x, x) = f('')
-reveal_type(x) # N: Revealed type is "builtins.str"
+reveal_type(x) # N: Revealed type is "Literal['']?"
 [builtins fixtures/tuple.pyi]
 [out]
 
@@ -2552,8 +2552,8 @@ def make_tuple(elem: T) -> Tuple[T]:
 
 def main() -> None:
     ((a, b),) = make_tuple((1, 2))
-    reveal_type(a) # N: Revealed type is "builtins.int"
-    reveal_type(b) # N: Revealed type is "builtins.int"
+    reveal_type(a) # N: Revealed type is "Literal[1]?"
+    reveal_type(b) # N: Revealed type is "Literal[2]?"
 [builtins fixtures/tuple.pyi]
 [out]
 
@@ -3358,7 +3358,7 @@ def f(x: Callable[[], T]) -> T:
     return x()
 
 reveal_type(f(lambda: None))  # N: Revealed type is "None"
-reveal_type(f(lambda: 1))  # N: Revealed type is "builtins.int"
+reveal_type(f(lambda: 1))  # N: Revealed type is "Literal[1]?"
 
 def g() -> None: pass
 
@@ -3373,7 +3373,7 @@ def f(x: Callable[[], T]) -> T:
     return x()
 
 reveal_type(f(lambda: None))  # N: Revealed type is "None"
-reveal_type(f(lambda: 1))  # N: Revealed type is "builtins.int"
+reveal_type(f(lambda: 1))  # N: Revealed type is "Literal[1]?"
 
 def g() -> None: pass
 
@@ -3830,7 +3830,7 @@ def dec2(f: Callable[[S], List[T]]) -> Callable[[S], T]: ...
 def func2(arg: T) -> List[Union[T, str]]:
     ...
 reveal_type(func2)  # N: Revealed type is "def [S] (S`4) -> Union[S`4, builtins.str]"
-reveal_type(func2(42))  # N: Revealed type is "Union[builtins.int, builtins.str]"
+reveal_type(func2(42))  # N: Revealed type is "Union[Literal[42]?, builtins.str]"
 [builtins fixtures/list.pyi]
 
 [case testInferenceAgainstGenericCallbackProtoMultiple]
@@ -3851,7 +3851,7 @@ def Negate(count: int, /, metric: Metric[float]) -> float: ...
 def Combine(count: int, m1: Metric[T], m2: Metric[T], /, *more: Metric[T]) -> T: ...
 
 reveal_type(Negate)  # N: Revealed type is "def (metric: __main__.Metric[builtins.float]) -> builtins.float"
-reveal_type(Combine)  # N: Revealed type is "def [T] (def () -> T`5, def () -> T`5, *more: def () -> T`5) -> T`5"
+reveal_type(Combine)  # N: Revealed type is "def [T] (def () -> T`6, def () -> T`6, *more: def () -> T`6) -> T`6"
 
 def m1() -> float: ...
 def m2() -> float: ...

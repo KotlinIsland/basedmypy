@@ -830,11 +830,11 @@ class Bar(Base, frozen=False):
 foo = Foo(0, 1)
 foo.foo = 5  # E: Property "foo" defined in "Foo" is read-only
 foo.base = 6
-reveal_type(foo.base)  # N: Revealed type is "builtins.int"
+reveal_type(foo.base)  # N: Revealed type is "Literal[6]?"
 bar = Bar(0, 1)
 bar.bar = 5
 bar.base = 6
-reveal_type(bar.base)  # N: Revealed type is "builtins.int"
+reveal_type(bar.base)  # N: Revealed type is "Literal[6]?"
 
 [typing fixtures/typing-full.pyi]
 [builtins fixtures/dataclasses.pyi]

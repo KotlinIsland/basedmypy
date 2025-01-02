@@ -345,7 +345,7 @@ def foo() -> None:
         x = ''
     else:
         x = 0
-    reveal_type(x)  # N: Revealed type is "builtins.str"
+    reveal_type(x)  # N: Revealed type is "Literal['']?"
 [builtins fixtures/ops.pyi]
 [out]
 
@@ -357,7 +357,7 @@ class C:
             x = ''
         else:
             x = 0
-        reveal_type(x)  # N: Revealed type is "builtins.str"
+        reveal_type(x)  # N: Revealed type is "Literal['']?"
 [builtins fixtures/ops.pyi]
 [out]
 
@@ -428,7 +428,7 @@ if sys.version_info == (3, 11):
     x = "foo"
 else:
     x = 3
-reveal_type(x)  # N: Revealed type is "builtins.str"
+reveal_type(x)  # N: Revealed type is "Literal['foo']?"
 [builtins fixtures/ops.pyi]
 [out]
 
@@ -439,7 +439,7 @@ if sys.version_info == (3, 6):
     x = "foo"
 else:
     x = 3
-reveal_type(x)  # N: Revealed type is "builtins.int"
+reveal_type(x)  # N: Revealed type is "Literal[3]?"
 [builtins fixtures/ops.pyi]
 [out]
 
@@ -450,7 +450,7 @@ if sys.platform == 'linux':
     x = "foo"
 else:
     x = 3
-reveal_type(x)  # N: Revealed type is "builtins.str"
+reveal_type(x)  # N: Revealed type is "Literal['foo']?"
 [builtins fixtures/ops.pyi]
 [out]
 
@@ -461,7 +461,7 @@ if sys.platform == 'linux':
     x = "foo"
 else:
     x = 3
-reveal_type(x)  # N: Revealed type is "builtins.int"
+reveal_type(x)  # N: Revealed type is "Literal[3]?"
 [builtins fixtures/ops.pyi]
 [out]
 
@@ -472,7 +472,7 @@ if sys.platform.startswith('win'):
     x = "foo"
 else:
     x = 3
-reveal_type(x)  # N: Revealed type is "builtins.str"
+reveal_type(x)  # N: Revealed type is "Literal['foo']?"
 [builtins fixtures/ops.pyi]
 [out]
 
@@ -510,12 +510,12 @@ if PY2 and sys.platform == 'linux':
     x = 'foo'
 else:
     x = 3
-reveal_type(x)  # N: Revealed type is "builtins.int"
+reveal_type(x)  # N: Revealed type is "Literal[3]?"
 if sys.platform == 'linux' and PY2:
     y = 'foo'
 else:
     y = 3
-reveal_type(y)  # N: Revealed type is "builtins.int"
+reveal_type(y)  # N: Revealed type is "Literal[3]?"
 [builtins fixtures/ops.pyi]
 
 [case testShortCircuitOrWithConditionalAssignment]
@@ -528,12 +528,12 @@ if PY2 or sys.platform == 'linux':
     x = 'foo'
 else:
     x = 3
-reveal_type(x)  # N: Revealed type is "builtins.str"
+reveal_type(x)  # N: Revealed type is "Literal['foo']?"
 if sys.platform == 'linux' or PY2:
     y = 'foo'
 else:
     y = 3
-reveal_type(y)  # N: Revealed type is "builtins.str"
+reveal_type(y)  # N: Revealed type is "Literal['foo']?"
 [builtins fixtures/ops.pyi]
 
 [case testShortCircuitNoEvaluation]
