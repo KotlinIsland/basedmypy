@@ -3604,6 +3604,14 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                 self.infer_variable_type(inferred, lvalue, rvalue_type, rvalue)
             self.check_assignment_to_slots(lvalue)
 
+        if (
+            isinstance(lvalue, NameExpr)
+            and isinstance(lvalue.node, Var)
+            and lvalue.node.is_read_only
+            and not self.get_final_context()
+        ):
+            self.msg.read_only(lvalue.node.name, rvalue)
+
     # (type, operator) tuples for augmented assignments supported with partial types
     partial_type_augmented_ops: Final = {("builtins.list", "+"), ("builtins.set", "|")}
 

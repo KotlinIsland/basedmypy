@@ -18,7 +18,7 @@ T = TypeVar("T")
 
 @trait
 @mypyc_attr(allow_interpreted_subclasses=True)
-class ExpressionVisitor(Generic[T]):
+class ExpressionVisitor(Generic[T]):  # type: ignore[abstract]
     @abstractmethod
     def visit_int_expr(self, o: mypy.nodes.IntExpr) -> T:
         pass
@@ -198,7 +198,7 @@ class ExpressionVisitor(Generic[T]):
 
 @trait
 @mypyc_attr(allow_interpreted_subclasses=True)
-class StatementVisitor(Generic[T]):
+class StatementVisitor(Generic[T]):  # type: ignore[abstract]
     # Definitions
 
     @abstractmethod
@@ -316,7 +316,7 @@ class StatementVisitor(Generic[T]):
 
 @trait
 @mypyc_attr(allow_interpreted_subclasses=True)
-class PatternVisitor(Generic[T]):
+class PatternVisitor(Generic[T]):  # type: ignore[abstract]
     @abstractmethod
     def visit_as_pattern(self, o: mypy.patterns.AsPattern) -> T:
         pass

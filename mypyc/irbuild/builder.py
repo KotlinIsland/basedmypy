@@ -142,7 +142,7 @@ from mypyc.primitives.registry import CFunctionDescription, function_ops
 int_borrow_friendly_op: Final = {"+", "-", "==", "!=", "<", "<=", ">", ">="}
 
 
-class IRVisitor(ExpressionVisitor[Value], StatementVisitor[None]):
+class IRVisitor(ExpressionVisitor[Value], StatementVisitor[None]):  # type: ignore[abstract]
     pass
 
 

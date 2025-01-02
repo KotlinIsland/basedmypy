@@ -1,6 +1,9 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Added
+- `Abstract` and `abstract` modifiers
+- `ReadOnly` attributes
 
 ## [2.9.0]
 ### Added

@@ -211,7 +211,7 @@ class Float(Value):
         self.line = line
 
 
-class Op(Value):
+class Op(Value):  # type: ignore[abstract]
     """Abstract base class for all IR operations.
 
     Each operation must be stored in a BasicBlock (in 'ops') to be
@@ -251,7 +251,7 @@ class Op(Value):
         pass
 
 
-class BaseAssign(Op):
+class BaseAssign(Op):  # type: ignore[abstract]
     """Base class for ops that assign to a register."""
 
     def __init__(self, dest: Register, line: int = -1) -> None:
@@ -308,7 +308,7 @@ class AssignMulti(BaseAssign):
         return visitor.visit_assign_multi(self)
 
 
-class ControlOp(Op):
+class ControlOp(Op):  # type: ignore[abstract]
     """Control flow operation."""
 
     def targets(self) -> Sequence[BasicBlock]:
@@ -456,7 +456,7 @@ class Unreachable(ControlOp):
         return visitor.visit_unreachable(self)
 
 
-class RegisterOp(Op):
+class RegisterOp(Op):  # type: ignore[abstract]
     """Abstract base class for operations that can be written as r1 = f(r2, ..., rn).
 
     Takes some values, performs an operation, and generates an output
@@ -1560,7 +1560,7 @@ class Unborrow(RegisterOp):
 
 
 @trait
-class OpVisitor(Generic[T]):
+class OpVisitor(Generic[T]):  # type: ignore[abstract]
     """Generic visitor over ops (uses the visitor design pattern)."""
 
     @abstractmethod

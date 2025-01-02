@@ -400,7 +400,7 @@ def infer_method_arg_types(
 
 
 @mypyc_attr(allow_interpreted_subclasses=True)
-class SignatureGenerator:
+class SignatureGenerator:  # type: ignore[abstract]
     """Abstract base class for extracting a list of FunctionSigs for each function."""
 
     def remove_self_type(

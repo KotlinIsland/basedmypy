@@ -195,7 +195,7 @@ def transform_class_def(builder: IRBuilder, cdef: ClassDef) -> None:
     cls_builder.finalize(ir)
 
 
-class ClassBuilder:
+class ClassBuilder:  # type: ignore[abstract]
     """Create IR for a class definition.
 
     This is an abstract base class.
