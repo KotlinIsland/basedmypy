@@ -93,6 +93,7 @@ from mypy.types import (
     UninhabitedType,
     UnionType,
     UnpackType,
+    VarianceModifier,
     flatten_nested_unions,
     get_proper_type,
     get_proper_types,
@@ -2675,6 +2676,9 @@ def format_type_inner(
             if typ.args:
                 type_str += f"[{format_list(typ.args)}]"
         return type_str
+
+    if isinstance(typ, VarianceModifier):
+        return typ.render(format)
 
     # TODO: always mention type alias names in errors.
     typ = get_proper_type(typ)

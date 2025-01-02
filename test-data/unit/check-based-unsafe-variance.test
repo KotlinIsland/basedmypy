@@ -2,7 +2,7 @@
 from helper import T_out
 from typing import Generic
 class G(Generic[T_out]):
-    def f(self, t: T_out): ...  # E: This usage of this covariant type variable is unsafe as an input parameter.  [unsafe-variance] \
+    def f(self, t: T_out): ...  # E: This usage of this covariant type variable is unsafe as an input parameter  [unsafe-variance] \
                                 # N: If you are using the value in a 'variance safe' way (not storing or retrieving values), this error could be ignored
 
 
@@ -10,7 +10,7 @@ class G(Generic[T_out]):
 from helper import T_in
 from typing import Generic
 class G(Generic[T_in]):
-    def f(self) -> T_in: ...  # E: This usage of this contravariant type variable is unsafe as a return type.  [unsafe-variance] \
+    def f(self) -> T_in: ...  # E: This usage of this contravariant type variable is unsafe as a return type  [unsafe-variance] \
                               # N: If you are using the value in a 'variance safe' way (not storing or retrieving values), this error could be ignored
 
 

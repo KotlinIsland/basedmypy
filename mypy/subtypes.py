@@ -67,6 +67,7 @@ from mypy.types import (
     UnionType,
     UnpackType,
     UntypedType,
+    VarianceModifier,
     find_unpack_in_list,
     get_proper_type,
     is_named_instance,
@@ -378,6 +379,8 @@ def check_type_parameter(
         p_left = get_proper_type(left)
         if isinstance(p_left, UninhabitedType) and p_left.ambiguous:
             variance = COVARIANT
+    if isinstance(right, VarianceModifier):
+        variance = right.variance
     # If variance hasn't been inferred yet, we are lenient and default to
     # covariance. This shouldn't happen often, but it's very difficult to
     # avoid these cases altogether.
