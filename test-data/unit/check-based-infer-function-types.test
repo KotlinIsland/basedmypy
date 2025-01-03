@@ -350,10 +350,8 @@ class S:
 def foo(a=1):
     1 + ""
 
-foo()  # E: Call to untyped function "foo" in typed context  [no-untyped-call]
-reveal_type(foo)  # E: Expression type contains "Any" (has type "def (a: int=...) -> Untyped")  [no-any-expr] \
-                  # E: Expression type contains "Any" (has type "def (a: int=...) -> Untyped")  [no-any-expr] \
-                  # N: Revealed type is "def (a: int =) -> Untyped"
+foo()
+reveal_type(foo)  # N: Revealed type is "def (a: int =) -> None"  # because it's inferred
 
 def bar(a=1) -> None:
     1 + ""  # E: Unsupported operand types for + ("int" and "str")  [operator]

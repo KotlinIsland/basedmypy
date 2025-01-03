@@ -5,7 +5,8 @@
 --
 -- You can add an empty section like `[delete mod.py.2]` to delete `mod.py`
 -- before the second run.
---
+--ck
+
 -- Errors expected in the first run should be in the `[out1]` section, and
 -- errors expected in the second run should be in the `[out2]` section, and so on.
 -- If a section is omitted, it is expected there are no errors on that run.

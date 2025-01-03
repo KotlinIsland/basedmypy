@@ -62,16 +62,16 @@ reveal_type(A.i)  # N: Revealed type is "def (self: __main__.A, i: int, j: Untyp
 
 
 [case testGenerator]
-def f():  # E: The return type of a generator function should be "Generator" or one of its supertypes  [misc]
+def f():
     yield
 
-def g(i: int):  # E: The return type of a generator function should be "Generator" or one of its supertypes  [misc]
+def g(i: int):
     yield
 
 class A:
-    def f(self): # E: The return type of a generator function should be "Generator" or one of its supertypes  [misc]
+    def f(self):
         yield
-    def g(self, i: int): # E: The return type of a generator function should be "Generator" or one of its supertypes  [misc]
+    def g(self, i: int):
         yield
 
 
