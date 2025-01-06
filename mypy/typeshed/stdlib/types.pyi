@@ -73,6 +73,7 @@ _P = ParamSpec("_P")
 
 # Make sure this class definition stays roughly in line with `builtins.function`
 # This class is special-cased
+# is actually `builtins.function`
 @final
 class FunctionType:
     @property
@@ -430,6 +431,7 @@ class CoroutineType(Coroutine[_YieldT_co, _SendT_contra, _ReturnT_co]):
     if sys.version_info >= (3, 13):
         def __class_getitem__(cls, item: Any, /) -> Any: ...
 
+# is actually `builtins.method`
 @final
 class MethodType:
     @property

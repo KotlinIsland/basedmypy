@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.9.1]
+### Fixed
+- definition of `functools.cache` and `operator.attrgetter`
+
 ## [2.9.0]
 ### Added
 - `collections.User*` should have `__repr__`
