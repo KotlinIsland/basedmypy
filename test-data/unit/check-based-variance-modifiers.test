@@ -1,0 +1,130 @@
+[case testVarianceModifiers-3.12]
+from basedtyping import In, Out, InOut
+
+class A[T: In[int]]:
+    def f(self, t: T) -> T:  # E: This usage of this contravariant type variable is unsafe as a return type  [unsafe-variance] \
+                             # N: If you are using the value in a 'variance safe' way (not storing or retrieving values), this error could be ignored
+        return t
+
+class B[T: Out[int]]:
+    def f(self, t: T) -> T:  # E: This usage of this covariant type variable is unsafe as an input parameter  [unsafe-variance] \
+                             # N: If you are using the value in a 'variance safe' way (not storing or retrieving values), this error could be ignored
+        return t
+
+class C[T: InOut[int]]:
+    def f(self, t: T) -> T: ...
+
+class D[T: InOut[int]]:
+    def f(self) -> T: ...
+# check it doesn't infer
+d1: D[int]
+d2: D[object] = d1 # E:  # E: Type argument "object" of "D" must be a subtype of "int"  [type-var] \
+                         # E: Incompatible types in assignment (expression has type "D[int]", variable has type "D[object]")  [assignment]
+
+
+[case testVarianceModifiersBare-3.12]
+from basedtyping import In, Out
+
+class A[T: Out]: ...
+aint1: A[int]
+aobject1: A[object] = aint1
+aobject2: A[object]
+aint2: A[int] = aobject2  # E: erm
+
+class B[T]: ...
+type BAlias[T: In] = B[T]
+bint1: BAlias[int]
+bobject1: BAlias[object] = bint1  # E: erm
+bobject2: BAlias[object]
+bint2: BAlias[int] = bobject2
+[typing fixtures/typing-full.pyi]
+[builtins fixtures/tuple.pyi]
+
+
+[case testVarianceModifiersErrors-3.12]
+from basedtyping import In, Out, InOut
+class A[T: list[In]]: ...  # E: Use-site variance modifiers must take a single argument  [valid-type]
+class B[T: In[int, str]]: ...  # E: Use-site variance modifiers must only take a single argument  [valid-type]
+def f[T: Out](): ...  # E: Top level use-site variance is invalid  [valid-type]
+
+
+[case testUseSiteVarianceModifiersErrors]
+from basedtyping import In, Out, InOut
+from typing import List
+a: List[In]  # E: Use-site variance modifiers must take a single argument  [valid-type]
+b: List[InOut]  # E: Use-site invariance is not supported  [valid-type]
+c: List[Out]  # E: Use-site variance modifiers must take a single argument  [valid-type]
+d: Out[int]  # E: Top level use-site variance is invalid  [valid-type]
+
+
+[case testUseSiteVarianceModifiers]
+from __future__ import annotations
+from basedtyping import In, Out, InOut
+from helper import T
+from typing import Generic
+
+class A(Generic[T]):
+    t: T
+    def do(self, value: T) -> T: return value
+def f(out_a: A[Out[int | str]], in_a: A[In[bool]]):
+    reveal_type(out_a.do)  # N: Revealed type is "_NamedCallable & (value: Never) -> int | str"
+    reveal_type(in_a.do)  # N: Revealed type is "_NamedCallable & (value: bool) -> object"
+    reveal_type(out_a.t)  # N: Revealed type is "int | str"
+    reveal_type(in_a.t)  # N: Revealed type is "object"
+    out_a.t = True  # E: Incompatible types in assignment (expression has type "bool", variable has type "Never")  [assignment]
+    in_a.t = True  # no error, takes bool
+    in_a.t = 1  # error, needs bool  # E: Incompatible types in assignment (expression has type "int", variable has type "bool")  [assignment]
+a: A[int]
+f(a, a)
+b: A[None]
+f(b, b)  # E: Argument 1 to "f" has incompatible type "A[None]"; expected "A[out int | str]"  [arg-type] \
+         # E: Argument 2 to "f" has incompatible type "A[None]"; expected "A[in bool]"  [arg-type]
+[builtins fixtures/tuple.pyi]
+
+
+[case testUseSiteAlias-3.12]
+from basedtyping import Out
+from helper import T
+
+OutList1 = list[Out[T]]
+type OutList2[T2] = list[Out[T2]]
+a: list[int]
+b: OutList1[object] = a
+c: OutList2[object] = a
+[typing fixtures/typing-full.pyi]
+[builtins fixtures/tuple.pyi]
+
+
+[case testUseSiteVarianceSuggestion]
+from typing import TypeVar, Generic
+from typing_extensions import Never
+from helper import T
+
+U = TypeVar("U")
+
+class A(Generic[T, U]): pass
+class B: pass
+
+a1: A[int, int]
+a2: A[Never, object] = a1  # E: Incompatible types in assignment (expression has type "A[int, int]", variable has type "A[Never, object]")  [assignment] \
+                           # N: Consider using "A[basedtyping.In[Never], basedtyping.Out[object]]" instead, which has the correct variances \
+                           # N: See https://kotlinisland.github.io/basedmypy/based_features.html#use-site-variance for more information
+b1: B = a1  # E: Incompatible types in assignment (expression has type "A[int, int]", variable has type "B")  [assignment]
+
+a3: A[int, object]
+a4: A[Never, object] = a3  # E: Incompatible types in assignment (expression has type "A[int, object]", variable has type "A[Never, object]")  [assignment] \
+                           # N: Consider using "A[basedtyping.In[Never], object]" instead, which is contravariant \
+                           # N: See https://kotlinisland.github.io/basedmypy/based_features.html#use-site-variance for more information
+
+a5: A[Never, int]
+a6: A[Never, object] = a5  # E: Incompatible types in assignment (expression has type "A[Never, int]", variable has type "A[Never, object]")  [assignment] \
+                           # N: Consider using "A[Never, basedtyping.Out[object]]" instead, which is covariant \
+                           # N: See https://kotlinisland.github.io/basedmypy/based_features.html#use-site-variance for more information
+
+
+
+
+
+
+[typing fixtures/typing-full.pyi]
+[builtins fixtures/tuple.pyi]

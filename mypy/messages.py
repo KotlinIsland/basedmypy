@@ -24,6 +24,7 @@ from mypy import errorcodes as codes, message_registry
 from mypy.erasetype import erase_type
 from mypy.errorcodes import ErrorCode
 from mypy.errors import ErrorInfo, Errors, ErrorWatcher
+from mypy.meet import is_overlapping_types
 from mypy.nodes import (
     ARG_NAMED,
     ARG_NAMED_OPT,
@@ -93,6 +94,7 @@ from mypy.types import (
     UninhabitedType,
     UnionType,
     UnpackType,
+    VarianceModifier,
     flatten_nested_unions,
     get_proper_type,
     get_proper_types,
@@ -2676,6 +2678,9 @@ def format_type_inner(
                 type_str += f"[{format_list(typ.args)}]"
         return type_str
 
+    if isinstance(typ, VarianceModifier):
+        return typ.render(format)
+
     # TODO: always mention type alias names in errors.
     typ = get_proper_type(typ)
 
@@ -3371,12 +3376,39 @@ def append_invariance_notes(
     elif (
         arg_type.type.fullname == "builtins.dict"
         and expected_type.type.fullname == "builtins.dict"
-        and is_same_type(arg_type.args[0], expected_type.args[0])
+        and is_subtype(arg_type.args[0], expected_type.args[0])
         and is_subtype(arg_type.args[1], expected_type.args[1])
     ):
         invariant_type = "dict"
         covariant_suggestion = (
-            'Consider using "Mapping" instead, which is covariant in the value type'
+            'Consider using "Mapping" instead, which is covariant'
+        )
+    args_string = []
+    if mypy.options._based and is_overlapping_types(expected_type, arg_type):
+        is_covariant = False
+        is_contravariant = False
+        for arg, expected in zip(arg_type.args, expected_type.args):
+            if not is_subtype(arg, expected):
+                modifier = "In"
+                is_contravariant = True
+            elif not is_subtype(expected, arg):
+                modifier = "Out"
+                is_covariant = True
+            else:
+                args_string.append(str(expected))
+                continue
+            args_string.append(f"basedtyping.{modifier}[{expected}]")
+        arg_string = f"{arg_type.type.name}[{', '.join(args_string)}]"
+
+        if is_covariant and is_contravariant:
+            variance = "has the correct variances"
+        elif is_covariant:
+            variance = "is covariant"
+        else:
+            variance = "is contravariant"
+        notes.append(f'Consider using "{arg_string}" instead, which {variance}')
+        notes.append(
+        "See https://kotlinisland.github.io/basedmypy/based_features.html#use-site-variance for more information"
         )
     if invariant_type and covariant_suggestion:
         notes.append(
@@ -3384,6 +3416,7 @@ def append_invariance_notes(
             + "https://kotlinisland.github.io/basedmypy/common_issues.html#variance"
         )
         notes.append(covariant_suggestion)
+
     return notes
 
 

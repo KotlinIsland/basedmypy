@@ -5,5 +5,8 @@
 # will slow down tests.
 
 Untyped = 0
-Intersection = 1
-FunctionType = 2
+Intersection = 0
+FunctionType = 0
+In = 0
+Out = 0
+InOut = 0

@@ -49,6 +49,7 @@ from mypy.types import (
     UninhabitedType,
     UnionType,
     UnpackType,
+    VarianceModifier,
     get_proper_type,
 )
 
@@ -86,6 +87,10 @@ class TypeVisitor(Generic[T]):
     @abstractmethod
     def visit_deleted_type(self, t: DeletedType) -> T:
         pass
+
+    def visit_variance_modifier(self, t: VarianceModifier) -> T:
+        assert t.value
+        return t.value.accept(self)
 
     @abstractmethod
     def visit_type_var(self, t: TypeVarType) -> T:
@@ -244,6 +249,9 @@ class TypeTranslator(TypeVisitor[Type]):
         )
         result.metadata = t.metadata
         return result
+
+    def visit_variance_modifier(self, t: VarianceModifier) -> Type:
+        return VarianceModifier(t.variance, t.value.accept(self))
 
     def visit_type_var(self, t: TypeVarType) -> Type:
         return t

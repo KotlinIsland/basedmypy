@@ -32,6 +32,7 @@ from mypy.nodes import (
     ARG_STAR,
     ARG_STAR2,
     INVARIANT,
+    VARIANCE_NOT_READY,
     ArgKind,
     FakeInfo,
     FuncDef,
@@ -39,7 +40,7 @@ from mypy.nodes import (
 )
 from mypy.options import Options
 from mypy.state import state
-from mypy.util import IdMapper
+from mypy.util import IdMapper, safe
 
 T = TypeVar("T")
 
@@ -335,9 +336,17 @@ class TypeAliasType(Type):
             assert isinstance(self.alias.target, Instance)  # type: ignore[misc]
             return self.alias.target.copy_modified(args=self.args)
 
+        def apply_explicit_variance(type_var: TypeVarLikeType, substitute: Type) -> Type:
+            if isinstance(type_var, TypeVarType) and type_var.variance != VARIANCE_NOT_READY:
+                return VarianceModifier(type_var.variance, substitute)
+            return substitute
+
         # TODO: this logic duplicates the one in expand_type_by_instance().
         if self.alias.tvar_tuple_index is None:
-            mapping = {v.id: s for (v, s) in zip(self.alias.alias_tvars, self.args)}
+            mapping = {
+                v.id: apply_explicit_variance(v, s)
+                for (v, s) in zip(self.alias.alias_tvars, self.args)
+            }
         else:
             prefix = self.alias.tvar_tuple_index
             suffix = len(self.alias.alias_tvars) - self.alias.tvar_tuple_index - 1
@@ -348,7 +357,7 @@ class TypeAliasType(Type):
             for tvar, sub in zip(
                 self.alias.alias_tvars[:prefix] + self.alias.alias_tvars[prefix + 1 :], start + end
             ):
-                mapping[tvar.id] = sub
+                mapping[tvar.id] = apply_explicit_variance(tvar, sub)
 
         new_tp = self.alias.target.accept(InstantiateAliasVisitor(mapping))
         new_tp.accept(LocationSetter(self.line, self.column))
@@ -1028,6 +1037,43 @@ class UnboundType(ProperType):
         )
 
 
+class VarianceModifier(Type):
+    # maybe it would make more sense for this to be a `ProperType`
+    #  the current implementation is quite hacky
+    __slots__ = ("variance", "_value")
+
+    def __init__(self, variance: int, value: Type | None, line: int = -1, column: int = -1):
+        super().__init__(line, column)
+        self.variance = variance
+        self._value = value
+
+    def render(self, renderer: Callable[[Type], str]) -> str:
+        return f"{self.variance_keyword}{renderer(self.value)}"
+
+    @property
+    def value(self) -> Type:
+        return safe(self._value)
+
+    @property
+    def variance_keyword(self) -> str:
+        return {1: "out ", 2: "in "}.get(self.variance, "")
+
+    def accept(self, visitor: TypeVisitor[T]) -> T:
+        return visitor.visit_variance_modifier(self)
+
+    def serialize(self) -> JsonDict:
+        return {
+            ".class": "VarianceModifier",
+            "variance": self.variance,
+            "value": self.value.serialize(),
+        }
+
+    @classmethod
+    def deserialize(cls, data: JsonDict) -> Self:
+        assert data[".class"] == "VarianceModifier"
+        return cls(data["variance"], deserialize_type(data["value"]))
+
+
 class CallableArgument(ProperType):
     """Represents a Arg(type, 'name') inside a Callable's type list.
 
@@ -1569,6 +1615,7 @@ class Instance(ProperType):
     __slots__ = (
         "type",
         "args",
+        "_variances",
         "invalid",
         "type_ref",
         "last_known_value",
@@ -3521,6 +3568,9 @@ def get_proper_type(typ: Type | None) -> ProperType | None:
         return None
     if isinstance(typ, TypeGuardedType):  # type: ignore[misc]
         typ = typ.type_guard
+    if isinstance(typ, VarianceModifier):
+        # this is quite hacky, it might be better as a ProperType
+        typ = typ.value
     while isinstance(typ, TypeAliasType):
         typ = typ._expand_once()
     # TODO: store the name of original type alias on this type, so we can show it in errors.
@@ -3652,6 +3702,9 @@ class TypeStrVisitor(SyntheticTypeVisitor[str]):
             if s.startswith("builtins."):
                 return s.partition(".")[2]
         return s
+
+    def visit_variance_modifier(self, t: VarianceModifier) -> str:
+        return t.render(lambda x: x.accept(self))
 
     @contextlib.contextmanager
     def own_type_vars(

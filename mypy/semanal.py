@@ -298,6 +298,7 @@ from mypy.types import (
     UnionType,
     UnpackType,
     UntypedType,
+    VarianceModifier,
     get_proper_type,
     get_proper_types,
     has_type_vars,
@@ -1962,14 +1963,25 @@ class SemanticAnalyzer(
         self, type_param: TypeParam, context: Context
     ) -> TypeVarLikeExpr | None:
         fullname = self.qualified_name(type_param.name)
+        variance = VARIANCE_NOT_READY
+        upper_bound = None
         if type_param.upper_bound:
-            upper_bound = self.anal_type(type_param.upper_bound, allow_placeholder=True)
-            # TODO: we should validate the upper bound is valid for a given kind.
-            if upper_bound is None:
-                # This and below copies special-casing for old-style type variables, that
-                # is equally necessary for new-style classes to break a vicious circle.
-                upper_bound = PlaceholderType(None, [], context.line)
-        else:
+            variance_or_bound = self.anal_type(
+                type_param.upper_bound,
+                allow_placeholder=True,
+                is_type_var_bound=isinstance(context, (ClassDef, TypeAliasStmt)),
+            )
+            if isinstance(variance_or_bound, VarianceModifier):
+                variance = variance_or_bound.variance
+                upper_bound = variance_or_bound._value
+            else:
+                upper_bound = variance_or_bound
+                # TODO: we should validate the upper bound is valid for a given kind.
+                if upper_bound is None:
+                    # This and below copies special-casing for old-style type variables, that
+                    # is equally necessary for new-style classes to break a vicious circle.
+                    upper_bound = PlaceholderType(None, [], context.line)
+        if upper_bound is None:
             if type_param.kind == TYPE_VAR_TUPLE_KIND:
                 upper_bound = self.named_type("builtins.tuple", [self.object_type()])
             else:
@@ -2012,7 +2024,7 @@ class SemanticAnalyzer(
                 values=values,
                 upper_bound=upper_bound,
                 default=default,
-                variance=VARIANCE_NOT_READY,
+                variance=variance,
                 is_new_style=True,
                 line=context.line,
             )
@@ -6261,6 +6273,7 @@ class SemanticAnalyzer(
                 allow_param_spec_literals=has_param_spec,
                 allow_unpack=allow_unpack,
                 runtime=True,
+                nested=True,
             )
             if analyzed is None:
                 return None
@@ -7545,6 +7558,7 @@ class SemanticAnalyzer(
         report_invalid_types: bool = True,
         prohibit_self_type: str | None = None,
         allow_type_any: bool = False,
+        is_type_var_bound=False,
     ) -> TypeAnalyser:
         if tvar_scope is None:
             tvar_scope = self.tvar_scope
@@ -7564,6 +7578,7 @@ class SemanticAnalyzer(
             allow_unpack=allow_unpack,
             prohibit_self_type=prohibit_self_type,
             allow_type_any=allow_type_any,
+            is_type_var_bound=is_type_var_bound,
         )
         tpan.in_dynamic_func = bool(self.function_stack and self.function_stack[-1].is_dynamic())
         tpan.global_scope = not self.type and not self.function_stack
@@ -7589,6 +7604,8 @@ class SemanticAnalyzer(
         prohibit_self_type: str | None = None,
         allow_type_any: bool = False,
         runtime: bool | None = None,
+        is_type_var_bound=False,
+        nested=False,
     ) -> Type | None:
         """Semantically analyze a type.
 
@@ -7624,6 +7641,7 @@ class SemanticAnalyzer(
             report_invalid_types=report_invalid_types,
             prohibit_self_type=prohibit_self_type,
             allow_type_any=allow_type_any,
+            is_type_var_bound=is_type_var_bound,
         )
         if not a.api.is_stub_file and runtime:
             a.always_allow_new_syntax = False
@@ -7631,6 +7649,8 @@ class SemanticAnalyzer(
             a.always_allow_new_syntax = True
         if self.is_stub_file:
             a.always_allow_new_syntax = True
+        if nested:
+            a.nesting_level += 1
         tag = self.track_incomplete_refs()
         typ = typ.accept(a)
         if self.found_incomplete_ref(tag):

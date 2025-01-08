@@ -25,6 +25,82 @@ Using the ``&`` operator or ``basedtyping.Intersection`` you can denote intersec
         x.reset()
         x.add("first")
 
+
+Explicit Variance
+-----------------
+
+it is frequently desirable to explicitly declare the variance of type parameters on types and classes.
+but until dedicated syntax is added:
+
+.. code-block:: python
+
+    from basedtyping import In, InOut, Out
+
+    class Example[
+        Contravariant: In,  # In designates contravariant, as values can only pass 'into' the class
+        Invariant: InOut,  # I nOut designates invariant, as values can pass both 'into' and 'out' of the class
+        Covariant: Out,  # Out designates covariant, as the values can only pass 'out' of the class
+    ]: ...
+
+The same applies to type declarations:
+
+.. code-block:: python
+
+    type Example[Contravariant: In, Invariant: InOut, Covariant: Out] = ...
+
+when a bound is supplied, it is provided as an argument to the variance modifier:
+
+.. code-block:: python
+
+    class Example[T: Out[int]]: ...
+
+
+Use-site Variance
+-----------------
+
+Use-site variance is a concept that can be used to modify an invariant type
+parameter to become covariant or contravariant
+
+given:
+
+.. code-block:: python
+
+    def f(data: list[object]):  # we can't use `Sequence[object]` because we need `clear`
+        for element in data:
+            print(element)
+        data.clear()
+
+    a = [1, 2, 3]
+    f(a)  # error: list[int] is incompatible with list[object]
+
+We can use ``basedtyping.In`` and ``basedtyping.Out`` to implement use-site variance.
+
+Nesting a type within ``Out`` (i.e. ``list[Out[int]]``) will project that type argument to become covariant
+
+This concept can be used in this case to make the api both type-safe and ergonomic:
+
+.. code-block:: python
+
+    def f(data: list[Out[object]]):
+        for element in data:
+            print(element)
+        data.clear()
+
+    a = [1, 2, 3]
+    f(a)  # no error, list[int] is a valid subtype of the covariant list[out object]
+
+What makes this type-safe is that the usages of the type parameter in input positions
+are replaced with `Never` (or output positions and the upper bound in the case of contravariance):
+
+.. code-block:: python
+
+    class A[T: int | str]:
+        def f(self, t: T) -> T: ...
+
+    A[Out[int]]().f  # (t: Never) -> int
+    A[In[int]]().f  # (t: int) -> int | str
+
+
 Type Joins
 ----------
 

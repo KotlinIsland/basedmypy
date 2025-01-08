@@ -1,6 +1,8 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Added
+- explicit and use-site variance modifiers `In`/`Out`/`InOut`
 
 ## [2.9.1]
 ### Fixed
