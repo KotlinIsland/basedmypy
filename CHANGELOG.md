@@ -1,6 +1,8 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Added
+- infer return types and generator types
 
 ## [2.9.1]
 ### Fixed

@@ -60,3 +60,22 @@ When a parameter is named `_`, it's type will be inferred as `object`:
         reveal_type(_)  # Revealed type is "object"
 
 This is to help with writing functions for callbacks where you don't care about certain parameters.
+
+
+Return Type Inferred
+--------------------
+
+.. code-block:: python
+
+    def f():  # Revealed type is "() -> 1"
+        return 1
+
+
+Generator Type Inferred
+-----------------------
+
+.. code-block:: python
+
+    def f():  # Revealed type is "() -> Generator[1, str, 2]"
+        a: str = yield 1
+        return 2

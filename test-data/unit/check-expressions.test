@@ -1260,7 +1260,6 @@ if int():
 if int():
     f = lambda: '' \
         # E: Incompatible types in assignment (expression has type "Callable[[], str]", variable has type "Callable[[], int]") \
-        # E: Incompatible return value type (got "str", expected "int")
 
 [case testVoidLambda]
 import typing

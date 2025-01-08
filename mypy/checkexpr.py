@@ -629,7 +629,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                 fullname == p or fullname.startswith(f"{p}.")
                 for p in self.chk.options.untyped_calls_exclude
             ):
-                if callee_type.implicit:
+                if callee_type.implicit and not self.chk.options.infer_function_types:
                     self.msg.untyped_function_call(callee_type, e)
             if fullname is None and member is not None:
                 assert object_type is not None
@@ -638,7 +638,13 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                 fullname == p or fullname.startswith(f"{p}.")
                 for p in self.chk.options.untyped_calls_exclude
             ):
-                if callee_type.implicit:
+                proper_type = get_proper_type(callee_type.ret_type)
+                if (
+                    isinstance(proper_type, UntypedType)
+                    and proper_type.type_of_any == TypeOfAny.to_be_inferred
+                ):
+                    self.chk.current_node_deferred = True
+                elif callee_type.implicit and not self.chk.options.infer_function_types:
                     self.msg.untyped_function_call(callee_type, e)
                 elif has_untyped_type(callee_type):
                     # Get module of the function, to get its settings
@@ -6290,22 +6296,34 @@ class ExpressionChecker(ExpressionVisitor[Type]):
     def visit_yield_expr(self, e: YieldExpr) -> Type:
         return_type = self.chk.return_types[-1]
         expected_item_type = self.chk.get_generator_yield_type(return_type, False)
+        proper_type = get_proper_type(return_type)
+        infer = (
+            isinstance(proper_type, UntypedType)
+            and proper_type.type_of_any == TypeOfAny.to_be_inferred
+        )
+        if infer and self.type_context[-1]:
+            self.chk.inferred_send_types.append(self.type_context[-1])
         if e.expr is None:
-            if (
+            if infer:
+                self.chk.inferred_yield_types.append(NoneType())
+            elif (
                 not isinstance(get_proper_type(expected_item_type), (NoneType, AnyType))
                 and self.chk.in_checked_function()
             ):
                 self.chk.fail(message_registry.YIELD_VALUE_EXPECTED, e)
         else:
             actual_item_type = self.accept(e.expr, expected_item_type)
-            self.chk.check_subtype(
-                actual_item_type,
-                expected_item_type,
-                e,
-                message_registry.INCOMPATIBLE_TYPES_IN_YIELD,
-                "actual type",
-                "expected type",
-            )
+            if infer:
+                self.chk.inferred_yield_types.append(actual_item_type)
+            else:
+                self.chk.check_subtype(
+                    actual_item_type,
+                    expected_item_type,
+                    e,
+                    message_registry.INCOMPATIBLE_TYPES_IN_YIELD,
+                    "actual type",
+                    "expected type",
+                )
         return self.chk.get_generator_receive_type(return_type, False)
 
     def visit_await_expr(self, e: AwaitExpr, allow_none_return: bool = False) -> Type:

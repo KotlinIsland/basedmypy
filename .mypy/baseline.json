@@ -1989,7 +1989,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"type_context\" is not using @override but is overriding a method in class \"mypy.plugin.CheckerPluginInterface\"",
-        "offset": 456,
+        "offset": 464,
         "src": "def type_context(self) -> list[Type | None]:",
         "target": "mypy.checker"
       },
@@ -1997,7 +1997,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_overloaded_func_def\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 191,
+        "offset": 198,
         "src": "def visit_overloaded_func_def(self, defn: OverloadedFuncDef, do_items=True) -> None:",
         "target": "mypy.checker.TypeChecker.visit_overloaded_func_def"
       },
@@ -2029,7 +2029,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_class_def\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 1113,
+        "offset": 1151,
         "src": "def visit_class_def(self, defn: ClassDef) -> None:",
         "target": "mypy.checker.TypeChecker.visit_class_def"
       },
@@ -2093,7 +2093,7 @@
         "code": "truthy-bool",
         "column": 23,
         "message": "\"signature\" has type \"Type\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 169,
+        "offset": 172,
         "src": "if signature:",
         "target": "mypy.checker.TypeChecker.check_assignment"
       },
@@ -2245,7 +2245,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_if_stmt\" is not using @override but is overriding a method in class \"mypy.visitor.NodeVisitor\"",
-        "offset": 111,
+        "offset": 123,
         "src": "def visit_if_stmt(self, s: IfStmt) -> None:",
         "target": "mypy.checker.TypeChecker.visit_if_stmt"
       },
@@ -2639,7 +2639,7 @@
         "code": "truthy-bool",
         "column": 34,
         "message": "\"item_name_expr\" has type \"Expression\" which does not implement __bool__ or __len__ so it could always be true in boolean context",
-        "offset": 424,
+        "offset": 430,
         "src": "key_context = item_name_expr or item_arg",
         "target": "mypy.checkexpr.ExpressionChecker.validate_typeddict_kwargs"
       },
@@ -3055,7 +3055,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"visit_await_expr\" is not using @override but is overriding a method in class \"mypy.visitor.ExpressionVisitor\"",
-        "offset": 21,
+        "offset": 33,
         "src": "def visit_await_expr(self, e: AwaitExpr, allow_none_return: bool = False) -> Type:",
         "target": "mypy.checkexpr.ExpressionChecker.visit_await_expr"
       },
@@ -6859,7 +6859,7 @@
         "code": "redundant-expr",
         "column": 19,
         "message": "Condition is always false",
-        "offset": 375,
+        "offset": 377,
         "src": "if e.type is None:",
         "target": "mypy.errors.Errors.render_messages"
       },
@@ -32695,7 +32695,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"__repr__\" is not using @override but is overriding a method in class \"builtins.object\"",
-        "offset": 96,
+        "offset": 97,
         "src": "def __repr__(self) -> str:",
         "target": "mypy.types.Type.__repr__"
       },
@@ -33631,7 +33631,7 @@
         "code": "explicit-override",
         "column": 4,
         "message": "Method \"describe\" is not using @override but is overriding a method in class \"mypy.types.AnyType\"",
-        "offset": 59,
+        "offset": 61,
         "src": "def describe(self) -> str:",
         "target": "mypy.types.UntypedType.describe"
       },
@@ -36587,17 +36587,9 @@
       },
       {
         "code": "no-any-expr",
-        "column": 11,
-        "message": "Expression type contains \"Any\" (has type \"attrgetter[Any]\")",
-        "offset": 1,
-        "src": "return operator.attrgetter(name)",
-        "target": "mypy.util.attrgetter"
-      },
-      {
-        "code": "no-any-expr",
         "column": 7,
         "message": "Expression has type \"Any\"",
-        "offset": 4,
+        "offset": 5,
         "src": "if orjson is not None:",
         "target": "mypy.util.json_dumps"
       },

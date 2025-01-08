@@ -21,7 +21,7 @@ reveal_type(A.g)  # N: Revealed type is "def (self: __main__.A, i: int) -> None"
 # flags: --allow-untyped-defs --allow-any-expr
 
 def f(): ...
-reveal_type(f)  # N: Revealed type is "def () -> Untyped"
+reveal_type(f)  # N: Revealed type is "def () -> None"
 
 def g(i: int): ...
 reveal_type(g)  # N: Revealed type is "def (i: int) -> None"
@@ -34,8 +34,8 @@ class A:
     def h(self, i: int): ...
     def i(self, i: int, j): ... # E: Function is missing a type annotation for one or more arguments  [no-untyped-def]
 
-reveal_type(A.f)  # N: Revealed type is "def (self: __main__.A) -> Untyped"
-reveal_type(A.g)  # N: Revealed type is "def (self: __main__.A, i: Untyped) -> Untyped"
+reveal_type(A.f)  # N: Revealed type is "def (self: __main__.A) -> None"
+reveal_type(A.g)  # N: Revealed type is "def (self: __main__.A, i: Untyped) -> None"
 reveal_type(A.h)  # N: Revealed type is "def (self: __main__.A, i: int) -> None"
 reveal_type(A.i)  # N: Revealed type is "def (self: __main__.A, i: int, j: Untyped) -> None"
 
@@ -44,7 +44,7 @@ reveal_type(A.i)  # N: Revealed type is "def (self: __main__.A, i: int, j: Untyp
 # flags: --allow-incomplete-defs --allow-untyped-defs --allow-any-expr
 
 def f(i): ...
-reveal_type(f)  # N: Revealed type is "def (i: Untyped) -> Untyped"
+reveal_type(f)  # N: Revealed type is "def (i: Untyped) -> None"
 
 def g(i: int, j): ...
 reveal_type(g)  # N: Revealed type is "def (i: int, j: Untyped) -> None"
@@ -55,23 +55,23 @@ class A:
     def h(self, i: int): ...
     def i(self, i: int, j): ...
 
-reveal_type(A.f)  # N: Revealed type is "def (self: __main__.A) -> Untyped"
-reveal_type(A.g)  # N: Revealed type is "def (self: __main__.A, i: Untyped) -> Untyped"
+reveal_type(A.f)  # N: Revealed type is "def (self: __main__.A) -> None"
+reveal_type(A.g)  # N: Revealed type is "def (self: __main__.A, i: Untyped) -> None"
 reveal_type(A.h)  # N: Revealed type is "def (self: __main__.A, i: int) -> None"
 reveal_type(A.i)  # N: Revealed type is "def (self: __main__.A, i: int, j: Untyped) -> None"
 
 
 [case testGenerator]
-def f():  # E: The return type of a generator function should be "Generator" or one of its supertypes  [misc]
+def f():
     yield
 
-def g(i: int):  # E: The return type of a generator function should be "Generator" or one of its supertypes  [misc]
+def g(i: int):
     yield
 
 class A:
-    def f(self): # E: The return type of a generator function should be "Generator" or one of its supertypes  [misc]
+    def f(self):
         yield
-    def g(self, i: int): # E: The return type of a generator function should be "Generator" or one of its supertypes  [misc]
+    def g(self, i: int):
         yield
 
 

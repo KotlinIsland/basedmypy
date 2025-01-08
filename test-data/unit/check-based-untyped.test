@@ -71,15 +71,10 @@ from basedtyping import Untyped
 
 class A:
     @property
-    def foo(self): ...
-    @foo.setter
-    def foo(self, value): ...
-    @property
     def bar(self) -> Untyped: ...
     @bar.setter
     def bar(self, value: Untyped) -> None: ...
 
 a: A
-a.foo = 1  # E: Usage of untyped name "foo" in typed context  [no-untyped-usage]
 a.bar = 1  # E: Usage of untyped name "bar" in typed context  [no-untyped-usage]
 [builtins fixtures/property.pyi]
