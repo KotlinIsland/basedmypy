@@ -75,7 +75,7 @@ JsonDict: _TypeAlias = Dict[str, Any]
 #
 # Note: Float values are only used internally. They are not accepted within
 # Literal[...].
-LiteralValue: _TypeAlias = Union[int, str, bool, float]
+LiteralValue: _TypeAlias = Union[int, str, bool, float, complex]
 
 
 # If we only import type_visitor in the middle of the file, mypy
@@ -2045,6 +2045,7 @@ class CallableType(FunctionLike):
         "imprecise_arg_kinds",
         "unpack_kwargs",  # Was an Unpack[...] with **kwargs used to define this callable?
         "fully_typed",  # If all type positions are filled.
+        "is_type_function",
     )
 
     def __init__(
@@ -2071,6 +2072,7 @@ class CallableType(FunctionLike):
         from_concatenate: bool = False,
         imprecise_arg_kinds: bool = False,
         unpack_kwargs: bool = False,
+        is_type_function=False,
     ) -> None:
         super().__init__(line, column)
         assert len(arg_types) == len(arg_kinds) == len(arg_names)
@@ -2122,6 +2124,7 @@ class CallableType(FunctionLike):
         self.fully_typed = not (
             any(is_unannotated_any(arg) for arg in arg_types) or is_unannotated_any(ret_type)
         )
+        self.is_type_function = is_type_function
 
     def copy_modified(
         self: CT,
@@ -2177,6 +2180,7 @@ class CallableType(FunctionLike):
                 else self.imprecise_arg_kinds
             ),
             unpack_kwargs=unpack_kwargs if unpack_kwargs is not _dummy else self.unpack_kwargs,
+            is_type_function=self.is_type_function,
         )
         # Optimization: Only NewTypes are supported as subtypes since
         # the class is effectively final, so we can use a cast safely.
@@ -2496,6 +2500,7 @@ class CallableType(FunctionLike):
             "from_concatenate": self.from_concatenate,
             "imprecise_arg_kinds": self.imprecise_arg_kinds,
             "unpack_kwargs": self.unpack_kwargs,
+            "is_type_function": self.is_type_function,
         }
 
     @classmethod
@@ -2523,6 +2528,7 @@ class CallableType(FunctionLike):
             from_concatenate=data["from_concatenate"],
             imprecise_arg_kinds=data["imprecise_arg_kinds"],
             unpack_kwargs=data["unpack_kwargs"],
+            is_type_function=data["is_type_function"],
         )
 
 

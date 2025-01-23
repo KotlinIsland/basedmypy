@@ -1,0 +1,17 @@
+[case testNarrowToLiteral]
+a = "a"
+reveal_type(a)  # Revealed type is "'a'" (narrowed from "str")
+a = "b"
+reveal_type(a)  # Revealed type is "'b'" (narrowed from "str")
+b = a
+reveal_type(b)  # Revealed type is "'b'" (narrowed from "str")
+b = "c"
+reveal_type(b)  # Revealed type is "'c'" (narrowed from "str")
+
+
+[case testNarrowToLiteralGeneric]
+from helper import T
+def f(t: T) -> T: ...
+
+a = f(1)
+reveal_type(a)  # revealed type is "1" (narrowed from "int")

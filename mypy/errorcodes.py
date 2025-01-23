@@ -315,6 +315,9 @@ REGEX: Final = ErrorCode("regex", "Regex related errors", "General")
 TYPE_CHECK_ONLY: Final[ErrorCode] = ErrorCode(
     "type-check-only", "Value doesn't exist at runtime", "General"
 )
+CALL_RAISES: Final[ErrorCode] = ErrorCode(
+    "call-raises", "function call raises an error", "General"
+)
 REVEAL: Final = ErrorCode("reveal", "Reveal types at check time", "General")
 
 # Syntax errors are often blocking.

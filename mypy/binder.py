@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from typing import DefaultDict, Generator, Iterator, List, NamedTuple, Optional, Tuple, Union
 from typing_extensions import TypeAlias as _TypeAlias
 
+import mypy.options
 from mypy.erasetype import remove_instance_last_known_values
 from mypy.join import join_simple
 from mypy.literals import Key, literal, literal_hash, subkeys
@@ -331,7 +332,8 @@ class ConditionalTypeBinder:
     ) -> None:
         # We should erase last known value in binder, because if we are using it,
         # it means that the target is not final, and therefore can't hold a literal.
-        type = remove_instance_last_known_values(type)
+        # HUUHHH?????
+        # type = remove_instance_last_known_values(type)
 
         if self.type_assignments is not None:
             # We are in a multiassign from union, defer the actual binding,

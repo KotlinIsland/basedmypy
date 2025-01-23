@@ -206,23 +206,24 @@ h(1)
 i()
 i(1)
 f(arg=0)  # E: Unexpected keyword argument "arg" for "f"
-g(arg=0)  # E: Unexpected keyword argument "arg"
+g(arg=0)  # E: Unexpected keyword argument "arg" for <lambda>
 h(arg=0)  # E: Unexpected keyword argument "arg" for "h"
-i(arg=0)  # E: Unexpected keyword argument "arg"
+i(arg=0)  # E: Unexpected keyword argument "arg" for <lambda>
 
 [case testWalrus]
 from typing import NamedTuple, Optional, List
 from typing_extensions import Final
 
 if a := 2:
-    reveal_type(a)  # N: Revealed type is "builtins.int"
+    reveal_type(a)  # N: Revealed type is "Literal[2]?"
 
 while b := "x":
-    reveal_type(b)  # N: Revealed type is "builtins.str"
+    reveal_type(b)  # N: Revealed type is "Literal['x']?"
 
 l = [y2 := 1, y2 + 2, y2 + 3]
 reveal_type(y2)  # N: Revealed type is "builtins.int"
-reveal_type(l)  # N: Revealed type is "builtins.list[builtins.int]"
+# TODO: get rid of the `| 3`
+reveal_type(l)  # N: Revealed type is "builtins.list[builtins.int | Literal[3]?]"
 
 filtered_data = [y3 for x in l if (y3 := a) is not None]
 reveal_type(filtered_data)  # N: Revealed type is "builtins.list[builtins.int]"

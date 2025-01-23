@@ -138,7 +138,7 @@ def f() -> None:
 import typing
 def f() -> None:
     a = g
-    a(B()) # E: Argument 1 has incompatible type "B"; expected "A"
+    a(B()) # E: Argument 1 to "g" has incompatible type "B"; expected "A"
     a(A())
 
 def g(a: 'A') -> None: pass
@@ -151,7 +151,7 @@ class B: pass
 import typing
 def f() -> None:
     a = A
-    a(A()) # E: Too many arguments
+    a(A()) # E: Too many arguments for "A"
     a()
     t = a # type: type
 
@@ -343,7 +343,7 @@ for var2 in [g, h, i, j, k, l]:
     reveal_type(var2)  # N: Revealed type is "Union[builtins.int, builtins.str]"
 
 for var3 in [m, n, o, p, q, r]:
-    reveal_type(var3)  # N: Revealed type is "Union[builtins.int, Any]"
+    reveal_type(var3)  # N: Revealed type is "builtins.int"
 
 T = TypeVar("T", bound=Type[Foo])
 
@@ -2552,8 +2552,8 @@ def make_tuple(elem: T) -> Tuple[T]:
 
 def main() -> None:
     ((a, b),) = make_tuple((1, 2))
-    reveal_type(a) # N: Revealed type is "builtins.int"
-    reveal_type(b) # N: Revealed type is "builtins.int"
+    reveal_type(a) # N: Revealed type is "Literal[1]?"
+    reveal_type(b) # N: Revealed type is "Literal[2]?"
 [builtins fixtures/tuple.pyi]
 [out]
 

@@ -1,0 +1,56 @@
+[case typeFunctionAsFunction]
+from basedtyping import type_function
+@type_function
+def f(s: str) -> str:
+    return "a"
+
+reveal_type(f("b"))  # Revealed type is "'a'"
+
+
+[case typeFunctionMethod]
+def f(i: int):
+    reveal_type(i + 1)  # N: Revealed type is "2"
+    reveal_type(1 + i)  # N: Revealed type is "2"
+    reveal_type(i + i)  # N: Revealed type is "2"
+
+[file builtins.py]
+from basedtyping import type_function
+class int:
+    @type_function
+    def m(self, other: "int") -> "int":
+        return self + 1
+
+class dict: ...
+
+
+[case typeFunctionReportError]
+from basedtyping import type_function, TypeFunctionError
+
+@type_function
+def F(o: bool):
+    if o is True:
+        raise TypeFunctionError("this is an error", "the-code")
+
+F(True)  # E: this is an error  [the-code]
+F(False)
+
+def main():
+    F(False)
+    reveal_type(F(True))  # E: this is an error  [the-code] \
+                          # N: Revealed type is "Never"
+[builtins fixtures/exception.pyi]
+
+
+[case typeFunctionReportRaises]
+from basedtyping import type_function
+
+@type_function
+def F(o: bool):
+    if o is True:
+        raise TypeError("this is an error")
+
+def main():
+    F(False)
+    reveal_type(F(True))  # E: Invocation raises TypeError: this is an error  [call-raises] \
+                          # N: Revealed type is "Never"
+[builtins fixtures/exception.pyi]

@@ -1,0 +1,26 @@
+[case testInferLiteralGeneric]
+from helper import T
+def f(t: T) -> T: ...
+
+reveal_type(f(1))  # N: Revealed type is "1"
+
+
+[case testDontInferLiteralGenericAssignment]
+from helper import T
+def f(t: T) -> T: ...
+
+a = f(1)
+reveal_type(a)  # N: Revealed type is "int"
+
+
+[case testDontInferLiteralGenericClass]
+from helper import T
+
+class A(Generic[T]):
+    def __init__(self, t: T): ...
+
+def f(t: T) -> A[T]: ...
+
+reveal_type(f(1))  # N: Revealed type is "A[int]"
+a = f(1)
+reveal_type(a)  # N: Revealed type is "A[int]"

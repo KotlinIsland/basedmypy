@@ -804,6 +804,7 @@ class FuncDef(FuncItem, SymbolNode, Statement):
         "dataclass_transform_spec",
         "docstring",
         "deprecated",
+        "is_type_function",
     )
 
     __match_args__ = ("name", "arguments", "type", "body")
@@ -834,6 +835,7 @@ class FuncDef(FuncItem, SymbolNode, Statement):
         self.dataclass_transform_spec: DataclassTransformSpec | None = None
         self.docstring: str | None = None
         self.deprecated: str | None = None
+        self.is_type_function = False
 
     @property
     def name(self) -> str:

@@ -81,8 +81,8 @@ T = TypeVar('T')
 
 def f(x: T) -> T: return x
 [out2]
-tmp/a.py:2: note: Revealed type is "builtins.int"
-tmp/a.py:3: note: Revealed type is "builtins.str"
+tmp/a.py:2: note: Revealed type is "Literal[1]?"
+tmp/a.py:3: note: Revealed type is "Literal['']?"
 
 [case testSerializeFunctionReturningGenericFunction]
 import a
@@ -100,7 +100,7 @@ T = TypeVar('T')
 def f() -> Callable[[T], T]: pass
 [out2]
 tmp/a.py:2: note: Revealed type is "def () -> def [T] (T`-1) -> T`-1"
-tmp/a.py:3: note: Revealed type is "builtins.str"
+tmp/a.py:3: note: Revealed type is "Literal['']?"
 
 [case testSerializeArgumentKinds]
 import a

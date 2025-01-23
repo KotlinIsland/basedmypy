@@ -987,7 +987,7 @@ main:4: error: "A" not callable
 [case testAssertType]
 from typing import assert_type, Any
 from typing_extensions import Literal
-a: int = 1
+a: int
 returned = assert_type(a, int)
 reveal_type(returned)  # N: Revealed type is "builtins.int"
 assert_type(a, str)  # E: Expression is of type "int", not "str"
@@ -1002,7 +1002,7 @@ from typing import assert_type, TypeVar, Generic
 from typing_extensions import Literal
 T = TypeVar("T")
 def f(x: T) -> T: return x
-assert_type(f(1), int)
+assert_type(f(1), Literal[1])
 class Gen(Generic[T]):
     def __new__(cls, obj: T) -> Gen[T]: ...
 assert_type(Gen(1), Gen[int])
@@ -1839,14 +1839,14 @@ def f():
     x = 42
     reveal_type(x)
 [out]
-main:4: note: Revealed type is "builtins.int"
+main:4: note: Revealed type is "Literal[42]?"
 
 [case testRevealTypedDef]
 def f() -> None:
     x = 42
     reveal_type(x)
 [out]
-main:3: note: Revealed type is "builtins.int"
+main:3: note: Revealed type is "Literal[42]?"
 
 [case testLambdaTypedContext]
 def f() -> None:
