@@ -158,6 +158,55 @@ represent a set of choices that the ``TypeVar`` can be replaced with:
     type C = B[object]  # mypy doesn't report the error here
 
 
+Abstract Classes
+----------------
+
+abstract classes are more strict:
+
+.. code-block:: python
+
+    class A:  # error: abstract class not denoted as abstract
+        @abstractmethod
+        def f(self): ...
+
+and more flexable:
+
+.. code-block:: python
+
+    from basedtyping import abstract
+
+    @abstract
+    class A:
+        @abstract
+        def f(self): ...
+
+
+and there are abstract attributes:
+
+.. code-block:: python
+
+    from basedtyping import abstract, Abstract
+
+    @abstract
+    class A:
+        a: Abstract[int]
+
+
+Read-only attributes
+--------------------
+
+simply:
+
+.. code-block:: python
+
+    from typing import ReadOnly
+
+    class A:
+        a: ReadOnly[int]
+
+    A().a = 1  # error: A.a is read-only
+
+
 Reinvented type guards
 ----------------------
 

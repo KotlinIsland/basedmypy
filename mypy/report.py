@@ -705,7 +705,7 @@ class CoberturaXmlReporter(AbstractReporter):
 register_reporter("cobertura-xml", CoberturaXmlReporter, needs_lxml=True)
 
 
-class AbstractXmlReporter(AbstractReporter):
+class AbstractXmlReporter(AbstractReporter):  # type: ignore[abstract]
     """Internal abstract class for reporters that work via XML."""
 
     def __init__(self, reports: Reports, output_dir: str) -> None:

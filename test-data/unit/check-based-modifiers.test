@@ -1,0 +1,28 @@
+[case testAbstractAttribute]
+from basedtyping import Abstract, abstract
+class A:  # E: Class __main__.A has abstract attribute "a"  [abstract] \
+          # N: If it is meant to be abstract, decorate the class with `basedtyping.abstract`, or add `abc.ABC` as a base class, or `abc.ABCMeta` as the metaclass
+    a: Abstract[int]
+A()  # E:  # E: Cannot instantiate abstract class "A" with abstract attribute "a"  [abstract]
+
+
+[case testReadOnlyAttribute]
+from typing_extensions import ReadOnly
+class A:
+    a: ReadOnly = 1
+A().a = 2  # E: Attribute "a" defined in "A" is read only  [read-only]
+[builtins fixtures/tuple.pyi]
+
+
+[case testMultipleModifiers]
+from basedtyping import Abstract, abstract
+from typing_extensions import ReadOnly
+from typing import ClassVar
+
+@abstract
+class A:
+   a: ClassVar[Abstract[ReadOnly[int]]]
+A().a = 1  # E: Cannot instantiate abstract class "A" with abstract attribute "a"  [abstract] \
+           # E: Attribute "a" defined in "A" is read only  [read-only] \
+           # E: Cannot assign to class variable "a" via instance  [misc]
+[builtins fixtures/tuple.pyi]

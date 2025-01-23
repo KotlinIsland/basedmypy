@@ -1,0 +1,19 @@
+[case testBasedReadOnly]
+from typing_extensions import ReadOnly
+
+class A:
+    a: ReadOnly = 1
+    a = 2 # E: Name "a" is read only  [read-only]
+    b: ReadOnly[int] = 1
+    b = 2 # E: Name "b" is read only  [read-only]
+
+a: A
+a.a  = 2  # E: Attribute "a" defined in "A" is read only  [read-only]
+a.b  = 2  # E: Attribute "b" defined in "A" is read only  [read-only]
+
+b: ReadOnly = 1
+c: ReadOnly[int] = 1
+
+b = 2  # E: Name "b" is read only  [read-only]
+c = 2  # E: Name "c" is read only  [read-only]
+[builtins fixtures/tuple.pyi]

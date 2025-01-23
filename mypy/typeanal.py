@@ -737,6 +737,15 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
             return self.anal_type(
                 t.args[0], allow_typed_dict_special_forms=self.allow_typed_dict_special_forms
             )
+        elif fullname == "basedtyping.Abstract":
+            if not t.args:
+                self.fail(
+                    "Abstract[...] must have exactly one type argument", t, code=codes.VALID_TYPE
+                )
+                return AnyType(TypeOfAny.from_error)
+            return self.anal_type(
+                t.args[0], allow_typed_dict_special_forms=self.allow_typed_dict_special_forms
+            )
         elif fullname in ("typing_extensions.Required", "typing.Required"):
             if not self.allow_typed_dict_special_forms:
                 self.fail(
@@ -770,7 +779,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 self.anal_type(t.args[0], allow_typed_dict_special_forms=True), required=False
             )
         elif fullname in ("typing_extensions.ReadOnly", "typing.ReadOnly"):
-            if not self.allow_typed_dict_special_forms:
+            if not mypy.options._based and not self.allow_typed_dict_special_forms:
                 self.fail(
                     "ReadOnly[] can be only used in a TypedDict definition",
                     t,

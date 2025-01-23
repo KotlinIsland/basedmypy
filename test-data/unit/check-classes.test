@@ -5949,7 +5949,7 @@ class A:  # OK, has @abstractmethod
     def f(self) -> None:
         pass
 
-class B(A):  # E: Class a.B has abstract attributes "f"  # N: If it is meant to be abstract, add 'abc.ABCMeta' as an explicit metaclass
+class B(A):  # E: Class a.B has abstract attribute "f"  # N: If it is meant to be abstract, decorate the class with `basedtyping.abstract`, or add `abc.ABC` as a base class, or `abc.ABCMeta` as the metaclass
     pass
 
 class C(A, metaclass=ABCMeta):  # OK, has ABCMeta as a metaclass

@@ -1743,7 +1743,7 @@ class Instance(ProperType):
         )
 
 
-class FunctionLike(ProperType):
+class FunctionLike(ProperType):  # type: ignore[abstract]
     """Abstract base class for function types."""
 
     __slots__ = ("fallback",)
@@ -3962,7 +3962,7 @@ class TypeStrVisitor(SyntheticTypeVisitor[str]):
         return " | ".join(res)
 
 
-class TrivialSyntheticTypeTranslator(TypeTranslator, SyntheticTypeVisitor[Type]):
+class TrivialSyntheticTypeTranslator(TypeTranslator, SyntheticTypeVisitor[Type]):  # type: ignore[abstract]
     """A base class for type translators that need to be run during semantic analysis."""
 
     def visit_placeholder_type(self, t: PlaceholderType) -> Type:
