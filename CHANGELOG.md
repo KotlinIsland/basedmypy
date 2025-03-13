@@ -1,6 +1,8 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Fixed
+- allow `@final` decorator on `Protocol` classes with abstract attributes (#867)
 
 ## [2.10.0]
 ### Changes
