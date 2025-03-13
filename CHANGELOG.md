@@ -1,6 +1,8 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Fixes
+- make `NewType` work properly
 
 ## [2.10.0]
 ### Changes
