@@ -816,6 +816,8 @@ def analyze_var(
         if mx.is_lvalue and var.is_property and not var.is_settable_property:
             # TODO allow setting attributes in subclass (although it is probably an error)
             mx.msg.read_only_property(name, itype.type, mx.context)
+        if mx.is_lvalue and var.is_read_only:
+            mx.msg.read_only(name, mx.context, itype.type)
         if mx.is_lvalue and var.is_classvar:
             mx.msg.cant_assign_to_classvar(name, mx.context)
         t = freshen_all_functions_type_vars(typ)

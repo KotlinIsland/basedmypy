@@ -62,7 +62,7 @@ PRIORITY_FALLBACKS: Final = 1
 
 
 @trait
-class SemanticAnalyzerCoreInterface:
+class SemanticAnalyzerCoreInterface:  # type: ignore[abstract]
     """A core abstract interface to generic semantic analyzer functionality.
 
     This is implemented by both semantic analyzer passes 2 and 3.
@@ -142,7 +142,7 @@ class SemanticAnalyzerCoreInterface:
 
 
 @trait
-class SemanticAnalyzerInterface(SemanticAnalyzerCoreInterface):
+class SemanticAnalyzerInterface(SemanticAnalyzerCoreInterface):  # type: ignore[abstract]
     """A limited abstract interface to some generic semantic analyzer pass 2 functionality.
 
     We use this interface for various reasons:

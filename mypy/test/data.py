@@ -815,7 +815,7 @@ def has_stable_flags(testcase: DataDrivenTestCase) -> bool:
     return True
 
 
-class DataSuite:
+class DataSuite:  # type: ignore[abstract]
     # option fields - class variables
     files: list[str]
 

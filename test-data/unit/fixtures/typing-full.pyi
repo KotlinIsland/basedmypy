@@ -88,7 +88,7 @@ class Iterator(Iterable[T_co], Protocol):
     @abstractmethod
     def __next__(self) -> T_co: pass
 
-class Generator(Iterator[T], Generic[T, U, V]):
+class Generator(Iterator[T], Generic[T, U, V]):  # type: ignore[abstract]
     @abstractmethod
     def send(self, value: U) -> T: pass
 
@@ -101,7 +101,7 @@ class Generator(Iterator[T], Generic[T, U, V]):
     @abstractmethod
     def __iter__(self) -> 'Generator[T, U, V]': pass
 
-class AsyncGenerator(AsyncIterator[T], Generic[T, U]):
+class AsyncGenerator(AsyncIterator[T], Generic[T, U]):  # type: ignore[abstract]
     @abstractmethod
     def __anext__(self) -> Awaitable[T]: pass
 
@@ -125,7 +125,7 @@ class Awaitable(Protocol[T]):
 class AwaitableGenerator(Generator[T, U, V], Awaitable[V], Generic[T, U, V, S], metaclass=ABCMeta):
     pass
 
-class Coroutine(Awaitable[V], Generic[T, U, V]):
+class Coroutine(Awaitable[V], Generic[T, U, V]):  # type: ignore[abstract]
     @abstractmethod
     def send(self, value: U) -> T: pass
 
@@ -146,11 +146,11 @@ class AsyncIterator(AsyncIterable[T], Protocol):
     @abstractmethod
     def __anext__(self) -> Awaitable[T]: pass
 
-class Sequence(Iterable[T_co], Container[T_co]):
+class Sequence(Iterable[T_co], Container[T_co]):  # type: ignore[abstract]
     @abstractmethod
     def __getitem__(self, n: Any) -> T_co: pass
 
-class MutableSequence(Sequence[T]):
+class MutableSequence(Sequence[T]):  # type: ignore[abstract]
     @abstractmethod
     def __setitem__(self, n: Any, o: T) -> None: pass
 

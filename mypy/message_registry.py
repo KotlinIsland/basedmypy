@@ -266,6 +266,7 @@ CANNOT_OVERRIDE_CLASS_VAR: Final = ErrorMessage(
 CLASS_VAR_WITH_TYPEVARS: Final = "ClassVar cannot contain type variables"
 CLASS_VAR_WITH_GENERIC_SELF: Final = "ClassVar cannot contain Self type in generic classes"
 CLASS_VAR_OUTSIDE_OF_CLASS: Final = "ClassVar can only be used for assignments in class body"
+ABSTRACT_OUTSIDE_OF_CLASS: Final = "`Abstract` can only be used for assignments in a class body"
 
 # Protocol
 RUNTIME_PROTOCOL_EXPECTED: Final = ErrorMessage(

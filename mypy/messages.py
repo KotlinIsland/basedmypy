@@ -1570,12 +1570,13 @@ class MessageBuilder:
     def cannot_instantiate_abstract_class(
         self, class_name: str, abstract_attributes: dict[str, bool], context: Context
     ) -> None:
-        attrs = format_string_list([f'"{a}"' for a in abstract_attributes])
+        if abstract_attributes:
+            attrs = format_string_list([f'"{a}"' for a in abstract_attributes])
+            rest = f" with abstract attribute{plural_s(abstract_attributes)} {attrs}"
+        else:
+            rest = ""
         self.fail(
-            f'Cannot instantiate abstract class "{class_name}" with abstract '
-            f"attribute{plural_s(abstract_attributes)} {attrs}",
-            context,
-            code=codes.ABSTRACT,
+            f'Cannot instantiate abstract class "{class_name}"{rest}', context, code=codes.ABSTRACT
         )
         attrs_with_none = [
             f'"{a}"'
@@ -1656,7 +1657,18 @@ class MessageBuilder:
         self.fail("Final name must be initialized with a value", ctx)
 
     def read_only_property(self, name: str, type: TypeInfo, context: Context) -> None:
-        self.fail(f'Property "{name}" defined in "{type.name}" is read-only', context)
+        self.fail(
+            f'Property "{name}" defined in "{type.name}" is read-only',
+            context,
+            code=ErrorCode("read-only", "", ""),
+        )
+
+    def read_only(self, name: str, context: Context, type: TypeInfo | None = None) -> None:
+        if type is None:
+            prefix = f'Name "{name}"'
+        else:
+            prefix = f'Attribute "{name}" defined in "{type.name}"'
+        self.fail(f"{prefix} is read only", context, code=ErrorCode("read-only", "", ""))
 
     def incompatible_typevar_value(
         self,

@@ -32,7 +32,7 @@ ICODE_GEN_BUILTINS = os.path.join(test_data_prefix, "fixtures/ir.py")
 TESTUTIL_PATH = os.path.join(test_data_prefix, "fixtures/testutil.py")
 
 
-class MypycDataSuite(DataSuite):
+class MypycDataSuite(DataSuite):  # type: ignore[abstract]
     # Need to list no files, since this will be picked up as a suite of tests
     files: list[str] = []
     data_prefix = test_data_prefix

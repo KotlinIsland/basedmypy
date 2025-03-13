@@ -170,7 +170,7 @@ class AnalysisResult(Generic[T]):
 GenAndKill = tuple[set[T], set[T]]
 
 
-class BaseAnalysisVisitor(OpVisitor[GenAndKill[T]]):
+class BaseAnalysisVisitor(OpVisitor[GenAndKill[T]]):  # type: ignore[abstract]
     def visit_goto(self, op: Goto) -> GenAndKill[T]:
         return set(), set()
 

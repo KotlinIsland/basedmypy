@@ -58,7 +58,7 @@ T = TypeVar("T")
 
 @trait
 @mypyc_attr(allow_interpreted_subclasses=True)
-class TypeVisitor(Generic[T]):
+class TypeVisitor(Generic[T]):  # type: ignore[abstract]
     """Visitor class for types (Type subclasses).
 
     The parameter T is the return type of the visit methods.
@@ -158,7 +158,7 @@ class TypeVisitor(Generic[T]):
 
 @trait
 @mypyc_attr(allow_interpreted_subclasses=True)
-class SyntheticTypeVisitor(TypeVisitor[T]):
+class SyntheticTypeVisitor(TypeVisitor[T]):  # type: ignore[abstract]
     """A TypeVisitor that also knows how to visit synthetic AST constructs.
 
     Not just real types.
@@ -186,7 +186,7 @@ class SyntheticTypeVisitor(TypeVisitor[T]):
 
 
 @mypyc_attr(allow_interpreted_subclasses=True)
-class TypeTranslator(TypeVisitor[Type]):
+class TypeTranslator(TypeVisitor[Type]):  # type: ignore[abstract]
     """Identity type transformation.
 
     Subclass this and override some methods to implement a non-trivial

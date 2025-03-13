@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from mypyc.irbuild.builder import IRBuilder
 
 
-class NonlocalControl:
+class NonlocalControl:  # type: ignore[abstract]
     """ABC representing a stack frame of constructs that modify nonlocal control flow.
 
     The nonlocal control flow constructs are break, continue, and
@@ -113,7 +113,7 @@ class GeneratorNonlocalControl(BaseNonlocalControl):
         builder.builder.pop_error_handler()
 
 
-class CleanupNonlocalControl(NonlocalControl):
+class CleanupNonlocalControl(NonlocalControl):  # type: ignore[abstract]
     """Abstract nonlocal control that runs some cleanup code."""
 
     def __init__(self, outer: NonlocalControl) -> None:

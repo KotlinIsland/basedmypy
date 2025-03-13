@@ -7,6 +7,8 @@ from __future__ import annotations
 
 from typing import Final
 
+import mypy.options
+from mypy import errorcodes
 from mypy.errors import Errors
 from mypy.nodes import (
     IMPLICITLY_ABSTRACT,
@@ -23,6 +25,7 @@ from mypy.nodes import (
 )
 from mypy.options import Options
 from mypy.types import MYPYC_NATIVE_INT_NAMES, Instance, ProperType
+from mypy.util import plural_s
 
 # Hard coded type promotions (shared between all Python versions).
 # These add extra ad-hoc edges to the subtyping relation. For example,
@@ -46,7 +49,7 @@ def calculate_class_abstract_status(typ: TypeInfo, is_stub_file: bool, errors: E
     abstract attribute.  Also compute a list of abstract attributes.
     Report error is required ABCMeta metaclass is missing.
     """
-    typ.is_abstract = False
+    was_abstract = typ.is_abstract
     typ.abstract_attributes = []
     if typ.typeddict_type:
         return  # TypedDict can't be abstract
@@ -91,24 +94,39 @@ def calculate_class_abstract_status(typ: TypeInfo, is_stub_file: bool, errors: E
                     if base is typ:
                         abstract_in_this_class.append(name)
             concrete.add(name)
-    # In stubs, abstract classes need to be explicitly marked because it is too
+    # In programming, abstract classes need to be explicitly marked because it is too
     # easy to accidentally leave a concrete class abstract by forgetting to
     # implement some methods.
     typ.abstract_attributes = sorted(abstract)
-    if is_stub_file:
+    if mypy.options._based or is_stub_file:
         if typ.declared_metaclass and typ.declared_metaclass.type.has_base("abc.ABCMeta"):
+            return
+        if any(base.type.fullname == "abc.ABC" for base in typ.bases):
             return
         if typ.is_protocol:
             return
-        if abstract and not abstract_in_this_class:
+        if was_abstract:
+            return
+        derives_protocol = any(base.type.is_protocol for base in typ.bases)
+        if abstract and (not abstract_in_this_class or mypy.options._based):
 
             def report(message: str, severity: str) -> None:
-                errors.report(typ.line, typ.column, message, severity=severity)
+                errors.report(
+                    typ.line, typ.column, message, severity=severity, code=errorcodes.ABSTRACT
+                )
 
             attrs = ", ".join(f'"{attr}"' for attr, _ in sorted(abstract))
-            report(f"Class {typ.fullname} has abstract attributes {attrs}", "error")
             report(
-                "If it is meant to be abstract, add 'abc.ABCMeta' as an explicit metaclass", "note"
+                f"Class {typ.fullname} has abstract attribute{plural_s(abstract)} {attrs}", "error"
+            )
+            if derives_protocol:
+                report(
+                    "If it is meant to be a protocol, add `typing.Protocol` as a base class",
+                    "note",
+                )
+            report(
+                "If it is meant to be abstract, decorate the class with `basedtyping.abstract`, or add `abc.ABC` as a base class, or `abc.ABCMeta` as the metaclass",
+                "note",
             )
     if typ.is_final and abstract:
         attrs = ", ".join(f'"{attr}"' for attr, _ in sorted(abstract))

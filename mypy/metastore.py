@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     import sqlite3
 
 
-class MetadataStore:
+class MetadataStore:  # type: ignore[abstract]
     """Generic interface for metadata storage."""
 
     @abstractmethod
