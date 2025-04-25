@@ -1,6 +1,8 @@
 # Basedmypy Changelog
 
 ## [Unreleased]
+### Changes
+- don't error on missing arguments on `types.FunctionType` and `types.BuiltinFunctionType`
 ### Fixed
 - allow `@final` decorator on `Protocol` classes with abstract attributes (#867)
 

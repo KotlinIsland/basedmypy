@@ -689,8 +689,6 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         elif fullname == "basedtyping.Intersection":
             items = self.anal_array(t.args)
             return IntersectionType.make_intersection(items)
-        elif fullname == "basedtyping.FunctionType":
-            return self.analyze_callable_type(t, type_name="types.FunctionType")
         elif fullname == "typing.Optional":
             if len(t.args) != 1:
                 self.fail(
@@ -706,7 +704,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         elif fullname in {"basedtyping.FunctionType", "basedtyping.BuiltinFunctionType"}:
             return self.analyze_callable_type(t, type_name=fullname)
         elif fullname in {"types.FunctionType", "types.BuiltinFunctionType"}:
-            if not self.always_allow_new_syntax and not self.python_3_12_type_alias:
+            if not self.always_allow_new_syntax and not self.python_3_12_type_alias and t.args:
                 name = fullname.rsplit(".")[-1]
                 self.fail(
                     f'Type parameters for "{name}" requires `from __future__ import annotations` or quoted types',
@@ -1706,11 +1704,13 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
 
     def analyze_callable_type(self, t: UnboundType, type_name: str = CALLABLE_NAME) -> Type:
         fallback = self.named_type(
-            "builtins.function" if type_name == "types.FunctionType" else type_name
+            "builtins.function"
+            if type_name in {"basedtyping.FunctionType", "types.FunctionType"}
+            else type_name
         )
         if len(t.args) == 0:
             # Callable (bare). Treat as Callable[..., Any].
-            any_type = self.get_omitted_any(t)
+            any_type = self.get_omitted_any(t, type_name)
             ret = callable_with_ellipsis(any_type, any_type, fallback)
         elif len(t.args) == 2:
             callable_args = t.args[0]
@@ -2228,7 +2228,7 @@ def get_omitted_any(
                 typ,
                 code=codes.TYPE_ARG,
             )
-        else:
+        elif fullname not in {"types.FunctionType", "types.BuiltinFunctionType"}:
             typ = unexpanded_type or orig_type
             type_str = typ.name if isinstance(typ, UnboundType) else format_type_bare(typ, options)
 
@@ -2256,6 +2256,8 @@ def get_omitted_any(
                     typ,
                     code=codes.TYPE_ARG,
                 )
+        else:
+            typ = orig_type
 
         any_type = UntypedType(TypeOfAny.from_omitted_generics, line=typ.line, column=typ.column)
     else:

@@ -54,6 +54,17 @@ Foo = FunctionType[[int], str]  # E: Type parameters for "FunctionType" requires
 [builtins fixtures/tuple.pyi]
 
 
+[case testFunctionTypeNoArguments]
+from types import FunctionType
+
+a: FunctionType
+
+from basedtyping import FunctionType as BasedFunctionType
+
+b: BasedFunctionType   # E: Missing type parameters for generic type "BasedFunctionType"  [type-arg]
+[builtins fixtures/tuple.pyi]
+
+
 [case testFunctionTypeOnInstance]
 from typing import ClassVar
 class A:
