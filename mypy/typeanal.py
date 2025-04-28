@@ -689,6 +689,12 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         elif fullname == "basedtyping.Intersection":
             items = self.anal_array(t.args)
             return IntersectionType.make_intersection(items)
+        elif fullname == "basedtyping.Int":
+            return self.named_type("builtins.int")
+        elif fullname == "basedtyping.Float":
+            return self.named_type("builtins.float")
+        elif fullname == "basedtyping.Complex":
+            return self.named_type("builtins.complex")
         elif fullname == "typing.Optional":
             if len(t.args) != 1:
                 self.fail(
