@@ -45,11 +45,12 @@ This also means that you are always free to ignore the errors mypy reports,
 if you so wish. You can always use the Python interpreter to run your code,
 even if mypy reports errors.
 
-However, if you try directly running mypy on your existing Python code, it
-will most likely report little to no errors. This is a feature! It makes it
-easy to adopt mypy incrementally.
+If you try directly running mypy on your existing Python code, it
+will most likely report lots and lots of errors. This is a feature! It makes it
+easy to notice all the possible errors with your code. (You can also
+look into the baseline feature to help you adopt mypy incrementally.)
 
-In order to get useful diagnostics from mypy, you must add *type annotations*
+In order to get useful inferences from mypy, you must add *type annotations*
 to your code. See the section below for details.
 
 .. _getting-started-dynamic-vs-static:
