@@ -1260,7 +1260,7 @@ def g(s: List[Any]) -> None:
 
 f(0)
 
-# type of list below is inferred with expected type of "List[Any]", so that becomes it's type
+# type of list below is inferred with expected type of "List[Any]", so that becomes its type
 # instead of List[str]
 g([''])  # E: Expression type contains "Any" (has type "List[Any]")
 [builtins fixtures/list.pyi]
