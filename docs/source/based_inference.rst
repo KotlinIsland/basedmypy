@@ -41,7 +41,7 @@ Infer the type of a function parameter from its default value:
 Narrow On Initial Assignment
 ----------------------------
 
-When a variable definition has an explicit annotation, the initialization value will be used to narrow it's type:
+When a variable definition has an explicit annotation, the initialization value will be used to narrow its type:
 
 .. code-block:: python
 
@@ -52,7 +52,7 @@ When a variable definition has an explicit annotation, the initialization value 
 Unused Parameter Inferred
 -------------------------
 
-When a parameter is named `_`, it's type will be inferred as `object`:
+When a parameter is named `_`, its type will be inferred as `object`:
 
 .. code-block:: python
 
