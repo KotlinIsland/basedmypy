@@ -1,3 +1,13 @@
+> [!IMPORTANT]
+> deprecated: basedmypy is no longer actively maintained
+>
+> as of July 2025, this project is deprecated. basedmypy was intended to push the ecosystem forward from mypy, and there are now great alternatives that exist
+>
+> - basedpyright: https://github.com/DetachHead/basedpyright
+> - ty: https://github.com/astral-sh/ty
+>
+> we recommend migrating to one of the above projects for ongoing improvements and support. Thank you to everyone who used, contributed to, and supported basedmypy
+
 [![Discord](https://img.shields.io/discord/948915247073349673?logo=discord)](https://discord.gg/7y9upqPrk2)
 [![Playground](https://img.shields.io/badge/🛝%20playground-blue)](https://mypy-play.net/?mypy=basedmypy-latest)
 [![Stable Version](https://img.shields.io/pypi/v/basedmypy?color=blue)](https://pypi.org/project/basedmypy/)
