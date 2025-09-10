@@ -6,6 +6,9 @@
 Welcome to the basedmypy docs!
 ==============================
 
+.. warning::
+   basedmypy is deprecated and no longer maintained as of July 2025. please consider using basedpyright instead: https://github.com/DetachHead/basedpyright
+
 Basedmypy is a static type checker for Python that is built on top of the work done
 by the `mypy project <https://github.com/python/mypy>`_.
 
