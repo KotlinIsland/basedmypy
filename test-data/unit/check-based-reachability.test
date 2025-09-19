@@ -1,0 +1,7 @@
+[case testReachability]
+from typing_extensions import Never
+def f() -> Never: raise Exception
+print(f())  # E: Statement is unreachable  [unreachable]
+[f(), 1]  # E: Statement is unreachable  [unreachable]
+def f2() -> int:
+    return f()  # E: Statement is unreachable  [unreachable]
