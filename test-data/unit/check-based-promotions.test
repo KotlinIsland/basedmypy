@@ -1,0 +1,40 @@
+[case testInference]
+i = 1
+reveal_type(i)  # N: Revealed type is "int"
+
+c = 1j
+reveal_type(c)  # N: Revealed type is "complex | float | int"
+
+f = 1.
+reveal_type(f)  # N: Revealed type is "float | int"
+
+
+[case testBasedtypingImports]
+from basedtyping import Int, Complex, Float
+
+i: Int
+i = 1
+i = 1.  # E: ...
+i = ij  # E: ...
+
+c: Complex
+c = 1  # E: ...
+c = 1.  # E: ...
+c = 1j
+
+f: Float
+c = 1  # E: ...
+c = 1.
+c = 1j  # E: ...
+
+
+[case testDisable]
+# flags: --disable-number-promotions
+i = 1
+reveal_type(i)  # N: Revealed type is "int"
+
+c = 1j
+reveal_type(c)  # N: Revealed type is "complex | float | int"
+
+f = 1.
+reveal_type(f)  # N: Revealed type is "float | int"
